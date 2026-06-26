@@ -1144,6 +1144,7 @@ export class AdminComponent implements OnInit {
         next: () => {
           course.status = newStatus;
           this.loadStatistics();
+          this.loadCourses();
           this.setSuccess(`وضعیت دوره "${course.title}" به ${newStatus === 'active' ? 'فعال' : 'غیرفعال'} تغییر یافت.`);
         },
         error: (error) => {
