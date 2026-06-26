@@ -190,8 +190,21 @@ import { AuthService } from '../../core/services/auth.service';
                   >
                     <div class="list-item-top">
                       <strong>{{ course.title }}</strong>
-                      <span class="status-chip" [ngClass]="courseStatusClass(course.status)">
-                        {{ courseStatusLabel(course.status) }}
+                      <span class="list-item-actions">
+                        <span class="status-chip" [ngClass]="courseStatusClass(course.status)">
+                          {{ courseStatusLabel(course.status) }}
+                        </span>
+                        @if (course.status === 'inactive' || course.status === 'active') {
+                          <button
+                            type="button"
+                            class="toggle-btn"
+                            [class.is-active]="course.status === 'active'"
+                            (click)="$event.stopPropagation(); toggleCourseStatus(course)"
+                            [title]="course.status === 'active' ? 'غیرفعال کردن' : 'فعال کردن'"
+                          >
+                            {{ course.status === 'active' ? '🔴' : '🟢' }}
+                          </button>
+                        }
                       </span>
                     </div>
                     <span class="list-meta list-meta--truncate">{{ course.courseCode }}</span>
@@ -673,6 +686,29 @@ import { AuthService } from '../../core/services/auth.service';
         background: #f3f4f6;
         border-color: #d1d5db;
       }
+      .list-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .toggle-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.85rem;
+        line-height: 1;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        width: 1.5rem;
+        height: 1.5rem;
+        transition: transform 0.15s;
+      }
+      .toggle-btn:hover {
+        transform: scale(1.2);
+      }
       .editor-form {
         border: 1px solid var(--lp-border);
         border-radius: 12px;
@@ -1093,6 +1129,22 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف دوره با خطا مواجه شد.');
+        }
+      });
+  }
+
+  toggleCourseStatus(course: Course): void {
+    const newStatus: CourseStatus = course.status === 'active' ? 'inactive' : 'active';
+    this.api
+      .updateAdminCourse(course.id, { status: newStatus })
+      .subscribe({
+        next: () => {
+          course.status = newStatus;
+          this.loadStatistics();
+          this.setSuccess(`وضعیت دوره "${course.title}" به ${newStatus === 'active' ? 'فعال' : 'غیرفعال'} تغییر یافت.`);
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'تغییر وضعیت دوره با خطا مواجه شد.');
         }
       });
   }
