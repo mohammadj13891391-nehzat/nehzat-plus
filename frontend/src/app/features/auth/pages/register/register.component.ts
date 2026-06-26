@@ -22,6 +22,9 @@ import { AuthService } from '../../../../core/services/auth.service';
           <input formControlName="email" type="email" placeholder="ایمیل" />
           <input formControlName="phoneNumber" type="text" placeholder="شماره موبایل (09xxxxxxxxx)" />
           <input formControlName="password" type="password" placeholder="رمز عبور" />
+          @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
+            <small class="error">رمز عبور باید حداقل ۸ کاراکتر باشد</small>
+          }
           <button type="submit" [disabled]="form.invalid || loading">
             {{ loading ? 'در حال ثبت نام...' : 'ثبت نام' }}
           </button>
@@ -57,7 +60,7 @@ export class RegisterComponent {
     username: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   submit(): void {
