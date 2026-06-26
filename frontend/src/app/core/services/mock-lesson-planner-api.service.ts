@@ -223,7 +223,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
   getStudentProgress(studentId: number): Observable<StudentProgressResponse> {
     const student = this.store.students.find((item) => item.id === studentId);
     if (!student) {
-      return this.fail('دانش آموز پیدا نشد.');
+      return this.fail('متربی پیدا نشد.');
     }
     const courseIds = this.store.studentCourseMap[studentId] ?? [];
     const courses = this.store.courses.filter((course) => courseIds.includes(course.id));
@@ -407,7 +407,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     student = {
       id: this.nextNumericId(this.store.students),
       studentId: derivedStudentId,
-      firstName: user.firstName || 'دانش‌آموز',
+      firstName: user.firstName || 'متربی',
       lastName: user.lastName || 'نمونه',
       email: user.email || `${user.username}@example.com`,
       phoneNumber: user.phoneNumber || '09120000000'
@@ -723,7 +723,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 2,
         title: 'علوم تجربی',
-        description: 'فعالیت های آزمایشگاهی ساده برای دانش آموزان',
+        description: 'فعالیت های آزمایشگاهی ساده برای متربیان',
         courseCode: 'SCI-201',
         credits: 2,
         instructor: 'مهندس کریمی',

@@ -12,10 +12,10 @@ import { AuthService } from '../../../../core/services/auth.service';
   template: `
     <main class="page-container">
       <section class="card auth-card">
-        <h1 class="title">ورود به پنل دانش‌آموز</h1>
+        <h1 class="title">ورود به پنل متربی</h1>
         <p class="subtitle">برای نسخه نمایشی از حساب‌های زیر استفاده کنید:</p>
         <ul class="demo-accounts">
-          <li>دانش‌آموز: <code>student / student123</code></li>
+          <li>متربی: <code>student / student123</code></li>
           <li>مدیر: <code>admin / admin123</code></li>
         </ul>
 

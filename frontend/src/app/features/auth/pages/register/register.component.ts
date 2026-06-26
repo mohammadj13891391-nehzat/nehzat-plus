@@ -12,7 +12,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   template: `
     <main class="page-shell">
       <section class="card auth-card">
-        <h1>ثبت نام دانش آموز</h1>
+        <h1>ثبت نام متربی</h1>
         <p class="muted">پس از ثبت‌نام، حساب شما باید توسط مدیر تایید شود.</p>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">

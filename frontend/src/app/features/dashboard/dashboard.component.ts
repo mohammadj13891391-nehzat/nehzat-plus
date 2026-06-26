@@ -34,7 +34,7 @@ type TimelineStatus = 'future' | 'today' | 'past';
             />
           }
           <div>
-            <h1>پنل دانش‌آموز</h1>
+            <h1>پنل متربی</h1>
             <p class="muted">خوش آمدید {{ displayName }}</p>
           </div>
         </div>
@@ -405,7 +405,7 @@ type TimelineStatus = 'future' | 'today' | 'past';
               <p><strong>ایمیل:</strong> {{ currentUser.studentInfo?.email ?? '-' }}</p>
               <p><strong>شماره تماس:</strong> {{ currentUser.studentInfo?.phoneNumber ?? '-' }}</p>
               <p><strong>نام کاربری:</strong> {{ currentUser.username }}</p>
-              <p><strong>نوع کاربر:</strong> {{ currentUser.userType === 'admin' ? 'مدیر' : 'دانش‌آموز' }}</p>
+              <p><strong>نوع کاربر:</strong> {{ currentUser.userType === 'admin' ? 'مدیر' : 'متربی' }}</p>
             </div>
           </div>
         </div>
@@ -826,7 +826,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get displayName(): string {
     const student = this.currentUser?.studentInfo;
     if (!student) {
-      return this.currentUser?.username ?? 'دانش‌آموز';
+      return this.currentUser?.username ?? 'متربی';
     }
     return `${student.firstName} ${student.lastName}`;
   }
@@ -860,7 +860,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.getStudentId() === null) {
-      this.errorMessage = 'شناسه دانش‌آموز نامعتبر است. لطفا یک‌بار خروج و ورود مجدد انجام دهید.';
+      this.errorMessage = 'شناسه متربی نامعتبر است. لطفا یک‌بار خروج و ورود مجدد انجام دهید.';
     }
     this.loadCourses();
     this.loadSubmissions();
@@ -1090,7 +1090,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
     const payload = new FormData();
     payload.append('audioFile', audioFile);
-    payload.append('notes', 'ارسال از داشبورد دانش‌آموز');
+    payload.append('notes', 'ارسال از داشبورد متربی');
     payload.append('timeSpent', String(this.recordingDurationSeconds || 1));
 
     this.isSubmitting = true;

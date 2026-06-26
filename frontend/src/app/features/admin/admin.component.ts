@@ -71,7 +71,7 @@ import { AuthService } from '../../core/services/auth.service';
       <section id="admin-users" class="card pending-users-card" aria-labelledby="admin-users-title">
         <header class="section-header">
           <h2 id="admin-users-title" class="section-title">
-            دانش‌آموزان در انتظار تایید
+            متربیان در انتظار تایید
             <span class="count-badge">{{ pendingUsers.length }}</span>
           </h2>
           <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers" (click)="refreshAll()">
@@ -113,7 +113,7 @@ import { AuthService } from '../../core/services/auth.service';
                       <input type="text" formControlName="phoneNumber" />
                     </label>
                     <label>
-                      شماره دانش‌آموزی
+                      شماره متربی
                       <input type="text" formControlName="studentId" />
                     </label>
                     <label>
