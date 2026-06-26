@@ -182,11 +182,14 @@ import { AuthService } from '../../core/services/auth.service';
             } @else {
               <div class="select-list">
                 @for (course of courses; track course.id) {
-                  <button
-                    type="button"
+                  <div
                     class="list-item"
+                    role="button"
+                    tabindex="0"
                     [class.is-selected]="selectedCourseId === course.id"
                     (click)="selectCourse(course.id)"
+                    (keydown.enter)="selectCourse(course.id)"
+                    (keydown.space)="$event.preventDefault(); selectCourse(course.id)"
                   >
                     <div class="list-item-top">
                       <strong>{{ course.title }}</strong>
@@ -209,7 +212,7 @@ import { AuthService } from '../../core/services/auth.service';
                     </div>
                     <span class="list-meta list-meta--truncate">{{ course.courseCode }}</span>
                     <small class="list-meta list-meta--truncate">{{ course.instructor }}</small>
-                  </button>
+                  </div>
                 }
               </div>
             }
