@@ -28,8 +28,12 @@ nehzat-plus/
 ├─ frontend/                # فرانت‌اند Angular 21 (standalone + Capacitor)
 │  ├─ src/app/
 │  │  ├─ core/              # Models, Services, Guards, Interceptors
-│  │  ├─ features/          # auth, dashboard, admin
-│  │  └─ ...
+│  │  │  ├─ models/         # LessonPlanner models (TypeScript interfaces)
+│  │  │  ├─ services/       # AuthService + API interface (HTTP/Mock)
+│  │  │  ├─ guards/         # authGuard, adminGuard (functional)
+│  │  │  └─ interceptors/   # authInterceptor (Bearer token)
+│  │  ├─ features/          # auth, dashboard, admin (lazy modules)
+│  │  └─ config.loader.ts   # بارگیری پویای API URL از config.json
 │  └─ README.md
 │
 └─ docs/                    # مستندات تکمیلی
@@ -70,7 +74,11 @@ npm start
 ```
 - سرور روی `http://localhost:4200` اجرا می‌شود
 - فرانت‌اند از Angular 21 با معماری standalone components استفاده می‌کند
-- پشتیبانی از Capacitor برای اجرا روی اندروید
+- **API لایه**: مبتنی بر اینترفیس با قابلیت جابه‌جایی بین HTTP واقعی و Mock (تغییر با `environment.useMockApi`)
+- **بارگیری پویای API URL**: فایل `config.json` در bootstrap برنامه بارگذاری می‌شود (`config.loader.ts`)
+- **استایل**: CSS سفارشی با متغیرهای `--lp-*` و فونت وزیرمتن (بدون Bootstrap)
+- **تست**: Vitest با jsdom (جایگزین Karma/Jasmine)
+- **پشتیبانی موبایل**: Capacitor 8 برای اجرا روی اندروید
 
 ## 🧪 تست سیستم
 
@@ -148,6 +156,24 @@ npm start
 - `ADMIN_API_EXAMPLES.md` - مثال‌های عملی API مدیریت
 - `user-stories-student.md` - داستان‌های کاربری دانش‌آموز
 
+## 🧪 حالت توسعه با Mock API
+
+فرانت‌اند از معماری API دوگانه پشتیبانی می‌کند:
+- **HTTP واقعی**: اتصال به بک‌اند ASP.NET Core
+- **Mock**: داده‌های نمونه درون‌مرورگری بدون نیاز به بک‌اند
+
+تغییر حالت با `useMockApi: true/false` در `frontend/src/environments/environment.ts` انجام می‌شود.
+در حالت Mock، کلیه عملیات‌های CRUD، احراز هویت و آپلود فایل بدون سرور قابل تست هستند.
+
+## 🔧 پیکربندی API URL
+
+برنامه `config.json` را در ریشه (`/config.json`) در زمان اجرا بارگذاری می‌کند:
+```json
+{ "apiUrl": "http://localhost:5253" }
+```
+این فایل می‌تواند در هر محیط (توسعه، استیجینگ، production) متفاوت باشد.
+در صورت نبود فایل، برنامه همچنان کار می‌کند (API URL خالی می‌ماند).
+
 ## 📱 پشتیبانی موبایل
 
 پروژه از Capacitor برای اجرا روی اندروید پشتیبانی می‌کند:
@@ -163,3 +189,4 @@ npx cap open android
 - کاربران pending نمی‌توانند وارد شوند
 - فایل‌ها محدودیت نوع و حجم دارند
 - دسترسی‌ها بر اساس نوع کاربر کنترل می‌شود
+- **توجه**: توکن احراز هویت فعلی صرفاً یک `dummy-token` در localStorage است و امنیت واقعی ندارد — بک‌اند نیز middleware احراز هویت ندارد
