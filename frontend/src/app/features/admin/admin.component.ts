@@ -948,7 +948,7 @@ export class AdminComponent implements OnInit {
     { key: 'teachers', label: 'مربیان' },
     { key: 'courses', label: 'دوره‌ها' },
     { key: 'branch-managers', label: 'مسئولین شعب' },
-    { key: 'branches', label: 'شعبه‌ها' },
+    { key: 'branches', label: 'مکاتب تربیتی، آموزشی، مهارتی' },
     { key: 'parents', label: 'والدین' },
     { key: 'evaluators', label: 'ارزیاب' },
     { key: 'headquarters', label: 'ستاد' }

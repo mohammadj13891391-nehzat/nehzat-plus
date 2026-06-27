@@ -76,6 +76,33 @@ export interface CreateCoursePayload {
 
 export type UpdateCoursePayload = Partial<CreateCoursePayload>;
 
+export type MadrasahGender = 'boys' | 'girls';
+export type MadrasahGrade = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type MadrasahStatus = 'active' | 'inactive';
+
+export interface Madrasah {
+  id: number;
+  name: string;
+  gender: MadrasahGender;
+  grade: MadrasahGrade;
+  capacity?: number;
+  managerId?: number;
+  status: MadrasahStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMadrasahPayload {
+  name: string;
+  gender: MadrasahGender;
+  grade: MadrasahGrade;
+  capacity?: number;
+  managerId?: number;
+  status?: MadrasahStatus;
+}
+
+export type UpdateMadrasahPayload = Partial<CreateMadrasahPayload>;
+
 export interface AssignmentAttachment {
   id: number;
   assignmentId: number;
