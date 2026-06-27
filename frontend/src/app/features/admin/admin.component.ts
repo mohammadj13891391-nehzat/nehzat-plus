@@ -22,7 +22,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <main class="app-shell app-shell--narrow admin-page" aria-labelledby="admin-page-title">
+    <main class="app-shell admin-page" aria-labelledby="admin-page-title">
       <header class="shell-header">
         <div>
           <h1 id="admin-page-title">پنل مدیریت</h1>
@@ -61,475 +61,535 @@ import { AuthService } from '../../core/services/auth.service';
         </article>
       </section>
 
-      <nav class="section-nav" aria-label="بخش‌های پنل مدیریت">
-        <a class="nav-chip" href="#admin-users">کاربران</a>
-        <a class="nav-chip" href="#admin-courses">دوره‌ها</a>
-        <a class="nav-chip" href="#admin-assignments">تکالیف</a>
-        <a class="nav-chip" href="#admin-attachments">پیوست‌ها</a>
-      </nav>
+      <div class="admin-layout">
+        <aside class="admin-sidebar" aria-label="منوی مدیریت">
+          <ul class="sidebar-menu">
+            @for (item of menuItems; track item.key) {
+              <li
+                class="sidebar-item"
+                [class.active]="activeMenu === item.key"
+                (click)="activeMenu = item.key"
+                (keydown.enter)="activeMenu = item.key"
+                tabindex="0"
+                role="button"
+              >
+                {{ item.label }}
+              </li>
+            }
+          </ul>
+        </aside>
 
-      <section id="admin-users" class="card pending-users-card" aria-labelledby="admin-users-title">
-        <header class="section-header">
-          <h2 id="admin-users-title" class="section-title">
-            متربیان در انتظار تایید
-            <span class="count-badge">{{ pendingUsers.length }}</span>
-          </h2>
-          <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers" (click)="refreshAll()">
-            {{ loadingPendingUsers ? 'در حال بروزرسانی...' : 'بروزرسانی' }}
-          </button>
-        </header>
+        <div class="admin-content">
+          @if (activeMenu === 'trainees') {
+            <section class="card pending-users-card" aria-labelledby="admin-users-title">
+              <header class="section-header">
+                <h2 id="admin-users-title" class="section-title">
+                  متربیان در انتظار تایید
+                  <span class="count-badge">{{ pendingUsers.length }}</span>
+                </h2>
+                <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers" (click)="refreshAll()">
+                  {{ loadingPendingUsers ? 'در حال بروزرسانی...' : 'بروزرسانی' }}
+                </button>
+              </header>
 
-        @if (loadingPendingUsers) {
-          <p class="muted">در حال دریافت لیست کاربران...</p>
-        } @else if (pendingUsers.length === 0) {
-          <p class="muted">در حال حاضر کاربر در انتظار تایید وجود ندارد.</p>
-        } @else {
-          <div class="pending-list">
-            @for (user of pendingUsers; track user.id) {
-              <article class="pending-item">
-                <div class="pending-summary">
-                  <h3>{{ user.firstName }} {{ user.lastName }}</h3>
-                  <p class="muted">نام کاربری: {{ user.username }}</p>
-                  <p class="muted">ایمیل: {{ user.email || '-' }}</p>
-                  <p class="muted">موبایل: {{ user.phoneNumber || '-' }}</p>
+              @if (loadingPendingUsers) {
+                <p class="muted">در حال دریافت لیست کاربران...</p>
+              } @else if (pendingUsers.length === 0) {
+                <p class="muted">در حال حاضر کاربر در انتظار تایید وجود ندارد.</p>
+              } @else {
+                <div class="pending-list">
+                  @for (user of pendingUsers; track user.id) {
+                    <article class="pending-item">
+                      <div class="pending-summary">
+                        <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                        <p class="muted">نام کاربری: {{ user.username }}</p>
+                        <p class="muted">ایمیل: {{ user.email || '-' }}</p>
+                        <p class="muted">موبایل: {{ user.phoneNumber || '-' }}</p>
+                      </div>
+
+                      @if (approvalForms[user.id]; as approvalForm) {
+                        <form [formGroup]="approvalForm" class="approval-form" (ngSubmit)="approveUser(user)">
+                          <label>
+                            نام
+                            <input type="text" formControlName="firstName" />
+                          </label>
+                          <label>
+                            نام خانوادگی
+                            <input type="text" formControlName="lastName" />
+                          </label>
+                          <label>
+                            ایمیل
+                            <input type="email" formControlName="email" />
+                          </label>
+                          <label>
+                            موبایل
+                            <input type="text" formControlName="phoneNumber" />
+                          </label>
+                          <label>
+                            شماره متربی
+                            <input type="text" formControlName="studentId" />
+                          </label>
+                          <label>
+                            دوره‌ها (ID با کاما)
+                            <input type="text" formControlName="courseIdsInput" placeholder="مثال: 1,2" />
+                          </label>
+
+                          <div class="row-actions">
+                            <button type="submit" class="btn" [disabled]="isProcessing(user.id) || approvalForm.invalid">
+                              {{ isProcessing(user.id) ? 'در حال تایید...' : 'تایید' }}
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              [disabled]="isProcessing(user.id)"
+                              (click)="rejectUser(user)"
+                            >
+                              {{ isProcessing(user.id) ? 'در حال پردازش...' : 'رد' }}
+                            </button>
+                          </div>
+                        </form>
+                      }
+                    </article>
+                  }
+                </div>
+              }
+            </section>
+          }
+
+          @if (activeMenu === 'teachers') {
+            <section class="card">
+              <h2 class="section-title">مربیان</h2>
+              <p class="muted">بخش مربیان در حال توسعه است.</p>
+            </section>
+          }
+
+          @if (activeMenu === 'courses') {
+            <section id="admin-courses" class="card" aria-labelledby="admin-courses-title">
+              <header class="section-header">
+                <h2 id="admin-courses-title" class="section-title">
+                  مدیریت دوره‌ها
+                  <span class="count-badge">{{ courses.length }}</span>
+                </h2>
+                <button type="button" class="btn btn-secondary" (click)="startCreateCourse()">دوره جدید</button>
+              </header>
+
+              <form class="inline-form" [formGroup]="courseFilterForm" (ngSubmit)="applyCourseFilters()">
+                <label>
+                  جستجو
+                  <input type="text" formControlName="query" placeholder="عنوان، کد یا مدرس" />
+                </label>
+                <label>
+                  وضعیت
+                  <select formControlName="status">
+                    <option value="">همه</option>
+                    <option value="active">فعال</option>
+                    <option value="inactive">غیرفعال</option>
+                    <option value="archived">آرشیو</option>
+                  </select>
+                </label>
+                <div class="row-actions">
+                  <button type="submit" class="btn" [disabled]="loadingCourses">اعمال</button>
+                  <button type="button" class="btn btn-secondary" [disabled]="loadingCourses" (click)="resetCourseFilters()">
+                    پاک کردن
+                  </button>
+                </div>
+              </form>
+
+              <div class="split-grid">
+                <div>
+                  @if (loadingCourses) {
+                    <p class="muted">در حال دریافت دوره‌ها...</p>
+                  } @else if (courses.length === 0) {
+                    <p class="muted">هیچ دوره‌ای یافت نشد.</p>
+                  } @else {
+                    <div class="select-list">
+                      @for (course of courses; track course.id) {
+                        <div
+                          class="list-item"
+                          role="button"
+                          tabindex="0"
+                          [class.is-selected]="selectedCourseId === course.id"
+                          (click)="selectCourse(course.id)"
+                          (keydown.enter)="selectCourse(course.id)"
+                          (keydown.space)="$event.preventDefault(); selectCourse(course.id)"
+                        >
+                          <div class="list-item-top">
+                            <strong>{{ course.title }}</strong>
+                            <span class="list-item-actions">
+                              <span class="status-chip" [ngClass]="courseStatusClass(course.status)">
+                                {{ courseStatusLabel(course.status) }}
+                              </span>
+                              @if (course.status === 'inactive' || course.status === 'active') {
+                                <button
+                                  type="button"
+                                  class="toggle-btn"
+                                  [class.is-active]="course.status === 'active'"
+                                  (click)="$event.stopPropagation(); toggleCourseStatus(course)"
+                                  [title]="course.status === 'active' ? 'غیرفعال کردن' : 'فعال کردن'"
+                                >
+                                  {{ course.status === 'active' ? '🔴' : '🟢' }}
+                                </button>
+                              }
+                            </span>
+                          </div>
+                          <span class="list-meta list-meta--truncate">{{ course.courseCode }}</span>
+                          <small class="list-meta list-meta--truncate">{{ course.instructor }}</small>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
 
-                @if (approvalForms[user.id]; as approvalForm) {
-                  <form [formGroup]="approvalForm" class="approval-form" (ngSubmit)="approveUser(user)">
-                    <label>
-                      نام
-                      <input type="text" formControlName="firstName" />
-                    </label>
-                    <label>
-                      نام خانوادگی
-                      <input type="text" formControlName="lastName" />
-                    </label>
-                    <label>
-                      ایمیل
-                      <input type="email" formControlName="email" />
-                    </label>
-                    <label>
-                      موبایل
-                      <input type="text" formControlName="phoneNumber" />
-                    </label>
-                    <label>
-                      شماره متربی
-                      <input type="text" formControlName="studentId" />
-                    </label>
-                    <label>
-                      دوره‌ها (ID با کاما)
-                      <input type="text" formControlName="courseIdsInput" placeholder="مثال: 1,2" />
-                    </label>
-
-                    <div class="row-actions">
-                      <button type="submit" class="btn" [disabled]="isProcessing(user.id) || approvalForm.invalid">
-                        {{ isProcessing(user.id) ? 'در حال تایید...' : 'تایید' }}
+                <form [formGroup]="courseForm" class="editor-form" (ngSubmit)="saveCourse()">
+                  <h3>{{ courseMode === 'create' ? 'ایجاد دوره' : 'ویرایش دوره' }}</h3>
+                  <label>
+                    عنوان
+                    <input type="text" formControlName="title" />
+                  </label>
+                  <label>
+                    کد دوره
+                    <input type="text" formControlName="courseCode" />
+                  </label>
+                  <label>
+                    توضیحات
+                    <textarea formControlName="description" rows="3"></textarea>
+                  </label>
+                  <label>
+                    مدرس
+                    <input type="text" formControlName="instructor" />
+                  </label>
+                  <label>
+                    وضعیت
+                    <select formControlName="status">
+                      <option value="active">فعال</option>
+                      <option value="inactive">غیرفعال</option>
+                      <option value="archived">آرشیو</option>
+                    </select>
+                  </label>
+                  <label>
+                    تاریخ شروع
+                    <input type="date" formControlName="startDate" />
+                  </label>
+                  <label>
+                    تاریخ پایان
+                    <input type="date" formControlName="endDate" />
+                  </label>
+                  <label>
+                    واحد
+                    <input type="number" formControlName="credits" min="1" />
+                  </label>
+                  <label>
+                    ظرفیت
+                    <input type="number" formControlName="maxStudents" min="1" />
+                  </label>
+                  <div class="row-actions">
+                    <button type="submit" class="btn" [disabled]="courseForm.invalid || savingCourse">
+                      {{ savingCourse ? 'در حال ذخیره...' : courseMode === 'create' ? 'ایجاد دوره' : 'ذخیره تغییرات' }}
+                    </button>
+                    @if (courseMode === 'edit' && selectedCourseId !== null) {
+                      <button type="button" class="btn btn-secondary" [disabled]="savingCourse" (click)="deleteSelectedCourse()">
+                        حذف دوره
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        [disabled]="isProcessing(user.id)"
-                        (click)="rejectUser(user)"
-                      >
-                        {{ isProcessing(user.id) ? 'در حال پردازش...' : 'رد' }}
-                      </button>
-                    </div>
-                  </form>
-                }
-              </article>
-            }
-          </div>
-        }
-      </section>
+                    }
+                  </div>
+                </form>
+              </div>
+            </section>
 
-      <section id="admin-courses" class="card" aria-labelledby="admin-courses-title">
-        <header class="section-header">
-          <h2 id="admin-courses-title" class="section-title">
-            مدیریت دوره‌ها
-            <span class="count-badge">{{ courses.length }}</span>
-          </h2>
-          <button type="button" class="btn btn-secondary" (click)="startCreateCourse()">دوره جدید</button>
-        </header>
+            <section id="admin-assignments" class="card" aria-labelledby="admin-assignments-title">
+              <header class="section-header">
+                <h2 id="admin-assignments-title" class="section-title">
+                  مدیریت تکالیف
+                  <span class="count-badge">{{ assignments.length }}</span>
+                </h2>
+                <button type="button" class="btn btn-secondary" [disabled]="selectedCourseId === null" (click)="startCreateAssignment()">
+                  تکلیف جدید
+                </button>
+              </header>
 
-        <form class="inline-form" [formGroup]="courseFilterForm" (ngSubmit)="applyCourseFilters()">
-          <label>
-            جستجو
-            <input type="text" formControlName="query" placeholder="عنوان، کد یا مدرس" />
-          </label>
-          <label>
-            وضعیت
-            <select formControlName="status">
-              <option value="">همه</option>
-              <option value="active">فعال</option>
-              <option value="inactive">غیرفعال</option>
-              <option value="archived">آرشیو</option>
-            </select>
-          </label>
-          <div class="row-actions">
-            <button type="submit" class="btn" [disabled]="loadingCourses">اعمال</button>
-            <button type="button" class="btn btn-secondary" [disabled]="loadingCourses" (click)="resetCourseFilters()">
-              پاک کردن
-            </button>
-          </div>
-        </form>
-
-        <div class="split-grid">
-          <div>
-            @if (loadingCourses) {
-              <p class="muted">در حال دریافت دوره‌ها...</p>
-            } @else if (courses.length === 0) {
-              <p class="muted">هیچ دوره‌ای یافت نشد.</p>
-            } @else {
-              <div class="select-list">
-                @for (course of courses; track course.id) {
-                  <div
-                    class="list-item"
-                    role="button"
-                    tabindex="0"
-                    [class.is-selected]="selectedCourseId === course.id"
-                    (click)="selectCourse(course.id)"
-                    (keydown.enter)="selectCourse(course.id)"
-                    (keydown.space)="$event.preventDefault(); selectCourse(course.id)"
-                  >
-                    <div class="list-item-top">
-                      <strong>{{ course.title }}</strong>
-                      <span class="list-item-actions">
-                        <span class="status-chip" [ngClass]="courseStatusClass(course.status)">
-                          {{ courseStatusLabel(course.status) }}
-                        </span>
-                        @if (course.status === 'inactive' || course.status === 'active') {
+              <p class="section-context">دوره انتخاب‌شده: {{ selectedCourseTitle }}</p>
+              @if (selectedCourseId === null) {
+                <p class="muted">برای مدیریت تکالیف، ابتدا یک دوره انتخاب یا ایجاد کنید.</p>
+              } @else {
+                <div class="split-grid">
+                  <div>
+                    @if (loadingAssignments) {
+                      <p class="muted">در حال دریافت تکالیف...</p>
+                    } @else if (assignments.length === 0) {
+                      <p class="muted">برای این دوره تکلیفی ثبت نشده است.</p>
+                    } @else {
+                      <div class="select-list">
+                        @for (assignment of assignments; track assignment.id) {
                           <button
                             type="button"
-                            class="toggle-btn"
-                            [class.is-active]="course.status === 'active'"
-                            (click)="$event.stopPropagation(); toggleCourseStatus(course)"
-                            [title]="course.status === 'active' ? 'غیرفعال کردن' : 'فعال کردن'"
+                            class="list-item"
+                            [class.is-selected]="selectedAssignmentId === assignment.id"
+                            (click)="selectAssignment(assignment.id)"
                           >
-                            {{ course.status === 'active' ? '🔴' : '🟢' }}
+                          <div class="list-item-top">
+                            <strong>{{ assignment.title }}</strong>
+                            <span class="status-chip" [ngClass]="assignmentStatusClass(assignment.status)">
+                              {{ assignmentStatusLabel(assignment.status) }}
+                            </span>
+                          </div>
+                          <span class="list-meta">{{ assignment.assignmentDate }}</span>
+                          <small class="list-meta">{{ assignmentTypeLabel(assignment.type) }}</small>
                           </button>
                         }
-                      </span>
+                      </div>
+                    }
+                  </div>
+
+                  <form [formGroup]="assignmentForm" class="editor-form" (ngSubmit)="saveAssignment()">
+                    <h3>{{ assignmentMode === 'create' ? 'ایجاد تکلیف' : 'ویرایش تکلیف' }}</h3>
+                    <label>
+                      عنوان
+                      <input type="text" formControlName="title" />
+                    </label>
+                    <label>
+                      توضیحات
+                      <textarea formControlName="description" rows="3"></textarea>
+                    </label>
+                    <label>
+                      تاریخ تکلیف
+                      <input type="date" formControlName="assignmentDate" />
+                    </label>
+                    <label>
+                      نوع
+                      <select formControlName="type">
+                        <option value="daily">روزانه</option>
+                        <option value="homework">تکلیف</option>
+                        <option value="project">پروژه</option>
+                        <option value="exam">آزمون</option>
+                      </select>
+                    </label>
+                    <label>
+                      وضعیت
+                      <select formControlName="status">
+                        <option value="draft">پیش‌نویس</option>
+                        <option value="published">منتشر شده</option>
+                        <option value="closed">بسته</option>
+                      </select>
+                    </label>
+                    <label>
+                      نمره
+                      <input type="number" formControlName="maxScore" min="0" />
+                    </label>
+                    <label>
+                      راهنما
+                      <textarea formControlName="instructions" rows="3"></textarea>
+                    </label>
+                    <div class="row-actions">
+                      <button type="submit" class="btn" [disabled]="assignmentForm.invalid || savingAssignment">
+                        {{ savingAssignment ? 'در حال ذخیره...' : assignmentMode === 'create' ? 'ایجاد تکلیف' : 'ذخیره تغییرات' }}
+                      </button>
+                      @if (assignmentMode === 'edit' && selectedAssignmentId !== null) {
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          [disabled]="savingAssignment"
+                          (click)="deleteSelectedAssignment()"
+                        >
+                          حذف تکلیف
+                        </button>
+                      }
                     </div>
-                    <span class="list-meta list-meta--truncate">{{ course.courseCode }}</span>
-                    <small class="list-meta list-meta--truncate">{{ course.instructor }}</small>
+                  </form>
+                </div>
+
+                <form [formGroup]="dailySeriesForm" class="editor-form daily-series-form" (ngSubmit)="createDailySeries()">
+                  <h3>ایجاد سری روزانه</h3>
+                  <label>
+                    تاریخ شروع
+                    <input type="date" formControlName="startDate" />
+                  </label>
+                  <label>
+                    تعداد روز
+                    <input type="number" formControlName="days" min="1" />
+                  </label>
+                  <label>
+                    پیشوند عنوان
+                    <input type="text" formControlName="titlePrefix" />
+                  </label>
+                  <label>
+                    پیشوند توضیحات
+                    <input type="text" formControlName="descriptionPrefix" />
+                  </label>
+                  <label>
+                    نوع
+                    <select formControlName="type">
+                      <option value="daily">روزانه</option>
+                      <option value="homework">تکلیف</option>
+                      <option value="project">پروژه</option>
+                      <option value="exam">آزمون</option>
+                    </select>
+                  </label>
+                  <label>
+                    نمره
+                    <input type="number" formControlName="maxScore" min="0" />
+                  </label>
+                  <label>
+                    راهنما
+                    <input type="text" formControlName="instructions" />
+                  </label>
+                  <button type="submit" class="btn" [disabled]="dailySeriesForm.invalid || creatingDailySeries">
+                    {{ creatingDailySeries ? 'در حال ایجاد...' : 'ایجاد سری روزانه' }}
+                  </button>
+                </form>
+              }
+            </section>
+
+            <section id="admin-attachments" class="card" aria-labelledby="admin-attachments-title">
+              <header class="section-header">
+                <h2 id="admin-attachments-title" class="section-title">
+                  مدیریت پیوست‌ها
+                  <span class="count-badge">{{ attachments.length }}</span>
+                </h2>
+              </header>
+
+              <p class="section-context">تکلیف انتخاب‌شده: {{ selectedAssignmentTitle }}</p>
+              @if (selectedAssignmentId === null) {
+                <p class="muted">برای مدیریت پیوست‌ها، ابتدا یک تکلیف انتخاب کنید.</p>
+              } @else {
+                <form [formGroup]="attachmentCreateForm" class="editor-form" (ngSubmit)="createAttachment()">
+                  <h3>پیوست جدید</h3>
+                  <label>
+                    عنوان
+                    <input type="text" formControlName="title" />
+                  </label>
+                  <label>
+                    توضیحات
+                    <input type="text" formControlName="description" />
+                  </label>
+                  <label>
+                    نوع
+                    <select formControlName="kind">
+                      <option value="document">سند</option>
+                      <option value="audio">صوت</option>
+                      <option value="image">تصویر</option>
+                      <option value="text">متن</option>
+                      <option value="other">سایر</option>
+                    </select>
+                  </label>
+                  <label>
+                    ترتیب نمایش
+                    <input type="number" formControlName="displayOrder" min="1" />
+                  </label>
+                  <label>
+                    فایل
+                    <input type="file" (change)="onCreateAttachmentFileChange($event)" />
+                  </label>
+                  <button type="submit" class="btn" [disabled]="attachmentCreateForm.invalid || creatingAttachment">
+                    {{ creatingAttachment ? 'در حال ایجاد...' : 'افزودن پیوست' }}
+                  </button>
+                </form>
+
+                @if (loadingAttachments) {
+                  <p class="muted">در حال دریافت پیوست‌ها...</p>
+                } @else if (attachments.length === 0) {
+                  <p class="muted">برای این تکلیف پیوستی ثبت نشده است.</p>
+                } @else {
+                  <div class="pending-list">
+                    @for (attachment of attachments; track attachment.id) {
+                      <article class="pending-item">
+                        <p><strong>{{ attachment.title }}</strong></p>
+                        <p class="muted url-text">{{ attachment.url }}</p>
+
+                        @if (attachmentMetaForms[attachment.id]; as attachmentForm) {
+                          <form [formGroup]="attachmentForm" class="approval-form" (ngSubmit)="updateAttachment(attachment.id)">
+                            <label>
+                              عنوان
+                              <input type="text" formControlName="title" />
+                            </label>
+                            <label>
+                              توضیحات
+                              <input type="text" formControlName="description" />
+                            </label>
+                            <label>
+                              نوع
+                              <select formControlName="kind">
+                                <option value="document">سند</option>
+                                <option value="audio">صوت</option>
+                                <option value="image">تصویر</option>
+                                <option value="text">متن</option>
+                                <option value="other">سایر</option>
+                              </select>
+                            </label>
+                            <label>
+                              ترتیب نمایش
+                              <input type="number" formControlName="displayOrder" min="1" />
+                            </label>
+                            <label>
+                              جایگزینی فایل
+                              <input type="file" (change)="onReplaceAttachmentFileChange(attachment.id, $event)" />
+                            </label>
+                            <div class="row-actions">
+                              <button type="submit" class="btn" [disabled]="updatingAttachmentIds.has(attachment.id)">
+                                {{ updatingAttachmentIds.has(attachment.id) ? 'در حال ذخیره...' : 'ذخیره' }}
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-secondary"
+                                [disabled]="updatingAttachmentIds.has(attachment.id)"
+                                (click)="replaceAttachmentFile(attachment.id)"
+                              >
+                                جایگزینی فایل
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-secondary"
+                                [disabled]="updatingAttachmentIds.has(attachment.id)"
+                                (click)="deleteAttachment(attachment.id)"
+                              >
+                                حذف
+                              </button>
+                            </div>
+                          </form>
+                        }
+                      </article>
+                    }
                   </div>
                 }
-              </div>
-            }
-          </div>
-
-          <form [formGroup]="courseForm" class="editor-form" (ngSubmit)="saveCourse()">
-            <h3>{{ courseMode === 'create' ? 'ایجاد دوره' : 'ویرایش دوره' }}</h3>
-            <label>
-              عنوان
-              <input type="text" formControlName="title" />
-            </label>
-            <label>
-              کد دوره
-              <input type="text" formControlName="courseCode" />
-            </label>
-            <label>
-              توضیحات
-              <textarea formControlName="description" rows="3"></textarea>
-            </label>
-            <label>
-              مدرس
-              <input type="text" formControlName="instructor" />
-            </label>
-            <label>
-              وضعیت
-              <select formControlName="status">
-                <option value="active">فعال</option>
-                <option value="inactive">غیرفعال</option>
-                <option value="archived">آرشیو</option>
-              </select>
-            </label>
-            <label>
-              تاریخ شروع
-              <input type="date" formControlName="startDate" />
-            </label>
-            <label>
-              تاریخ پایان
-              <input type="date" formControlName="endDate" />
-            </label>
-            <label>
-              واحد
-              <input type="number" formControlName="credits" min="1" />
-            </label>
-            <label>
-              ظرفیت
-              <input type="number" formControlName="maxStudents" min="1" />
-            </label>
-            <div class="row-actions">
-              <button type="submit" class="btn" [disabled]="courseForm.invalid || savingCourse">
-                {{ savingCourse ? 'در حال ذخیره...' : courseMode === 'create' ? 'ایجاد دوره' : 'ذخیره تغییرات' }}
-              </button>
-              @if (courseMode === 'edit' && selectedCourseId !== null) {
-                <button type="button" class="btn btn-secondary" [disabled]="savingCourse" (click)="deleteSelectedCourse()">
-                  حذف دوره
-                </button>
               }
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <section id="admin-assignments" class="card" aria-labelledby="admin-assignments-title">
-        <header class="section-header">
-          <h2 id="admin-assignments-title" class="section-title">
-            مدیریت تکالیف
-            <span class="count-badge">{{ assignments.length }}</span>
-          </h2>
-          <button type="button" class="btn btn-secondary" [disabled]="selectedCourseId === null" (click)="startCreateAssignment()">
-            تکلیف جدید
-          </button>
-        </header>
-
-        <p class="section-context">دوره انتخاب‌شده: {{ selectedCourseTitle }}</p>
-        @if (selectedCourseId === null) {
-          <p class="muted">برای مدیریت تکالیف، ابتدا یک دوره انتخاب یا ایجاد کنید.</p>
-        } @else {
-          <div class="split-grid">
-            <div>
-              @if (loadingAssignments) {
-                <p class="muted">در حال دریافت تکالیف...</p>
-              } @else if (assignments.length === 0) {
-                <p class="muted">برای این دوره تکلیفی ثبت نشده است.</p>
-              } @else {
-                <div class="select-list">
-                  @for (assignment of assignments; track assignment.id) {
-                    <button
-                      type="button"
-                      class="list-item"
-                      [class.is-selected]="selectedAssignmentId === assignment.id"
-                      (click)="selectAssignment(assignment.id)"
-                    >
-                    <div class="list-item-top">
-                      <strong>{{ assignment.title }}</strong>
-                      <span class="status-chip" [ngClass]="assignmentStatusClass(assignment.status)">
-                        {{ assignmentStatusLabel(assignment.status) }}
-                      </span>
-                    </div>
-                    <span class="list-meta">{{ assignment.assignmentDate }}</span>
-                    <small class="list-meta">{{ assignmentTypeLabel(assignment.type) }}</small>
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-
-            <form [formGroup]="assignmentForm" class="editor-form" (ngSubmit)="saveAssignment()">
-              <h3>{{ assignmentMode === 'create' ? 'ایجاد تکلیف' : 'ویرایش تکلیف' }}</h3>
-              <label>
-                عنوان
-                <input type="text" formControlName="title" />
-              </label>
-              <label>
-                توضیحات
-                <textarea formControlName="description" rows="3"></textarea>
-              </label>
-              <label>
-                تاریخ تکلیف
-                <input type="date" formControlName="assignmentDate" />
-              </label>
-              <label>
-                نوع
-                <select formControlName="type">
-                  <option value="daily">روزانه</option>
-                  <option value="homework">تکلیف</option>
-                  <option value="project">پروژه</option>
-                  <option value="exam">آزمون</option>
-                </select>
-              </label>
-              <label>
-                وضعیت
-                <select formControlName="status">
-                  <option value="draft">پیش‌نویس</option>
-                  <option value="published">منتشر شده</option>
-                  <option value="closed">بسته</option>
-                </select>
-              </label>
-              <label>
-                نمره
-                <input type="number" formControlName="maxScore" min="0" />
-              </label>
-              <label>
-                راهنما
-                <textarea formControlName="instructions" rows="3"></textarea>
-              </label>
-              <div class="row-actions">
-                <button type="submit" class="btn" [disabled]="assignmentForm.invalid || savingAssignment">
-                  {{ savingAssignment ? 'در حال ذخیره...' : assignmentMode === 'create' ? 'ایجاد تکلیف' : 'ذخیره تغییرات' }}
-                </button>
-                @if (assignmentMode === 'edit' && selectedAssignmentId !== null) {
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    [disabled]="savingAssignment"
-                    (click)="deleteSelectedAssignment()"
-                  >
-                    حذف تکلیف
-                  </button>
-                }
-              </div>
-            </form>
-          </div>
-
-          <form [formGroup]="dailySeriesForm" class="editor-form daily-series-form" (ngSubmit)="createDailySeries()">
-            <h3>ایجاد سری روزانه</h3>
-            <label>
-              تاریخ شروع
-              <input type="date" formControlName="startDate" />
-            </label>
-            <label>
-              تعداد روز
-              <input type="number" formControlName="days" min="1" />
-            </label>
-            <label>
-              پیشوند عنوان
-              <input type="text" formControlName="titlePrefix" />
-            </label>
-            <label>
-              پیشوند توضیحات
-              <input type="text" formControlName="descriptionPrefix" />
-            </label>
-            <label>
-              نوع
-              <select formControlName="type">
-                <option value="daily">روزانه</option>
-                <option value="homework">تکلیف</option>
-                <option value="project">پروژه</option>
-                <option value="exam">آزمون</option>
-              </select>
-            </label>
-            <label>
-              نمره
-              <input type="number" formControlName="maxScore" min="0" />
-            </label>
-            <label>
-              راهنما
-              <textarea formControlName="instructions" rows="2"></textarea>
-            </label>
-            <button type="submit" class="btn" [disabled]="dailySeriesForm.invalid || creatingDailySeries">
-              {{ creatingDailySeries ? 'در حال ایجاد...' : 'ایجاد سری روزانه' }}
-            </button>
-          </form>
-        }
-      </section>
-
-      <section id="admin-attachments" class="card" aria-labelledby="admin-attachments-title">
-        <header class="section-header">
-          <h2 id="admin-attachments-title" class="section-title">
-            مدیریت پیوست‌ها
-            <span class="count-badge">{{ attachments.length }}</span>
-          </h2>
-        </header>
-
-        <p class="section-context">تکلیف انتخاب‌شده: {{ selectedAssignmentTitle }}</p>
-        @if (selectedAssignmentId === null) {
-          <p class="muted">برای مدیریت پیوست‌ها، ابتدا یک تکلیف انتخاب کنید.</p>
-        } @else {
-          <form [formGroup]="attachmentCreateForm" class="editor-form" (ngSubmit)="createAttachment()">
-            <h3>پیوست جدید</h3>
-            <label>
-              عنوان
-              <input type="text" formControlName="title" />
-            </label>
-            <label>
-              توضیحات
-              <input type="text" formControlName="description" />
-            </label>
-            <label>
-              نوع
-              <select formControlName="kind">
-                <option value="document">سند</option>
-                <option value="audio">صوت</option>
-                <option value="image">تصویر</option>
-                <option value="text">متن</option>
-                <option value="other">سایر</option>
-              </select>
-            </label>
-            <label>
-              ترتیب نمایش
-              <input type="number" formControlName="displayOrder" min="1" />
-            </label>
-            <label>
-              فایل
-              <input type="file" (change)="onCreateAttachmentFileChange($event)" />
-            </label>
-            <button type="submit" class="btn" [disabled]="attachmentCreateForm.invalid || creatingAttachment">
-              {{ creatingAttachment ? 'در حال ایجاد...' : 'افزودن پیوست' }}
-            </button>
-          </form>
-
-          @if (loadingAttachments) {
-            <p class="muted">در حال دریافت پیوست‌ها...</p>
-          } @else if (attachments.length === 0) {
-            <p class="muted">برای این تکلیف پیوستی ثبت نشده است.</p>
-          } @else {
-            <div class="pending-list">
-              @for (attachment of attachments; track attachment.id) {
-                <article class="pending-item">
-                  <p><strong>{{ attachment.title }}</strong></p>
-                  <p class="muted url-text">{{ attachment.url }}</p>
-
-                  @if (attachmentMetaForms[attachment.id]; as attachmentForm) {
-                    <form [formGroup]="attachmentForm" class="approval-form" (ngSubmit)="updateAttachment(attachment.id)">
-                      <label>
-                        عنوان
-                        <input type="text" formControlName="title" />
-                      </label>
-                      <label>
-                        توضیحات
-                        <input type="text" formControlName="description" />
-                      </label>
-                      <label>
-                        نوع
-                        <select formControlName="kind">
-                          <option value="document">سند</option>
-                          <option value="audio">صوت</option>
-                          <option value="image">تصویر</option>
-                          <option value="text">متن</option>
-                          <option value="other">سایر</option>
-                        </select>
-                      </label>
-                      <label>
-                        ترتیب نمایش
-                        <input type="number" formControlName="displayOrder" min="1" />
-                      </label>
-                      <label>
-                        جایگزینی فایل
-                        <input type="file" (change)="onReplaceAttachmentFileChange(attachment.id, $event)" />
-                      </label>
-                      <div class="row-actions">
-                        <button type="submit" class="btn" [disabled]="updatingAttachmentIds.has(attachment.id)">
-                          {{ updatingAttachmentIds.has(attachment.id) ? 'در حال ذخیره...' : 'ذخیره' }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          [disabled]="updatingAttachmentIds.has(attachment.id)"
-                          (click)="replaceAttachmentFile(attachment.id)"
-                        >
-                          جایگزینی فایل
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          [disabled]="updatingAttachmentIds.has(attachment.id)"
-                          (click)="deleteAttachment(attachment.id)"
-                        >
-                          حذف
-                        </button>
-                      </div>
-                    </form>
-                  }
-                </article>
-              }
-            </div>
+            </section>
           }
-        }
-      </section>
+
+          @if (activeMenu === 'branch-managers') {
+            <section class="card">
+              <h2 class="section-title">مسئولین شعب</h2>
+              <p class="muted">بخش مسئولین شعب در حال توسعه است.</p>
+            </section>
+          }
+
+          @if (activeMenu === 'branches') {
+            <section class="card">
+              <h2 class="section-title">شعبه‌ها</h2>
+              <p class="muted">بخش شعبه‌ها در حال توسعه است.</p>
+            </section>
+          }
+
+          @if (activeMenu === 'parents') {
+            <section class="card">
+              <h2 class="section-title">والدین</h2>
+              <p class="muted">بخش والدین در حال توسعه است.</p>
+            </section>
+          }
+
+          @if (activeMenu === 'evaluators') {
+            <section class="card">
+              <h2 class="section-title">ارزیاب</h2>
+              <p class="muted">بخش ارزیاب در حال توسعه است.</p>
+            </section>
+          }
+
+          @if (activeMenu === 'headquarters') {
+            <section class="card">
+              <h2 class="section-title">ستاد</h2>
+              <p class="muted">بخش ستاد در حال توسعه است.</p>
+            </section>
+          }
+        </div>
+      </div>
     </main>
   `,
   styles: [
@@ -771,9 +831,68 @@ import { AuthService } from '../../core/services/auth.service';
         overflow-wrap: anywhere;
         word-break: break-word;
       }
+      .admin-layout {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+      .admin-sidebar {
+        flex: 0 0 160px;
+        position: sticky;
+        top: 0.5rem;
+      }
+      .sidebar-menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.25rem;
+      }
+      .sidebar-item {
+        border: 1px solid var(--lp-border);
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+        cursor: pointer;
+        font-size: 0.87rem;
+        background: #fff;
+        transition: background 0.15s, border-color 0.15s;
+        user-select: none;
+      }
+      .sidebar-item:hover {
+        background: #f1f5f9;
+      }
+      .sidebar-item.active {
+        border-color: var(--lp-primary);
+        background: #eff6ff;
+        color: var(--lp-primary);
+        font-weight: 600;
+      }
+      .sidebar-item:focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 2px;
+      }
+      .admin-content {
+        flex: 1;
+        min-width: 0;
+        display: grid;
+        gap: 1rem;
+      }
       @media (max-width: 900px) {
         .split-grid {
           grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 768px) {
+        .admin-layout {
+          flex-direction: column-reverse;
+        }
+        .admin-sidebar {
+          flex: none;
+          width: 100%;
+          position: static;
+        }
+        .sidebar-menu {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         }
       }
       @media (max-width: 640px) {
@@ -807,6 +926,9 @@ import { AuthService } from '../../core/services/auth.service';
         .editor-form {
           padding: 0.65rem;
         }
+        .sidebar-menu {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
       }
     `
   ]
@@ -820,6 +942,17 @@ export class AdminComponent implements OnInit {
   username = '';
   errorMessage = '';
   successMessage = '';
+  activeMenu: 'trainees' | 'teachers' | 'courses' | 'branch-managers' | 'branches' | 'parents' | 'evaluators' | 'headquarters' = 'courses';
+  menuItems = [
+    { key: 'trainees', label: 'متربیان' },
+    { key: 'teachers', label: 'مربیان' },
+    { key: 'courses', label: 'دوره‌ها' },
+    { key: 'branch-managers', label: 'مسئولین شعب' },
+    { key: 'branches', label: 'شعبه‌ها' },
+    { key: 'parents', label: 'والدین' },
+    { key: 'evaluators', label: 'ارزیاب' },
+    { key: 'headquarters', label: 'ستاد' }
+  ] as const;
 
   stats = {
     pendingUsers: 0,
