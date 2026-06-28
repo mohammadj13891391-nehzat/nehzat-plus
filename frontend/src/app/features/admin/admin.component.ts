@@ -561,10 +561,45 @@ import { AuthService } from '../../core/services/auth.service';
             </section>
           }
 
-          @if (activeMenu === 'branches') {
+          @if (activeMenu === 'makatib') {
             <section class="card">
-              <h2 class="section-title">شعبه‌ها</h2>
-              <p class="muted">بخش شعبه‌ها در حال توسعه است.</p>
+              <h2 class="section-title">مکاتب تربیتی، آموزشی، مهارتی</h2>
+              <div class="makatib-grid">
+                <div class="maktab-group">
+                  <h3 class="maktab-group-title">مکتب دخترانه</h3>
+                  <div class="maktab-list">
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال اول</span>
+                      <span class="maktab-name">مکتب حضرت رقیه علیها السلام</span>
+                    </div>
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال دوم</span>
+                      <span class="maktab-name">مکتب حضرت سکینه علیها السلام</span>
+                    </div>
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال سوم</span>
+                      <span class="maktab-name">مکتب حضرت فاطمه بنت الحسین علیها السلام</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="maktab-group">
+                  <h3 class="maktab-group-title">مکتب پسرانه</h3>
+                  <div class="maktab-list">
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال اول</span>
+                      <span class="maktab-name">مکتب حضرت علی اصغر علیه السلام</span>
+                    </div>
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال دوم</span>
+                      <span class="maktab-name">مکتب حضرت قاسم علیه السلام</span>
+                    </div>
+                    <div class="maktab-item">
+                      <span class="maktab-level">7 سال سوم</span>
+                      <span class="maktab-name">مکتب حضرت علی اکبر علیه السلام</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
           }
 
@@ -883,7 +918,49 @@ import { AuthService } from '../../core/services/auth.service';
         }
       }
       @media (max-width: 768px) {
-        .admin-layout {
+      .makatib-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        margin-top: 0.75rem;
+      }
+      .maktab-group {
+        border: 1px solid var(--lp-border);
+        border-radius: 12px;
+        padding: 0.75rem;
+        background: #fff;
+      }
+      .maktab-group-title {
+        margin: 0 0 0.75rem;
+        font-size: 1rem;
+        color: var(--lp-primary);
+        text-align: center;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+      }
+      .maktab-list {
+        display: grid;
+        gap: 0.5rem;
+      }
+      .maktab-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.6rem 0.75rem;
+        background: #f8fafc;
+      }
+      .maktab-level {
+        font-size: 0.75rem;
+        color: var(--lp-muted);
+      }
+      .maktab-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .admin-layout {
           flex-direction: column-reverse;
         }
         .admin-sidebar {
@@ -942,13 +1019,13 @@ export class AdminComponent implements OnInit {
   username = '';
   errorMessage = '';
   successMessage = '';
-  activeMenu: 'trainees' | 'teachers' | 'courses' | 'branch-managers' | 'branches' | 'parents' | 'evaluators' | 'headquarters' = 'courses';
+  activeMenu: 'trainees' | 'teachers' | 'courses' | 'branch-managers' | 'makatib' | 'parents' | 'evaluators' | 'headquarters' = 'makatib';
   menuItems = [
     { key: 'trainees', label: 'متربیان' },
     { key: 'teachers', label: 'مربیان' },
     { key: 'courses', label: 'دوره‌ها' },
     { key: 'branch-managers', label: 'مسئولین شعب' },
-    { key: 'branches', label: 'مکاتب تربیتی، آموزشی، مهارتی' },
+    { key: 'makatib', label: 'مکاتب تربیتی، آموزشی، مهارتی' },
     { key: 'parents', label: 'والدین' },
     { key: 'evaluators', label: 'ارزیاب' },
     { key: 'headquarters', label: 'ستاد' }
