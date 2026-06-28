@@ -564,41 +564,29 @@ import { AuthService } from '../../core/services/auth.service';
           @if (activeMenu === 'makatib') {
             <section class="card">
               <h2 class="section-title">مکاتب تربیتی، آموزشی، مهارتی</h2>
-              <div class="makatib-grid">
-                <div class="maktab-group">
-                  <h3 class="maktab-group-title">مکتب دخترانه</h3>
-                  <div class="maktab-list">
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال اول</span>
-                      <span class="maktab-name">مکتب حضرت رقیه علیها السلام</span>
+              <nav class="maktab-tabs" aria-label="مکاتب">
+                @for (maktab of maktabList; track maktab.id) {
+                  <button
+                    type="button"
+                    class="maktab-tab"
+                    [class.active]="activeMaktab === maktab.id"
+                    (click)="activeMaktab = maktab.id"
+                  >
+                    <span class="maktab-tab-gender">{{ maktab.gender }}</span>
+                    <span class="maktab-tab-name">{{ maktab.label }}</span>
+                    <span class="maktab-tab-level">{{ maktab.level }}</span>
+                  </button>
+                }
+              </nav>
+              <div class="maktab-content">
+                @for (maktab of maktabList; track maktab.id) {
+                  @if (activeMaktab === maktab.id) {
+                    <div class="maktab-panel">
+                      <h3 class="maktab-panel-title">{{ maktab.label }}</h3>
+                      <p class="muted">شعبه‌های {{ maktab.label }} به زودی اضافه می‌شود.</p>
                     </div>
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال دوم</span>
-                      <span class="maktab-name">مکتب حضرت سکینه علیها السلام</span>
-                    </div>
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال سوم</span>
-                      <span class="maktab-name">مکتب حضرت فاطمه بنت الحسین علیها السلام</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="maktab-group">
-                  <h3 class="maktab-group-title">مکتب پسرانه</h3>
-                  <div class="maktab-list">
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال اول</span>
-                      <span class="maktab-name">مکتب حضرت علی اصغر علیه السلام</span>
-                    </div>
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال دوم</span>
-                      <span class="maktab-name">مکتب حضرت قاسم علیه السلام</span>
-                    </div>
-                    <div class="maktab-item">
-                      <span class="maktab-level">7 سال سوم</span>
-                      <span class="maktab-name">مکتب حضرت علی اکبر علیه السلام</span>
-                    </div>
-                  </div>
-                </div>
+                  }
+                }
               </div>
             </section>
           }
@@ -918,47 +906,66 @@ import { AuthService } from '../../core/services/auth.service';
         }
       }
       @media (max-width: 768px) {
-      .makatib-grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        margin-top: 0.75rem;
-      }
-      .maktab-group {
-        border: 1px solid var(--lp-border);
-        border-radius: 12px;
-        padding: 0.75rem;
-        background: #fff;
-      }
-      .maktab-group-title {
-        margin: 0 0 0.75rem;
-        font-size: 1rem;
-        color: var(--lp-primary);
-        text-align: center;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e2e8f0;
-      }
-      .maktab-list {
-        display: grid;
+      .maktab-tabs {
+        display: flex;
         gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        margin-top: 0.75rem;
+        scrollbar-width: thin;
       }
-      .maktab-item {
+      .maktab-tab {
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 0.2rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 0.6rem 0.75rem;
-        background: #f8fafc;
+        align-items: center;
+        gap: 0.15rem;
+        border: 1px solid var(--lp-border);
+        border-radius: 12px;
+        padding: 0.5rem 0.75rem;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color 0.15s, background 0.15s;
+        min-width: 140px;
       }
-      .maktab-level {
-        font-size: 0.75rem;
+      .maktab-tab:hover {
+        background: #f1f5f9;
+      }
+      .maktab-tab.active {
+        border-color: var(--lp-primary);
+        background: #eff6ff;
+      }
+      .maktab-tab:focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 2px;
+      }
+      .maktab-tab-gender {
+        font-size: 0.7rem;
         color: var(--lp-muted);
       }
-      .maktab-name {
-        font-size: 0.9rem;
+      .maktab-tab-name {
+        font-size: 0.78rem;
         font-weight: 600;
         color: #0f172a;
+        text-align: center;
+      }
+      .maktab-tab-level {
+        font-size: 0.7rem;
+        color: var(--lp-muted);
+      }
+      .maktab-content {
+        margin-top: 0.75rem;
+      }
+      .maktab-panel {
+        border: 1px solid var(--lp-border);
+        border-radius: 12px;
+        padding: 1rem;
+        background: #fff;
+      }
+      .maktab-panel-title {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        color: var(--lp-primary);
       }
       .admin-layout {
           flex-direction: column-reverse;
@@ -1020,6 +1027,15 @@ export class AdminComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   activeMenu: 'trainees' | 'teachers' | 'courses' | 'branch-managers' | 'makatib' | 'parents' | 'evaluators' | 'headquarters' = 'makatib';
+  activeMaktab: string = 'roqieh';
+  maktabList = [
+    { id: 'roqieh', label: 'مکتب حضرت رقیه علیها السلام', level: '7 سال اول', gender: 'دخترانه' },
+    { id: 'sakineh', label: 'مکتب حضرت سکینه علیها السلام', level: '7 سال دوم', gender: 'دخترانه' },
+    { id: 'fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام', level: '7 سال سوم', gender: 'دخترانه' },
+    { id: 'ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام', level: '7 سال اول', gender: 'پسرانه' },
+    { id: 'ghasem', label: 'مکتب حضرت قاسم علیه السلام', level: '7 سال دوم', gender: 'پسرانه' },
+    { id: 'ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام', level: '7 سال سوم', gender: 'پسرانه' }
+  ];
   menuItems = [
     { key: 'trainees', label: 'متربیان' },
     { key: 'teachers', label: 'مربیان' },
