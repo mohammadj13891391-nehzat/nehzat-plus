@@ -82,3 +82,24 @@ Page reload sent to client(s).
 Application bundle generation failed. [0.282 seconds] - 2026-06-27T16:37:01.854Z
 
 [33m>[39m Changes detected. Rebuilding...
+[32m√[39m Changes detected. Rebuilding...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m              [2m | [22m [1mRaw size[22m
+[32mchunk-Y6PNCSNM.js[39m  [2m | [22m[2m-[22m                  [2m | [22m [36m48.35 kB[39m[2m | [22m
+[32mstyles.css[39m         [2m | [22m[2mstyles[22m             [2m | [22m  [36m5.14 kB[39m[2m | [22m
+[32mmain.js[39m            [2m | [22m[2mmain[22m               [2m | [22m  [36m4.62 kB[39m[2m | [22m
+[32mchunk-GOMI4DH3.js[39m  [2m | [22m[2m-[22m                  [2m | [22m  [36m1.37 kB[39m[2m | [22m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m      [2m | [22m [1m59.49 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m              [2m | [22m [1mRaw size[22m
+[32mchunk-PTVAWLSL.js[39m  [2m | [22m[2madmin-component[22m    [2m | [22m[36m140.13 kB[39m[2m | [22m
+[32mchunk-BWTYSJQS.js[39m  [2m | [22m[2mdashboard-component[22m[2m | [22m[36m116.60 kB[39m[2m | [22m
+[32mchunk-3IGO7HX5.js[39m  [2m | [22m[2mregister-component[22m [2m | [22m [36m10.84 kB[39m[2m | [22m
+[32mchunk-T7PXKESC.js[39m  [2m | [22m[2mlogin-component[22m    [2m | [22m  [36m9.11 kB[39m[2m | [22m
+[32mchunk-UMHVBT7Q.js[39m  [2m | [22m[2mauth-routes[22m        [2m | [22m[36m464 bytes[39m[2m | [22m
+[32mchunk-XLD53CSO.js[39m  [2m | [22m[2mdashboard-routes[22m   [2m | [22m[36m294 bytes[39m[2m | [22m
+[32mchunk-CHZN7ASN.js[39m  [2m | [22m[2madmin-routes[22m       [2m | [22m[36m274 bytes[39m[2m | [22m
+
+Application bundle generation complete. [0.328 seconds] - 2026-06-27T16:43:51.496Z
+
+Page reload sent to client(s).
