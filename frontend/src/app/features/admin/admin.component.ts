@@ -1253,6 +1253,45 @@ export class AdminComponent implements OnInit {
     this.loadMenuData(this.activeMenu);
   }
 
+  loadMenuData(key: string): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    switch (key) {
+      case 'trainees':
+        this.loadPendingUsers();
+        this.loadAllStudents();
+        break;
+      case 'teachers':
+        this.loadCoaches();
+        break;
+      case 'courses':
+        this.loadCourses();
+        break;
+      case 'branch-managers':
+        this.loadBranchManagers();
+        break;
+      case 'makatib':
+        this.loadMadrasahs();
+        break;
+      case 'parents':
+        this.loadParents();
+        break;
+      case 'evaluators':
+        this.loadEvaluators();
+        break;
+      case 'headquarters':
+        this.loadHeadquartersSummary();
+        break;
+      case 'makatib-girls':
+      case 'makatib-boys':
+        this.selectedProvince = '';
+        this.branches = [];
+        this.loadBranches();
+        break;
+    }
+  }
+
   logout(): void {
     this.authService.logout();
     void this.router.navigateByUrl('/auth/login');
