@@ -290,6 +290,32 @@ export interface CourseInviteCode {
   courseId: number;
 }
 
+export interface BranchManager {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  assignedBranch: string;
+  assignedProvince: string;
+  gender: 'male' | 'female' | 'mixed';
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface CreateBranchManagerPayload {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  assignedBranch: string;
+  assignedProvince: string;
+  gender: 'male' | 'female' | 'mixed';
+}
+
 export interface CreateCoachPayload {
   username: string;
   password: string;

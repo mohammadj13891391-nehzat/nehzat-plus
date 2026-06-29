@@ -11,11 +11,13 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  BranchManager,
   Coach,
   Course,
   CourseEnrollment,
   CourseInviteCode,
   CreateAssignmentPayload,
+  CreateBranchManagerPayload,
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
@@ -96,6 +98,11 @@ export abstract class LessonPlannerApi {
   abstract createCoach(payload: CreateCoachPayload): Observable<Coach>;
   abstract updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach>;
   abstract deleteCoach(id: number): Observable<ApiMessageResponse>;
+
+  abstract getBranchManagers(): Observable<BranchManager[]>;
+  abstract createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager>;
+  abstract updateBranchManager(id: number, payload: Partial<CreateBranchManagerPayload>): Observable<BranchManager>;
+  abstract deleteBranchManager(id: number): Observable<ApiMessageResponse>;
 
   abstract getSystemStatistics(): Observable<AdminSystemStatistics>;
   abstract getCourseStatistics(courseId: number): Observable<unknown>;
