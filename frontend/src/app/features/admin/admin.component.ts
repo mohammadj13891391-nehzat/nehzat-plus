@@ -1250,7 +1250,7 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.refreshAll();
+    this.loadMenuData(this.activeMenu);
   }
 
   logout(): void {
