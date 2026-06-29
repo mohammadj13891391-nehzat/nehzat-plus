@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -20,7 +20,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })
@@ -119,8 +119,68 @@ export class AdminComponent implements OnInit {
   creatingAttachment = false;
   updatingAttachmentIds = new Set<number>();
 
+  readonly provinces = [
+    'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
+    'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
+    'خراسان رضوی', 'خراسان شمالی', 'خوزستان', 'زنجان', 'سمنان',
+    'سیستان و بلوچستان', 'فارس', 'قزوین', 'قم', 'کردستان',
+    'کرمان', 'کرمانشاه', 'کهگیلویه و بویراحمد', 'گلستان', 'گیلان',
+    'لرستان', 'مازندران', 'مرکزی', 'هرمزگان', 'همدان', 'یزد'
+  ];
+  selectedProvince = '';
+  newBranchName = '';
+  private readonly STORAGE_KEY = 'maktab_branches';
+
+  get branches(): string[] {
+    if (!this.activeMenu || !this.selectedProvince) return [];
+    const key = `${this.activeMenu}:${this.selectedProvince}`;
+    return this.branchData[key] ?? [];
+  }
+
+  private branchData: Record<string, string[]> = {};
+
   constructor() {
     this.username = this.authService.getCurrentUser()?.username ?? 'admin';
+    this.loadBranchData();
+  }
+
+  private loadBranchData(): void {
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) {
+        this.branchData = JSON.parse(saved);
+      }
+    } catch { /* ignore */ }
+  }
+
+  private saveBranchData(): void {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.branchData));
+    } catch { /* ignore */ }
+  }
+
+  addBranch(): void {
+    const name = this.newBranchName.trim();
+    if (!name || !this.activeMenu || !this.selectedProvince) return;
+    const key = `${this.activeMenu}:${this.selectedProvince}`;
+    if (!this.branchData[key]) {
+      this.branchData[key] = [];
+    }
+    if (this.branchData[key].includes(name)) return;
+    this.branchData[key].push(name);
+    this.newBranchName = '';
+    this.saveBranchData();
+  }
+
+  removeBranch(branchName: string): void {
+    if (!this.activeMenu || !this.selectedProvince) return;
+    const key = `${this.activeMenu}:${this.selectedProvince}`;
+    this.branchData[key] = (this.branchData[key] ?? []).filter((b) => b !== branchName);
+    this.saveBranchData();
+  }
+
+  selectProvince(province: string): void {
+    this.selectedProvince = province;
   }
 
   ngOnInit(): void {

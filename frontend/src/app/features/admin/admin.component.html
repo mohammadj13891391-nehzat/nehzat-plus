@@ -613,7 +613,51 @@
         @if (activeMenu === maktab.key) {
           <section class="card">
             <h2 class="section-title">{{ maktab.label }}</h2>
-            <p class="muted">شعبه‌های {{ maktab.label }} به زودی اضافه می‌شود.</p>
+
+            <div class="province-selector">
+              <label>
+                انتخاب استان
+                <select (change)="selectProvince($any($event.target).value)">
+                  <option value="">-- استان را انتخاب کنید --</option>
+                  @for (province of provinces; track province) {
+                    <option [value]="province" [selected]="selectedProvince === province">{{ province }}</option>
+                  }
+                </select>
+              </label>
+            </div>
+
+            @if (selectedProvince) {
+              <div class="branch-section">
+                <h3 class="branch-province-title">شعبه‌های استان {{ selectedProvince }}</h3>
+
+                <div class="branch-add-form">
+                  <input
+                    type="text"
+                    [ngModel]="newBranchName"
+                    (ngModelChange)="newBranchName = $event"
+                    (keydown.enter)="addBranch()"
+                    placeholder="نام شعبه جدید"
+                    class="branch-input"
+                  />
+                  <button type="button" class="btn" (click)="addBranch()" [disabled]="!newBranchName.trim() || !selectedProvince">
+                    افزودن شعبه
+                  </button>
+                </div>
+
+                @if (branches.length === 0) {
+                  <p class="muted">هنوز شعبه‌ای برای این استان ثبت نشده است.</p>
+                } @else {
+                  <div class="branch-list">
+                    @for (branch of branches; track branch) {
+                      <div class="branch-item">
+                        <span class="branch-name">{{ branch }}</span>
+                        <button type="button" class="btn-remove" (click)="removeBranch(branch)" title="حذف شعبه">✕</button>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </section>
         }
       }

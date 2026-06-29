@@ -346,6 +346,74 @@ button:focus-visible {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
+.province-selector {
+  margin: 0.75rem 0;
+}
+.province-selector label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.province-selector select {
+  width: 100%;
+  max-width: 320px;
+}
+.branch-section {
+  margin-top: 1rem;
+  border-top: 1px solid var(--lp-border);
+  padding-top: 0.75rem;
+}
+.branch-province-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: var(--primary);
+}
+.branch-add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.branch-input {
+  flex: 1;
+  max-width: 300px;
+}
+.branch-list {
+  display: grid;
+  gap: 0.4rem;
+}
+.branch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+.branch-item:hover {
+  border-color: var(--gold);
+}
+.branch-name {
+  font-size: 0.9rem;
+}
+.btn-remove {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  color: var(--lp-danger);
+  font-size: 0.8rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-remove:hover {
+  background: #fee2e2;
+  border-color: var(--lp-danger);
+}
+
 @media (max-width: 640px) {
   .admin-page {
     gap: 0.75rem;
