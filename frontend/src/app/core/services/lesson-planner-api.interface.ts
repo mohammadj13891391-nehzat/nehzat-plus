@@ -23,8 +23,11 @@ import {
   CreateDailySeriesPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
+  CreateParentPayload,
   Madrasah,
   MaktabBranch,
+  Parent,
+  ParentStudentInfo,
   PendingUser,
   StudentAssignmentGateState,
   StudentInfo,
@@ -125,4 +128,10 @@ export abstract class LessonPlannerApi {
   abstract getMaktabBranches(madrasahId: number): Observable<MaktabBranch[]>;
   abstract createMaktabBranch(madrasahId: number, payload: CreateMaktabBranchPayload): Observable<MaktabBranch>;
   abstract deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse>;
+
+  abstract getParents(): Observable<Parent[]>;
+  abstract createParent(payload: CreateParentPayload): Observable<Parent>;
+  abstract updateParent(id: number, payload: Partial<CreateParentPayload>): Observable<Parent>;
+  abstract deleteParent(id: number): Observable<ApiMessageResponse>;
+  abstract getParentStudents(parentId: number): Observable<ParentStudentInfo[]>;
 }

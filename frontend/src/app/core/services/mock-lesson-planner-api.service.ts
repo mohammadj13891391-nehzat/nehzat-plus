@@ -24,12 +24,15 @@ import type {
   CreateCoachPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
+  CreateParentPayload,
   DailySeriesPayload,
   Madrasah,
   MadrasahGender,
   MadrasahGrade,
   MadrasahStatus,
   MaktabBranch,
+  Parent,
+  ParentStudentInfo,
   PendingUser,
   Student,
   StudentCourseProgress,
@@ -71,6 +74,7 @@ type MockStore = {
   maktabBranches: MaktabBranch[];
   coaches: Coach[];
   branchManagers: BranchManager[];
+  parents: Parent[];
   assignments: Assignment[];
   attachments: AssignmentAttachment[];
   students: Student[];
@@ -504,6 +508,89 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
     this.store.maktabBranches.splice(index, 1);
     return this.ok({ message: 'شعبه با موفقیت حذف شد.' });
+  }
+
+  getParents(): Observable<Parent[]> {
+    return this.ok(this.store.parents.map((p) => ({ ...p })));
+  }
+
+  createParent(payload: CreateParentPayload): Observable<Parent> {
+    const now = new Date().toISOString();
+    const parent: Parent = {
+      id: this.nextNumericId(this.store.parents),
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      address: payload.address ?? '',
+      nationalCode: payload.nationalCode ?? '',
+      studentIds: payload.studentIds ?? [],
+      status: 'active',
+      createdAt: now
+    };
+    this.store.parents.push(parent);
+    return this.ok({ ...parent });
+  }
+
+  updateParent(id: number, payload: Partial<CreateParentPayload>): Observable<Parent> {
+    const index = this.store.parents.findIndex((p) => p.id === id);
+    if (index < 0) {
+      return this.fail('والد پیدا نشد.');
+    }
+    const next: Parent = {
+      ...this.store.parents[index],
+      ...payload,
+      id
+    };
+    this.store.parents[index] = next;
+    return this.ok({ ...next });
+  }
+
+  deleteParent(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.parents.findIndex((p) => p.id === id);
+    if (index < 0) {
+      return this.fail('والد پیدا نشد.');
+    }
+    this.store.parents.splice(index, 1);
+    return this.ok({ message: 'والد با موفقیت حذف شد.' });
+  }
+
+  getParentStudents(parentId: number): Observable<ParentStudentInfo[]> {
+    const parent = this.store.parents.find((p) => p.id === parentId);
+    if (!parent) {
+      return this.fail('والد پیدا نشد.');
+    }
+
+    const studentsInfo: ParentStudentInfo[] = [];
+    for (const studentId of parent.studentIds) {
+      const student = this.store.students.find((s) => s.id === studentId);
+      if (!student) continue;
+
+      const studentCourseIds = this.store.studentCourseMap[studentId] ?? [];
+      for (const courseId of studentCourseIds) {
+        const course = this.store.courses.find((c) => c.id === courseId);
+        if (!course) continue;
+
+        const submissions = this.store.submissions.filter(
+          (sub) => sub.studentId === studentId && this.store.assignments.some((a) => a.id === sub.assignmentId && a.courseId === courseId)
+        );
+        const latestGrade = submissions.length > 0
+          ? submissions.reduce((latest, sub) => (sub.dailyScore ?? 0) > (latest.dailyScore ?? 0) ? sub : latest, submissions[0]).dailyScore
+          : undefined;
+
+        studentsInfo.push({
+          studentId,
+          studentName: `${student.firstName} ${student.lastName}`,
+          studentCode: student.studentId,
+          courseName: course.title,
+          latestGrade,
+          attendanceRate: submissions.length > 0 ? Math.round((submissions.filter((s) => s.isCompleted).length / submissions.length) * 100) : undefined
+        });
+      }
+    }
+
+    return this.ok(studentsInfo);
   }
 
   getBranchManagers(): Observable<BranchManager[]> {
@@ -1312,6 +1399,35 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       }
     ];
 
+    const parents: Parent[] = [
+      {
+        id: 1,
+        username: 'ahmadi.parent',
+        firstName: 'محمد',
+        lastName: 'احمدی',
+        email: 'ahmadi.parent@example.com',
+        phoneNumber: '09121111111',
+        address: 'تهران، خیابان ولیعصر',
+        nationalCode: '1234567890',
+        studentIds: [1],
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 2,
+        username: 'mohammadi.parent',
+        firstName: 'علی',
+        lastName: 'محمدی',
+        email: 'mohammadi.parent@example.com',
+        phoneNumber: '09122222222',
+        address: 'تهران، خیابان انقلاب',
+        nationalCode: '0987654321',
+        studentIds: [2, 3],
+        status: 'active',
+        createdAt: now.toISOString()
+      }
+    ];
+
     return {
       users,
       courses,
@@ -1319,6 +1435,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       maktabBranches,
       branchManagers,
       coaches,
+      parents,
       assignments,
       attachments,
       students,

@@ -355,6 +355,41 @@ export interface CreateCoachPayload {
   assignedCourseIds: number[];
 }
 
+export interface Parent {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  nationalCode: string;
+  studentIds: number[];
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface CreateParentPayload {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address?: string;
+  nationalCode?: string;
+  studentIds?: number[];
+}
+
+export interface ParentStudentInfo {
+  studentId: number;
+  studentName: string;
+  studentCode: string;
+  courseName: string;
+  latestGrade?: number;
+  attendanceRate?: number;
+}
+
 // Compatibility aliases used by partially-scaffolded services.
 export type SignInRequest = AuthSigninPayload;
 export type SignInResponse = AuthSigninResponse;

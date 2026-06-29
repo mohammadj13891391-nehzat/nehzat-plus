@@ -20,8 +20,11 @@ import type {
   CreateCoachPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
+  CreateParentPayload,
   Madrasah,
   MaktabBranch,
+  Parent,
+  ParentStudentInfo,
   PendingUser,
   StudentInfo,
   StudentProgressResponse
@@ -472,6 +475,165 @@ export class AdminComponent implements OnInit {
     );
   }
 
+  parents: Parent[] = [];
+  loadingParents = false;
+  savingParent = false;
+  searchParentQuery = '';
+  parentEditMode = false;
+  selectedParentId: number | null = null;
+  parentStudents: ParentStudentInfo[] = [];
+  loadingParentStudents = false;
+  parentForm = this.fb.nonNullable.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
+    address: [''],
+    nationalCode: [''],
+    studentIds: ['']
+  });
+
+  get filteredParents(): Parent[] {
+    const q = this.searchParentQuery.trim().toLowerCase();
+    if (!q) return this.parents;
+    return this.parents.filter(
+      (p) =>
+        p.firstName.toLowerCase().includes(q) ||
+        p.lastName.toLowerCase().includes(q) ||
+        p.username.toLowerCase().includes(q) ||
+        p.email.toLowerCase().includes(q) ||
+        p.phoneNumber.includes(q)
+    );
+  }
+
+  loadParents(): void {
+    this.loadingParents = true;
+    this.api
+      .getParents()
+      .pipe(finalize(() => (this.loadingParents = false)))
+      .subscribe({
+        next: (parents) => {
+          this.parents = parents;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست والدین با خطا مواجه شد.');
+        }
+      });
+  }
+
+  startCreateParent(): void {
+    this.parentEditMode = false;
+    this.selectedParentId = null;
+    this.parentForm.setValue({
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      address: '',
+      nationalCode: '',
+      studentIds: ''
+    });
+  }
+
+  selectParent(parentId: number): void {
+    const parent = this.parents.find((p) => p.id === parentId);
+    if (!parent) return;
+    this.selectedParentId = parentId;
+    this.parentEditMode = true;
+    this.parentForm.setValue({
+      username: parent.username,
+      password: '',
+      firstName: parent.firstName,
+      lastName: parent.lastName,
+      email: parent.email,
+      phoneNumber: parent.phoneNumber,
+      address: parent.address ?? '',
+      nationalCode: parent.nationalCode ?? '',
+      studentIds: parent.studentIds.join(',')
+    });
+    this.parentForm.get('password')?.clearValidators();
+    this.parentForm.get('password')?.updateValueAndValidity();
+    this.loadParentStudents(parentId);
+  }
+
+  saveParent(): void {
+    if (this.parentForm.invalid) return;
+    const raw = this.parentForm.getRawValue();
+    const studentIds = raw.studentIds
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    const payload: CreateParentPayload = {
+      username: raw.username.trim(),
+      password: raw.password.trim(),
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      email: raw.email.trim(),
+      phoneNumber: raw.phoneNumber.trim(),
+      address: raw.address.trim(),
+      nationalCode: raw.nationalCode.trim(),
+      studentIds
+    };
+
+    this.savingParent = true;
+    const request$ =
+      this.parentEditMode && this.selectedParentId !== null
+        ? this.api.updateParent(this.selectedParentId, payload)
+        : this.api.createParent(payload);
+
+    request$.pipe(finalize(() => (this.savingParent = false))).subscribe({
+      next: (parent) => {
+        this.selectedParentId = parent.id;
+        this.parentEditMode = true;
+        this.setSuccess('اطلاعات والد ذخیره شد.');
+        this.loadParents();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات والد با خطا مواجه شد.');
+      }
+    });
+  }
+
+  deleteParent(parentId: number): void {
+    if (this.savingParent) return;
+    this.savingParent = true;
+    this.api
+      .deleteParent(parentId)
+      .pipe(finalize(() => (this.savingParent = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          if (this.selectedParentId === parentId) {
+            this.startCreateParent();
+            this.parentStudents = [];
+          }
+          this.loadParents();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف والد با خطا مواجه شد.');
+        }
+      });
+  }
+
+  loadParentStudents(parentId: number): void {
+    this.loadingParentStudents = true;
+    this.api
+      .getParentStudents(parentId)
+      .pipe(finalize(() => (this.loadingParentStudents = false)))
+      .subscribe({
+        next: (students) => {
+          this.parentStudents = students;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت اطلاعات فرزندان با خطا مواجه شد.');
+        }
+      });
+  }
+
   loadBranchManagers(): void {
     this.loadingBranchManagers = true;
     this.api
@@ -816,6 +978,7 @@ export class AdminComponent implements OnInit {
     this.loadCoaches();
     this.loadBranchManagers();
     this.loadMadrasahs();
+    this.loadParents();
   }
 
   isProcessing(userId: number): boolean {

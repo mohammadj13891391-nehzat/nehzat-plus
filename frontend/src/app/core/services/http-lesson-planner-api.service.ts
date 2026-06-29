@@ -26,9 +26,12 @@ import {
   CreateDailySeriesPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
+  CreateParentPayload,
   Course,
   Madrasah,
   MaktabBranch,
+  Parent,
+  ParentStudentInfo,
   PendingUser,
   StudentInfo,
   StudentProgressResponse,
@@ -292,6 +295,26 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse> {
     return this.http.delete<ApiMessageResponse>(this.url(`/admin/madrasahs/${madrasahId}/branches/${branchId}`));
+  }
+
+  getParents(): Observable<Parent[]> {
+    return this.http.get<Parent[]>(this.url('/admin/parents'));
+  }
+
+  createParent(payload: CreateParentPayload): Observable<Parent> {
+    return this.http.post<Parent>(this.url('/admin/parents'), payload);
+  }
+
+  updateParent(id: number, payload: Partial<CreateParentPayload>): Observable<Parent> {
+    return this.http.put<Parent>(this.url(`/admin/parents/${id}`), payload);
+  }
+
+  deleteParent(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/parents/${id}`));
+  }
+
+  getParentStudents(parentId: number): Observable<ParentStudentInfo[]> {
+    return this.http.get<ParentStudentInfo[]>(this.url(`/admin/parents/${parentId}/students`));
   }
 
   getCourseStatistics(courseId: number): Observable<AdminCourseStatistics> {
