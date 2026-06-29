@@ -190,3 +190,27 @@ npx cap open android
 - فایل‌ها محدودیت نوع و حجم دارند
 - دسترسی‌ها بر اساس نوع کاربر کنترل می‌شود
 - **توجه**: توکن احراز هویت فعلی صرفاً یک `dummy-token` در localStorage است و امنیت واقعی ندارد — بک‌اند نیز middleware احراز هویت ندارد
+
+---
+
+## Deployment & Versioning
+
+### Web Application
+
+**GitHub Pages:** https://mohammadj13891391-nehzat.github.io/nehzat-plus/
+
+استقرار خودکار با push به شاخه main از طریق GitHub Pages انجام می‌شود.
+
+### Releases & APK
+
+**Releases:** https://github.com/mohammadj13891391-nehzat/nehzat-plus/releases
+
+فایل APK در بخش Releases قابل دانلود است.
+
+### Versioning
+
+- **Versions:** v1.0.0, v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.2.3, v1.2.4, v1.2.5, v1.3.0, v1.4.0
+- **Current Version:** v1.4.0
+- **CI/CD:** GitHub Actions (see .github/workflows/deploy.yml) for automatic: Build & deploy to GitHub Pages, Build APK, Create Release on Tags
+
+**Git Repo:** https://github.com/mohammadj13891391-nehzat/nehzat-plus.git

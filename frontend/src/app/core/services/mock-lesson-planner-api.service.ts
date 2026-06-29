@@ -896,77 +896,77 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       }
     ];
 
+    const madrasahs: Madrasah[] = [
+      {
+        id: 1,
+        name: 'مکتب حضرت رقیه علیها السلام',
+        gender: 'girls',
+        grade: 1,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      },
+      {
+        id: 2,
+        name: 'مکتب حضرت سکینه علیها السلام',
+        gender: 'girls',
+        grade: 2,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      },
+      {
+        id: 3,
+        name: 'مکتب حضرت فاطمه بنت الحسین علیها السلام',
+        gender: 'girls',
+        grade: 3,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      },
+      {
+        id: 4,
+        name: 'مکتب حضرت علی اصغر علیه السلام',
+        gender: 'boys',
+        grade: 1,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      },
+      {
+        id: 5,
+        name: 'مکتب حضرت قاسم علیه السلام',
+        gender: 'boys',
+        grade: 2,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      },
+      {
+        id: 6,
+        name: 'مکتب حضرت علی اکبر علیه السلام',
+        gender: 'boys',
+        grade: 3,
+        capacity: 30,
+        status: 'active',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString()
+      }
+    ];
+
     return {
       users,
       courses,
-      madrasahs: [
-        {
-          id: 1,
-          name: 'مکتب حضرت رقیه علیها السلام',
-          gender: 'girls',
-          grade: 1,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        },
-        {
-          id: 2,
-          name: 'مکتب حضرت سکینه علیها السلام',
-          gender: 'girls',
-          grade: 2,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        },
-        {
-          id: 3,
-          name: 'مکتب حضرت فاطمه بنت الحسین علیها السلام',
-          gender: 'girls',
-          grade: 3,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        },
-        {
-          id: 4,
-          name: 'مکتب حضرت علی اصغر علیه السلام',
-          gender: 'boys',
-          grade: 1,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        },
-        {
-          id: 5,
-          name: 'مکتب حضرت قاسم علیه السلام',
-          gender: 'boys',
-          grade: 2,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        },
-        {
-          id: 6,
-          name: 'مکتب حضرت علی اکبر علیه السلام',
-          gender: 'boys',
-          grade: 3,
-          capacity: 30,
-          status: 'active',
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
-        }
-      ],
+      madrasahs,
       assignments,
       attachments,
       students,
-      studentCourseMap: {
-        1: [1, 2]
-      },
+      studentCourseMap: { '1': [1, 2] },
       submissions,
       listenState: {}
     };

@@ -65,16 +65,84 @@ import { AuthService } from '../../core/services/auth.service';
         <aside class="admin-sidebar" aria-label="منوی مدیریت">
           <ul class="sidebar-menu">
             @for (item of menuItems; track item.key) {
-              <li
-                class="sidebar-item"
-                [class.active]="activeMenu === item.key"
-                (click)="activeMenu = item.key"
-                (keydown.enter)="activeMenu = item.key"
-                tabindex="0"
-                role="button"
-              >
-                {{ item.label }}
-              </li>
+              @if (item.key === 'makatib') {
+                <li
+                  class="sidebar-item sidebar-parent"
+                  [class.expanded]="expandedMenus.has('makatib')"
+                  (click)="toggleExpand('makatib'); activeMenu = 'makatib'"
+                  (keydown.enter)="toggleExpand('makatib'); activeMenu = 'makatib'"
+                  tabindex="0"
+                  role="button"
+                >
+                  <span class="sidebar-parent-label">{{ item.label }}</span>
+                  <span class="sidebar-arrow">{{ expandedMenus.has('makatib') ? '▲' : '▼' }}</span>
+                </li>
+                @if (expandedMenus.has('makatib')) {
+                  <li class="sidebar-submenu">
+                    <ul>
+                      <li
+                        class="sidebar-item sidebar-sub-parent"
+                        [class.expanded]="expandedMenus.has('makatib-girls')"
+                        (click)="toggleExpand('makatib-girls'); $event.stopPropagation()"
+                        tabindex="0"
+                        role="button"
+                      >
+                        <span>مکاتب دخترانه</span>
+                        <span class="sidebar-arrow">{{ expandedMenus.has('makatib-girls') ? '▲' : '▼' }}</span>
+                      </li>
+                      @if (expandedMenus.has('makatib-girls')) {
+                        @for (maktab of makatibGirls; track maktab.key) {
+                          <li
+                            class="sidebar-item sidebar-child"
+                            [class.active]="activeMenu === maktab.key"
+                            (click)="activeMenu = maktab.key; $event.stopPropagation()"
+                            tabindex="0"
+                            role="button"
+                          >
+                            <span class="sidebar-child-level">{{ maktab.level }}</span>
+                            <span class="sidebar-child-name">{{ maktab.label }}</span>
+                          </li>
+                        }
+                      }
+                      <li
+                        class="sidebar-item sidebar-sub-parent"
+                        [class.expanded]="expandedMenus.has('makatib-boys')"
+                        (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
+                        tabindex="0"
+                        role="button"
+                      >
+                        <span>مکاتب پسرانه</span>
+                        <span class="sidebar-arrow">{{ expandedMenus.has('makatib-boys') ? '▲' : '▼' }}</span>
+                      </li>
+                      @if (expandedMenus.has('makatib-boys')) {
+                        @for (maktab of makatibBoys; track maktab.key) {
+                          <li
+                            class="sidebar-item sidebar-child"
+                            [class.active]="activeMenu === maktab.key"
+                            (click)="activeMenu = maktab.key; $event.stopPropagation()"
+                            tabindex="0"
+                            role="button"
+                          >
+                            <span class="sidebar-child-level">{{ maktab.level }}</span>
+                            <span class="sidebar-child-name">{{ maktab.label }}</span>
+                          </li>
+                        }
+                      }
+                    </ul>
+                  </li>
+                }
+              } @else {
+                <li
+                  class="sidebar-item"
+                  [class.active]="activeMenu === item.key"
+                  (click)="activeMenu = item.key"
+                  (keydown.enter)="activeMenu = item.key"
+                  tabindex="0"
+                  role="button"
+                >
+                  {{ item.label }}
+                </li>
+              }
             }
           </ul>
         </aside>
@@ -564,31 +632,16 @@ import { AuthService } from '../../core/services/auth.service';
           @if (activeMenu === 'makatib') {
             <section class="card">
               <h2 class="section-title">مکاتب تربیتی، آموزشی، مهارتی</h2>
-              <nav class="maktab-tabs" aria-label="مکاتب">
-                @for (maktab of maktabList; track maktab.id) {
-                  <button
-                    type="button"
-                    class="maktab-tab"
-                    [class.active]="activeMaktab === maktab.id"
-                    (click)="activeMaktab = maktab.id"
-                  >
-                    <span class="maktab-tab-gender">{{ maktab.gender }}</span>
-                    <span class="maktab-tab-name">{{ maktab.label }}</span>
-                    <span class="maktab-tab-level">{{ maktab.level }}</span>
-                  </button>
-                }
-              </nav>
-              <div class="maktab-content">
-                @for (maktab of maktabList; track maktab.id) {
-                  @if (activeMaktab === maktab.id) {
-                    <div class="maktab-panel">
-                      <h3 class="maktab-panel-title">{{ maktab.label }}</h3>
-                      <p class="muted">شعبه‌های {{ maktab.label }} به زودی اضافه می‌شود.</p>
-                    </div>
-                  }
-                }
-              </div>
+              <p class="muted">از منوی سمت راست یک مکتب را انتخاب کنید.</p>
             </section>
+          }
+          @for (maktab of allMakatib; track maktab.key) {
+            @if (activeMenu === maktab.key) {
+              <section class="card">
+                <h2 class="section-title">{{ maktab.label }}</h2>
+                <p class="muted">شعبه‌های {{ maktab.label }} به زودی اضافه می‌شود.</p>
+              </section>
+            }
           }
 
           @if (activeMenu === 'parents') {
@@ -1026,16 +1079,8 @@ export class AdminComponent implements OnInit {
   username = '';
   errorMessage = '';
   successMessage = '';
-  activeMenu: 'trainees' | 'teachers' | 'courses' | 'branch-managers' | 'makatib' | 'parents' | 'evaluators' | 'headquarters' = 'makatib';
-  activeMaktab: string = 'roqieh';
-  maktabList = [
-    { id: 'roqieh', label: 'مکتب حضرت رقیه علیها السلام', level: '7 سال اول', gender: 'دخترانه' },
-    { id: 'sakineh', label: 'مکتب حضرت سکینه علیها السلام', level: '7 سال دوم', gender: 'دخترانه' },
-    { id: 'fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام', level: '7 سال سوم', gender: 'دخترانه' },
-    { id: 'ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام', level: '7 سال اول', gender: 'پسرانه' },
-    { id: 'ghasem', label: 'مکتب حضرت قاسم علیه السلام', level: '7 سال دوم', gender: 'پسرانه' },
-    { id: 'ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام', level: '7 سال سوم', gender: 'پسرانه' }
-  ];
+  activeMenu: string = 'makatib';
+  expandedMenus = new Set<string>(['makatib']);
   menuItems = [
     { key: 'trainees', label: 'متربیان' },
     { key: 'teachers', label: 'مربیان' },
@@ -1360,6 +1405,38 @@ export class AdminComponent implements OnInit {
           this.setError(error?.error?.message ?? 'حذف دوره با خطا مواجه شد.');
         }
       });
+  }
+
+  readonly makatibGirls = [
+    { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام', level: '7 سال اول' },
+    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام', level: '7 سال دوم' },
+    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام', level: '7 سال سوم' }
+  ];
+  readonly makatibBoys = [
+    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام', level: '7 سال اول' },
+    { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام', level: '7 سال دوم' },
+    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام', level: '7 سال سوم' }
+  ];
+  readonly allMakatib = [...this.makatibGirls, ...this.makatibBoys];
+
+  toggleExpand(key: string): void {
+    if (this.expandedMenus.has(key)) {
+      this.expandedMenus.delete(key);
+    } else {
+      this.expandedMenus.add(key);
+    }
+  }
+
+  // Handle makatib click - expand girls/boys sections only when makatib itself is clicked
+  toggleMakatibClick(): void {
+    this.expandedMenus.add('makatib');
+    this.activeMenu = 'makatib';
+    // Auto-expand children based on active menu
+    if (this.makatibGirls.some(m => m.key === this.activeMenu)) {
+      this.expandedMenus.add('makatib-girls');
+    } else if (this.makatibBoys.some(m => m.key === this.activeMenu)) {
+      this.expandedMenus.add('makatib-boys');
+    }
   }
 
   toggleCourseStatus(course: Course): void {
