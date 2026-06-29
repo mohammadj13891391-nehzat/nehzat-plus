@@ -83,6 +83,9 @@ export type MadrasahStatus = 'active' | 'inactive';
 export interface Madrasah {
   id: number;
   name: string;
+  key: string;
+  label: string;
+  level: string;
   gender: MadrasahGender;
   grade: MadrasahGrade;
   capacity?: number;
@@ -94,6 +97,9 @@ export interface Madrasah {
 
 export interface CreateMadrasahPayload {
   name: string;
+  key: string;
+  label: string;
+  level: string;
   gender: MadrasahGender;
   grade: MadrasahGrade;
   capacity?: number;
@@ -102,6 +108,28 @@ export interface CreateMadrasahPayload {
 }
 
 export type UpdateMadrasahPayload = Partial<CreateMadrasahPayload>;
+
+export interface MaktabBranch {
+  id: number;
+  madrasahId: number;
+  province: string;
+  name: string;
+  address: string;
+  capacity: number;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMaktabBranchPayload {
+  province: string;
+  name: string;
+  address?: string;
+  capacity?: number;
+  status?: 'active' | 'inactive';
+}
+
+export type UpdateMaktabBranchPayload = Partial<CreateMaktabBranchPayload>;
 
 export interface AssignmentAttachment {
   id: number;

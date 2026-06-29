@@ -24,10 +24,15 @@ import {
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
+  CreateMadrasahPayload,
+  CreateMaktabBranchPayload,
   Course,
+  Madrasah,
+  MaktabBranch,
   PendingUser,
   StudentInfo,
-  StudentProgressResponse
+  StudentProgressResponse,
+  UpdateMadrasahPayload
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -259,6 +264,34 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   generateCourseInviteCode(courseId: number): Observable<CourseInviteCode> {
     return this.http.post<CourseInviteCode>(this.url(`/admin/courses/${courseId}/invite-code`), {});
+  }
+
+  getMadrasahs(): Observable<Madrasah[]> {
+    return this.http.get<Madrasah[]>(this.url('/admin/madrasahs'));
+  }
+
+  createMadrasah(payload: CreateMadrasahPayload): Observable<Madrasah> {
+    return this.http.post<Madrasah>(this.url('/admin/madrasahs'), payload);
+  }
+
+  updateMadrasah(id: number, payload: UpdateMadrasahPayload): Observable<Madrasah> {
+    return this.http.put<Madrasah>(this.url(`/admin/madrasahs/${id}`), payload);
+  }
+
+  deleteMadrasah(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/madrasahs/${id}`));
+  }
+
+  getMaktabBranches(madrasahId: number): Observable<MaktabBranch[]> {
+    return this.http.get<MaktabBranch[]>(this.url(`/admin/madrasahs/${madrasahId}/branches`));
+  }
+
+  createMaktabBranch(madrasahId: number, payload: CreateMaktabBranchPayload): Observable<MaktabBranch> {
+    return this.http.post<MaktabBranch>(this.url(`/admin/madrasahs/${madrasahId}/branches`), payload);
+  }
+
+  deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/madrasahs/${madrasahId}/branches/${branchId}`));
   }
 
   getCourseStatistics(courseId: number): Observable<AdminCourseStatistics> {

@@ -18,6 +18,10 @@ import type {
   CourseStatus,
   CreateBranchManagerPayload,
   CreateCoachPayload,
+  CreateMadrasahPayload,
+  CreateMaktabBranchPayload,
+  Madrasah,
+  MaktabBranch,
   PendingUser,
   StudentInfo,
   StudentProgressResponse
@@ -126,6 +130,22 @@ export class AdminComponent implements OnInit {
   loadingAttachments = false;
   creatingAttachment = false;
   updatingAttachmentIds = new Set<number>();
+
+  readonly makatibGirls = [
+    { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام (7 سال اول)', level: '7 سال اول' },
+    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)', level: '7 سال دوم' },
+    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)', level: '7 سال سوم' }
+  ];
+
+  readonly makatibBoys = [
+    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)', level: '7 سال اول' },
+    { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام (7 سال دوم)', level: '7 سال دوم' },
+    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)', level: '7 سال سوم' }
+  ];
+
+  get allMakatib(): { key: string; label: string; level: string }[] {
+    return [...this.makatibGirls, ...this.makatibBoys];
+  }
 
   traineesTab: 'pending' | 'all' = 'pending';
   allStudents: StudentInfo[] = [];
@@ -565,60 +585,217 @@ export class AdminComponent implements OnInit {
     'کرمان', 'کرمانشاه', 'کهگیلویه و بویراحمد', 'گلستان', 'گیلان',
     'لرستان', 'مازندران', 'مرکزی', 'هرمزگان', 'همدان', 'یزد'
   ];
-  selectedProvince = '';
-  newBranchName = '';
-  private readonly STORAGE_KEY = 'maktab_branches';
 
-  get branches(): string[] {
-    if (!this.activeMenu || !this.selectedProvince) return [];
-    const key = `${this.activeMenu}:${this.selectedProvince}`;
-    return this.branchData[key] ?? [];
+  madrasahs: Madrasah[] = [];
+  loadingMadrasahs = false;
+  savingMadrasah = false;
+  selectedMadrasahId: number | null = null;
+  madrasahEditMode = false;
+  madrasahForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required]],
+    key: ['', [Validators.required]],
+    label: ['', [Validators.required]],
+    level: ['', [Validators.required]],
+    gender: ['girls'],
+    grade: [1, [Validators.required, Validators.min(1), Validators.max(7)]],
+    capacity: [30, [Validators.required, Validators.min(1)]],
+    status: ['active']
+  });
+
+  get madrasahGirls(): Madrasah[] {
+    return this.madrasahs.filter((m) => m.gender === 'girls');
   }
 
-  private branchData: Record<string, string[]> = {};
+  get madrasahBoys(): Madrasah[] {
+    return this.madrasahs.filter((m) => m.gender === 'boys');
+  }
+
+  get selectedMadrasah(): Madrasah | undefined {
+    return this.madrasahs.find((m) => m.key === this.activeMenu);
+  }
+
+  selectedProvince = '';
+  newBranchName = '';
+  branches: MaktabBranch[] = [];
+  loadingBranches = false;
+  savingBranch = false;
 
   constructor() {
     this.username = this.authService.getCurrentUser()?.username ?? 'admin';
-    this.loadBranchData();
   }
 
-  private loadBranchData(): void {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      if (saved) {
-        this.branchData = JSON.parse(saved);
+  loadMadrasahs(): void {
+    this.loadingMadrasahs = true;
+    this.api
+      .getMadrasahs()
+      .pipe(finalize(() => (this.loadingMadrasahs = false)))
+      .subscribe({
+        next: (madrasahs) => {
+          this.madrasahs = madrasahs;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست مکاتب با خطا مواجه شد.');
+        }
+      });
+  }
+
+  startCreateMadrasah(): void {
+    this.madrasahEditMode = false;
+    this.selectedMadrasahId = null;
+    this.madrasahForm.setValue({
+      name: '',
+      key: '',
+      label: '',
+      level: '',
+      gender: 'girls',
+      grade: 1,
+      capacity: 30,
+      status: 'active'
+    });
+  }
+
+  selectMadrasah(madrasahId: number): void {
+    const m = this.madrasahs.find((item) => item.id === madrasahId);
+    if (!m) return;
+    this.selectedMadrasahId = madrasahId;
+    this.madrasahEditMode = true;
+    this.madrasahForm.setValue({
+      name: m.name,
+      key: m.key,
+      label: m.label,
+      level: m.level,
+      gender: m.gender,
+      grade: m.grade,
+      capacity: m.capacity ?? 30,
+      status: m.status
+    });
+  }
+
+  saveMadrasah(): void {
+    if (this.madrasahForm.invalid) return;
+    const raw = this.madrasahForm.getRawValue();
+    const payload: CreateMadrasahPayload = {
+      name: raw.name.trim(),
+      key: raw.key.trim(),
+      label: raw.label.trim(),
+      level: raw.level.trim(),
+      gender: raw.gender as 'boys' | 'girls',
+      grade: raw.grade as 1 | 2 | 3 | 4 | 5 | 6 | 7,
+      capacity: raw.capacity,
+      status: raw.status as 'active' | 'inactive'
+    };
+
+    this.savingMadrasah = true;
+    const request$ =
+      this.madrasahEditMode && this.selectedMadrasahId !== null
+        ? this.api.updateMadrasah(this.selectedMadrasahId, payload)
+        : this.api.createMadrasah(payload);
+
+    request$.pipe(finalize(() => (this.savingMadrasah = false))).subscribe({
+      next: (madrasah) => {
+        this.selectedMadrasahId = madrasah.id;
+        this.madrasahEditMode = true;
+        this.setSuccess('اطلاعات مکتب ذخیره شد.');
+        this.loadMadrasahs();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مکتب با خطا مواجه شد.');
       }
-    } catch { /* ignore */ }
+    });
   }
 
-  private saveBranchData(): void {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.branchData));
-    } catch { /* ignore */ }
+  deleteMadrasah(madrasahId: number): void {
+    if (this.savingMadrasah) return;
+    this.savingMadrasah = true;
+    this.api
+      .deleteMadrasah(madrasahId)
+      .pipe(finalize(() => (this.savingMadrasah = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          if (this.selectedMadrasahId === madrasahId) {
+            this.startCreateMadrasah();
+          }
+          if (this.selectedMadrasah?.id === madrasahId) {
+            this.activeMenu = 'makatib';
+            this.branches = [];
+          }
+          this.loadMadrasahs();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف مکتب با خطا مواجه شد.');
+        }
+      });
+  }
+
+  loadBranches(): void {
+    const madrasah = this.selectedMadrasah;
+    if (!madrasah) {
+      this.branches = [];
+      return;
+    }
+    this.loadingBranches = true;
+    this.api
+      .getMaktabBranches(madrasah.id)
+      .pipe(finalize(() => (this.loadingBranches = false)))
+      .subscribe({
+        next: (branches) => {
+          this.branches = branches;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت شعب با خطا مواجه شد.');
+        }
+      });
   }
 
   addBranch(): void {
     const name = this.newBranchName.trim();
-    if (!name || !this.activeMenu || !this.selectedProvince) return;
-    const key = `${this.activeMenu}:${this.selectedProvince}`;
-    if (!this.branchData[key]) {
-      this.branchData[key] = [];
-    }
-    if (this.branchData[key].includes(name)) return;
-    this.branchData[key].push(name);
-    this.newBranchName = '';
-    this.saveBranchData();
+    const madrasah = this.selectedMadrasah;
+    if (!name || !madrasah || !this.selectedProvince) return;
+    if (this.savingBranch) return;
+
+    this.savingBranch = true;
+    this.api
+      .createMaktabBranch(madrasah.id, {
+        province: this.selectedProvince,
+        name,
+        status: 'active'
+      })
+      .pipe(finalize(() => (this.savingBranch = false)))
+      .subscribe({
+        next: () => {
+          this.newBranchName = '';
+          this.setSuccess('شعبه با موفقیت اضافه شد.');
+          this.loadBranches();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'افزودن شعبه با خطا مواجه شد.');
+        }
+      });
   }
 
-  removeBranch(branchName: string): void {
-    if (!this.activeMenu || !this.selectedProvince) return;
-    const key = `${this.activeMenu}:${this.selectedProvince}`;
-    this.branchData[key] = (this.branchData[key] ?? []).filter((b) => b !== branchName);
-    this.saveBranchData();
+  removeBranch(branchId: number): void {
+    const madrasah = this.selectedMadrasah;
+    if (!madrasah || this.savingBranch) return;
+
+    this.savingBranch = true;
+    this.api
+      .deleteMaktabBranch(madrasah.id, branchId)
+      .pipe(finalize(() => (this.savingBranch = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          this.loadBranches();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف شعبه با خطا مواجه شد.');
+        }
+      });
   }
 
   selectProvince(province: string): void {
     this.selectedProvince = province;
+    this.loadBranches();
   }
 
   ngOnInit(): void {
@@ -638,6 +815,7 @@ export class AdminComponent implements OnInit {
     this.loadCourses();
     this.loadCoaches();
     this.loadBranchManagers();
+    this.loadMadrasahs();
   }
 
   isProcessing(userId: number): boolean {
@@ -863,18 +1041,6 @@ export class AdminComponent implements OnInit {
       });
   }
 
-  readonly makatibGirls = [
-    { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام (7 سال اول)', level: '7 سال اول' },
-    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)', level: '7 سال دوم' },
-    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)', level: '7 سال سوم' }
-  ];
-  readonly makatibBoys = [
-    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)', level: '7 سال اول' },
-    { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام (7 سال دوم)', level: '7 سال دوم' },
-    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)', level: '7 سال سوم' }
-  ];
-  readonly allMakatib = [...this.makatibGirls, ...this.makatibBoys];
-
   toggleExpand(key: string): void {
     if (this.expandedMenus.has(key)) {
       this.expandedMenus.delete(key);
@@ -883,27 +1049,42 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  // Handle makatib click - expand girls/boys sections only when makatib itself is clicked
-  toggleMakatibClick(): void {
+  onMakatibSidebarClick(): void {
     this.expandedMenus.add('makatib');
     this.activeMenu = 'makatib';
-    // Auto-expand children based on active menu
-    if (this.makatibGirls.some(m => m.key === this.activeMenu)) {
+    this.selectedProvince = '';
+    this.branches = [];
+  }
+
+  onMadrasahSidebarClick(madrasah: Madrasah): void {
+    this.activeMenu = madrasah.key;
+    this.selectedProvince = '';
+    this.branches = [];
+    if (madrasah.gender === 'girls') {
       this.expandedMenus.add('makatib-girls');
-    } else if (this.makatibBoys.some(m => m.key === this.activeMenu)) {
+    } else {
       this.expandedMenus.add('makatib-boys');
     }
   }
 
   toggleCourseStatus(course: Course): void {
+    if (this.savingCourse) {
+      return;
+    }
+    this.savingCourse = true;
     const newStatus: CourseStatus = course.status === 'active' ? 'inactive' : 'active';
+    const wasActive = course.status === 'active';
     this.api
       .updateAdminCourse(course.id, { status: newStatus })
+      .pipe(finalize(() => (this.savingCourse = false)))
       .subscribe({
         next: () => {
           course.status = newStatus;
-          this.loadStatistics();
-          this.loadCourses();
+          if (wasActive) {
+            this.stats.activeCourses--;
+          } else {
+            this.stats.activeCourses++;
+          }
           this.setSuccess(`وضعیت دوره "${course.title}" به ${newStatus === 'active' ? 'فعال' : 'غیرفعال'} تغییر یافت.`);
         },
         error: (error) => {

@@ -22,18 +22,21 @@ import type {
   CoursePayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
+  CreateMadrasahPayload,
+  CreateMaktabBranchPayload,
   DailySeriesPayload,
+  Madrasah,
+  MadrasahGender,
+  MadrasahGrade,
+  MadrasahStatus,
+  MaktabBranch,
   PendingUser,
   Student,
   StudentCourseProgress,
   StudentInfo,
   StudentProgressResponse,
-  UserType,
-  Madrasah,
-  CreateMadrasahPayload,
-  MadrasahGender,
-  MadrasahGrade,
-  MadrasahStatus
+  UpdateMadrasahPayload,
+  UserType
 } from '../models/lesson-planner.models';
 import { resolveMediaUrl } from './api-url.util';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
@@ -65,6 +68,7 @@ type MockStore = {
   users: StoredUser[];
   courses: Course[];
   madrasahs: Madrasah[];
+  maktabBranches: MaktabBranch[];
   coaches: Coach[];
   branchManagers: BranchManager[];
   assignments: Assignment[];
@@ -421,6 +425,85 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
     this.store.coaches.splice(index, 1);
     return this.ok({ message: 'مربی با موفقیت حذف شد.' });
+  }
+
+  getMadrasahs(): Observable<Madrasah[]> {
+    return this.ok(this.store.madrasahs.map((m) => ({ ...m })));
+  }
+
+  createMadrasah(payload: CreateMadrasahPayload): Observable<Madrasah> {
+    const now = new Date().toISOString();
+    const madrasah: Madrasah = {
+      id: this.nextNumericId(this.store.madrasahs),
+      name: payload.name,
+      key: payload.key,
+      label: payload.label,
+      level: payload.level,
+      gender: payload.gender,
+      grade: payload.grade,
+      capacity: payload.capacity,
+      managerId: payload.managerId,
+      status: payload.status ?? 'active',
+      createdAt: now,
+      updatedAt: now
+    };
+    this.store.madrasahs.push(madrasah);
+    return this.ok({ ...madrasah });
+  }
+
+  updateMadrasah(id: number, payload: UpdateMadrasahPayload): Observable<Madrasah> {
+    const index = this.store.madrasahs.findIndex((m) => m.id === id);
+    if (index < 0) {
+      return this.fail('مکتب پیدا نشد.');
+    }
+    const next: Madrasah = {
+      ...this.store.madrasahs[index],
+      ...payload,
+      id,
+      updatedAt: new Date().toISOString()
+    };
+    this.store.madrasahs[index] = next;
+    return this.ok({ ...next });
+  }
+
+  deleteMadrasah(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.madrasahs.findIndex((m) => m.id === id);
+    if (index < 0) {
+      return this.fail('مکتب پیدا نشد.');
+    }
+    this.store.madrasahs.splice(index, 1);
+    this.store.maktabBranches = this.store.maktabBranches.filter((b) => b.madrasahId !== id);
+    return this.ok({ message: 'مکتب با موفقیت حذف شد.' });
+  }
+
+  getMaktabBranches(madrasahId: number): Observable<MaktabBranch[]> {
+    return this.ok(this.store.maktabBranches.filter((b) => b.madrasahId === madrasahId).map((b) => ({ ...b })));
+  }
+
+  createMaktabBranch(madrasahId: number, payload: CreateMaktabBranchPayload): Observable<MaktabBranch> {
+    const now = new Date().toISOString();
+    const branch: MaktabBranch = {
+      id: this.nextNumericId(this.store.maktabBranches),
+      madrasahId,
+      province: payload.province,
+      name: payload.name,
+      address: payload.address ?? '',
+      capacity: payload.capacity ?? 30,
+      status: payload.status ?? 'active',
+      createdAt: now,
+      updatedAt: now
+    };
+    this.store.maktabBranches.push(branch);
+    return this.ok({ ...branch });
+  }
+
+  deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse> {
+    const index = this.store.maktabBranches.findIndex((b) => b.id === branchId && b.madrasahId === madrasahId);
+    if (index < 0) {
+      return this.fail('شعبه پیدا نشد.');
+    }
+    this.store.maktabBranches.splice(index, 1);
+    return this.ok({ message: 'شعبه با موفقیت حذف شد.' });
   }
 
   getBranchManagers(): Observable<BranchManager[]> {
@@ -1059,6 +1142,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 1,
         name: 'مکتب حضرت رقیه علیها السلام',
+        key: 'maktab-roqieh',
+        label: 'مکتب حضرت رقیه علیها السلام (7 سال اول)',
+        level: '7 سال اول',
         gender: 'girls',
         grade: 1,
         capacity: 30,
@@ -1069,6 +1155,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 2,
         name: 'مکتب حضرت سکینه علیها السلام',
+        key: 'maktab-sakineh',
+        label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)',
+        level: '7 سال دوم',
         gender: 'girls',
         grade: 2,
         capacity: 30,
@@ -1079,6 +1168,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 3,
         name: 'مکتب حضرت فاطمه بنت الحسین علیها السلام',
+        key: 'maktab-fatemeh',
+        label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)',
+        level: '7 سال سوم',
         gender: 'girls',
         grade: 3,
         capacity: 30,
@@ -1089,6 +1181,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 4,
         name: 'مکتب حضرت علی اصغر علیه السلام',
+        key: 'maktab-ali-asghar',
+        label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)',
+        level: '7 سال اول',
         gender: 'boys',
         grade: 1,
         capacity: 30,
@@ -1099,6 +1194,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 5,
         name: 'مکتب حضرت قاسم علیه السلام',
+        key: 'maktab-ghasem',
+        label: 'مکتب حضرت قاسم علیه السلام (7 سال دوم)',
+        level: '7 سال دوم',
         gender: 'boys',
         grade: 2,
         capacity: 30,
@@ -1109,6 +1207,9 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       {
         id: 6,
         name: 'مکتب حضرت علی اکبر علیه السلام',
+        key: 'maktab-ali-akbar',
+        label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)',
+        level: '7 سال سوم',
         gender: 'boys',
         grade: 3,
         capacity: 30,
@@ -1116,6 +1217,18 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
         createdAt: now.toISOString(),
         updatedAt: now.toISOString()
       }
+    ];
+
+    const maktabBranches: MaktabBranch[] = [
+      { id: 1, madrasahId: 1, province: 'تهران', name: 'شعبه مرکزی', address: 'تهران، میدان انقلاب', capacity: 50, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 2, madrasahId: 1, province: 'خراسان رضوی', name: 'شعبه امام رضا', address: 'مشهد، حرم مطهر', capacity: 40, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 3, madrasahId: 1, province: 'قم', name: 'شعبه حضرت معصومه', address: 'قم، بلوار جمهوری', capacity: 35, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 4, madrasahId: 2, province: 'تهران', name: 'شعبه سکینه', address: 'تهران، تجریش', capacity: 30, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 5, madrasahId: 2, province: 'اصفهان', name: 'شعبه اصفهان', address: 'اصفهان، چهارباغ', capacity: 25, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 6, madrasahId: 4, province: 'تهران', name: 'شعبه پسرانه مرکزی', address: 'تهران، شهرری', capacity: 45, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 7, madrasahId: 4, province: 'خراسان رضوی', name: 'شعبه پسرانه مشهد', address: 'مشهد، طبرسی', capacity: 40, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 8, madrasahId: 5, province: 'تهران', name: 'شعبه پسرانه قاسم', address: 'تهران، تهرانپارس', capacity: 35, status: 'inactive', createdAt: now.toISOString(), updatedAt: now.toISOString() },
+      { id: 9, madrasahId: 6, province: 'تهران', name: 'شعبه علی اکبر', address: 'تهران، شمیران', capacity: 30, status: 'active', createdAt: now.toISOString(), updatedAt: now.toISOString() }
     ];
 
     const branchManagers: BranchManager[] = [
@@ -1203,6 +1316,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       users,
       courses,
       madrasahs,
+      maktabBranches,
       branchManagers,
       coaches,
       assignments,

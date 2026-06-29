@@ -67,41 +67,41 @@
                     <span class="sidebar-arrow">{{ expandedMenus.has('makatib-girls') ? '▲' : '▼' }}</span>
                   </li>
                   @if (expandedMenus.has('makatib-girls')) {
-                    @for (maktab of makatibGirls; track maktab.key) {
+                    @for (maktab of madrasahGirls; track maktab.key) {
                       <li
                         class="sidebar-item sidebar-child"
                         [class.active]="activeMenu === maktab.key"
-                        (click)="activeMenu = maktab.key; $event.stopPropagation()"
+                        (click)="onMadrasahSidebarClick(maktab); $event.stopPropagation()"
                         tabindex="0"
                         role="button"
                       >
                          <span class="sidebar-child-name">{{ maktab.label }}</span>
                        </li>
                      }
-                   }
-                   <li
-                     class="sidebar-item sidebar-sub-parent"
-                     [class.expanded]="expandedMenus.has('makatib-boys')"
-                     (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
-                     tabindex="0"
-                     role="button"
-                   >
-                     <span>مکاتب پسرانه</span>
-                     <span class="sidebar-arrow">{{ expandedMenus.has('makatib-boys') ? '▲' : '▼' }}</span>
-                   </li>
-                   @if (expandedMenus.has('makatib-boys')) {
-                     @for (maktab of makatibBoys; track maktab.key) {
-                       <li
-                         class="sidebar-item sidebar-child"
-                         [class.active]="activeMenu === maktab.key"
-                         (click)="activeMenu = maktab.key; $event.stopPropagation()"
-                         tabindex="0"
-                         role="button"
-                       >
-                        <span class="sidebar-child-name">{{ maktab.label }}</span>
-                      </li>
                     }
-                  }
+                    <li
+                      class="sidebar-item sidebar-sub-parent"
+                      [class.expanded]="expandedMenus.has('makatib-boys')"
+                      (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
+                      tabindex="0"
+                      role="button"
+                    >
+                      <span>مکاتب پسرانه</span>
+                      <span class="sidebar-arrow">{{ expandedMenus.has('makatib-boys') ? '▲' : '▼' }}</span>
+                    </li>
+                    @if (expandedMenus.has('makatib-boys')) {
+                      @for (maktab of madrasahBoys; track maktab.key) {
+                        <li
+                          class="sidebar-item sidebar-child"
+                          [class.active]="activeMenu === maktab.key"
+                          (click)="onMadrasahSidebarClick(maktab); $event.stopPropagation()"
+                          tabindex="0"
+                          role="button"
+                        >
+                         <span class="sidebar-child-name">{{ maktab.label }}</span>
+                       </li>
+                     }
+                   }
                 </ul>
               </li>
             }
@@ -1034,7 +1034,7 @@
                     @for (branch of branches; track branch) {
                       <div class="branch-item">
                         <span class="branch-name">{{ branch }}</span>
-                        <button type="button" class="btn-remove" (click)="removeBranch(branch)" title="حذف شعبه">✕</button>
+                        <button type="button" class="btn-remove" (click)="removeBranch(branch.id)" title="حذف شعبه">✕</button>
                       </div>
                     }
                   </div>

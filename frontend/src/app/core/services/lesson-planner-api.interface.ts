@@ -21,11 +21,16 @@ import {
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
+  CreateMadrasahPayload,
+  CreateMaktabBranchPayload,
+  Madrasah,
+  MaktabBranch,
   PendingUser,
   StudentAssignmentGateState,
   StudentInfo,
   StudentProgressResponse,
-  UpdateAttachmentPayload
+  UpdateAttachmentPayload,
+  UpdateMadrasahPayload
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -111,4 +116,13 @@ export abstract class LessonPlannerApi {
   abstract enrollStudentInCourse(courseId: number, studentId: number): Observable<ApiMessageResponse>;
   abstract unenrollStudentFromCourse(courseId: number, studentId: number): Observable<ApiMessageResponse>;
   abstract generateCourseInviteCode(courseId: number): Observable<CourseInviteCode>;
+
+  abstract getMadrasahs(): Observable<Madrasah[]>;
+  abstract createMadrasah(payload: CreateMadrasahPayload): Observable<Madrasah>;
+  abstract updateMadrasah(id: number, payload: UpdateMadrasahPayload): Observable<Madrasah>;
+  abstract deleteMadrasah(id: number): Observable<ApiMessageResponse>;
+
+  abstract getMaktabBranches(madrasahId: number): Observable<MaktabBranch[]>;
+  abstract createMaktabBranch(madrasahId: number, payload: CreateMaktabBranchPayload): Observable<MaktabBranch>;
+  abstract deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse>;
 }
