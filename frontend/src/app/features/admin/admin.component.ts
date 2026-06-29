@@ -18,9 +18,13 @@ import type {
   CourseStatus,
   CreateBranchManagerPayload,
   CreateCoachPayload,
+  CreateEvaluationPayload,
+  CreateEvaluatorPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  EvaluationRecord,
+  Evaluator,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -634,6 +638,222 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  evaluators: Evaluator[] = [];
+  loadingEvaluators = false;
+  savingEvaluator = false;
+  searchEvaluatorQuery = '';
+  evaluatorEditMode = false;
+  selectedEvaluatorId: number | null = null;
+  evaluationRecords: EvaluationRecord[] = [];
+  loadingEvaluationRecords = false;
+  savingEvaluation = false;
+  evaluationForm = this.fb.nonNullable.group({
+    evaluatorId: [0, [Validators.required]],
+    targetName: ['', [Validators.required]],
+    targetType: ['coach' as 'coach' | 'student' | 'branch'],
+    targetId: [0, [Validators.required]],
+    score: [10, [Validators.required, Validators.min(0), Validators.max(20)]],
+    feedback: ['', [Validators.required]],
+    evaluationDate: [this.todayIsoDate(), [Validators.required]]
+  });
+  evaluatorForm = this.fb.nonNullable.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
+    expertise: [''],
+    assignedMadrasahIds: ['']
+  });
+
+  get filteredEvaluators(): Evaluator[] {
+    const q = this.searchEvaluatorQuery.trim().toLowerCase();
+    if (!q) return this.evaluators;
+    return this.evaluators.filter(
+      (e) =>
+        e.firstName.toLowerCase().includes(q) ||
+        e.lastName.toLowerCase().includes(q) ||
+        e.username.toLowerCase().includes(q) ||
+        e.expertise.toLowerCase().includes(q)
+    );
+  }
+
+  loadEvaluators(): void {
+    this.loadingEvaluators = true;
+    this.api
+      .getEvaluators()
+      .pipe(finalize(() => (this.loadingEvaluators = false)))
+      .subscribe({
+        next: (evaluators) => {
+          this.evaluators = evaluators;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست ارزیابان با خطا مواجه شد.');
+        }
+      });
+  }
+
+  startCreateEvaluator(): void {
+    this.evaluatorEditMode = false;
+    this.selectedEvaluatorId = null;
+    this.evaluatorForm.setValue({
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      expertise: '',
+      assignedMadrasahIds: ''
+    });
+  }
+
+  selectEvaluator(evaluatorId: number): void {
+    const evaluator = this.evaluators.find((e) => e.id === evaluatorId);
+    if (!evaluator) return;
+    this.selectedEvaluatorId = evaluatorId;
+    this.evaluatorEditMode = true;
+    this.evaluatorForm.setValue({
+      username: evaluator.username,
+      password: '',
+      firstName: evaluator.firstName,
+      lastName: evaluator.lastName,
+      email: evaluator.email,
+      phoneNumber: evaluator.phoneNumber,
+      expertise: evaluator.expertise,
+      assignedMadrasahIds: evaluator.assignedMadrasahIds.join(',')
+    });
+    this.evaluatorForm.get('password')?.clearValidators();
+    this.evaluatorForm.get('password')?.updateValueAndValidity();
+    this.loadEvaluationRecords(evaluatorId);
+  }
+
+  saveEvaluator(): void {
+    if (this.evaluatorForm.invalid) return;
+    const raw = this.evaluatorForm.getRawValue();
+    const madrasahIds = raw.assignedMadrasahIds
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    const payload: CreateEvaluatorPayload = {
+      username: raw.username.trim(),
+      password: raw.password.trim(),
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      email: raw.email.trim(),
+      phoneNumber: raw.phoneNumber.trim(),
+      expertise: raw.expertise.trim(),
+      assignedMadrasahIds: madrasahIds
+    };
+
+    this.savingEvaluator = true;
+    const request$ =
+      this.evaluatorEditMode && this.selectedEvaluatorId !== null
+        ? this.api.updateEvaluator(this.selectedEvaluatorId, payload)
+        : this.api.createEvaluator(payload);
+
+    request$.pipe(finalize(() => (this.savingEvaluator = false))).subscribe({
+      next: (evaluator) => {
+        this.selectedEvaluatorId = evaluator.id;
+        this.evaluatorEditMode = true;
+        this.setSuccess('اطلاعات ارزیاب ذخیره شد.');
+        this.loadEvaluators();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات ارزیاب با خطا مواجه شد.');
+      }
+    });
+  }
+
+  deleteEvaluator(evaluatorId: number): void {
+    if (this.savingEvaluator) return;
+    this.savingEvaluator = true;
+    this.api
+      .deleteEvaluator(evaluatorId)
+      .pipe(finalize(() => (this.savingEvaluator = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          if (this.selectedEvaluatorId === evaluatorId) {
+            this.startCreateEvaluator();
+            this.evaluationRecords = [];
+          }
+          this.loadEvaluators();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف ارزیاب با خطا مواجه شد.');
+        }
+      });
+  }
+
+  loadEvaluationRecords(evaluatorId?: number): void {
+    this.loadingEvaluationRecords = true;
+    this.api
+      .getEvaluationRecords(evaluatorId)
+      .pipe(finalize(() => (this.loadingEvaluationRecords = false)))
+      .subscribe({
+        next: (records) => {
+          this.evaluationRecords = records;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت رکوردهای ارزیابی با خطا مواجه شد.');
+        }
+      });
+  }
+
+  saveEvaluation(): void {
+    if (this.evaluationForm.invalid) return;
+    const raw = this.evaluationForm.getRawValue();
+    const payload: CreateEvaluationPayload = {
+      evaluatorId: raw.evaluatorId,
+      targetName: raw.targetName.trim(),
+      targetType: raw.targetType,
+      targetId: raw.targetId,
+      score: raw.score,
+      feedback: raw.feedback.trim(),
+      evaluationDate: raw.evaluationDate
+    };
+
+    this.savingEvaluation = true;
+    this.api
+      .createEvaluation(payload)
+      .pipe(finalize(() => (this.savingEvaluation = false)))
+      .subscribe({
+        next: () => {
+          this.setSuccess('رکورد ارزیابی با موفقیت ثبت شد.');
+          this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
+          this.evaluationForm.patchValue({
+            targetName: '',
+            targetId: 0,
+            score: 10,
+            feedback: '',
+            evaluationDate: this.todayIsoDate()
+          });
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ثبت رکورد ارزیابی با خطا مواجه شد.');
+        }
+      });
+  }
+
+  deleteEvaluation(recordId: number): void {
+    if (this.savingEvaluation) return;
+    this.savingEvaluation = true;
+    this.api
+      .deleteEvaluation(recordId)
+      .pipe(finalize(() => (this.savingEvaluation = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف رکورد ارزیابی با خطا مواجه شد.');
+        }
+      });
+  }
+
   loadBranchManagers(): void {
     this.loadingBranchManagers = true;
     this.api
@@ -979,6 +1199,7 @@ export class AdminComponent implements OnInit {
     this.loadBranchManagers();
     this.loadMadrasahs();
     this.loadParents();
+    this.loadEvaluators();
   }
 
   isProcessing(userId: number): boolean {

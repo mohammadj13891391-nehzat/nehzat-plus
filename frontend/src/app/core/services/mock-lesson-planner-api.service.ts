@@ -22,10 +22,14 @@ import type {
   CoursePayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
+  CreateEvaluationPayload,
+  CreateEvaluatorPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
   DailySeriesPayload,
+  EvaluationRecord,
+  Evaluator,
   Madrasah,
   MadrasahGender,
   MadrasahGrade,
@@ -75,6 +79,8 @@ type MockStore = {
   coaches: Coach[];
   branchManagers: BranchManager[];
   parents: Parent[];
+  evaluators: Evaluator[];
+  evaluationRecords: EvaluationRecord[];
   assignments: Assignment[];
   attachments: AssignmentAttachment[];
   students: Student[];
@@ -591,6 +597,88 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
 
     return this.ok(studentsInfo);
+  }
+
+  getEvaluators(): Observable<Evaluator[]> {
+    return this.ok(this.store.evaluators.map((e) => ({ ...e })));
+  }
+
+  createEvaluator(payload: CreateEvaluatorPayload): Observable<Evaluator> {
+    const now = new Date().toISOString();
+    const evaluator: Evaluator = {
+      id: this.nextNumericId(this.store.evaluators),
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      expertise: payload.expertise ?? '',
+      assignedMadrasahIds: payload.assignedMadrasahIds ?? [],
+      status: 'active',
+      createdAt: now
+    };
+    this.store.evaluators.push(evaluator);
+    return this.ok({ ...evaluator });
+  }
+
+  updateEvaluator(id: number, payload: Partial<CreateEvaluatorPayload>): Observable<Evaluator> {
+    const index = this.store.evaluators.findIndex((e) => e.id === id);
+    if (index < 0) {
+      return this.fail('ارزیاب پیدا نشد.');
+    }
+    const next: Evaluator = {
+      ...this.store.evaluators[index],
+      ...payload,
+      id
+    };
+    this.store.evaluators[index] = next;
+    return this.ok({ ...next });
+  }
+
+  deleteEvaluator(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.evaluators.findIndex((e) => e.id === id);
+    if (index < 0) {
+      return this.fail('ارزیاب پیدا نشد.');
+    }
+    this.store.evaluators.splice(index, 1);
+    this.store.evaluationRecords = this.store.evaluationRecords.filter((r) => r.evaluatorId !== id);
+    return this.ok({ message: 'ارزیاب با موفقیت حذف شد.' });
+  }
+
+  getEvaluationRecords(evaluatorId?: number): Observable<EvaluationRecord[]> {
+    let records = this.store.evaluationRecords;
+    if (evaluatorId !== undefined) {
+      records = records.filter((r) => r.evaluatorId === evaluatorId);
+    }
+    return this.ok(records.map((r) => ({ ...r })));
+  }
+
+  createEvaluation(payload: CreateEvaluationPayload): Observable<EvaluationRecord> {
+    const now = new Date().toISOString();
+    const evaluator = this.store.evaluators.find((e) => e.id === payload.evaluatorId);
+    const record: EvaluationRecord = {
+      id: this.nextNumericId(this.store.evaluationRecords),
+      evaluatorId: payload.evaluatorId,
+      evaluatorName: evaluator ? `${evaluator.firstName} ${evaluator.lastName}` : `#${payload.evaluatorId}`,
+      targetName: payload.targetName,
+      targetType: payload.targetType,
+      targetId: payload.targetId,
+      score: payload.score,
+      feedback: payload.feedback,
+      evaluationDate: payload.evaluationDate,
+      createdAt: now
+    };
+    this.store.evaluationRecords.push(record);
+    return this.ok({ ...record });
+  }
+
+  deleteEvaluation(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.evaluationRecords.findIndex((r) => r.id === id);
+    if (index < 0) {
+      return this.fail('رکورد ارزیابی پیدا نشد.');
+    }
+    this.store.evaluationRecords.splice(index, 1);
+    return this.ok({ message: 'رکورد ارزیابی با موفقیت حذف شد.' });
   }
 
   getBranchManagers(): Observable<BranchManager[]> {
@@ -1428,6 +1516,72 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       }
     ];
 
+    const evaluators: Evaluator[] = [
+      {
+        id: 1,
+        username: 'dr.salehi',
+        firstName: 'دکتر',
+        lastName: 'صالحی',
+        email: 'dr.salehi@example.com',
+        phoneNumber: '09125555555',
+        expertise: 'ارزیابی آموزشی',
+        assignedMadrasahIds: [1, 2, 3],
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 2,
+        username: 'mrs.bagheri',
+        firstName: 'خانم',
+        lastName: 'Bagheri',
+        email: 'bagheri@example.com',
+        phoneNumber: '09126666666',
+        expertise: 'ارزیابی عملکرد مربیان',
+        assignedMadrasahIds: [4, 5, 6],
+        status: 'active',
+        createdAt: now.toISOString()
+      }
+    ];
+
+    const evaluationRecords: EvaluationRecord[] = [
+      {
+        id: 1,
+        evaluatorId: 1,
+        evaluatorName: 'دکتر صالحی',
+        targetName: 'دکتر احمدی',
+        targetType: 'coach',
+        targetId: 1,
+        score: 18,
+        feedback: 'عملکرد بسیار عالی در تدریس ریاضیات',
+        evaluationDate: today,
+        createdAt: now.toISOString()
+      },
+      {
+        id: 2,
+        evaluatorId: 1,
+        evaluatorName: 'دکتر صالحی',
+        targetName: 'علی رضایی',
+        targetType: 'student',
+        targetId: 1,
+        score: 16,
+        feedback: 'پیشرفت خوب در دروس پایه',
+        evaluationDate: past.toISOString().slice(0, 10),
+        createdAt: now.toISOString()
+      },
+      {
+        id: 3,
+        evaluatorId: 2,
+        evaluatorName: 'خانم باقری',
+        targetName: 'مهندس کریمی',
+        targetType: 'coach',
+        targetId: 2,
+        score: 15,
+        feedback: 'نیاز به بهبود در تعامل با متربیان',
+        evaluationDate: today,
+        createdAt: now.toISOString()
+      }
+    ];
+
     return {
       users,
       courses,
@@ -1436,6 +1590,8 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       branchManagers,
       coaches,
       parents,
+      evaluators,
+      evaluationRecords,
       assignments,
       attachments,
       students,

@@ -24,10 +24,14 @@ import {
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
+  CreateEvaluationPayload,
+  CreateEvaluatorPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
   Course,
+  EvaluationRecord,
+  Evaluator,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -315,6 +319,38 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   getParentStudents(parentId: number): Observable<ParentStudentInfo[]> {
     return this.http.get<ParentStudentInfo[]>(this.url(`/admin/parents/${parentId}/students`));
+  }
+
+  getEvaluators(): Observable<Evaluator[]> {
+    return this.http.get<Evaluator[]>(this.url('/admin/evaluators'));
+  }
+
+  createEvaluator(payload: CreateEvaluatorPayload): Observable<Evaluator> {
+    return this.http.post<Evaluator>(this.url('/admin/evaluators'), payload);
+  }
+
+  updateEvaluator(id: number, payload: Partial<CreateEvaluatorPayload>): Observable<Evaluator> {
+    return this.http.put<Evaluator>(this.url(`/admin/evaluators/${id}`), payload);
+  }
+
+  deleteEvaluator(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/evaluators/${id}`));
+  }
+
+  getEvaluationRecords(evaluatorId?: number): Observable<EvaluationRecord[]> {
+    let params = new HttpParams();
+    if (evaluatorId !== undefined) {
+      params = params.set('evaluatorId', String(evaluatorId));
+    }
+    return this.http.get<EvaluationRecord[]>(this.url('/admin/evaluations'), { params });
+  }
+
+  createEvaluation(payload: CreateEvaluationPayload): Observable<EvaluationRecord> {
+    return this.http.post<EvaluationRecord>(this.url('/admin/evaluations'), payload);
+  }
+
+  deleteEvaluation(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/evaluations/${id}`));
   }
 
   getCourseStatistics(courseId: number): Observable<AdminCourseStatistics> {

@@ -21,9 +21,13 @@ import {
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
+  CreateEvaluationPayload,
+  CreateEvaluatorPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  EvaluationRecord,
+  Evaluator,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -134,4 +138,13 @@ export abstract class LessonPlannerApi {
   abstract updateParent(id: number, payload: Partial<CreateParentPayload>): Observable<Parent>;
   abstract deleteParent(id: number): Observable<ApiMessageResponse>;
   abstract getParentStudents(parentId: number): Observable<ParentStudentInfo[]>;
+
+  abstract getEvaluators(): Observable<Evaluator[]>;
+  abstract createEvaluator(payload: CreateEvaluatorPayload): Observable<Evaluator>;
+  abstract updateEvaluator(id: number, payload: Partial<CreateEvaluatorPayload>): Observable<Evaluator>;
+  abstract deleteEvaluator(id: number): Observable<ApiMessageResponse>;
+
+  abstract getEvaluationRecords(evaluatorId?: number): Observable<EvaluationRecord[]>;
+  abstract createEvaluation(payload: CreateEvaluationPayload): Observable<EvaluationRecord>;
+  abstract deleteEvaluation(id: number): Observable<ApiMessageResponse>;
 }

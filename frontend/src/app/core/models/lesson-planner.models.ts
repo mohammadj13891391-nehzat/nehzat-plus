@@ -390,6 +390,53 @@ export interface ParentStudentInfo {
   attendanceRate?: number;
 }
 
+export interface Evaluator {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  expertise: string;
+  assignedMadrasahIds: number[];
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface CreateEvaluatorPayload {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  expertise?: string;
+  assignedMadrasahIds?: number[];
+}
+
+export interface EvaluationRecord {
+  id: number;
+  evaluatorId: number;
+  evaluatorName: string;
+  targetName: string;
+  targetType: 'coach' | 'student' | 'branch';
+  targetId: number;
+  score: number;
+  feedback: string;
+  evaluationDate: string;
+  createdAt?: string;
+}
+
+export interface CreateEvaluationPayload {
+  evaluatorId: number;
+  targetName: string;
+  targetType: 'coach' | 'student' | 'branch';
+  targetId: number;
+  score: number;
+  feedback: string;
+  evaluationDate: string;
+}
+
 // Compatibility aliases used by partially-scaffolded services.
 export type SignInRequest = AuthSigninPayload;
 export type SignInResponse = AuthSigninResponse;
