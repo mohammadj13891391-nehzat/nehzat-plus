@@ -38,6 +38,7 @@ import type {
 } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-admin',
@@ -51,6 +52,7 @@ export class AdminComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly fb = inject(FormBuilder);
+  private readonly notify = inject(NotificationService);
 
   username = '';
   errorMessage = '';
@@ -1951,11 +1953,13 @@ export class AdminComponent implements OnInit {
   private setSuccess(message: string): void {
     this.successMessage = message;
     this.errorMessage = '';
+    this.notify.show(message, 'success');
   }
 
   private setError(message: string): void {
     this.errorMessage = message;
     this.successMessage = '';
+    this.notify.show(message, 'error');
   }
 
   private todayIsoDate(): string {

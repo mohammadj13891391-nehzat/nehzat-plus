@@ -14,6 +14,7 @@ import type {
 import { resolveMediaUrl } from '../../core/services/api-url.util';
 import { AuthService } from '../../core/services/auth.service';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
+import { NotificationService } from '../../core/services/notification.service';
 import { DashboardTrainingStepsComponent } from './dashboard-training-steps/dashboard-training-steps.component';
 
 type TimelineStatus = 'future' | 'today' | 'past';
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly router = inject(Router);
+  private readonly notify = inject(NotificationService);
 
   currentUser: CurrentUser | null = null;
   courses: Course[] = [];
@@ -107,7 +109,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.getStudentId() === null) {
-      this.errorMessage = 'شناسه متربی نامعتبر است. لطفا یک‌بار خروج و ورود مجدد انجام دهید.';
+      this.setError('شناسه متربی نامعتبر است. لطفا یک‌بار خروج و ورود مجدد انجام دهید.');
     }
     this.loadCourses();
     this.loadSubmissions();
@@ -155,7 +157,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'خطا در دریافت دروس فعال';
+          this.setError(error?.error?.message ?? 'خطا در دریافت دروس فعال');
         }
       });
   }
@@ -183,7 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.updateChartSummary();
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'خطا در دریافت تکالیف';
+          this.setError(error?.error?.message ?? 'خطا در دریافت تکالیف');
           this.assignments = [];
           this.updateChartSummary();
         }
@@ -205,7 +207,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.updateChartSummary();
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'خطا در دریافت ارسال‌ها';
+          this.setError(error?.error?.message ?? 'خطا در دریافت ارسال‌ها');
           this.submissions = [];
           this.updateChartSummary();
         }
@@ -272,11 +274,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
     if (!this.isRecordingUnlocked) {
-      this.errorMessage = 'ضبط هنوز فعال نشده است. ابتدا فایل راهنما را کامل گوش دهید.';
+      this.setError('ضبط هنوز فعال نشده است. ابتدا فایل راهنما را کامل گوش دهید.');
       return;
     }
     if (!navigator.mediaDevices?.getUserMedia) {
-      this.errorMessage = 'مرورگر شما از ضبط صدا پشتیبانی نمی‌کند.';
+      this.setError('مرورگر شما از ضبط صدا پشتیبانی نمی‌کند.');
       return;
     }
 
@@ -302,7 +304,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.recordingStartedAt = Date.now();
       this.isRecording = true;
     } catch {
-      this.errorMessage = 'دسترسی به میکروفون امکان‌پذیر نیست.';
+      this.setError('دسترسی به میکروفون امکان‌پذیر نیست.');
       this.stopStreamTracks();
     }
   }
@@ -326,7 +328,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
     if (!this.isRecordingUnlocked) {
-      this.errorMessage = 'ضبط هنوز فعال نشده است.';
+      this.setError('ضبط هنوز فعال نشده است.');
       return;
     }
 
@@ -346,13 +348,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: () => {
-          this.successMessage = 'فایل صوتی با موفقیت ارسال شد.';
+          this.setSuccess('فایل صوتی با موفقیت ارسال شد.');
           this.loadSubmissions();
           this.loadAssignmentProgress(this.selectedAssignment!.id);
           this.resetRecordingPreview();
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'خطا در ارسال فایل صوتی';
+          this.setError(error?.error?.message ?? 'خطا در ارسال فایل صوتی');
         }
       });
   }
@@ -445,13 +447,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.assignmentProgress = progress;
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'ثبت گوش‌دادن با خطا مواجه شد.';
+          this.setError(error?.error?.message ?? 'ثبت گوش‌دادن با خطا مواجه شد.');
         }
       });
   }
 
   onInstructionAudioError(): void {
-    this.errorMessage = 'پخش فایل راهنما با خطا مواجه شد.';
+    this.setError('پخش فایل راهنما با خطا مواجه شد.');
   }
 
   private loadAssignmentProgress(assignmentId: number): void {
@@ -485,7 +487,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.lastProgressRequestKey !== requestKey) {
           return;
         }
-        this.errorMessage = error?.error?.message ?? 'دریافت وضعیت تکلیف با خطا مواجه شد.';
+        this.setError(error?.error?.message ?? 'دریافت وضعیت تکلیف با خطا مواجه شد.');
       }
     });
   }
@@ -524,5 +526,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.mediaStream.getTracks().forEach((track) => track.stop());
       this.mediaStream = null;
     }
+  }
+
+  private setError(message: string): void {
+    this.errorMessage = message;
+    this.successMessage = '';
+    this.notify.show(message, 'error');
+  }
+
+  private setSuccess(message: string): void {
+    this.successMessage = message;
+    this.errorMessage = '';
+    this.notify.show(message, 'success');
   }
 }

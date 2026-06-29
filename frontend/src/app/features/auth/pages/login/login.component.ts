@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notify = inject(NotificationService);
 
   protected readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
@@ -41,6 +43,7 @@ export class LoginComponent {
         },
         error: (error) => {
           this.errorMessage = error?.error?.message ?? 'خطا در ورود. دوباره تلاش کنید.';
+          this.notify.show(this.errorMessage, 'error');
         }
       });
   }

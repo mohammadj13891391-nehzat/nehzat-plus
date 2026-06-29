@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,7 @@ export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notify = inject(NotificationService);
 
   loading = false;
   errorMessage = '';
@@ -45,6 +47,7 @@ export class RegisterComponent {
       .subscribe({
         next: (response) => {
           this.successMessage = response.message;
+          this.notify.show(response.message, 'success');
           window.setTimeout(() => {
             void this.router.navigateByUrl('/auth/login');
           }, 1000);
@@ -52,6 +55,7 @@ export class RegisterComponent {
         error: (error: unknown) => {
           this.errorMessage =
             (error as { error?: { message?: string } })?.error?.message ?? 'خطا در ثبت نام';
+          this.notify.show(this.errorMessage, 'error');
         }
       });
   }
