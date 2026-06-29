@@ -15,7 +15,9 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  Coach,
   CreateAssignmentPayload,
+  CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
   Course,
@@ -201,6 +203,22 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   deleteAttachment(attachmentId: number): Observable<ApiMessageResponse> {
     return this.http.delete<ApiMessageResponse>(this.url(`/admin/attachments/${attachmentId}`));
+  }
+
+  getCoaches(): Observable<Coach[]> {
+    return this.http.get<Coach[]>(this.url('/admin/coaches'));
+  }
+
+  createCoach(payload: CreateCoachPayload): Observable<Coach> {
+    return this.http.post<Coach>(this.url('/admin/coaches'), payload);
+  }
+
+  updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach> {
+    return this.http.put<Coach>(this.url(`/admin/coaches/${id}`), payload);
+  }
+
+  deleteCoach(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/coaches/${id}`));
   }
 
   getSystemStatistics(): Observable<AdminSystemStatistics> {

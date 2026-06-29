@@ -1,4 +1,4 @@
-export type UserType = 'student' | 'admin';
+export type UserType = 'student' | 'admin' | 'teacher';
 export type CourseStatus = 'active' | 'inactive' | 'archived' | string;
 export type AssignmentStatus = 'draft' | 'published' | 'closed' | string;
 export type AssignmentType = 'daily' | 'homework' | 'project' | 'exam' | string;
@@ -263,6 +263,30 @@ export interface CurrentUser {
 }
 
 export type CurrentUserSession = CurrentUser;
+
+export interface Coach {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  specialization: string;
+  assignedCourseIds: number[];
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface CreateCoachPayload {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  specialization: string;
+  assignedCourseIds: number[];
+}
 
 // Compatibility aliases used by partially-scaffolded services.
 export type SignInRequest = AuthSigninPayload;

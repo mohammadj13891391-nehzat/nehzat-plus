@@ -10,8 +10,10 @@ import type {
   AssignmentStatus,
   AssignmentType,
   AttachmentKind,
+  Coach,
   Course,
   CourseStatus,
+  CreateCoachPayload,
   PendingUser,
   StudentInfo,
   StudentProgressResponse
@@ -180,6 +182,147 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  coaches: Coach[] = [];
+  loadingCoaches = false;
+  savingCoach = false;
+  coachForm = this.fb.nonNullable.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
+    specialization: [''],
+    assignedCourseIds: ['']
+  });
+  coachEditMode = false;
+  selectedCoachId: number | null = null;
+
+  get filteredCoaches(): Coach[] {
+    const q = this.searchCoachQuery.trim().toLowerCase();
+    if (!q) return this.coaches;
+    return this.coaches.filter(
+      (c) =>
+        c.firstName.toLowerCase().includes(q) ||
+        c.lastName.toLowerCase().includes(q) ||
+        c.username.toLowerCase().includes(q) ||
+        c.specialization.toLowerCase().includes(q)
+    );
+  }
+  searchCoachQuery = '';
+
+  loadCoaches(): void {
+    this.loadingCoaches = true;
+    this.api
+      .getCoaches()
+      .pipe(finalize(() => (this.loadingCoaches = false)))
+      .subscribe({
+        next: (coaches) => {
+          this.coaches = coaches;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست مربیان با خطا مواجه شد.');
+        }
+      });
+  }
+
+  startCreateCoach(): void {
+    this.coachEditMode = false;
+    this.selectedCoachId = null;
+    this.coachForm.setValue({
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      specialization: '',
+      assignedCourseIds: ''
+    });
+  }
+
+  selectCoach(coachId: number): void {
+    const coach = this.coaches.find((c) => c.id === coachId);
+    if (!coach) return;
+    this.selectedCoachId = coachId;
+    this.coachEditMode = true;
+    this.coachForm.setValue({
+      username: coach.username,
+      password: '',
+      firstName: coach.firstName,
+      lastName: coach.lastName,
+      email: coach.email,
+      phoneNumber: coach.phoneNumber,
+      specialization: coach.specialization,
+      assignedCourseIds: coach.assignedCourseIds.join(',')
+    });
+    this.coachForm.get('password')?.clearValidators();
+    this.coachForm.get('password')?.updateValueAndValidity();
+  }
+
+  saveCoach(): void {
+    if (this.coachForm.invalid) return;
+    const raw = this.coachForm.getRawValue();
+    const courseIds = raw.assignedCourseIds
+      .split(',')
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    const payload: CreateCoachPayload = {
+      username: raw.username.trim(),
+      password: raw.password.trim(),
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      email: raw.email.trim(),
+      phoneNumber: raw.phoneNumber.trim(),
+      specialization: raw.specialization.trim(),
+      assignedCourseIds: courseIds
+    };
+
+    this.savingCoach = true;
+    const request$ =
+      this.coachEditMode && this.selectedCoachId !== null
+        ? this.api.updateCoach(this.selectedCoachId, payload)
+        : this.api.createCoach(payload);
+
+    request$.pipe(finalize(() => (this.savingCoach = false))).subscribe({
+      next: (coach) => {
+        this.selectedCoachId = coach.id;
+        this.coachEditMode = true;
+        this.setSuccess('اطلاعات مربی ذخیره شد.');
+        this.loadCoaches();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مربی با خطا مواجه شد.');
+      }
+    });
+  }
+
+  deleteCoach(coachId: number): void {
+    if (this.savingCoach) return;
+    this.savingCoach = true;
+    this.api
+      .deleteCoach(coachId)
+      .pipe(finalize(() => (this.savingCoach = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          if (this.selectedCoachId === coachId) {
+            this.startCreateCoach();
+          }
+          this.loadCoaches();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف مربی با خطا مواجه شد.');
+        }
+      });
+  }
+
+  getCourseNamesForCoach(coach: Coach): string {
+    return coach.assignedCourseIds
+      .map((id) => this.courses.find((c) => c.id === id)?.title ?? `#${id}`)
+      .join('، ') || '—';
+  }
+
   readonly provinces = [
     'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
     'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
@@ -259,6 +402,7 @@ export class AdminComponent implements OnInit {
     this.loadStatistics();
     this.loadPendingUsers();
     this.loadCourses();
+    this.loadCoaches();
   }
 
   isProcessing(userId: number): boolean {

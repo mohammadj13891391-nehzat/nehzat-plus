@@ -14,8 +14,10 @@ import type {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  Coach,
   Course,
   CoursePayload,
+  CreateCoachPayload,
   DailySeriesPayload,
   PendingUser,
   Student,
@@ -59,6 +61,7 @@ type MockStore = {
   users: StoredUser[];
   courses: Course[];
   madrasahs: Madrasah[];
+  coaches: Coach[];
   assignments: Assignment[];
   attachments: AssignmentAttachment[];
   students: Student[];
@@ -368,6 +371,51 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       phoneNumber: s.phoneNumber ?? ''
     }));
     return this.ok(students);
+  }
+
+  getCoaches(): Observable<Coach[]> {
+    return this.ok(this.store.coaches.map((c) => ({ ...c })));
+  }
+
+  createCoach(payload: CreateCoachPayload): Observable<Coach> {
+    const now = new Date().toISOString();
+    const coach: Coach = {
+      id: this.nextNumericId(this.store.coaches),
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      specialization: payload.specialization,
+      assignedCourseIds: payload.assignedCourseIds,
+      status: 'active',
+      createdAt: now
+    };
+    this.store.coaches.push(coach);
+    return this.ok({ ...coach });
+  }
+
+  updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach> {
+    const index = this.store.coaches.findIndex((c) => c.id === id);
+    if (index < 0) {
+      return this.fail('مربی پیدا نشد.');
+    }
+    const next: Coach = {
+      ...this.store.coaches[index],
+      ...payload,
+      id
+    };
+    this.store.coaches[index] = next;
+    return this.ok({ ...next });
+  }
+
+  deleteCoach(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.coaches.findIndex((c) => c.id === id);
+    if (index < 0) {
+      return this.fail('مربی پیدا نشد.');
+    }
+    this.store.coaches.splice(index, 1);
+    return this.ok({ message: 'مربی با موفقیت حذف شد.' });
   }
 
   getPendingUsers(): Observable<PendingUser[]> {
@@ -972,10 +1020,50 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       }
     ];
 
+    const coaches: Coach[] = [
+      {
+        id: 1,
+        username: 'dr.ahmadi',
+        firstName: 'دکتر',
+        lastName: 'احمدی',
+        email: 'dr.ahmadi@example.com',
+        phoneNumber: '09121111111',
+        specialization: 'ریاضیات',
+        assignedCourseIds: [1],
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 2,
+        username: 'mohandes.karimi',
+        firstName: 'مهندس',
+        lastName: 'کریمی',
+        email: 'mohandes.karimi@example.com',
+        phoneNumber: '09122222222',
+        specialization: 'علوم تجربی',
+        assignedCourseIds: [2],
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 3,
+        username: 'sadeghi',
+        firstName: 'خانم',
+        lastName: 'صادقی',
+        email: 'sadeghi@example.com',
+        phoneNumber: '09123333333',
+        specialization: 'تاریخ و ادبیات',
+        assignedCourseIds: [3],
+        status: 'inactive',
+        createdAt: now.toISOString()
+      }
+    ];
+
     return {
       users,
       courses,
       madrasahs,
+      coaches,
       assignments,
       attachments,
       students,

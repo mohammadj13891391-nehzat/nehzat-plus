@@ -11,8 +11,10 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  Coach,
   Course,
   CreateAssignmentPayload,
+  CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
   PendingUser,
@@ -87,6 +89,11 @@ export abstract class LessonPlannerApi {
     payload: UpdateAttachmentPayload
   ): Observable<AssignmentAttachment>;
   abstract deleteAttachment(attachmentId: number): Observable<ApiMessageResponse>;
+
+  abstract getCoaches(): Observable<Coach[]>;
+  abstract createCoach(payload: CreateCoachPayload): Observable<Coach>;
+  abstract updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach>;
+  abstract deleteCoach(id: number): Observable<ApiMessageResponse>;
 
   abstract getSystemStatistics(): Observable<AdminSystemStatistics>;
   abstract getCourseStatistics(courseId: number): Observable<unknown>;
