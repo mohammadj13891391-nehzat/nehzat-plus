@@ -2,5 +2,5 @@ export const environment = {
   production: true,
   apiUrl: '',
   apiPublicUrl: '',
-  useMockApi: true
+  useMockApi: false
 };
