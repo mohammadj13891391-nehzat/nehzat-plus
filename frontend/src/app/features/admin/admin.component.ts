@@ -12,6 +12,8 @@ import type {
   AttachmentKind,
   Coach,
   Course,
+  CourseEnrollment,
+  CourseInviteCode,
   CourseStatus,
   CreateCoachPayload,
   PendingUser,
@@ -180,6 +182,100 @@ export class AdminComponent implements OnInit {
           this.setError(error?.error?.message ?? 'دریافت اطلاعات متربی با خطا مواجه شد.');
         }
       });
+  }
+
+  courseEnrollments: CourseEnrollment[] = [];
+  loadingEnrollments = false;
+  enrollStudentId = 0;
+  enrollingStudent = false;
+  courseInviteCode: CourseInviteCode | null = null;
+  generatingInviteCode = false;
+
+  get courseStatLabels(): Record<string, string> {
+    const course = this.courses.find((c) => c.id === this.selectedCourseId);
+    if (!course) return {};
+    const totalAssignments = this.assignments.length;
+    const totalEnrolled = this.courseEnrollments.length;
+    return {
+      'وضعیت': course.status === 'active' ? 'فعال' : course.status === 'inactive' ? 'غیرفعال' : 'آرشیو',
+      'مدرس': course.instructor,
+      'کد': course.courseCode,
+      'تکالیف': String(totalAssignments),
+      'متربیان': String(totalEnrolled),
+      'ظرفیت': `${totalEnrolled} / ${course.maxStudents ?? '—'}`
+    };
+  }
+
+  loadCourseEnrollments(): void {
+    if (this.selectedCourseId === null) return;
+    this.loadingEnrollments = true;
+    this.courseEnrollments = [];
+    this.api
+      .getCourseEnrollments(this.selectedCourseId)
+      .pipe(finalize(() => (this.loadingEnrollments = false)))
+      .subscribe({
+        next: (enrollments) => {
+          this.courseEnrollments = enrollments;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست متربیان دوره با خطا مواجه شد.');
+        }
+      });
+  }
+
+  enrollStudentInCourse(): void {
+    if (this.selectedCourseId === null || !this.enrollStudentId) return;
+    this.enrollingStudent = true;
+    this.api
+      .enrollStudentInCourse(this.selectedCourseId, this.enrollStudentId)
+      .pipe(finalize(() => (this.enrollingStudent = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          this.enrollStudentId = 0;
+          this.loadCourseEnrollments();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ثبت‌نام متربی با خطا مواجه شد.');
+        }
+      });
+  }
+
+  unenrollStudent(studentId: number): void {
+    if (this.selectedCourseId === null) return;
+    this.api
+      .unenrollStudentFromCourse(this.selectedCourseId, studentId)
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          this.loadCourseEnrollments();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف متربی از دوره با خطا مواجه شد.');
+        }
+      });
+  }
+
+  generateInviteCode(): void {
+    if (this.selectedCourseId === null) return;
+    this.generatingInviteCode = true;
+    this.api
+      .generateCourseInviteCode(this.selectedCourseId)
+      .pipe(finalize(() => (this.generatingInviteCode = false)))
+      .subscribe({
+        next: (inviteCode) => {
+          this.courseInviteCode = inviteCode;
+          this.setSuccess('کد دعوت با موفقیت تولید شد.');
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'تولید کد دعوت با خطا مواجه شد.');
+        }
+      });
+  }
+
+  copyInviteCode(code: string): void {
+    navigator.clipboard.writeText(code).catch(() => {});
+    this.setSuccess('کد دعوت کپی شد.');
   }
 
   coaches: Coach[] = [];
@@ -567,6 +663,8 @@ export class AdminComponent implements OnInit {
     }
     this.startCreateAssignment();
     this.loadAssignments(courseId);
+    this.loadCourseEnrollments();
+    this.courseInviteCode = null;
   }
 
   saveCourse(): void {

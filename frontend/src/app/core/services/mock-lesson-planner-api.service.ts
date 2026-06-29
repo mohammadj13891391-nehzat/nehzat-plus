@@ -16,6 +16,8 @@ import type {
   AuthSignupResponse,
   Coach,
   Course,
+  CourseEnrollment,
+  CourseInviteCode,
   CoursePayload,
   CreateCoachPayload,
   DailySeriesPayload,
@@ -690,6 +692,53 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       totalAssignments: assignments.length,
       totalAttachments
     });
+  }
+
+  getCourseEnrollments(courseId: number): Observable<CourseEnrollment[]> {
+    const enrollments: CourseEnrollment[] = [];
+    for (const [studentIdStr, courseIds] of Object.entries(this.store.studentCourseMap)) {
+      if (courseIds.includes(courseId)) {
+        const studentId = Number(studentIdStr);
+        const student = this.store.students.find((s) => s.id === studentId);
+        if (student) {
+          enrollments.push({
+            studentId: student.id,
+            studentName: `${student.firstName} ${student.lastName}`,
+            studentCode: student.studentId,
+            enrollmentDate: new Date().toISOString()
+          });
+        }
+      }
+    }
+    return this.ok(enrollments);
+  }
+
+  enrollStudentInCourse(courseId: number, studentId: number): Observable<ApiMessageResponse> {
+    const existing = this.store.studentCourseMap[studentId] ?? [];
+    if (existing.includes(courseId)) {
+      return this.ok({ message: 'متربی قبلاً در این دوره ثبت‌نام کرده است.' });
+    }
+    this.store.studentCourseMap[studentId] = [...existing, courseId];
+    return this.ok({ message: 'متربی با موفقیت در دوره ثبت‌نام شد.' });
+  }
+
+  unenrollStudentFromCourse(courseId: number, studentId: number): Observable<ApiMessageResponse> {
+    const existing = this.store.studentCourseMap[studentId];
+    if (!existing || !existing.includes(courseId)) {
+      return this.fail('متربی در این دوره ثبت‌نام نیست.');
+    }
+    this.store.studentCourseMap[studentId] = existing.filter((id) => id !== courseId);
+    return this.ok({ message: 'متربی از دوره حذف شد.' });
+  }
+
+  generateCourseInviteCode(courseId: number): Observable<CourseInviteCode> {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i += 1) {
+      code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    return this.ok({ code, expiresAt, courseId });
   }
 
   private withAttachments(assignment: Assignment): Assignment {

@@ -506,6 +506,81 @@ button:focus-visible {
   gap: 0.3rem;
   flex-wrap: wrap;
 }
+.course-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+.course-stat-item {
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  padding: 0.5rem;
+  background: var(--surface);
+  text-align: center;
+}
+.course-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+  margin-bottom: 0.15rem;
+}
+.course-stat-value {
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+.enroll-list {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.enroll-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  background: var(--surface);
+}
+.enroll-name {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.enroll-code {
+  font-size: 0.78rem;
+}
+.enroll-add-form {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+.enroll-input {
+  flex: 1;
+  max-width: 120px;
+}
+.invite-code-box {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border: 2px dashed var(--gold);
+  border-radius: 12px;
+  background: var(--gold-light);
+  text-align: center;
+}
+.invite-code-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--primary);
+  direction: ltr;
+}
+.invite-code-box .row-actions {
+  justify-content: center;
+}
 
 @media (max-width: 640px) {
   .admin-page {

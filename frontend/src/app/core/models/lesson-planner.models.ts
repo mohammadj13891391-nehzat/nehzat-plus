@@ -277,6 +277,19 @@ export interface Coach {
   createdAt?: string;
 }
 
+export interface CourseEnrollment {
+  studentId: number;
+  studentName: string;
+  studentCode: string;
+  enrollmentDate: string;
+}
+
+export interface CourseInviteCode {
+  code: string;
+  expiresAt: string;
+  courseId: number;
+}
+
 export interface CreateCoachPayload {
   username: string;
   password: string;

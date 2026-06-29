@@ -13,6 +13,8 @@ import {
   AuthSignupResponse,
   Coach,
   Course,
+  CourseEnrollment,
+  CourseInviteCode,
   CreateAssignmentPayload,
   CreateCoachPayload,
   CreateCoursePayload,
@@ -97,4 +99,9 @@ export abstract class LessonPlannerApi {
 
   abstract getSystemStatistics(): Observable<AdminSystemStatistics>;
   abstract getCourseStatistics(courseId: number): Observable<unknown>;
+
+  abstract getCourseEnrollments(courseId: number): Observable<CourseEnrollment[]>;
+  abstract enrollStudentInCourse(courseId: number, studentId: number): Observable<ApiMessageResponse>;
+  abstract unenrollStudentFromCourse(courseId: number, studentId: number): Observable<ApiMessageResponse>;
+  abstract generateCourseInviteCode(courseId: number): Observable<CourseInviteCode>;
 }

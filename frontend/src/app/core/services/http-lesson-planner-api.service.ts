@@ -16,6 +16,8 @@ import {
   AuthSignupPayload,
   AuthSignupResponse,
   Coach,
+  CourseEnrollment,
+  CourseInviteCode,
   CreateAssignmentPayload,
   CreateCoachPayload,
   CreateCoursePayload,
@@ -223,6 +225,22 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   getSystemStatistics(): Observable<AdminSystemStatistics> {
     return this.http.get<AdminSystemStatistics>(this.url('/admin/statistics'));
+  }
+
+  getCourseEnrollments(courseId: number): Observable<CourseEnrollment[]> {
+    return this.http.get<CourseEnrollment[]>(this.url(`/admin/courses/${courseId}/enrollments`));
+  }
+
+  enrollStudentInCourse(courseId: number, studentId: number): Observable<ApiMessageResponse> {
+    return this.http.post<ApiMessageResponse>(this.url(`/admin/courses/${courseId}/enroll`), { studentId });
+  }
+
+  unenrollStudentFromCourse(courseId: number, studentId: number): Observable<ApiMessageResponse> {
+    return this.http.post<ApiMessageResponse>(this.url(`/admin/courses/${courseId}/unenroll`), { studentId });
+  }
+
+  generateCourseInviteCode(courseId: number): Observable<CourseInviteCode> {
+    return this.http.post<CourseInviteCode>(this.url(`/admin/courses/${courseId}/invite-code`), {});
   }
 
   getCourseStatistics(courseId: number): Observable<AdminCourseStatistics> {
