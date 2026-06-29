@@ -1416,9 +1416,161 @@
       }
 
       @if (activeMenu === 'headquarters') {
-        <section class="card">
-          <h2 class="section-title">ستاد</h2>
-          <p class="muted">بخش ستاد در حال توسعه است.</p>
+        <section class="card" aria-labelledby="admin-hq-title">
+          <header class="section-header">
+            <h2 id="admin-hq-title" class="section-title">ستاد مرکزی</h2>
+          </header>
+
+          <div class="tabs">
+            <button type="button" class="tab-btn" [class.active]="headquartersTab === 'summary'" (click)="switchHeadquartersTab('summary')">خلاصه آمار</button>
+            <button type="button" class="tab-btn" [class.active]="headquartersTab === 'branches'" (click)="switchHeadquartersTab('branches')">عملکرد شعب</button>
+            <button type="button" class="tab-btn" [class.active]="headquartersTab === 'coaches'" (click)="switchHeadquartersTab('coaches')">عملکرد مربیان</button>
+          </div>
+
+          @if (headquartersTab === 'summary') {
+            @if (loadingHeadquarters) {
+              <p class="muted">در حال دریافت اطلاعات...</p>
+            } @else if (headquartersSummary) {
+              <div class="stats-grid">
+                <article class="stat-card">
+                  <h3>تعداد متربیان</h3>
+                  <strong>{{ headquartersSummary.totalStudents }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد مربیان</h3>
+                  <strong>{{ headquartersSummary.totalCoaches }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد مسئولین شعب</h3>
+                  <strong>{{ headquartersSummary.totalBranchManagers }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد ارزیابان</h3>
+                  <strong>{{ headquartersSummary.totalEvaluators }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد والدین</h3>
+                  <strong>{{ headquartersSummary.totalParents }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد دوره‌ها</h3>
+                  <strong>{{ headquartersSummary.totalCourses }} ({{ headquartersSummary.activeCourses }} فعال)</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد تکالیف</h3>
+                  <strong>{{ headquartersSummary.totalAssignments }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد ارسال‌ها</h3>
+                  <strong>{{ headquartersSummary.totalSubmissions }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد مکاتب</h3>
+                  <strong>{{ headquartersSummary.totalMadrasahs }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>تعداد شعب</h3>
+                  <strong>{{ headquartersSummary.totalBranches }}</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>میانگین نمرات</h3>
+                  <strong>{{ headquartersSummary.averageScore }}/۲۰</strong>
+                </article>
+                <article class="stat-card">
+                  <h3>نرخ حضور</h3>
+                  <strong>{{ headquartersSummary.averageAttendanceRate }}%</strong>
+                </article>
+              </div>
+            } @else {
+              <button type="button" class="btn" (click)="loadHeadquartersSummary()">بارگیری خلاصه آمار</button>
+            }
+          }
+
+          @if (headquartersTab === 'branches') {
+            @if (loadingBranchPerformance) {
+              <p class="muted">در حال دریافت اطلاعات عملکرد شعب...</p>
+            } @else if (branchPerformanceData.length === 0) {
+              <p class="muted">اطلاعاتی موجود نیست.</p>
+            } @else {
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>شعبه</th>
+                      <th>استان</th>
+                      <th>مکتب</th>
+                      <th>متربیان</th>
+                      <th>میانگین نمره</th>
+                      <th>حضور</th>
+                      <th>دوره‌ها</th>
+                      <th>ارزیابی‌ها</th>
+                      <th>وضعیت</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (branch of branchPerformanceData; track branch.branchId) {
+                      <tr>
+                        <td>{{ branch.branchName }}</td>
+                        <td>{{ branch.province }}</td>
+                        <td>{{ branch.madrasahName }}</td>
+                        <td>{{ branch.studentCount }}</td>
+                        <td>{{ branch.averageScore }}/۲۰</td>
+                        <td>{{ branch.attendanceRate }}%</td>
+                        <td>{{ branch.activeCourses }}</td>
+                        <td>{{ branch.evaluationCount }} ({{ branch.averageEvaluationScore }})</td>
+                        <td>
+                          <span class="status-chip" [ngClass]="branch.status === 'active' ? 'status-chip--active' : 'status-chip--inactive'">
+                            {{ branch.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+
+          @if (headquartersTab === 'coaches') {
+            @if (loadingCoachPerformance) {
+              <p class="muted">در حال دریافت اطلاعات عملکرد مربیان...</p>
+            } @else if (coachPerformanceData.length === 0) {
+              <p class="muted">اطلاعاتی موجود نیست.</p>
+            } @else {
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>مربی</th>
+                      <th>تخصص</th>
+                      <th>دوره‌ها</th>
+                      <th>متربیان</th>
+                      <th>میانگین نمره</th>
+                      <th>ارزیابی‌ها</th>
+                      <th>وضعیت</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (coach of coachPerformanceData; track coach.coachId) {
+                      <tr>
+                        <td>{{ coach.coachName }}</td>
+                        <td>{{ coach.specialization }}</td>
+                        <td>{{ coach.assignedCourseCount }}</td>
+                        <td>{{ coach.studentCount }}</td>
+                        <td>{{ coach.averageStudentScore }}/۲۰</td>
+                        <td>{{ coach.evaluationCount }} ({{ coach.averageEvaluationScore }})</td>
+                        <td>
+                          <span class="status-chip" [ngClass]="coach.status === 'active' ? 'status-chip--active' : 'status-chip--inactive'">
+                            {{ coach.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
         </section>
       }
     </div>

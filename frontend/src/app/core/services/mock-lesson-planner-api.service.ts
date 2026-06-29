@@ -30,6 +30,9 @@ import type {
   DailySeriesPayload,
   EvaluationRecord,
   Evaluator,
+  HeadquartersSummary,
+  BranchPerformance,
+  CoachPerformance,
   Madrasah,
   MadrasahGender,
   MadrasahGrade,
@@ -679,6 +682,86 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
     this.store.evaluationRecords.splice(index, 1);
     return this.ok({ message: 'رکورد ارزیابی با موفقیت حذف شد.' });
+  }
+
+  getHeadquartersSummary(): Observable<HeadquartersSummary> {
+    const allSubmissions = this.store.submissions;
+    const totalScores = allSubmissions.filter((s) => s.dailyScore !== undefined).map((s) => s.dailyScore!);
+    const averageScore = totalScores.length > 0 ? Math.round((totalScores.reduce((a, b) => a + b, 0) / totalScores.length) * 10) / 10 : 0;
+    const completedCount = allSubmissions.filter((s) => s.isCompleted).length;
+    const attendanceRate = allSubmissions.length > 0 ? Math.round((completedCount / allSubmissions.length) * 100) : 0;
+
+    const summary: HeadquartersSummary = {
+      totalStudents: this.store.students.length,
+      totalCoaches: this.store.coaches.length,
+      totalBranchManagers: this.store.branchManagers.length,
+      totalEvaluators: this.store.evaluators.length,
+      totalParents: this.store.parents.length,
+      totalCourses: this.store.courses.length,
+      activeCourses: this.store.courses.filter((c) => c.status === 'active').length,
+      totalAssignments: this.store.assignments.length,
+      totalSubmissions: allSubmissions.length,
+      totalMadrasahs: this.store.madrasahs.length,
+      totalBranches: this.store.maktabBranches.length,
+      averageScore,
+      averageAttendanceRate: attendanceRate,
+      lastUpdated: new Date().toISOString()
+    };
+    return this.ok(summary);
+  }
+
+  getBranchPerformance(): Observable<BranchPerformance[]> {
+    const performances: BranchPerformance[] = this.store.maktabBranches.map((branch) => {
+      const madrasah = this.store.madrasahs.find((m) => m.id === branch.madrasahId);
+      const branchEvaluations = this.store.evaluationRecords.filter(
+        (r) => r.targetType === 'branch' && r.targetId === branch.id
+      );
+      const avgEvalScore = branchEvaluations.length > 0
+        ? Math.round((branchEvaluations.reduce((a, r) => a + r.score, 0) / branchEvaluations.length) * 10) / 10
+        : 0;
+      return {
+        branchId: branch.id,
+        branchName: branch.name,
+        province: branch.province,
+        madrasahName: madrasah?.name ?? '',
+        studentCount: Math.floor(Math.random() * 30) + 5,
+        averageScore: Math.round((Math.random() * 8 + 12) * 10) / 10,
+        attendanceRate: Math.floor(Math.random() * 30) + 70,
+        activeCourses: Math.floor(Math.random() * 3) + 1,
+        evaluationCount: branchEvaluations.length,
+        averageEvaluationScore: avgEvalScore,
+        status: branch.status
+      };
+    });
+    return this.ok(performances);
+  }
+
+  getCoachPerformance(): Observable<CoachPerformance[]> {
+    const performances: CoachPerformance[] = this.store.coaches.map((coach) => {
+      const coachEvaluations = this.store.evaluationRecords.filter(
+        (r) => r.targetType === 'coach' && r.targetId === coach.id
+      );
+      const avgEvalScore = coachEvaluations.length > 0
+        ? Math.round((coachEvaluations.reduce((a, r) => a + r.score, 0) / coachEvaluations.length) * 10) / 10
+        : 0;
+      const assignedCourseCount = coach.assignedCourseIds.length;
+      let studentCount = 0;
+      for (const courseId of coach.assignedCourseIds) {
+        studentCount += Object.values(this.store.studentCourseMap).filter((ids) => ids.includes(courseId)).length;
+      }
+      return {
+        coachId: coach.id,
+        coachName: `${coach.firstName} ${coach.lastName}`,
+        specialization: coach.specialization,
+        assignedCourseCount,
+        studentCount,
+        averageStudentScore: Math.round((Math.random() * 8 + 12) * 10) / 10,
+        evaluationCount: coachEvaluations.length,
+        averageEvaluationScore: avgEvalScore,
+        status: coach.status
+      };
+    });
+    return this.ok(performances);
   }
 
   getBranchManagers(): Observable<BranchManager[]> {

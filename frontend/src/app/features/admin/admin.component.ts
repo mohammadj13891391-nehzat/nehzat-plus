@@ -25,6 +25,9 @@ import type {
   CreateParentPayload,
   EvaluationRecord,
   Evaluator,
+  HeadquartersSummary,
+  BranchPerformance,
+  CoachPerformance,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -852,6 +855,70 @@ export class AdminComponent implements OnInit {
           this.setError(error?.error?.message ?? 'حذف رکورد ارزیابی با خطا مواجه شد.');
         }
       });
+  }
+
+  headquartersSummary: HeadquartersSummary | null = null;
+  loadingHeadquarters = false;
+  branchPerformanceData: BranchPerformance[] = [];
+  coachPerformanceData: CoachPerformance[] = [];
+  loadingBranchPerformance = false;
+  loadingCoachPerformance = false;
+  headquartersTab: 'summary' | 'branches' | 'coaches' = 'summary';
+
+  loadHeadquartersSummary(): void {
+    this.loadingHeadquarters = true;
+    this.api
+      .getHeadquartersSummary()
+      .pipe(finalize(() => (this.loadingHeadquarters = false)))
+      .subscribe({
+        next: (summary) => {
+          this.headquartersSummary = summary;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت خلاصه ستاد با خطا مواجه شد.');
+        }
+      });
+  }
+
+  loadBranchPerformance(): void {
+    this.loadingBranchPerformance = true;
+    this.api
+      .getBranchPerformance()
+      .pipe(finalize(() => (this.loadingBranchPerformance = false)))
+      .subscribe({
+        next: (data) => {
+          this.branchPerformanceData = data;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت عملکرد شعب با خطا مواجه شد.');
+        }
+      });
+  }
+
+  loadCoachPerformance(): void {
+    this.loadingCoachPerformance = true;
+    this.api
+      .getCoachPerformance()
+      .pipe(finalize(() => (this.loadingCoachPerformance = false)))
+      .subscribe({
+        next: (data) => {
+          this.coachPerformanceData = data;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت عملکرد مربیان با خطا مواجه شد.');
+        }
+      });
+  }
+
+  switchHeadquartersTab(tab: 'summary' | 'branches' | 'coaches'): void {
+    this.headquartersTab = tab;
+    if (tab === 'summary' && !this.headquartersSummary) {
+      this.loadHeadquartersSummary();
+    } else if (tab === 'branches' && this.branchPerformanceData.length === 0) {
+      this.loadBranchPerformance();
+    } else if (tab === 'coaches' && this.coachPerformanceData.length === 0) {
+      this.loadCoachPerformance();
+    }
   }
 
   loadBranchManagers(): void {

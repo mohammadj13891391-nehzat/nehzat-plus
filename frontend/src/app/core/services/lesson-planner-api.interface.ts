@@ -28,6 +28,9 @@ import {
   CreateParentPayload,
   EvaluationRecord,
   Evaluator,
+  HeadquartersSummary,
+  BranchPerformance,
+  CoachPerformance,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -147,4 +150,8 @@ export abstract class LessonPlannerApi {
   abstract getEvaluationRecords(evaluatorId?: number): Observable<EvaluationRecord[]>;
   abstract createEvaluation(payload: CreateEvaluationPayload): Observable<EvaluationRecord>;
   abstract deleteEvaluation(id: number): Observable<ApiMessageResponse>;
+
+  abstract getHeadquartersSummary(): Observable<HeadquartersSummary>;
+  abstract getBranchPerformance(): Observable<BranchPerformance[]>;
+  abstract getCoachPerformance(): Observable<CoachPerformance[]>;
 }

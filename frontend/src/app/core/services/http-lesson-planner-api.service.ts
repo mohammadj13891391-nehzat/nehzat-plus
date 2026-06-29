@@ -32,6 +32,9 @@ import {
   Course,
   EvaluationRecord,
   Evaluator,
+  HeadquartersSummary,
+  BranchPerformance,
+  CoachPerformance,
   Madrasah,
   MaktabBranch,
   Parent,
@@ -351,6 +354,18 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   deleteEvaluation(id: number): Observable<ApiMessageResponse> {
     return this.http.delete<ApiMessageResponse>(this.url(`/admin/evaluations/${id}`));
+  }
+
+  getHeadquartersSummary(): Observable<HeadquartersSummary> {
+    return this.http.get<HeadquartersSummary>(this.url('/admin/headquarters/summary'));
+  }
+
+  getBranchPerformance(): Observable<BranchPerformance[]> {
+    return this.http.get<BranchPerformance[]>(this.url('/admin/headquarters/branch-performance'));
+  }
+
+  getCoachPerformance(): Observable<CoachPerformance[]> {
+    return this.http.get<CoachPerformance[]>(this.url('/admin/headquarters/coach-performance'));
   }
 
   getCourseStatistics(courseId: number): Observable<AdminCourseStatistics> {

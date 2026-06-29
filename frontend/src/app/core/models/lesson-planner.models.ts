@@ -437,6 +437,49 @@ export interface CreateEvaluationPayload {
   evaluationDate: string;
 }
 
+export interface HeadquartersSummary {
+  totalStudents: number;
+  totalCoaches: number;
+  totalBranchManagers: number;
+  totalEvaluators: number;
+  totalParents: number;
+  totalCourses: number;
+  activeCourses: number;
+  totalAssignments: number;
+  totalSubmissions: number;
+  totalMadrasahs: number;
+  totalBranches: number;
+  averageScore: number;
+  averageAttendanceRate: number;
+  lastUpdated: string;
+}
+
+export interface BranchPerformance {
+  branchId: number;
+  branchName: string;
+  province: string;
+  madrasahName: string;
+  studentCount: number;
+  averageScore: number;
+  attendanceRate: number;
+  activeCourses: number;
+  evaluationCount: number;
+  averageEvaluationScore: number;
+  status: 'active' | 'inactive';
+}
+
+export interface CoachPerformance {
+  coachId: number;
+  coachName: string;
+  specialization: string;
+  assignedCourseCount: number;
+  studentCount: number;
+  averageStudentScore: number;
+  evaluationCount: number;
+  averageEvaluationScore: number;
+  status: 'active' | 'inactive';
+}
+
 // Compatibility aliases used by partially-scaffolded services.
 export type SignInRequest = AuthSigninPayload;
 export type SignInResponse = AuthSigninResponse;
