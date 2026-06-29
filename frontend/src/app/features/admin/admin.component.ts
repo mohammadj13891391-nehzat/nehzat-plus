@@ -99,31 +99,29 @@ import { AuthService } from '../../core/services/auth.service';
                             tabindex="0"
                             role="button"
                           >
-                            <span class="sidebar-child-level">{{ maktab.level }}</span>
-                            <span class="sidebar-child-name">{{ maktab.label }}</span>
-                          </li>
-                        }
-                      }
-                      <li
-                        class="sidebar-item sidebar-sub-parent"
-                        [class.expanded]="expandedMenus.has('makatib-boys')"
-                        (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
-                        tabindex="0"
-                        role="button"
-                      >
-                        <span>مکاتب پسرانه</span>
-                        <span class="sidebar-arrow">{{ expandedMenus.has('makatib-boys') ? '▲' : '▼' }}</span>
-                      </li>
-                      @if (expandedMenus.has('makatib-boys')) {
-                        @for (maktab of makatibBoys; track maktab.key) {
-                          <li
-                            class="sidebar-item sidebar-child"
-                            [class.active]="activeMenu === maktab.key"
-                            (click)="activeMenu = maktab.key; $event.stopPropagation()"
-                            tabindex="0"
-                            role="button"
-                          >
-                            <span class="sidebar-child-level">{{ maktab.level }}</span>
+                             <span class="sidebar-child-name">{{ maktab.label }}</span>
+                           </li>
+                         }
+                       }
+                       <li
+                         class="sidebar-item sidebar-sub-parent"
+                         [class.expanded]="expandedMenus.has('makatib-boys')"
+                         (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
+                         tabindex="0"
+                         role="button"
+                       >
+                         <span>مکاتب پسرانه</span>
+                         <span class="sidebar-arrow">{{ expandedMenus.has('makatib-boys') ? '▲' : '▼' }}</span>
+                       </li>
+                       @if (expandedMenus.has('makatib-boys')) {
+                         @for (maktab of makatibBoys; track maktab.key) {
+                           <li
+                             class="sidebar-item sidebar-child"
+                             [class.active]="activeMenu === maktab.key"
+                             (click)="activeMenu = maktab.key; $event.stopPropagation()"
+                             tabindex="0"
+                             role="button"
+                           >
                             <span class="sidebar-child-name">{{ maktab.label }}</span>
                           </li>
                         }
@@ -1408,14 +1406,14 @@ export class AdminComponent implements OnInit {
   }
 
   readonly makatibGirls = [
-    { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام', level: '7 سال اول' },
-    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام', level: '7 سال دوم' },
-    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام', level: '7 سال سوم' }
+    { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام (7 سال اول)', level: '7 سال اول' },
+    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)', level: '7 سال دوم' },
+    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)', level: '7 سال سوم' }
   ];
   readonly makatibBoys = [
-    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام', level: '7 سال اول' },
-    { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام', level: '7 سال دوم' },
-    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام', level: '7 سال سوم' }
+    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)', level: '7 سال اول' },
+    { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام (7 سال دوم)', level: '7 سال دوم' },
+    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)', level: '7 سال سوم' }
   ];
   readonly allMakatib = [...this.makatibGirls, ...this.makatibBoys];
 
