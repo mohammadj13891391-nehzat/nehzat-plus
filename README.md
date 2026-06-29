@@ -39,6 +39,7 @@ nehzat-plus/
 └─ docs/                    # مستندات تکمیلی
    ├─ AGENTS.md             # راهنمای معماری سیستم
    ├─ FRONTEND_PRD.md       # سند نیازمندی محصول فرانت‌اند
+   ├─ SYSTEM_ARCHITECTURE.md # مستندات جامع معماری سیستم
    ├─ user-stories-student.md
    ├─ API_ENDPOINTS.md      # مستندات کامل API
    ├─ SIGNUP_APPROVAL_WORKFLOW.md
@@ -155,6 +156,7 @@ npm start
 - `STUDENT_FILE_UPLOAD_GUIDE.md` - راهنمای آپلود فایل
 - `ADMIN_API_EXAMPLES.md` - مثال‌های عملی API مدیریت
 - `user-stories-student.md` - داستان‌های کاربری دانش‌آموز
+- `SYSTEM_ARCHITECTURE.md` - مستندات جامع معماری سیستم (فارسی)
 
 ## 🧪 حالت توسعه با Mock API
 
