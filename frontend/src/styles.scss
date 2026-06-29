@@ -8,34 +8,58 @@
 :root {
   color-scheme: light;
   font-family: "myNeirizi", "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --bg: #f3f4f6;
+
+  --bg: #f6f3ed;
   --surface: #ffffff;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --primary: #1f6feb;
-  --primary-hover: #1a5ec7;
+  --text: #1e1b14;
+  --muted: #7a7468;
+  --border: #ddd5c5;
+  --primary: #1a6b3c;
+  --primary-hover: #14522d;
   --danger: #b91c1c;
-  --success: #166534;
-  --lp-bg: #f3f4f6;
+  --success: #1a6b3c;
+  --gold: #b8942e;
+  --gold-hover: #9e7d25;
+  --gold-light: #faf3e0;
+  --accent-blue: #2d5a8a;
+
+  --lp-bg: #f6f3ed;
   --lp-surface: #ffffff;
-  --lp-text: #111827;
-  --lp-muted: #6b7280;
-  --lp-border: #e5e7eb;
-  --lp-primary: #1f6feb;
-  --lp-primary-hover: #1a5ec7;
+  --lp-text: #1e1b14;
+  --lp-muted: #7a7468;
+  --lp-border: #ddd5c5;
+  --lp-primary: #1a6b3c;
+  --lp-primary-hover: #14522d;
   --lp-danger: #b91c1c;
-  --lp-success: #166534;
+  --lp-success: #1a6b3c;
 }
 
 * {
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #eff6ff, var(--bg) 45%);
+  background:
+    radial-gradient(ellipse at 50% 0%, #e8e3d8 0%, transparent 50%),
+    var(--bg);
   color: var(--text);
+  min-height: 100vh;
 }
 
 input,
@@ -43,6 +67,17 @@ button,
 textarea,
 select {
   font: inherit;
+}
+
+::selection {
+  background: var(--gold-light);
+  color: var(--text);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1rem 0;
 }
 
 .lp-page {
@@ -58,9 +93,9 @@ select {
   width: min(460px, 100%);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.08);
-  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(30, 27, 20, 0.08);
+  padding: 2rem;
 }
 
 .lp-title {
@@ -88,19 +123,21 @@ select {
 .lp-input {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0.62rem 0.7rem;
-  background: #fff;
+  background: var(--surface);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .lp-input:focus {
-  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
-  border-color: var(--primary);
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184, 148, 46, 0.12);
 }
 
 .lp-button {
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0.72rem 1rem;
   cursor: pointer;
   background: var(--primary);
@@ -178,16 +215,16 @@ select {
 .lp-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 1rem;
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 1rem;
-  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+  box-shadow: 0 8px 24px rgba(30, 27, 20, 0.06);
 }
 
 .card-grid {
@@ -208,6 +245,39 @@ select {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  background: linear-gradient(135deg, var(--primary) 0%, #0f3d22 100%);
+  color: #fff;
+  border-radius: 20px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(26, 107, 60, 0.2);
+}
+
+.shell-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.shell-header p {
+  margin: 0.2rem 0 0;
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+.shell-header button {
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+}
+
+.shell-header button:hover {
+  background: rgba(255,255,255,0.2);
 }
 
 .lp-topbar {
@@ -227,11 +297,12 @@ select {
 }
 
 .lp-chip {
-  background: #eef2ff;
-  color: #3730a3;
+  background: var(--gold-light);
+  color: var(--gold);
   border-radius: 999px;
   padding: 0.3rem 0.65rem;
   font-size: 0.85rem;
+  border: 1px solid rgba(184, 148, 46, 0.2);
 }
 
 .lp-link-btn,
@@ -240,11 +311,20 @@ select {
 .btn-secondary,
 .lp-btn {
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0.62rem 0.95rem;
   cursor: pointer;
   font-weight: 600;
   font: inherit;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.lp-link-btn:active,
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.lp-btn:active {
+  transform: scale(0.97);
 }
 
 .btn,
@@ -263,9 +343,15 @@ select {
 .btn-secondary,
 .lp-btn-secondary,
 .lp-link-btn {
-  background: #fff;
-  color: #0f172a;
+  background: var(--surface);
+  color: var(--text);
   border-color: var(--lp-border);
+}
+
+.btn-secondary:hover:not(:disabled),
+.lp-btn-secondary:hover:not(:disabled),
+.lp-link-btn:hover:not(:disabled) {
+  background: #f0ece4;
 }
 
 .btn:disabled,
@@ -274,12 +360,24 @@ select {
 .lp-btn:disabled,
 .lp-btn-secondary:disabled,
 .lp-link-btn:disabled {
-  opacity: 0.65;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .auth-card {
   width: min(480px, 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--primary), var(--gold));
 }
 
 .auth-form {
@@ -318,11 +416,19 @@ select {
   padding-right: 1rem;
 }
 
+.demo-accounts code {
+  background: var(--gold-light);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
 .helper-banner {
   border: 1px dashed var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0.7rem;
-  background: #f8fafc;
+  background: #f8f4ed;
 }
 
 a {
