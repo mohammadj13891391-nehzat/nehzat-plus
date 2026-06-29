@@ -15,10 +15,12 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  BranchManager,
   Coach,
   CourseEnrollment,
   CourseInviteCode,
   CreateAssignmentPayload,
+  CreateBranchManagerPayload,
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
@@ -217,6 +219,22 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach> {
     return this.http.put<Coach>(this.url(`/admin/coaches/${id}`), payload);
+  }
+
+  getBranchManagers(): Observable<BranchManager[]> {
+    return this.http.get<BranchManager[]>(this.url('/admin/branch-managers'));
+  }
+
+  createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {
+    return this.http.post<BranchManager>(this.url('/admin/branch-managers'), payload);
+  }
+
+  updateBranchManager(id: number, payload: Partial<CreateBranchManagerPayload>): Observable<BranchManager> {
+    return this.http.put<BranchManager>(this.url(`/admin/branch-managers/${id}`), payload);
+  }
+
+  deleteBranchManager(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/branch-managers/${id}`));
   }
 
   deleteCoach(id: number): Observable<ApiMessageResponse> {

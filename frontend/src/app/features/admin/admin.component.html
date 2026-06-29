@@ -876,9 +876,113 @@
       }
 
       @if (activeMenu === 'branch-managers') {
-        <section class="card">
-          <h2 class="section-title">مسئولین شعب</h2>
-          <p class="muted">بخش مسئولین شعب در حال توسعه است.</p>
+        <section class="card" aria-labelledby="admin-bm-title">
+          <header class="section-header">
+            <h2 id="admin-bm-title" class="section-title">
+              مدیریت مسئولین شعب
+              <span class="count-badge">{{ branchManagers.length }}</span>
+            </h2>
+            <button type="button" class="btn btn-secondary" (click)="startCreateBranchManager()">مسئول جدید</button>
+          </header>
+
+          <div class="trainee-search">
+            <input
+              type="text"
+              [ngModel]="searchBranchManagerQuery"
+              (ngModelChange)="searchBranchManagerQuery = $event"
+              placeholder="جستجوی مسئول (نام، شعبه، استان)..."
+              class="search-input"
+            />
+          </div>
+
+          @if (loadingBranchManagers) {
+            <p class="muted">در حال دریافت لیست مسئولین...</p>
+          } @else if (branchManagers.length === 0) {
+            <p class="muted">هیچ مسئول شعبه‌ای ثبت نشده است.</p>
+          } @else {
+            <div class="split-grid">
+              <div>
+                <div class="select-list">
+                  @for (bm of filteredBranchManagers; track bm.id) {
+                    <button
+                      type="button"
+                      class="list-item"
+                      [class.is-selected]="selectedBranchManagerId === bm.id"
+                      (click)="selectBranchManager(bm.id)"
+                    >
+                      <div class="list-item-top">
+                        <strong>{{ bm.firstName }} {{ bm.lastName }}</strong>
+                        <span class="status-chip" [ngClass]="'status-chip--' + (bm.status === 'active' ? 'active' : 'inactive')">
+                          {{ bm.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                        </span>
+                      </div>
+                      <span class="list-meta">{{ bm.assignedBranch }}</span>
+                      <small class="list-meta">{{ bm.assignedProvince }} · {{ bm.gender === 'male' ? 'مرد' : bm.gender === 'female' ? 'زن' : 'مختلط' }}</small>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <form [formGroup]="branchManagerForm" class="editor-form" (ngSubmit)="saveBranchManager()">
+                <h3>{{ branchManagerEditMode ? 'ویرایش مسئول شعبه' : 'مسئول شعبه جدید' }}</h3>
+                <label>
+                  نام کاربری
+                  <input type="text" formControlName="username" />
+                </label>
+                <label>
+                  رمز عبور
+                  <input type="password" formControlName="password" [placeholder]="branchManagerEditMode ? 'خالی بگذارید = بدون تغییر' : ''" />
+                </label>
+                <label>
+                  نام
+                  <input type="text" formControlName="firstName" />
+                </label>
+                <label>
+                  نام خانوادگی
+                  <input type="text" formControlName="lastName" />
+                </label>
+                <label>
+                  ایمیل
+                  <input type="email" formControlName="email" />
+                </label>
+                <label>
+                  موبایل
+                  <input type="text" formControlName="phoneNumber" placeholder="09xxxxxxxxx" />
+                </label>
+                <label>
+                  شعبه
+                  <input type="text" formControlName="assignedBranch" placeholder="نام شعبه" />
+                </label>
+                <label>
+                  استان
+                  <select formControlName="assignedProvince">
+                    <option value="">انتخاب کنید</option>
+                    @for (prov of provinces; track prov) {
+                      <option [value]="prov">{{ prov }}</option>
+                    }
+                  </select>
+                </label>
+                <label>
+                  جنسیت شعبه
+                  <select formControlName="gender">
+                    <option value="male">مردانه</option>
+                    <option value="female">زنانه</option>
+                    <option value="mixed">مختلط</option>
+                  </select>
+                </label>
+                <div class="row-actions">
+                  <button type="submit" class="btn" [disabled]="branchManagerForm.invalid || savingBranchManager">
+                    {{ savingBranchManager ? 'در حال ذخیره...' : branchManagerEditMode ? 'ذخیره تغییرات' : 'ایجاد مسئول' }}
+                  </button>
+                  @if (branchManagerEditMode && selectedBranchManagerId !== null) {
+                    <button type="button" class="btn btn-secondary" [disabled]="savingBranchManager" (click)="deleteBranchManager(selectedBranchManagerId)">
+                      حذف مسئول
+                    </button>
+                  }
+                </div>
+              </form>
+            </div>
+          }
         </section>
       }
 

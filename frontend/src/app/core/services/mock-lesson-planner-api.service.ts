@@ -14,11 +14,13 @@ import type {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  BranchManager,
   Coach,
   Course,
   CourseEnrollment,
   CourseInviteCode,
   CoursePayload,
+  CreateBranchManagerPayload,
   CreateCoachPayload,
   DailySeriesPayload,
   PendingUser,
@@ -64,6 +66,7 @@ type MockStore = {
   courses: Course[];
   madrasahs: Madrasah[];
   coaches: Coach[];
+  branchManagers: BranchManager[];
   assignments: Assignment[];
   attachments: AssignmentAttachment[];
   students: Student[];
@@ -418,6 +421,52 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
     this.store.coaches.splice(index, 1);
     return this.ok({ message: 'مربی با موفقیت حذف شد.' });
+  }
+
+  getBranchManagers(): Observable<BranchManager[]> {
+    return this.ok(this.store.branchManagers.map((bm) => ({ ...bm })));
+  }
+
+  createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {
+    const now = new Date().toISOString();
+    const bm: BranchManager = {
+      id: this.nextNumericId(this.store.branchManagers),
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      assignedBranch: payload.assignedBranch,
+      assignedProvince: payload.assignedProvince,
+      gender: payload.gender,
+      status: 'active',
+      createdAt: now
+    };
+    this.store.branchManagers.push(bm);
+    return this.ok({ ...bm });
+  }
+
+  updateBranchManager(id: number, payload: Partial<CreateBranchManagerPayload>): Observable<BranchManager> {
+    const index = this.store.branchManagers.findIndex((bm) => bm.id === id);
+    if (index < 0) {
+      return this.fail('مسئول شعبه پیدا نشد.');
+    }
+    const next: BranchManager = {
+      ...this.store.branchManagers[index],
+      ...payload,
+      id
+    };
+    this.store.branchManagers[index] = next;
+    return this.ok({ ...next });
+  }
+
+  deleteBranchManager(id: number): Observable<ApiMessageResponse> {
+    const index = this.store.branchManagers.findIndex((bm) => bm.id === id);
+    if (index < 0) {
+      return this.fail('مسئول شعبه پیدا نشد.');
+    }
+    this.store.branchManagers.splice(index, 1);
+    return this.ok({ message: 'مسئول شعبه با موفقیت حذف شد.' });
   }
 
   getPendingUsers(): Observable<PendingUser[]> {
@@ -1069,6 +1118,48 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       }
     ];
 
+    const branchManagers: BranchManager[] = [
+      {
+        id: 1,
+        username: 'manager.tehran',
+        firstName: 'علی',
+        lastName: 'مرادی',
+        email: 'tehran@example.com',
+        phoneNumber: '09121111111',
+        assignedBranch: 'شعبه مرکزی',
+        assignedProvince: 'تهران',
+        gender: 'male',
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 2,
+        username: 'manager.mashhad',
+        firstName: 'زهرا',
+        lastName: 'حسینی',
+        email: 'mashhad@example.com',
+        phoneNumber: '09122222222',
+        assignedBranch: 'شعبه امام رضا',
+        assignedProvince: 'خراسان رضوی',
+        gender: 'female',
+        status: 'active',
+        createdAt: now.toISOString()
+      },
+      {
+        id: 3,
+        username: 'manager.qom',
+        firstName: 'محمد',
+        lastName: 'رضایی',
+        email: 'qom@example.com',
+        phoneNumber: '09123333333',
+        assignedBranch: 'شعبه حضرت معصومه',
+        assignedProvince: 'قم',
+        gender: 'mixed',
+        status: 'inactive',
+        createdAt: now.toISOString()
+      }
+    ];
+
     const coaches: Coach[] = [
       {
         id: 1,
@@ -1112,6 +1203,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       users,
       courses,
       madrasahs,
+      branchManagers,
       coaches,
       assignments,
       attachments,

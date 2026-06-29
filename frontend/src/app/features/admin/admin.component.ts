@@ -10,11 +10,13 @@ import type {
   AssignmentStatus,
   AssignmentType,
   AttachmentKind,
+  BranchManager,
   Coach,
   Course,
   CourseEnrollment,
   CourseInviteCode,
   CourseStatus,
+  CreateBranchManagerPayload,
   CreateCoachPayload,
   PendingUser,
   StudentInfo,
@@ -419,6 +421,142 @@ export class AdminComponent implements OnInit {
       .join('، ') || '—';
   }
 
+  branchManagers: BranchManager[] = [];
+  loadingBranchManagers = false;
+  savingBranchManager = false;
+  searchBranchManagerQuery = '';
+  branchManagerEditMode = false;
+  selectedBranchManagerId: number | null = null;
+  branchManagerForm = this.fb.nonNullable.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
+    assignedBranch: ['', [Validators.required]],
+    assignedProvince: ['', [Validators.required]],
+    gender: ['mixed']
+  });
+
+  get filteredBranchManagers(): BranchManager[] {
+    const q = this.searchBranchManagerQuery.trim().toLowerCase();
+    if (!q) return this.branchManagers;
+    return this.branchManagers.filter(
+      (bm) =>
+        bm.firstName.toLowerCase().includes(q) ||
+        bm.lastName.toLowerCase().includes(q) ||
+        bm.username.toLowerCase().includes(q) ||
+        bm.assignedBranch.toLowerCase().includes(q) ||
+        bm.assignedProvince.toLowerCase().includes(q)
+    );
+  }
+
+  loadBranchManagers(): void {
+    this.loadingBranchManagers = true;
+    this.api
+      .getBranchManagers()
+      .pipe(finalize(() => (this.loadingBranchManagers = false)))
+      .subscribe({
+        next: (managers) => {
+          this.branchManagers = managers;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست مسئولین شعب با خطا مواجه شد.');
+        }
+      });
+  }
+
+  startCreateBranchManager(): void {
+    this.branchManagerEditMode = false;
+    this.selectedBranchManagerId = null;
+    this.branchManagerForm.setValue({
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      assignedBranch: '',
+      assignedProvince: '',
+      gender: 'mixed'
+    });
+  }
+
+  selectBranchManager(id: number): void {
+    const bm = this.branchManagers.find((item) => item.id === id);
+    if (!bm) return;
+    this.selectedBranchManagerId = id;
+    this.branchManagerEditMode = true;
+    this.branchManagerForm.setValue({
+      username: bm.username,
+      password: '',
+      firstName: bm.firstName,
+      lastName: bm.lastName,
+      email: bm.email,
+      phoneNumber: bm.phoneNumber,
+      assignedBranch: bm.assignedBranch,
+      assignedProvince: bm.assignedProvince,
+      gender: bm.gender
+    });
+    this.branchManagerForm.get('password')?.clearValidators();
+    this.branchManagerForm.get('password')?.updateValueAndValidity();
+  }
+
+  saveBranchManager(): void {
+    if (this.branchManagerForm.invalid) return;
+    const raw = this.branchManagerForm.getRawValue();
+    const payload: CreateBranchManagerPayload = {
+      username: raw.username.trim(),
+      password: raw.password.trim(),
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      email: raw.email.trim(),
+      phoneNumber: raw.phoneNumber.trim(),
+      assignedBranch: raw.assignedBranch.trim(),
+      assignedProvince: raw.assignedProvince.trim(),
+      gender: raw.gender as 'male' | 'female' | 'mixed'
+    };
+
+    this.savingBranchManager = true;
+    const request$ =
+      this.branchManagerEditMode && this.selectedBranchManagerId !== null
+        ? this.api.updateBranchManager(this.selectedBranchManagerId, payload)
+        : this.api.createBranchManager(payload);
+
+    request$.pipe(finalize(() => (this.savingBranchManager = false))).subscribe({
+      next: (bm) => {
+        this.selectedBranchManagerId = bm.id;
+        this.branchManagerEditMode = true;
+        this.setSuccess('اطلاعات مسئول شعبه ذخیره شد.');
+        this.loadBranchManagers();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مسئول شعبه با خطا مواجه شد.');
+      }
+    });
+  }
+
+  deleteBranchManager(id: number): void {
+    if (this.savingBranchManager) return;
+    this.savingBranchManager = true;
+    this.api
+      .deleteBranchManager(id)
+      .pipe(finalize(() => (this.savingBranchManager = false)))
+      .subscribe({
+        next: (response) => {
+          this.setSuccess(response.message);
+          if (this.selectedBranchManagerId === id) {
+            this.startCreateBranchManager();
+          }
+          this.loadBranchManagers();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'حذف مسئول شعبه با خطا مواجه شد.');
+        }
+      });
+  }
+
   readonly provinces = [
     'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
     'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
@@ -499,6 +637,7 @@ export class AdminComponent implements OnInit {
     this.loadPendingUsers();
     this.loadCourses();
     this.loadCoaches();
+    this.loadBranchManagers();
   }
 
   isProcessing(userId: number): boolean {
