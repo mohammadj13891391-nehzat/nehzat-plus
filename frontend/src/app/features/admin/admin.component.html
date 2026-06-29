@@ -126,7 +126,7 @@
         <section class="card" aria-labelledby="admin-users-title">
           <header class="section-header">
             <h2 id="admin-users-title" class="section-title">مدیریت متربیان</h2>
-            <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers" (click)="refreshAll()">
+            <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers || loadingAllStudents" (click)="refreshTrainees()">
               بروزرسانی
             </button>
           </header>

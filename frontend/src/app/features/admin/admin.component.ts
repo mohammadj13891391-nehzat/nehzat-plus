@@ -1271,6 +1271,15 @@ export class AdminComponent implements OnInit {
     this.loadEvaluators();
   }
 
+  refreshTrainees(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.loadPendingUsers();
+    if (this.traineesTab === 'all') {
+      this.loadAllStudents();
+    }
+  }
+
   isProcessing(userId: number): boolean {
     return this.processingUserIds.has(userId);
   }
