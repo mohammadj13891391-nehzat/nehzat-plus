@@ -1,6 +1,13 @@
+@font-face {
+  font-family: "myNeirizi";
+  src: url("/fonts/myNeirizi.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   color-scheme: light;
-  font-family: "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "myNeirizi", "Vazirmatn", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   --bg: #f3f4f6;
   --surface: #ffffff;
   --text: #111827;

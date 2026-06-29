@@ -1,0 +1,72 @@
+.virtual-training-box {
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  background: #f8faff;
+  padding: 0.85rem;
+  margin-bottom: 0.75rem;
+  display: grid;
+  gap: 0.7rem;
+}
+.virtual-training-box h4,
+.virtual-training-box h5 {
+  margin: 0;
+}
+.training-step {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.training-step p {
+  margin: 0;
+  line-height: 1.75;
+}
+.training-warning {
+  color: #9a3412;
+}
+.training-note {
+  color: #166534;
+}
+.training-footer {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 0.7rem;
+  display: grid;
+  gap: 0.45rem;
+}
+.training-footer ul {
+  margin: 0;
+  padding-right: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+}
+.audio-caption {
+  margin: 0;
+  font-weight: 600;
+}
+.download-link {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+}
+.download-link:hover {
+  text-decoration: underline;
+}
+.training-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.training-tags span {
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  color: #1e40af;
+  font-size: 0.8rem;
+  background: #eff6ff;
+}
+.muted {
+  color: var(--lp-muted);
+}

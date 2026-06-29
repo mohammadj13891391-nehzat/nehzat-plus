@@ -1,0 +1,284 @@
+<main class="student-page">
+  <header class="site-header">
+    <div class="brand-wrap">
+      @if (!logoHidden) {
+        <img
+          src="assets/nehzat.png"
+          alt="لوگو سایت"
+          class="site-logo"
+          (error)="logoHidden = true"
+        />
+      }
+      <div>
+        <h1>پنل متربی</h1>
+        <p class="muted">خوش آمدید {{ displayName }}</p>
+      </div>
+    </div>
+
+    <div class="user-menu">
+      <button type="button" class="menu-trigger" (click)="toggleUserMenu()">
+        <i class="bi bi-person-circle"></i>
+        <span>{{ currentUser?.username }}</span>
+      </button>
+      @if (isUserMenuOpen) {
+        <div class="menu-dropdown">
+          <button type="button" (click)="showUserModal()">نمایش جزئیات کاربر</button>
+          <button type="button" (click)="logout()">خروج</button>
+        </div>
+      }
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error">{{ errorMessage }}</p>
+  }
+  @if (successMessage) {
+    <p class="lp-success">{{ successMessage }}</p>
+  }
+
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <h3>دروس فعال</h3>
+      @if (loadingCourses) {
+        <p class="muted">در حال دریافت دروس...</p>
+      } @else if (courses.length === 0) {
+        <p class="muted">درسی برای شما فعال نشده است.</p>
+      } @else {
+        <div class="lesson-menu">
+          @for (course of courses; track course.id) {
+            <button
+              type="button"
+              class="lesson-btn"
+              [class.active]="selectedCourse?.id === course.id"
+              (click)="selectCourse(course)"
+            >
+              <i class="bi bi-book"></i> {{ course.title }}
+            </button>
+          }
+        </div>
+      }
+    </aside>
+
+    <section class="main-content">
+      <h2>داشبورد پیشرفت دروس</h2>
+
+      @if (selectedCourse) {
+        <div class="lesson-info">
+          <h3>{{ selectedCourse.title }}</h3>
+          <p><strong>استاد:</strong> {{ selectedCourse.instructor }}</p>
+          <p><strong>درباره درس:</strong> {{ selectedCourse.description }}</p>
+        </div>
+      }
+
+      <div class="timeline-container">
+        <h4>تایم‌لاین تکالیف</h4>
+        @if (loadingAssignments) {
+          <p class="muted">در حال دریافت تکالیف...</p>
+        } @else if (!selectedCourse || assignments.length === 0) {
+          <p class="muted">برای این درس هنوز تکلیفی ثبت نشده است.</p>
+        } @else {
+          <div class="timeline-horizontal">
+            @for (assignment of assignments; track assignment.id; let i = $index) {
+              <div class="timeline-item">
+                @if (i > 0) {
+                  <div class="timeline-bar"></div>
+                }
+                <button
+                  type="button"
+                  class="timeline-dot"
+                  [class.gray]="getAssignmentStatus(assignment) === 'future'"
+                  [class.blue]="getAssignmentStatus(assignment) === 'today'"
+                  [class.green]="getAssignmentStatus(assignment) === 'past'"
+                  [title]="assignment.title"
+                  (click)="showAssignmentDetails(assignment)"
+                >
+                  <i class="bi" [class.bi-file-earmark-audio]="hasAudioAttachment(assignment)"></i>
+                  <i class="bi bi-book" [class.hidden]="hasAudioAttachment(assignment)"></i>
+                </button>
+                <div class="timeline-label">روز {{ i + 1 }}</div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="chart-container">
+        <h4>نمودار پیشرفت</h4>
+        <div class="chart-placeholder">
+          {{ chartSummary }}
+        </div>
+      </div>
+
+      <app-dashboard-training-steps></app-dashboard-training-steps>
+
+      <div class="audio-recorder">
+        <h4>ضبط صوت</h4>
+        @if (selectedAssignment) {
+          <p class="muted">تکلیف انتخاب‌شده: {{ selectedAssignment.title }}</p>
+        } @else {
+          <p class="muted">برای شروع ضبط، ابتدا یک تکلیف از تایم‌لاین انتخاب کنید.</p>
+        }
+
+        @if (selectedAssignment && primaryInstructionAudioUrl) {
+          <p class="muted">
+            وضعیت پیش‌نیاز گوش‌دادن:
+            {{ assignmentProgress?.currentListenCount ?? 0 }} /
+            {{ assignmentProgress?.requiredListenCount ?? 3 }}
+          </p>
+        }
+
+        <div class="recorder-controls">
+          <button
+            type="button"
+            class="record-btn"
+            [class.recording]="isRecording"
+            (click)="toggleRecording()"
+            [disabled]="!selectedAssignment || (!isRecording && !isRecordingUnlocked)"
+          >
+            <i class="bi" [class.bi-mic]="!isRecording" [class.bi-stop-fill]="isRecording"></i>
+          </button>
+          @if (isRecording) {
+            <span class="text-danger">در حال ضبط...</span>
+          }
+        </div>
+
+        @if (selectedAssignment && !isRecordingUnlocked) {
+          <p class="lp-error">برای شروع ضبط باید فایل راهنما را کامل گوش دهید تا قفل باز شود.</p>
+        }
+
+        @if (audioUrl) {
+          <div class="audio-preview">
+            <audio [src]="audioUrl" controls></audio>
+            <button type="button" class="btn-primary" (click)="submitAudio()" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'در حال ارسال...' : 'ارسال صوت' }}
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="submissions-container">
+        <div class="submissions-header">
+          <h4>ارسال‌های من</h4>
+          <button type="button" class="btn-primary" (click)="loadSubmissions()">بروزرسانی</button>
+        </div>
+
+        @if (loadingSubmissions) {
+          <p class="muted">در حال بارگذاری ارسال‌ها...</p>
+        } @else if (filteredSubmissions.length === 0) {
+          <p class="muted">هنوز هیچ ارسالی ثبت نشده است.</p>
+        } @else {
+          <div class="submissions-grid">
+            @for (submission of filteredSubmissions; track submission.id) {
+              <article class="submission-card">
+                <h6>{{ assignmentTitleById(submission.assignmentId) }}</h6>
+                <p class="muted">تاریخ: {{ submission.submissionDate }}</p>
+                <p class="muted">وضعیت: {{ submission.status }}</p>
+                <p class="muted">نمره روزانه: {{ submission.dailyScore ?? 0 }}</p>
+                @if (submission.notes) {
+                  <p>{{ submission.notes }}</p>
+                }
+                @if (resolveAudioUrl(submission.audioFileUrl); as submissionAudioUrl) {
+                  <button type="button" class="btn-secondary" (click)="playAudio(submissionAudioUrl)">
+                    پخش صوت
+                  </button>
+                }
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+
+  @if (isAssignmentModalOpen && selectedAssignment) {
+    <div class="modal-backdrop" (click)="closeAssignmentModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h5>جزئیات تکلیف</h5>
+          <button type="button" class="btn-secondary" (click)="closeAssignmentModal()">بستن</button>
+        </header>
+
+        <div class="modal-body">
+          <h5>{{ selectedAssignment.title }}</h5>
+          <p><strong>تاریخ:</strong> {{ selectedAssignment.assignmentDate }}</p>
+          <p><strong>توضیحات:</strong> {{ selectedAssignment.description }}</p>
+          <p><strong>دستورالعمل:</strong> {{ selectedAssignment.instructions || '-' }}</p>
+
+          @if (selectedAssignment.attachments?.length) {
+            <div class="attachment-box">
+              <h6>فایل‌های ضمیمه:</h6>
+              <div class="attachment-list">
+                @for (attachment of selectedAssignment.attachments; track attachment.id) {
+                  <a
+                    [href]="resolveAttachmentUrl(attachment.url) || '#'"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="attachment-item"
+                  >
+                    <i class="bi" [class]="getAttachmentIcon(attachment.kind)"></i>
+                    {{ attachment.title }}
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+          @if (primaryInstructionAudioUrl) {
+            <div class="gate-box">
+              <h6>فایل راهنما (پیش‌نیاز ضبط)</h6>
+              <audio
+                #instructionAudio
+                controls
+                [src]="primaryInstructionAudioUrl"
+                (play)="onInstructionAudioPlay(instructionAudio)"
+                (timeupdate)="onInstructionAudioTimeUpdate(instructionAudio)"
+                (ended)="onInstructionAudioEnded(instructionAudio)"
+                (error)="onInstructionAudioError()"
+              ></audio>
+              <p class="muted">
+                گوش‌دادن کامل:
+                {{ assignmentProgress?.currentListenCount ?? 0 }}
+                /
+                {{ assignmentProgress?.requiredListenCount ?? 3 }}
+              </p>
+            </div>
+          }
+
+          @if (assignmentProgress) {
+            <div class="progress-box">
+              <p><strong>وضعیت:</strong> {{ assignmentProgress.hasSubmission ? 'تکمیل شده' : 'در انتظار تکمیل' }}</p>
+              <p><strong>نمره روزانه:</strong> {{ assignmentProgress.latestSubmission?.dailyScore ?? '-' }}</p>
+              <p><strong>نمره تجمعی:</strong> {{ assignmentProgress.latestSubmission?.cumulativeScore ?? '-' }}</p>
+              @if (assignmentProgress.latestSubmission?.feedback) {
+                <p><strong>بازخورد:</strong> {{ assignmentProgress.latestSubmission?.feedback }}</p>
+              }
+            </div>
+          }
+
+          <button type="button" class="btn-primary" (click)="startRecordingForAssignment(selectedAssignment)">
+            شروع ضبط صوت
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isUserModalOpen && currentUser) {
+    <div class="modal-backdrop" (click)="hideUserModal()">
+      <div class="modal-content user-modal" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h5>اطلاعات کاربر</h5>
+          <button type="button" class="btn-secondary" (click)="hideUserModal()">بستن</button>
+        </header>
+        <div class="modal-body user-grid">
+          <p><strong>نام:</strong> {{ currentUser.studentInfo?.firstName ?? '-' }}</p>
+          <p><strong>نام خانوادگی:</strong> {{ currentUser.studentInfo?.lastName ?? '-' }}</p>
+          <p><strong>ایمیل:</strong> {{ currentUser.studentInfo?.email ?? '-' }}</p>
+          <p><strong>شماره تماس:</strong> {{ currentUser.studentInfo?.phoneNumber ?? '-' }}</p>
+          <p><strong>نام کاربری:</strong> {{ currentUser.username }}</p>
+          <p><strong>نوع کاربر:</strong> {{ currentUser.userType === 'admin' ? 'مدیر' : 'متربی' }}</p>
+        </div>
+      </div>
+    </div>
+  }
+</main>

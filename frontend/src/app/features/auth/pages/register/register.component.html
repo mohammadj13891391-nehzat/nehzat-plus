@@ -1,0 +1,33 @@
+<main class="page-shell">
+  <section class="card auth-card">
+    <h1>ثبت نام متربی</h1>
+    <p class="muted">پس از ثبت‌نام، حساب شما باید توسط مدیر تایید شود.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <input formControlName="firstName" type="text" placeholder="نام" />
+      <input formControlName="lastName" type="text" placeholder="نام خانوادگی" />
+      <input formControlName="username" type="text" placeholder="نام کاربری" />
+      <input formControlName="email" type="email" placeholder="ایمیل" />
+      <input formControlName="phoneNumber" type="text" placeholder="شماره موبایل (09xxxxxxxxx)" />
+      <input formControlName="password" type="password" placeholder="رمز عبور" />
+      @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
+        <small class="error">رمز عبور باید حداقل ۸ کاراکتر باشد</small>
+      }
+      <button type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'در حال ثبت نام...' : 'ثبت نام' }}
+      </button>
+    </form>
+
+    @if (successMessage) {
+      <p class="ok">{{ successMessage }}</p>
+    }
+    @if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    }
+
+    <p class="muted">
+      حساب کاربری دارید؟
+      <a routerLink="/auth/login">وارد شوید</a>
+    </p>
+  </section>
+</main>
