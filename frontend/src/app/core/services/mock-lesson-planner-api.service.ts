@@ -20,6 +20,7 @@ import type {
   PendingUser,
   Student,
   StudentCourseProgress,
+  StudentInfo,
   StudentProgressResponse,
   UserType,
   Madrasah,
@@ -355,6 +356,18 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       submission.documentUrl = resolveMediaUrl(`/uploads/mock/${file.name}`) ?? `/uploads/mock/${file.name}`;
     }
     return this.ok({ ...submission });
+  }
+
+  getAllStudents(): Observable<StudentInfo[]> {
+    const students = this.store.students.map((s) => ({
+      id: s.id,
+      studentId: s.studentId,
+      firstName: s.firstName,
+      lastName: s.lastName,
+      email: s.email,
+      phoneNumber: s.phoneNumber ?? ''
+    }));
+    return this.ok(students);
   }
 
   getPendingUsers(): Observable<PendingUser[]> {

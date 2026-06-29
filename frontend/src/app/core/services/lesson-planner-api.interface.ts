@@ -17,6 +17,7 @@ import {
   CreateDailySeriesPayload,
   PendingUser,
   StudentAssignmentGateState,
+  StudentInfo,
   StudentProgressResponse,
   UpdateAttachmentPayload
 } from '../models/lesson-planner.models';
@@ -54,6 +55,8 @@ export abstract class LessonPlannerApi {
     submissionId: number,
     payload: FormData
   ): Observable<AssignmentSubmission>;
+
+  abstract getAllStudents(): Observable<StudentInfo[]>;
 
   abstract getPendingUsers(): Observable<PendingUser[]>;
   abstract approveUser(userId: number, payload: ApproveUserPayload): Observable<ApiMessageResponse>;

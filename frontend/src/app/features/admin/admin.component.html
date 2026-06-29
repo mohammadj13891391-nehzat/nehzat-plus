@@ -123,77 +123,180 @@
 
     <div class="admin-content">
       @if (activeMenu === 'trainees') {
-        <section class="card pending-users-card" aria-labelledby="admin-users-title">
+        <section class="card" aria-labelledby="admin-users-title">
           <header class="section-header">
-            <h2 id="admin-users-title" class="section-title">
-              متربیان در انتظار تایید
-              <span class="count-badge">{{ pendingUsers.length }}</span>
-            </h2>
+            <h2 id="admin-users-title" class="section-title">مدیریت متربیان</h2>
             <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers" (click)="refreshAll()">
-              {{ loadingPendingUsers ? 'در حال بروزرسانی...' : 'بروزرسانی' }}
+              بروزرسانی
             </button>
           </header>
 
-          @if (loadingPendingUsers) {
-            <p class="muted">در حال دریافت لیست کاربران...</p>
-          } @else if (pendingUsers.length === 0) {
-            <p class="muted">در حال حاضر کاربر در انتظار تایید وجود ندارد.</p>
-          } @else {
-            <div class="pending-list">
-              @for (user of pendingUsers; track user.id) {
-                <article class="pending-item">
-                  <div class="pending-summary">
-                    <h3>{{ user.firstName }} {{ user.lastName }}</h3>
-                    <p class="muted">نام کاربری: {{ user.username }}</p>
-                    <p class="muted">ایمیل: {{ user.email || '-' }}</p>
-                    <p class="muted">موبایل: {{ user.phoneNumber || '-' }}</p>
-                  </div>
+          <div class="tab-bar">
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="traineesTab === 'pending'"
+              (click)="switchTraineesTab('pending')"
+            >
+              در انتظار تایید
+              <span class="count-badge">{{ pendingUsers.length }}</span>
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="traineesTab === 'all'"
+              (click)="switchTraineesTab('all')"
+            >
+              همه متربیان
+              <span class="count-badge">{{ allStudents.length }}</span>
+            </button>
+          </div>
 
-                  @if (approvalForms[user.id]; as approvalForm) {
-                    <form [formGroup]="approvalForm" class="approval-form" (ngSubmit)="approveUser(user)">
-                      <label>
-                        نام
-                        <input type="text" formControlName="firstName" />
-                      </label>
-                      <label>
-                        نام خانوادگی
-                        <input type="text" formControlName="lastName" />
-                      </label>
-                      <label>
-                        ایمیل
-                        <input type="email" formControlName="email" />
-                      </label>
-                      <label>
-                        موبایل
-                        <input type="text" formControlName="phoneNumber" />
-                      </label>
-                      <label>
-                        شماره متربی
-                        <input type="text" formControlName="studentId" />
-                      </label>
-                      <label>
-                        دوره‌ها (ID با کاما)
-                        <input type="text" formControlName="courseIdsInput" placeholder="مثال: 1,2" />
-                      </label>
+          @if (traineesTab === 'pending') {
+            @if (loadingPendingUsers) {
+              <p class="muted">در حال دریافت لیست کاربران...</p>
+            } @else if (pendingUsers.length === 0) {
+              <p class="muted">در حال حاضر کاربر در انتظار تایید وجود ندارد.</p>
+            } @else {
+              <div class="pending-list">
+                @for (user of pendingUsers; track user.id) {
+                  <article class="pending-item">
+                    <div class="pending-summary">
+                      <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                      <p class="muted">نام کاربری: {{ user.username }}</p>
+                      <p class="muted">ایمیل: {{ user.email || '-' }}</p>
+                      <p class="muted">موبایل: {{ user.phoneNumber || '-' }}</p>
+                    </div>
 
-                      <div class="row-actions">
-                        <button type="submit" class="btn" [disabled]="isProcessing(user.id) || approvalForm.invalid">
-                          {{ isProcessing(user.id) ? 'در حال تایید...' : 'تایید' }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          [disabled]="isProcessing(user.id)"
-                          (click)="rejectUser(user)"
-                        >
-                          {{ isProcessing(user.id) ? 'در حال پردازش...' : 'رد' }}
-                        </button>
-                      </div>
-                    </form>
-                  }
-                </article>
-              }
+                    @if (approvalForms[user.id]; as approvalForm) {
+                      <form [formGroup]="approvalForm" class="approval-form" (ngSubmit)="approveUser(user)">
+                        <label>
+                          نام
+                          <input type="text" formControlName="firstName" />
+                        </label>
+                        <label>
+                          نام خانوادگی
+                          <input type="text" formControlName="lastName" />
+                        </label>
+                        <label>
+                          ایمیل
+                          <input type="email" formControlName="email" />
+                        </label>
+                        <label>
+                          موبایل
+                          <input type="text" formControlName="phoneNumber" />
+                        </label>
+                        <label>
+                          شماره متربی
+                          <input type="text" formControlName="studentId" />
+                        </label>
+                        <label>
+                          دوره‌ها (ID با کاما)
+                          <input type="text" formControlName="courseIdsInput" placeholder="مثال: 1,2" />
+                        </label>
+
+                        <div class="row-actions">
+                          <button type="submit" class="btn" [disabled]="isProcessing(user.id) || approvalForm.invalid">
+                            {{ isProcessing(user.id) ? 'در حال تایید...' : 'تایید' }}
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-secondary"
+                            [disabled]="isProcessing(user.id)"
+                            (click)="rejectUser(user)"
+                          >
+                            {{ isProcessing(user.id) ? 'در حال پردازش...' : 'رد' }}
+                          </button>
+                        </div>
+                      </form>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          }
+
+          @if (traineesTab === 'all') {
+            <div class="trainee-search">
+              <input
+                type="text"
+                [ngModel]="searchStudentQuery"
+                (ngModelChange)="searchStudentQuery = $event"
+                placeholder="جستجوی متربی (نام، کد، ایمیل)..."
+                class="search-input"
+              />
             </div>
+
+            @if (loadingAllStudents) {
+              <p class="muted">در حال دریافت لیست متربیان...</p>
+            } @else if (allStudents.length === 0) {
+              <p class="muted">هیچ متربی ثبت‌شده‌ای یافت نشد.</p>
+            } @else {
+              <div class="split-grid">
+                <div>
+                  <div class="select-list">
+                    @for (student of filteredStudents; track student.id) {
+                      <button
+                        type="button"
+                        class="list-item"
+                        [class.is-selected]="selectedStudentId === student.id"
+                        (click)="selectStudent(student.id)"
+                      >
+                        <div class="list-item-top">
+                          <strong>{{ student.firstName }} {{ student.lastName }}</strong>
+                        </div>
+                        <span class="list-meta">{{ student.studentId }}</span>
+                        <small class="list-meta">{{ student.email }}</small>
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <div>
+                  @if (loadingStudentProgress) {
+                    <p class="muted">در حال دریافت اطلاعات متربی...</p>
+                  } @else if (selectedStudentProgress) {
+                    <div class="editor-form">
+                      <h3>{{ selectedStudentProgress.student.firstName }} {{ selectedStudentProgress.student.lastName }}</h3>
+                      <p class="list-meta">کد: {{ selectedStudentProgress.student.studentId }}</p>
+                      <p class="list-meta">ایمیل: {{ selectedStudentProgress.student.email }}</p>
+                      <p class="list-meta">موبایل: {{ selectedStudentProgress.student.phoneNumber || '-' }}</p>
+
+                      <h4 style="margin: 0.75rem 0 0.35rem">دوره‌های ثبت‌نامی</h4>
+                      @if (selectedStudentProgress.courses.length === 0) {
+                        <p class="muted">هیچ دوره‌ای ثبت نشده است.</p>
+                      } @else {
+                        <ul class="trainee-course-list">
+                          @for (item of selectedStudentProgress.courses; track item.course.id) {
+                            <li>
+                              <strong>{{ item.course.title }}</strong>
+                              <span class="list-meta"> — {{ item.course.instructor }}</span>
+                            </li>
+                          }
+                        </ul>
+                      }
+
+                      <h4 style="margin: 0.75rem 0 0.35rem">آخرین ارسال‌ها</h4>
+                      @if (selectedStudentProgress.submissions.length === 0) {
+                        <p class="muted">هنوز ارسالی ثبت نشده است.</p>
+                      } @else {
+                        <ul class="trainee-course-list">
+                          @for (sub of selectedStudentProgress.submissions.slice(0, 5); track sub.id) {
+                            <li>
+                              <span>نمره: {{ sub.dailyScore ?? '-' }}</span>
+                              <span class="list-meta"> — {{ sub.submissionDate | date:'yyyy/MM/dd' }}</span>
+                              <span class="status-chip" [ngClass]="'status-chip--' + sub.status">{{ sub.status }}</span>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </div>
+                  } @else {
+                    <p class="muted">یک متربی را از لیست انتخاب کنید.</p>
+                  }
+                </div>
+              </div>
+            }
           }
         </section>
       }

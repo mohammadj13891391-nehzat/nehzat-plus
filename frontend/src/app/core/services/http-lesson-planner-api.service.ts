@@ -20,6 +20,7 @@ import {
   CreateDailySeriesPayload,
   Course,
   PendingUser,
+  StudentInfo,
   StudentProgressResponse
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
@@ -114,6 +115,10 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
       this.url(`/students/${studentId}/submissions/${submissionId}/upload`),
       payload
     );
+  }
+
+  getAllStudents(): Observable<StudentInfo[]> {
+    return this.http.get<StudentInfo[]>(this.url('/students'));
   }
 
   getPendingUsers(): Observable<PendingUser[]> {

@@ -12,7 +12,9 @@ import type {
   AttachmentKind,
   Course,
   CourseStatus,
-  PendingUser
+  PendingUser,
+  StudentInfo,
+  StudentProgressResponse
 } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 import { AuthService } from '../../core/services/auth.service';
@@ -118,6 +120,65 @@ export class AdminComponent implements OnInit {
   loadingAttachments = false;
   creatingAttachment = false;
   updatingAttachmentIds = new Set<number>();
+
+  traineesTab: 'pending' | 'all' = 'pending';
+  allStudents: StudentInfo[] = [];
+  loadingAllStudents = false;
+  searchStudentQuery = '';
+  selectedStudentId: number | null = null;
+  selectedStudentProgress: StudentProgressResponse | null = null;
+  loadingStudentProgress = false;
+
+  get filteredStudents(): StudentInfo[] {
+    const q = this.searchStudentQuery.trim().toLowerCase();
+    if (!q) return this.allStudents;
+    return this.allStudents.filter(
+      (s) =>
+        s.firstName.toLowerCase().includes(q) ||
+        s.lastName.toLowerCase().includes(q) ||
+        s.studentId.toLowerCase().includes(q) ||
+        s.email.toLowerCase().includes(q)
+    );
+  }
+
+  switchTraineesTab(tab: 'pending' | 'all'): void {
+    this.traineesTab = tab;
+    if (tab === 'all' && this.allStudents.length === 0) {
+      this.loadAllStudents();
+    }
+  }
+
+  loadAllStudents(): void {
+    this.loadingAllStudents = true;
+    this.api
+      .getAllStudents()
+      .pipe(finalize(() => (this.loadingAllStudents = false)))
+      .subscribe({
+        next: (students) => {
+          this.allStudents = students;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست متربیان با خطا مواجه شد.');
+        }
+      });
+  }
+
+  selectStudent(studentId: number): void {
+    this.selectedStudentId = studentId;
+    this.loadingStudentProgress = true;
+    this.selectedStudentProgress = null;
+    this.api
+      .getStudentProgress(studentId)
+      .pipe(finalize(() => (this.loadingStudentProgress = false)))
+      .subscribe({
+        next: (progress) => {
+          this.selectedStudentProgress = progress;
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت اطلاعات متربی با خطا مواجه شد.');
+        }
+      });
+  }
 
   readonly provinces = [
     'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',

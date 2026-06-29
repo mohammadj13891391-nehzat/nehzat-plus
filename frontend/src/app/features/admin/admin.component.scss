@@ -164,6 +164,26 @@
   background: #f0ece4;
   border-color: #ddd5c5;
 }
+.status-chip--graded {
+  color: #065f46;
+  background: #eaf5ed;
+  border-color: #a3d4b0;
+}
+.status-chip--submitted {
+  color: #92400e;
+  background: var(--gold-light);
+  border-color: #e8d5a0;
+}
+.status-chip--pending {
+  color: #5b5348;
+  background: #f0ece4;
+  border-color: #ddd5c5;
+}
+.status-chip--late {
+  color: #991b1b;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
 .list-item-actions {
   display: flex;
   align-items: center;
@@ -412,6 +432,64 @@ button:focus-visible {
 .btn-remove:hover {
   background: #fee2e2;
   border-color: var(--lp-danger);
+}
+
+.tab-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--lp-border);
+  padding-bottom: 0.25rem;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--lp-muted);
+  border-radius: 10px 10px 0 0;
+  transition: background 0.15s, color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.tab-btn:hover {
+  background: #f0ece4;
+  color: var(--text);
+}
+.tab-btn.active {
+  color: var(--lp-primary);
+  font-weight: 600;
+  background: #eaf5ed;
+}
+.tab-btn .count-badge {
+  font-size: 0.72rem;
+}
+.trainee-search {
+  margin-bottom: 0.75rem;
+}
+.search-input {
+  width: 100%;
+  max-width: 400px;
+}
+.trainee-course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.trainee-course-list li {
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 640px) {
