@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Tool artifacts
+frontend@0.0.0
+ng
+npm
