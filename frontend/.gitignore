@@ -47,3 +47,4 @@ Thumbs.db
 frontend@0.0.0
 ng
 npm
+ng-*.log
