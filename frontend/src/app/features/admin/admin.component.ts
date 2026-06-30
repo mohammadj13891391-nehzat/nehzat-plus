@@ -195,9 +195,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (students) => {
           this.allStudents = students;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست متربیان با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -251,9 +253,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (enrollments) => {
           this.courseEnrollments = enrollments;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست متربیان دوره با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -351,9 +355,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (coaches) => {
           this.coaches = coaches;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مربیان با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -560,9 +566,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (parents) => {
           this.parents = parents;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست والدین با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -727,9 +735,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (evaluators) => {
           this.evaluators = evaluators;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست ارزیابان با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -910,9 +920,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (summary) => {
           this.headquartersSummary = summary;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت خلاصه ستاد با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -925,9 +937,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.branchPerformanceData = data;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت عملکرد شعب با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -940,9 +954,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.coachPerformanceData = data;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت عملکرد مربیان با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -966,9 +982,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (managers) => {
           this.branchManagers = managers;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مسئولین شعب با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1118,9 +1136,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (madrasahs) => {
           this.madrasahs = madrasahs;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مکاتب با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1227,9 +1247,11 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (branches) => {
           this.branches = branches;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت شعب با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1880,6 +1902,7 @@ export class AdminComponent implements OnInit {
         this.stats.totalAssignments = systemStats.totalAssignments;
         this.stats.totalAttachments = systemStats.totalAttachments;
         this.stats.activeCourses = systemStats.activeCourses;
+        this.cdr.markForCheck();
       },
       error: () => {
         // Keep admin UI usable even if statistics endpoint fails.
@@ -1897,9 +1920,11 @@ export class AdminComponent implements OnInit {
           this.pendingUsers = users;
           this.ensureApprovalForms(users);
           this.stats.pendingUsers = users.length;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت کاربران در انتظار تایید با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1949,9 +1974,11 @@ export class AdminComponent implements OnInit {
           this.selectedAssignmentId = null;
           this.startCreateCourse();
         }
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.setError(error?.error?.message ?? 'دریافت دوره‌ها با خطا مواجه شد.');
+        this.cdr.markForCheck();
       }
     });
   }
@@ -1974,9 +2001,11 @@ export class AdminComponent implements OnInit {
             this.attachmentMetaForms = {};
             this.attachmentReplacementFiles = {};
           }
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت تکالیف با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
@@ -1990,9 +2019,11 @@ export class AdminComponent implements OnInit {
         next: (attachments) => {
           this.attachments = attachments;
           this.ensureAttachmentForms(attachments);
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت پیوست‌ها با خطا مواجه شد.');
+          this.cdr.markForCheck();
         }
       });
   }
