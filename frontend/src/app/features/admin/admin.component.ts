@@ -359,7 +359,7 @@ export class AdminComponent implements OnInit {
   startCreateCoach(): void {
     this.coachEditMode = false;
     this.selectedCoachId = null;
-    this.coachForm.setValue({
+    this.coachForm.reset({
       username: '',
       password: '',
       firstName: '',
@@ -369,6 +369,8 @@ export class AdminComponent implements OnInit {
       specialization: '',
       assignedCourseIds: ''
     });
+    this.coachForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.coachForm.get('password')?.updateValueAndValidity();
   }
 
   selectCoach(coachId: number): void {

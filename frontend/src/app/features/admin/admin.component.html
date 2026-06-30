@@ -352,36 +352,36 @@
               <form [formGroup]="coachForm" class="editor-form" (ngSubmit)="saveCoach()">
                 <h3>{{ coachEditMode ? 'ویرایش مربی' : 'مربی جدید' }}</h3>
                 <label>
-                  نام کاربری
-                  <input type="text" formControlName="username" />
+                  نام کاربری *
+                  <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" />
                 </label>
                 <label>
-                  رمز عبور
-                  <input type="password" formControlName="password" [placeholder]="coachEditMode ? 'خالی بگذارید = بدون تغییر' : ''" />
+                  {{ coachEditMode ? 'رمز عبور (خالی = بدون تغییر)' : 'رمز عبور *' }}
+                  <input type="password" formControlName="password" [placeholder]="coachEditMode ? 'خالی بگذارید = بدون تغییر' : 'حداقل ۶ کاراکتر'" />
                 </label>
                 <label>
-                  نام
-                  <input type="text" formControlName="firstName" />
+                  نام *
+                  <input type="text" formControlName="firstName" placeholder="مثال: علی" />
                 </label>
                 <label>
-                  نام خانوادگی
-                  <input type="text" formControlName="lastName" />
+                  نام خانوادگی *
+                  <input type="text" formControlName="lastName" placeholder="مثال: احمدی" />
                 </label>
                 <label>
-                  ایمیل
-                  <input type="email" formControlName="email" />
+                  ایمیل *
+                  <input type="email" formControlName="email" placeholder="مثال: ali@example.com" />
                 </label>
                 <label>
-                  موبایل
-                  <input type="text" formControlName="phoneNumber" placeholder="09xxxxxxxxx" />
+                  شماره موبایل *
+                  <input type="text" formControlName="phoneNumber" placeholder="09123456789" />
                 </label>
                 <label>
                   تخصص
                   <input type="text" formControlName="specialization" placeholder="مثال: ریاضیات، علوم قرآنی" />
                 </label>
                 <label>
-                  دوره‌ها (ID با کاما)
-                  <input type="text" formControlName="assignedCourseIds" placeholder="مثال: 1,2" />
+                  دوره‌های تحت پوشش (شناسه با کاما)
+                  <input type="text" formControlName="assignedCourseIds" placeholder="مثال: 1,2,3" />
                 </label>
                 <div class="row-actions">
                   <button type="submit" class="btn" [disabled]="coachForm.invalid || savingCoach">
