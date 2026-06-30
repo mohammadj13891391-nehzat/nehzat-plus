@@ -478,7 +478,7 @@ export class AdminComponent implements OnInit {
       .pipe(finalize(() => (this.savingCoach = false)))
       .subscribe({
         next: (response) => {
-          this.setSuccess(response.message);
+          this.setSuccess(response?.message ?? 'مربی با موفقیت حذف شد.');
           this.closeCoachModal();
           this.loadCoaches();
         },
