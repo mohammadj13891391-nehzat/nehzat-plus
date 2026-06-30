@@ -10,16 +10,16 @@ public class AssignmentAttachment
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Column(TypeName = "varchar(200)")]
+    [Column(TypeName = "nvarchar(200)")]
     public string? Title { get; set; }
 
-    [Column(TypeName = "text")]
+    [Column(TypeName = "nvarchar(max)")]
     public string? Description { get; set; }
 
-    [Column(TypeName = "varchar(20)")]
+    [Column(TypeName = "nvarchar(20)")]
     public string Kind { get; set; } = "other";
 
-    [Column(TypeName = "varchar(255)")]
+    [Column(TypeName = "nvarchar(255)")]
     public string Url { get; set; } = string.Empty;
 
     public int DisplayOrder { get; set; } = 0;

@@ -3,19 +3,14 @@ import { environment } from '../../../environments/environment';
 
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { HttpLessonPlannerApi } from './http-lesson-planner-api.service';
-import { MockLessonPlannerApi } from './mock-lesson-planner-api.service';
 
 export const LESSON_PLANNER_API = new InjectionToken<LessonPlannerApi>('LESSON_PLANNER_API');
 
 export function provideLessonPlannerApi(): EnvironmentProviders {
   return makeEnvironmentProviders([
-    HttpLessonPlannerApi,
-    MockLessonPlannerApi,
     {
       provide: LESSON_PLANNER_API,
-      useFactory: (httpApi: HttpLessonPlannerApi, mockApi: MockLessonPlannerApi): LessonPlannerApi =>
-        environment.useMockApi ? mockApi : httpApi,
-      deps: [HttpLessonPlannerApi, MockLessonPlannerApi]
+      useClass: HttpLessonPlannerApi
     }
   ]);
 }

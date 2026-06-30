@@ -308,7 +308,7 @@
               مدیریت مربیان
               <span class="count-badge">{{ coaches.length }}</span>
             </h2>
-            <button type="button" class="btn btn-secondary" (click)="startCreateCoach()">مربی جدید</button>
+            <button type="button" class="btn" (click)="openCoachModal()">مربی جدید</button>
           </header>
 
           <div class="trainee-search">
@@ -326,93 +326,119 @@
           } @else if (coaches.length === 0) {
             <p class="muted">هیچ مربی ثبت نشده است.</p>
           } @else {
-            <div class="split-grid">
-              <div>
-                <div class="select-list">
+            <div class="table-responsive">
+              <table class="data-table coach-table">
+                <thead>
+                  <tr>
+                    <th>نام و نام خانوادگی</th>
+                    <th>نام کاربری</th>
+                    <th>ایمیل</th>
+                    <th>موبایل</th>
+                    <th>تخصص</th>
+                    <th>دوره‌ها</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
                   @for (coach of filteredCoaches; track coach.id) {
-                    <button
-                      type="button"
-                      class="list-item"
-                      [class.is-selected]="selectedCoachId === coach.id"
-                      (click)="selectCoach(coach.id)"
-                    >
-                      <div class="list-item-top">
+                    <tr>
+                      <td class="coach-name-cell">
                         <strong>{{ coach.firstName }} {{ coach.lastName }}</strong>
-                        <span class="status-chip" [ngClass]="'status-chip--' + (coach.status === 'active' ? 'active' : 'inactive')">
+                      </td>
+                      <td>{{ coach.username }}</td>
+                      <td>{{ coach.email }}</td>
+                      <td>{{ coach.phoneNumber }}</td>
+                      <td>{{ coach.specialization || '—' }}</td>
+                      <td>
+                        @if (coach.assignedCourseIds.length > 0) {
+                          <span class="course-count-badge">{{ coach.assignedCourseIds.length }} دوره</span>
+                        } @else {
+                          <span class="muted">—</span>
+                        }
+                      </td>
+                      <td>
+                        <span class="status-chip" [ngClass]="'status-chip--' + coach.status">
                           {{ coach.status === 'active' ? 'فعال' : 'غیرفعال' }}
                         </span>
-                      </div>
-                      <span class="list-meta">{{ coach.username }}</span>
-                      <small class="list-meta">{{ coach.specialization || '—' }}</small>
-                    </button>
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          <button type="button" class="icon-btn icon-btn--edit" (click)="openCoachModal(coach)" title="ویرایش">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          </button>
+                          <button type="button" class="icon-btn icon-btn--delete" (click)="deleteCoach(coach.id)" title="حذف">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   }
-                </div>
-              </div>
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
 
-              <form [formGroup]="coachForm" class="editor-form" (ngSubmit)="saveCoach()">
+        @if (showCoachModal) {
+          <div class="modal-overlay" (click)="closeCoachModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
                 <h3>{{ coachEditMode ? 'ویرایش مربی' : 'مربی جدید' }}</h3>
-                <label>
-                  نام کاربری *
-                  <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" />
-                </label>
-                <label>
-                  {{ coachEditMode ? 'رمز عبور (خالی = بدون تغییر)' : 'رمز عبور *' }}
-                  <input type="password" formControlName="password" [placeholder]="coachEditMode ? 'خالی بگذارید = بدون تغییر' : 'حداقل ۶ کاراکتر'" />
-                </label>
-                <label>
-                  نام *
-                  <input type="text" formControlName="firstName" placeholder="مثال: علی" />
-                </label>
-                <label>
-                  نام خانوادگی *
-                  <input type="text" formControlName="lastName" placeholder="مثال: احمدی" />
-                </label>
-                <label>
-                  ایمیل *
-                  <input type="email" formControlName="email" placeholder="مثال: ali@example.com" />
-                </label>
-                <label>
-                  شماره موبایل *
-                  <input type="text" formControlName="phoneNumber" placeholder="09123456789" />
-                </label>
-                <label>
-                  تخصص
-                  <input type="text" formControlName="specialization" placeholder="مثال: ریاضیات، علوم قرآنی" />
-                </label>
-                <label>
-                  دوره‌های تحت پوشش (شناسه با کاما)
-                  <input type="text" formControlName="assignedCourseIds" placeholder="مثال: 1,2,3" />
-                </label>
-                <div class="row-actions">
-                  <button type="submit" class="btn" [disabled]="coachForm.invalid || savingCoach">
-                    {{ savingCoach ? 'در حال ذخیره...' : coachEditMode ? 'ذخیره تغییرات' : 'ایجاد مربی' }}
-                  </button>
+                <button type="button" class="modal-close" (click)="closeCoachModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <form [formGroup]="coachForm" class="modal-body" (ngSubmit)="saveCoach()">
+                <div class="form-grid">
+                  <label class="form-field">
+                    <span class="form-label">نام کاربری *</span>
+                    <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">{{ coachEditMode ? 'رمز عبور (خالی = بدون تغییر)' : 'رمز عبور *' }}</span>
+                    <input type="password" formControlName="password" [placeholder]="coachEditMode ? 'خالی بگذارید = بدون تغییر' : 'حداقل ۶ کاراکتر'" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">نام *</span>
+                    <input type="text" formControlName="firstName" placeholder="مثال: علی" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">نام خانوادگی *</span>
+                    <input type="text" formControlName="lastName" placeholder="مثال: احمدی" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">ایمیل *</span>
+                    <input type="email" formControlName="email" placeholder="مثال: ali@example.com" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">شماره موبایل *</span>
+                    <input type="text" formControlName="phoneNumber" placeholder="09123456789" class="form-input" />
+                  </label>
+                  <label class="form-field form-field--full">
+                    <span class="form-label">تخصص</span>
+                    <input type="text" formControlName="specialization" placeholder="مثال: ریاضیات، علوم قرآنی" class="form-input" />
+                  </label>
+                  <label class="form-field form-field--full">
+                    <span class="form-label">دوره‌های تحت پوشش (شناسه با کاما)</span>
+                    <input type="text" formControlName="assignedCourseIds" placeholder="مثال: 1,2,3" class="form-input" />
+                  </label>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" (click)="closeCoachModal()">انصراف</button>
                   @if (coachEditMode && selectedCoachId !== null) {
-                    <button type="button" class="btn btn-secondary" [disabled]="savingCoach" (click)="deleteCoach(selectedCoachId)">
+                    <button type="button" class="btn btn-danger" [disabled]="savingCoach" (click)="deleteCoach(selectedCoachId)">
                       حذف مربی
                     </button>
                   }
+                  <button type="submit" class="btn" [disabled]="coachForm.invalid || savingCoach">
+                    {{ savingCoach ? 'در حال ذخیره...' : coachEditMode ? 'ذخیره تغییرات' : 'ایجاد مربی' }}
+                  </button>
                 </div>
               </form>
             </div>
-          }
-
-          @if (coaches.length > 0) {
-            <section class="card" style="margin-top: 1rem">
-              <h3 style="margin: 0 0 0.5rem">دوره‌های تحت پوشش مربیان</h3>
-              <div class="coach-course-grid">
-                @for (coach of coaches; track coach.id) {
-                  @if (coach.assignedCourseIds.length > 0) {
-                    <div class="coach-course-item">
-                      <strong>{{ coach.firstName }} {{ coach.lastName }}</strong>
-                      <span class="list-meta">: {{ getCourseNamesForCoach(coach) }}</span>
-                    </div>
-                  }
-                }
-              </div>
-            </section>
-          }
-        </section>
+          </div>
+        }
       }
 
       @if (activeMenu === 'courses') {

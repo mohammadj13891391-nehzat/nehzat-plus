@@ -17,19 +17,19 @@ public class AssignmentSubmission
 
     public int CumulativeScore { get; set; } = 0;
 
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "pending";
 
-    [Column(TypeName = "text")]
+    [Column(TypeName = "nvarchar(max)")]
     public string? Feedback { get; set; }
 
-    [Column(TypeName = "varchar(255)")]
+    [Column(TypeName = "nvarchar(255)")]
     public string? AudioFileUrl { get; set; }
 
-    [Column(TypeName = "varchar(255)")]
+    [Column(TypeName = "nvarchar(255)")]
     public string? DocumentUrl { get; set; }
 
-    [Column(TypeName = "text")]
+    [Column(TypeName = "nvarchar(max)")]
     public string? Notes { get; set; }
 
     public bool IsCompleted { get; set; } = false;

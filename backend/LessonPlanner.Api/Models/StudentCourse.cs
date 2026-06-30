@@ -13,15 +13,15 @@ public class StudentCourse
     [Column(TypeName = "date")]
     public DateTime EnrollmentDate { get; set; }
 
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "enrolled";
 
     public int? FinalGrade { get; set; }
 
-    [Column(TypeName = "varchar(2)")]
+    [Column(TypeName = "nvarchar(2)")]
     public string? LetterGrade { get; set; }
 
-    [Column(TypeName = "text")]
+    [Column(TypeName = "nvarchar(max)")]
     public string? Notes { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -53,6 +53,7 @@ export class AdminComponent implements OnInit {
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly fb = inject(FormBuilder);
   private readonly notify = inject(NotificationService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   username = '';
   errorMessage = '';
@@ -315,6 +316,7 @@ export class AdminComponent implements OnInit {
   coaches: Coach[] = [];
   loadingCoaches = false;
   savingCoach = false;
+  showCoachModal = false;
   coachForm = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -356,21 +358,45 @@ export class AdminComponent implements OnInit {
       });
   }
 
-  startCreateCoach(): void {
+  openCoachModal(coach?: Coach): void {
+    if (coach) {
+      this.coachEditMode = true;
+      this.selectedCoachId = coach.id;
+      this.coachForm.reset({
+        username: coach.username,
+        password: '',
+        firstName: coach.firstName,
+        lastName: coach.lastName,
+        email: coach.email,
+        phoneNumber: coach.phoneNumber,
+        specialization: coach.specialization,
+        assignedCourseIds: coach.assignedCourseIds.join(',')
+      });
+      this.coachForm.get('password')?.clearValidators();
+      this.coachForm.get('password')?.updateValueAndValidity();
+    } else {
+      this.coachEditMode = false;
+      this.selectedCoachId = null;
+      this.coachForm.reset({
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        specialization: '',
+        assignedCourseIds: ''
+      });
+      this.coachForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.coachForm.get('password')?.updateValueAndValidity();
+    }
+    this.showCoachModal = true;
+  }
+
+  closeCoachModal(): void {
+    this.showCoachModal = false;
     this.coachEditMode = false;
     this.selectedCoachId = null;
-    this.coachForm.reset({
-      username: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phoneNumber: '',
-      specialization: '',
-      assignedCourseIds: ''
-    });
-    this.coachForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-    this.coachForm.get('password')?.updateValueAndValidity();
   }
 
   selectCoach(coachId: number): void {
@@ -410,18 +436,27 @@ export class AdminComponent implements OnInit {
       assignedCourseIds: courseIds
     };
 
+    const isEdit = this.coachEditMode && this.selectedCoachId !== null;
+    const coachId = this.selectedCoachId;
+    this.closeCoachModal();
     this.savingCoach = true;
-    const request$ =
-      this.coachEditMode && this.selectedCoachId !== null
-        ? this.api.updateCoach(this.selectedCoachId, payload)
+    const request$ = isEdit
+        ? this.api.updateCoach(coachId!, payload)
         : this.api.createCoach(payload);
 
     request$.pipe(finalize(() => (this.savingCoach = false))).subscribe({
       next: (coach) => {
+        if (isEdit) {
+          const idx = this.coaches.findIndex((c) => c.id === coach.id);
+          if (idx >= 0) { this.coaches[idx] = coach; }
+          else { this.coaches.push(coach); }
+        } else {
+          this.coaches.push(coach);
+        }
         this.selectedCoachId = coach.id;
         this.coachEditMode = true;
         this.setSuccess('اطلاعات مربی ذخیره شد.');
-        this.loadCoaches();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.setError(error?.error?.message ?? 'ذخیره اطلاعات مربی با خطا مواجه شد.');
@@ -438,9 +473,7 @@ export class AdminComponent implements OnInit {
       .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
-          if (this.selectedCoachId === coachId) {
-            this.startCreateCoach();
-          }
+          this.closeCoachModal();
           this.loadCoaches();
         },
         error: (error) => {

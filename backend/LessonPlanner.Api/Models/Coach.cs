@@ -10,28 +10,28 @@ public class Coach
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "nvarchar(100)")]
     public string Username { get; set; } = string.Empty;
 
-    [Column(TypeName = "varchar(255)")]
+    [Column(TypeName = "nvarchar(255)")]
     public string? PasswordHash { get; set; }
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "nvarchar(100)")]
     public string FirstName { get; set; } = string.Empty;
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "nvarchar(100)")]
     public string LastName { get; set; } = string.Empty;
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "nvarchar(100)")]
     public string Email { get; set; } = string.Empty;
 
-    [Column(TypeName = "varchar(20)")]
+    [Column(TypeName = "nvarchar(20)")]
     public string? PhoneNumber { get; set; }
 
-    [Column(TypeName = "varchar(100)")]
+    [Column(TypeName = "nvarchar(100)")]
     public string? Specialization { get; set; }
 
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

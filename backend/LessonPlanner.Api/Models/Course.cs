@@ -10,21 +10,21 @@ public class Course
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Column(TypeName = "varchar(200)")]
+    [Column(TypeName = "nvarchar(200)")]
     public string Title { get; set; } = string.Empty;
 
-    [Column(TypeName = "text")]
+    [Column(TypeName = "nvarchar(max)")]
     public string? Description { get; set; }
 
-    [Column(TypeName = "varchar(20)")]
+    [Column(TypeName = "nvarchar(20)")]
     public string CourseCode { get; set; } = string.Empty;
 
     public int Credits { get; set; }
 
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "nvarchar(50)")]
     public string Instructor { get; set; } = string.Empty;
 
-    [Column(TypeName = "varchar(50)")]
+    [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
     [Column(TypeName = "date")]
