@@ -17,8 +17,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
-builder.Services.AddScoped<SampleDataSeeder>();
+    builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
+    builder.Services.AddScoped<ICoachService, CoachService>();
+    builder.Services.AddScoped<SampleDataSeeder>();
 
 builder.Services.AddCors(options =>
 {

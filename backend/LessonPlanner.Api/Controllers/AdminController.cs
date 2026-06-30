@@ -10,10 +10,12 @@ namespace LessonPlanner.Api.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly ICourseService _courseService;
+    private readonly ICoachService _coachService;
 
-    public AdminController(ICourseService courseService)
+    public AdminController(ICourseService courseService, ICoachService coachService)
     {
         _courseService = courseService;
+        _coachService = coachService;
     }
 
     // ==================== Courses ====================
@@ -215,6 +217,107 @@ public class AdminController : ControllerBase
     {
         await _courseService.DeleteAttachmentAsync(id);
         return NoContent();
+    }
+
+    // ==================== Coaches ====================
+
+    [HttpGet("coaches")]
+    public async Task<IActionResult> GetAllCoaches()
+    {
+        var coaches = await _coachService.GetAllAsync();
+        var result = coaches.Select(c => new
+        {
+            c.Id,
+            c.Username,
+            c.FirstName,
+            c.LastName,
+            c.Email,
+            c.PhoneNumber,
+            c.Specialization,
+            AssignedCourseIds = c.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+            c.Status,
+            c.CreatedAt
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("coaches/{id}")]
+    public async Task<IActionResult> GetCoachById(int id)
+    {
+        var coach = await _coachService.FindByIdAsync(id);
+        if (coach == null) return NotFound(new { message = "مربی پیدا نشد." });
+        return Ok(new
+        {
+            coach.Id,
+            coach.Username,
+            coach.FirstName,
+            coach.LastName,
+            coach.Email,
+            coach.PhoneNumber,
+            coach.Specialization,
+            AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+            coach.Status,
+            coach.CreatedAt
+        });
+    }
+
+    [HttpPost("coaches")]
+    public async Task<IActionResult> CreateCoach([FromBody] CreateCoachRequest request)
+    {
+        var coach = await _coachService.CreateAsync(request);
+        return Ok(new
+        {
+            coach.Id,
+            coach.Username,
+            coach.FirstName,
+            coach.LastName,
+            coach.Email,
+            coach.PhoneNumber,
+            coach.Specialization,
+            AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+            coach.Status,
+            coach.CreatedAt
+        });
+    }
+
+    [HttpPut("coaches/{id}")]
+    public async Task<IActionResult> UpdateCoach(int id, [FromBody] UpdateCoachRequest request)
+    {
+        try
+        {
+            var coach = await _coachService.UpdateAsync(id, request);
+            return Ok(new
+            {
+                coach.Id,
+                coach.Username,
+                coach.FirstName,
+                coach.LastName,
+                coach.Email,
+                coach.PhoneNumber,
+                coach.Specialization,
+                AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+                coach.Status,
+                coach.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("coaches/{id}")]
+    public async Task<IActionResult> DeleteCoach(int id)
+    {
+        try
+        {
+            await _coachService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 
     // ==================== Statistics ====================

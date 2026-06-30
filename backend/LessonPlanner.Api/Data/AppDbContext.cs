@@ -14,6 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<AssignmentSubmission> AssignmentSubmissions => Set<AssignmentSubmission>();
     public DbSet<AssignmentAttachment> AssignmentAttachments => Set<AssignmentAttachment>();
     public DbSet<StudentCourse> StudentCourses => Set<StudentCourse>();
+    public DbSet<Coach> Coaches => Set<Coach>();
+    public DbSet<CoachCourse> CoachCourses => Set<CoachCourse>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +70,23 @@ public class AppDbContext : DbContext
 
             entity.HasOne(e => e.Course)
                   .WithMany(c => c.StudentCourses)
+                  .HasForeignKey(e => e.CourseId);
+        });
+
+        modelBuilder.Entity<Coach>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<CoachCourse>(entity =>
+        {
+            entity.HasOne(e => e.Coach)
+                  .WithMany(c => c.CoachCourses)
+                  .HasForeignKey(e => e.CoachId);
+
+            entity.HasOne(e => e.Course)
+                  .WithMany()
                   .HasForeignKey(e => e.CourseId);
         });
     }
