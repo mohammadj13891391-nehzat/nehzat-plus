@@ -285,4 +285,21 @@ public class CourseService : ICourseService
     {
         return await _userService.GetPendingUsersAsync();
     }
+
+    public async Task<List<object>> GetStudentsByIdsAsync(int[] studentIds)
+    {
+        var students = await _db.Students
+            .Where(s => studentIds.Contains(s.Id))
+            .ToListAsync();
+
+        return students.Select(s => (object)new
+        {
+            studentId = s.Id,
+            studentName = $"{s.FirstName} {s.LastName}",
+            studentCode = s.StudentId,
+            courseName = "", // no direct course name without joins
+            latestGrade = (int?)null,
+            attendanceRate = (double?)null
+        }).ToList();
+    }
 }

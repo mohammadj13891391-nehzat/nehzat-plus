@@ -16,6 +16,9 @@ public class AppDbContext : DbContext
     public DbSet<StudentCourse> StudentCourses => Set<StudentCourse>();
     public DbSet<Coach> Coaches => Set<Coach>();
     public DbSet<CoachCourse> CoachCourses => Set<CoachCourse>();
+    public DbSet<BranchManager> BranchManagers => Set<BranchManager>();
+    public DbSet<Parent> Parents => Set<Parent>();
+    public DbSet<Evaluator> Evaluators => Set<Evaluator>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +102,24 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Course)
                   .WithMany()
                   .HasForeignKey(e => e.CourseId);
+        });
+
+        modelBuilder.Entity<BranchManager>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<Parent>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<Evaluator>(entity =>
+        {
+            entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.Email).IsUnique();
         });
     }
 }

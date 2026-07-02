@@ -12,12 +12,18 @@ public class AdminController : ControllerBase
     private readonly ICourseService _courseService;
     private readonly ICoachService _coachService;
     private readonly IUserService _userService;
+    private readonly IBranchManagerService _branchManagerService;
+    private readonly IParentService _parentService;
+    private readonly IEvaluatorService _evaluatorService;
 
-    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService)
+    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService)
     {
         _courseService = courseService;
         _coachService = coachService;
         _userService = userService;
+        _branchManagerService = branchManagerService;
+        _parentService = parentService;
+        _evaluatorService = evaluatorService;
     }
 
     // ==================== Courses ====================
@@ -336,6 +342,415 @@ public class AdminController : ControllerBase
         try
         {
             await _coachService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    // ==================== Branch Managers ====================
+
+    [HttpGet("branch-managers")]
+    public async Task<IActionResult> GetAllBranchManagers()
+    {
+        var managers = await _branchManagerService.GetAllAsync();
+        var result = managers.Select(bm => new
+        {
+            bm.Id,
+            bm.Username,
+            bm.FirstName,
+            bm.LastName,
+            bm.Email,
+            bm.PhoneNumber,
+            bm.AssignedBranch,
+            bm.AssignedProvince,
+            bm.Gender,
+            bm.NationalCode,
+            bm.Status,
+            bm.CreatedAt
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("branch-managers/{id}")]
+    public async Task<IActionResult> GetBranchManagerById(int id)
+    {
+        var bm = await _branchManagerService.FindByIdAsync(id);
+        if (bm == null) return NotFound(new { message = "مسئول شعبه پیدا نشد." });
+        return Ok(new
+        {
+            bm.Id,
+            bm.Username,
+            bm.FirstName,
+            bm.LastName,
+            bm.Email,
+            bm.PhoneNumber,
+            bm.AssignedBranch,
+            bm.AssignedProvince,
+            bm.Gender,
+            bm.NationalCode,
+            bm.Status,
+            bm.CreatedAt
+        });
+    }
+
+    [HttpPost("branch-managers")]
+    public async Task<IActionResult> CreateBranchManager([FromBody] CreateBranchManagerRequest request)
+    {
+        var bm = await _branchManagerService.CreateAsync(request);
+
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing == null)
+        {
+            await _userService.CreateUserAsync(
+                request.Username,
+                request.Password,
+                null,
+                null,
+                "branch_manager",
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.PhoneNumber
+            );
+        }
+
+        return Ok(new
+        {
+            bm.Id,
+            bm.Username,
+            bm.FirstName,
+            bm.LastName,
+            bm.Email,
+            bm.PhoneNumber,
+            bm.AssignedBranch,
+            bm.AssignedProvince,
+            bm.Gender,
+            bm.NationalCode,
+            bm.Status,
+            bm.CreatedAt
+        });
+    }
+
+    [HttpPut("branch-managers/{id}")]
+    public async Task<IActionResult> UpdateBranchManager(int id, [FromBody] UpdateBranchManagerRequest request)
+    {
+        try
+        {
+            var bm = await _branchManagerService.UpdateAsync(id, request);
+            return Ok(new
+            {
+                bm.Id,
+                bm.Username,
+                bm.FirstName,
+                bm.LastName,
+                bm.Email,
+                bm.PhoneNumber,
+                bm.AssignedBranch,
+                bm.AssignedProvince,
+                bm.Gender,
+                bm.NationalCode,
+                bm.Status,
+                bm.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("branch-managers/{id}")]
+    public async Task<IActionResult> DeleteBranchManager(int id)
+    {
+        try
+        {
+            await _branchManagerService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    // ==================== Parents ====================
+
+    [HttpGet("parents")]
+    public async Task<IActionResult> GetAllParents()
+    {
+        var parents = await _parentService.GetAllAsync();
+        var result = parents.Select(p => new
+        {
+            p.Id,
+            p.Username,
+            p.FirstName,
+            p.LastName,
+            p.Email,
+            p.PhoneNumber,
+            p.Address,
+            p.NationalCode,
+            StudentIds = p.StudentIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            p.Status,
+            p.CreatedAt
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("parents/{id}")]
+    public async Task<IActionResult> GetParentById(int id)
+    {
+        var parent = await _parentService.FindByIdAsync(id);
+        if (parent == null) return NotFound(new { message = "والد پیدا نشد." });
+        return Ok(new
+        {
+            parent.Id,
+            parent.Username,
+            parent.FirstName,
+            parent.LastName,
+            parent.Email,
+            parent.PhoneNumber,
+            parent.Address,
+            parent.NationalCode,
+            StudentIds = parent.StudentIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            parent.Status,
+            parent.CreatedAt
+        });
+    }
+
+    [HttpPost("parents")]
+    public async Task<IActionResult> CreateParent([FromBody] CreateParentRequest request)
+    {
+        var parent = await _parentService.CreateAsync(request);
+
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing == null)
+        {
+            await _userService.CreateUserAsync(
+                request.Username,
+                request.Password,
+                null,
+                null,
+                "parent",
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.PhoneNumber
+            );
+        }
+
+        return Ok(new
+        {
+            parent.Id,
+            parent.Username,
+            parent.FirstName,
+            parent.LastName,
+            parent.Email,
+            parent.PhoneNumber,
+            parent.Address,
+            parent.NationalCode,
+            StudentIds = parent.StudentIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            parent.Status,
+            parent.CreatedAt
+        });
+    }
+
+    [HttpPut("parents/{id}")]
+    public async Task<IActionResult> UpdateParent(int id, [FromBody] UpdateParentRequest request)
+    {
+        try
+        {
+            var parent = await _parentService.UpdateAsync(id, request);
+            return Ok(new
+            {
+                parent.Id,
+                parent.Username,
+                parent.FirstName,
+                parent.LastName,
+                parent.Email,
+                parent.PhoneNumber,
+                parent.Address,
+                parent.NationalCode,
+                StudentIds = parent.StudentIds
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(int.Parse)
+                    .ToArray(),
+                parent.Status,
+                parent.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("parents/{id}")]
+    public async Task<IActionResult> DeleteParent(int id)
+    {
+        try
+        {
+            await _parentService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("parents/{id}/students")]
+    public async Task<IActionResult> GetParentStudents(int id)
+    {
+        var parent = await _parentService.FindByIdAsync(id);
+        if (parent == null) return NotFound(new { message = "والد پیدا نشد." });
+
+        var studentIds = parent.StudentIds
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(int.Parse)
+            .ToArray();
+
+        var students = await _courseService.GetStudentsByIdsAsync(studentIds);
+        return Ok(students);
+    }
+
+    // ==================== Evaluators ====================
+
+    [HttpGet("evaluators")]
+    public async Task<IActionResult> GetAllEvaluators()
+    {
+        var evaluators = await _evaluatorService.GetAllAsync();
+        var result = evaluators.Select(e => new
+        {
+            e.Id,
+            e.Username,
+            e.FirstName,
+            e.LastName,
+            e.Email,
+            e.PhoneNumber,
+            e.Expertise,
+            AssignedMadrasahIds = e.AssignedMadrasahIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            e.NationalCode,
+            e.Status,
+            e.CreatedAt
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("evaluators/{id}")]
+    public async Task<IActionResult> GetEvaluatorById(int id)
+    {
+        var evaluator = await _evaluatorService.FindByIdAsync(id);
+        if (evaluator == null) return NotFound(new { message = "ارزیاب پیدا نشد." });
+        return Ok(new
+        {
+            evaluator.Id,
+            evaluator.Username,
+            evaluator.FirstName,
+            evaluator.LastName,
+            evaluator.Email,
+            evaluator.PhoneNumber,
+            evaluator.Expertise,
+            AssignedMadrasahIds = evaluator.AssignedMadrasahIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            evaluator.NationalCode,
+            evaluator.Status,
+            evaluator.CreatedAt
+        });
+    }
+
+    [HttpPost("evaluators")]
+    public async Task<IActionResult> CreateEvaluator([FromBody] CreateEvaluatorRequest request)
+    {
+        var evaluator = await _evaluatorService.CreateAsync(request);
+
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing == null)
+        {
+            await _userService.CreateUserAsync(
+                request.Username,
+                request.Password,
+                null,
+                null,
+                "evaluator",
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.PhoneNumber
+            );
+        }
+
+        return Ok(new
+        {
+            evaluator.Id,
+            evaluator.Username,
+            evaluator.FirstName,
+            evaluator.LastName,
+            evaluator.Email,
+            evaluator.PhoneNumber,
+            evaluator.Expertise,
+            AssignedMadrasahIds = evaluator.AssignedMadrasahIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(int.Parse)
+                .ToArray(),
+            evaluator.NationalCode,
+            evaluator.Status,
+            evaluator.CreatedAt
+        });
+    }
+
+    [HttpPut("evaluators/{id}")]
+    public async Task<IActionResult> UpdateEvaluator(int id, [FromBody] UpdateEvaluatorRequest request)
+    {
+        try
+        {
+            var evaluator = await _evaluatorService.UpdateAsync(id, request);
+            return Ok(new
+            {
+                evaluator.Id,
+                evaluator.Username,
+                evaluator.FirstName,
+                evaluator.LastName,
+                evaluator.Email,
+                evaluator.PhoneNumber,
+                evaluator.Expertise,
+                AssignedMadrasahIds = evaluator.AssignedMadrasahIds
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(int.Parse)
+                    .ToArray(),
+                evaluator.NationalCode,
+                evaluator.Status,
+                evaluator.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("evaluators/{id}")]
+    public async Task<IActionResult> DeleteEvaluator(int id)
+    {
+        try
+        {
+            await _evaluatorService.DeleteAsync(id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)

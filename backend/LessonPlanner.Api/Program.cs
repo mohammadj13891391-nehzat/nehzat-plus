@@ -22,6 +22,9 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
     builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
     builder.Services.AddScoped<ICoachService, CoachService>();
+    builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
+    builder.Services.AddScoped<IParentService, ParentService>();
+    builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
     builder.Services.AddScoped<SampleDataSeeder>();
 
 builder.Services.AddCors(options =>

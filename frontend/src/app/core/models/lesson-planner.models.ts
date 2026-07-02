@@ -356,11 +356,13 @@ export interface BranchManager {
   assignedBranch: string;
   assignedProvince: string;
   gender: 'male' | 'female' | 'mixed';
+  nationalCode?: string;
   status: 'active' | 'inactive';
   createdAt?: string;
 }
 
 export interface CreateBranchManagerPayload {
+  nationalCode?: string;
   username: string;
   password: string;
   firstName: string;
@@ -428,11 +430,13 @@ export interface Evaluator {
   phoneNumber: string;
   expertise: string;
   assignedMadrasahIds: number[];
+  nationalCode?: string;
   status: 'active' | 'inactive';
   createdAt?: string;
 }
 
 export interface CreateEvaluatorPayload {
+  nationalCode?: string;
   username: string;
   password: string;
   firstName: string;

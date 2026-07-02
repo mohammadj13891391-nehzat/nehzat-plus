@@ -27,4 +27,5 @@ public interface ICourseService
     Task<object> ApproveUserAndCreateStudentAsync(int userId, string firstName, string lastName, string email, string phoneNumber, string studentId, int[] courseIds);
     Task<object> RejectUserAsync(int userId);
     Task<List<User>> GetPendingUsersAsync();
+    Task<List<object>> GetStudentsByIdsAsync(int[] studentIds);
 }

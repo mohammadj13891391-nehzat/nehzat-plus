@@ -518,6 +518,7 @@ export class AdminComponent implements OnInit {
   branchManagerEditMode = false;
   selectedBranchManagerId: number | null = null;
   branchManagerForm = this.fb.nonNullable.group({
+    nationalCode: [''],
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     firstName: ['', [Validators.required]],
@@ -590,6 +591,16 @@ export class AdminComponent implements OnInit {
           this.cdr.markForCheck();
         }
       });
+  }
+
+  /** Called on (input) event of parent nationalCode for auto-fill */
+  onParentNationalCodeInput(value: string): void {
+    if (this.parentEditMode) return;
+    const code = value.trim();
+    this.parentForm.patchValue({
+      username: code,
+      password: code
+    }, { emitEvent: false });
   }
 
   startCreateParent(): void {
@@ -722,6 +733,7 @@ export class AdminComponent implements OnInit {
     evaluationDate: [this.todayIsoDate(), [Validators.required]]
   });
   evaluatorForm = this.fb.nonNullable.group({
+    nationalCode: [''],
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     firstName: ['', [Validators.required]],
@@ -761,10 +773,21 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  /** Called on (input) event of evaluator nationalCode for auto-fill */
+  onEvaluatorNationalCodeInput(value: string): void {
+    if (this.evaluatorEditMode) return;
+    const code = value.trim();
+    this.evaluatorForm.patchValue({
+      username: code,
+      password: code
+    }, { emitEvent: false });
+  }
+
   startCreateEvaluator(): void {
     this.evaluatorEditMode = false;
     this.selectedEvaluatorId = null;
     this.evaluatorForm.setValue({
+      nationalCode: '',
       username: '',
       password: '',
       firstName: '',
@@ -782,6 +805,7 @@ export class AdminComponent implements OnInit {
     this.selectedEvaluatorId = evaluatorId;
     this.evaluatorEditMode = true;
     this.evaluatorForm.setValue({
+      nationalCode: evaluator.nationalCode ?? '',
       username: evaluator.username,
       password: '',
       firstName: evaluator.firstName,
@@ -804,6 +828,7 @@ export class AdminComponent implements OnInit {
       .map((s) => Number(s.trim()))
       .filter((n) => Number.isFinite(n) && n > 0);
     const payload: CreateEvaluatorPayload = {
+      nationalCode: raw.nationalCode.trim(),
       username: raw.username.trim(),
       password: raw.password.trim(),
       firstName: raw.firstName.trim(),
@@ -1008,10 +1033,21 @@ export class AdminComponent implements OnInit {
       });
   }
 
+  /** Called on (input) event of branch manager nationalCode for auto-fill */
+  onBranchManagerNationalCodeInput(value: string): void {
+    if (this.branchManagerEditMode) return;
+    const code = value.trim();
+    this.branchManagerForm.patchValue({
+      username: code,
+      password: code
+    }, { emitEvent: false });
+  }
+
   startCreateBranchManager(): void {
     this.branchManagerEditMode = false;
     this.selectedBranchManagerId = null;
     this.branchManagerForm.setValue({
+      nationalCode: '',
       username: '',
       password: '',
       firstName: '',
@@ -1030,6 +1066,7 @@ export class AdminComponent implements OnInit {
     this.selectedBranchManagerId = id;
     this.branchManagerEditMode = true;
     this.branchManagerForm.setValue({
+      nationalCode: bm.nationalCode ?? '',
       username: bm.username,
       password: '',
       firstName: bm.firstName,
@@ -1048,6 +1085,7 @@ export class AdminComponent implements OnInit {
     if (this.branchManagerForm.invalid) return;
     const raw = this.branchManagerForm.getRawValue();
     const payload: CreateBranchManagerPayload = {
+      nationalCode: raw.nationalCode.trim(),
       username: raw.username.trim(),
       password: raw.password.trim(),
       firstName: raw.firstName.trim(),

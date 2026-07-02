@@ -958,9 +958,16 @@
 
               <form [formGroup]="branchManagerForm" class="editor-form" (ngSubmit)="saveBranchManager()">
                 <h3>{{ branchManagerEditMode ? 'ویرایش مسئول شعبه' : 'مسئول شعبه جدید' }}</h3>
+                <label class="form-field">
+                  <span class="form-label">کد ملی</span>
+                  <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onBranchManagerNationalCodeInput($any($event.target).value)" />
+                  @if (!branchManagerEditMode) {
+                    <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
+                  }
+                </label>
                 <label>
                   نام کاربری
-                  <input type="text" formControlName="username" />
+                  <input type="text" formControlName="username" [readonly]="!branchManagerEditMode" />
                 </label>
                 <label>
                   رمز عبور
@@ -1218,9 +1225,16 @@
 
             <form [formGroup]="parentForm" class="editor-form" (ngSubmit)="saveParent()">
               <h3>{{ parentEditMode ? 'ویرایش والد' : 'ایجاد والد جدید' }}</h3>
+              <label class="form-field">
+                <span class="form-label">کد ملی</span>
+                <input type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onParentNationalCodeInput($any($event.target).value)" />
+                @if (!parentEditMode) {
+                  <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
+                }
+              </label>
               <label>
                 نام کاربری
-                <input type="text" formControlName="username" />
+                <input type="text" formControlName="username" [readonly]="!parentEditMode" />
               </label>
               <label>
                 رمز عبور
@@ -1245,10 +1259,6 @@
               <label>
                 آدرس
                 <textarea formControlName="address" rows="2"></textarea>
-              </label>
-              <label>
-                کد ملی
-                <input type="text" formControlName="nationalCode" dir="ltr" />
               </label>
               <label>
                 شناسه فرزندان (جدا شده با کاما)
@@ -1340,9 +1350,16 @@
 
             <form [formGroup]="evaluatorForm" class="editor-form" (ngSubmit)="saveEvaluator()">
               <h3>{{ evaluatorEditMode ? 'ویرایش ارزیاب' : 'ایجاد ارزیاب جدید' }}</h3>
+              <label class="form-field">
+                <span class="form-label">کد ملی</span>
+                <input type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onEvaluatorNationalCodeInput($any($event.target).value)" />
+                @if (!evaluatorEditMode) {
+                  <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
+                }
+              </label>
               <label>
                 نام کاربری
-                <input type="text" formControlName="username" />
+                <input type="text" formControlName="username" [readonly]="!evaluatorEditMode" />
               </label>
               <label>
                 رمز عبور
