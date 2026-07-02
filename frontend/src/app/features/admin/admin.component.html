@@ -392,8 +392,15 @@
               <form [formGroup]="coachForm" class="modal-body" (ngSubmit)="saveCoach()">
                 <div class="form-grid">
                   <label class="form-field">
+                    <span class="form-label">کد ملی</span>
+                    <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onNationalCodeInput($any($event.target).value)" />
+                    @if (!coachEditMode) {
+                      <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
+                    }
+                  </label>
+                  <label class="form-field">
                     <span class="form-label">نام کاربری *</span>
-                    <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" class="form-input" />
+                    <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" class="form-input" [readonly]="!coachEditMode" />
                   </label>
                   <label class="form-field">
                     <span class="form-label">{{ coachEditMode ? 'رمز عبور (خالی = بدون تغییر)' : 'رمز عبور *' }}</span>

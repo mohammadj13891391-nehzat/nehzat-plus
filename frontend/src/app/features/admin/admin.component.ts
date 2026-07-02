@@ -71,6 +71,8 @@ export class AdminComponent implements OnInit {
     { key: 'headquarters', label: 'ستاد' }
   ] as const;
 
+
+
   stats = {
     pendingUsers: 0,
     totalCourses: 0,
@@ -322,6 +324,7 @@ export class AdminComponent implements OnInit {
   savingCoach = false;
   showCoachModal = false;
   coachForm = this.fb.nonNullable.group({
+    nationalCode: [''],
     username: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     firstName: ['', [Validators.required]],
@@ -369,6 +372,7 @@ export class AdminComponent implements OnInit {
       this.coachEditMode = true;
       this.selectedCoachId = coach.id;
       this.coachForm.reset({
+        nationalCode: coach.nationalCode ?? '',
         username: coach.username,
         password: '',
         firstName: coach.firstName,
@@ -384,6 +388,7 @@ export class AdminComponent implements OnInit {
       this.coachEditMode = false;
       this.selectedCoachId = null;
       this.coachForm.reset({
+        nationalCode: '',
         username: '',
         password: '',
         firstName: '',
@@ -399,6 +404,16 @@ export class AdminComponent implements OnInit {
     this.showCoachModal = true;
   }
 
+  /** Called on (input) event of nationalCode to ensure auto-fill works reliably */
+  onNationalCodeInput(value: string): void {
+    if (this.coachEditMode) return;
+    const code = value.trim();
+    this.coachForm.patchValue({
+      username: code,
+      password: code
+    }, { emitEvent: false });
+  }
+
   closeCoachModal(): void {
     this.showCoachModal = false;
     this.coachEditMode = false;
@@ -411,6 +426,7 @@ export class AdminComponent implements OnInit {
     this.selectedCoachId = coachId;
     this.coachEditMode = true;
     this.coachForm.setValue({
+      nationalCode: coach.nationalCode ?? '',
       username: coach.username,
       password: '',
       firstName: coach.firstName,
@@ -439,6 +455,7 @@ export class AdminComponent implements OnInit {
       email: raw.email.trim(),
       phoneNumber: raw.phoneNumber.trim(),
       specialization: raw.specialization.trim(),
+      nationalCode: raw.nationalCode.trim(),
       assignedCourseIds: courseIds
     };
 
@@ -1307,6 +1324,12 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user?.userType !== 'manager') {
+      void this.router.navigateByUrl(this.authService.getDashboardPathForRole(user?.userType ?? 'trainee'));
+      return;
+    }
+
     this.loadMenuData(this.activeMenu);
   }
 

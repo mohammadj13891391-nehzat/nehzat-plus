@@ -38,7 +38,7 @@ export class LoginComponent {
       .pipe(finalize(() => (this.isSubmitting = false)))
       .subscribe({
         next: (response) => {
-          const target = response.userType === 'admin' ? '/admin' : '/dashboard';
+          const target = this.authService.getDashboardPathForRole(response.userType);
           void this.router.navigateByUrl(target);
         },
         error: (error) => {
