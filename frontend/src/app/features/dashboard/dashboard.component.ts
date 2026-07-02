@@ -80,6 +80,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return `${student.firstName} ${student.lastName}`;
   }
 
+  get roleDisplayName(): string {
+    return 'متربی';
+  }
+
   get filteredSubmissions(): AssignmentSubmission[] {
     if (!this.selectedCourse) {
       return this.submissions;
@@ -104,8 +108,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       void this.router.navigateByUrl('/auth/login');
       return;
     }
-    if (this.currentUser.userType === 'admin') {
-      void this.router.navigateByUrl('/admin');
+    if (this.currentUser.userType !== 'trainee') {
+      void this.router.navigateByUrl(this.authService.getDashboardPathForRole(this.currentUser.userType));
       return;
     }
     if (this.getStudentId() === null) {

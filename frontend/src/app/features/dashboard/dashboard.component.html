@@ -276,7 +276,7 @@
           <p><strong>ایمیل:</strong> {{ currentUser.studentInfo?.email ?? '-' }}</p>
           <p><strong>شماره تماس:</strong> {{ currentUser.studentInfo?.phoneNumber ?? '-' }}</p>
           <p><strong>نام کاربری:</strong> {{ currentUser.username }}</p>
-          <p><strong>نوع کاربر:</strong> {{ currentUser.userType === 'admin' ? 'مدیر' : 'متربی' }}</p>
+          <p><strong>نوع کاربر:</strong> {{ roleDisplayName }}</p>
         </div>
       </div>
     </div>
