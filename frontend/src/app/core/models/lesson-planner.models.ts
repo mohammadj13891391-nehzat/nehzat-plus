@@ -1,4 +1,11 @@
-export type UserType = 'student' | 'admin' | 'teacher';
+export type UserType =
+  | 'trainee'
+  | 'coach'
+  | 'parent'
+  | 'branch_manager'
+  | 'evaluator'
+  | 'headquarters'
+  | 'manager';
 export type CourseStatus = 'active' | 'inactive' | 'archived' | string;
 export type AssignmentStatus = 'draft' | 'published' | 'closed' | string;
 export type AssignmentType = 'daily' | 'homework' | 'project' | 'exam' | string;
@@ -246,6 +253,26 @@ export interface ApproveUserPayload {
   courseIds: number[];
 }
 
+export interface CreateUserPayload {
+  username: string;
+  password: string;
+  userType: UserType;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
+export interface CreatedUser {
+  id: number;
+  username: string;
+  userType: UserType;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+}
+
 export interface Student extends StudentInfo {}
 
 export interface StudentCourseProgress {
@@ -300,6 +327,7 @@ export interface Coach {
   email: string;
   phoneNumber: string;
   specialization: string;
+  nationalCode?: string;
   assignedCourseIds: number[];
   status: 'active' | 'inactive';
   createdAt?: string;
@@ -352,6 +380,7 @@ export interface CreateCoachPayload {
   email: string;
   phoneNumber: string;
   specialization: string;
+  nationalCode?: string;
   assignedCourseIds: number[];
 }
 

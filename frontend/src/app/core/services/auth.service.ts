@@ -7,7 +7,8 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
-  CurrentUser
+  CurrentUser,
+  UserType
 } from '../models/lesson-planner.models';
 import { LESSON_PLANNER_API } from './lesson-planner-api.token';
 
@@ -59,8 +60,29 @@ export class AuthService {
     }
   }
 
-  isAdmin(): boolean {
-    return this.getCurrentUser()?.userType === 'admin';
+  isManager(): boolean {
+    return this.getCurrentUser()?.userType === 'manager';
+  }
+
+  getDashboardPathForRole(userType: UserType): string {
+    switch (userType) {
+      case 'manager':
+        return '/admin';
+      case 'trainee':
+        return '/dashboard';
+      case 'coach':
+        return '/coach';
+      case 'parent':
+        return '/parent';
+      case 'branch_manager':
+        return '/branch-manager';
+      case 'evaluator':
+        return '/evaluator';
+      case 'headquarters':
+        return '/headquarters';
+      default:
+        return '/dashboard';
+    }
   }
 
   logout(): void {

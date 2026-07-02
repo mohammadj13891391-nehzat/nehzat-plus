@@ -19,6 +19,7 @@ import {
   Coach,
   CourseEnrollment,
   CourseInviteCode,
+  CreatedUser,
   CreateAssignmentPayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -29,6 +30,7 @@ import {
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  CreateUserPayload,
   Course,
   EvaluationRecord,
   Evaluator,
@@ -152,6 +154,10 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   rejectUser(userId: number): Observable<ApiMessageResponse> {
     return this.http.post<ApiMessageResponse>(this.url(`/admin/users/${userId}/reject`), {});
+  }
+
+  createUser(payload: CreateUserPayload): Observable<CreatedUser> {
+    return this.http.post<CreatedUser>(this.url('/admin/users'), payload);
   }
 
   getAdminCourses(): Observable<Course[]> {

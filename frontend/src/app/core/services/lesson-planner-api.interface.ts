@@ -16,6 +16,7 @@ import {
   Course,
   CourseEnrollment,
   CourseInviteCode,
+  CreatedUser,
   CreateAssignmentPayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -26,6 +27,7 @@ import {
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  CreateUserPayload,
   EvaluationRecord,
   Evaluator,
   HeadquartersSummary,
@@ -82,6 +84,7 @@ export abstract class LessonPlannerApi {
   abstract getPendingUsers(): Observable<PendingUser[]>;
   abstract approveUser(userId: number, payload: ApproveUserPayload): Observable<ApiMessageResponse>;
   abstract rejectUser(userId: number): Observable<ApiMessageResponse>;
+  abstract createUser(payload: CreateUserPayload): Observable<CreatedUser>;
 
   abstract getAdminCourses(): Observable<Course[]>;
   abstract createAdminCourse(payload: CreateCoursePayload): Observable<Course>;
