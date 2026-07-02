@@ -56,7 +56,7 @@ using (var scope = app.Services.CreateScope())
     {
         try
         {
-            await userService.CreateUserAsync("test", "password", null, null, "admin");
+            await userService.CreateUserAsync("test", "password", null, null, "manager");
             Console.WriteLine("✅ کاربر پیش‌فرض (مدیر) ایجاد شد");
         }
         catch (Exception ex)
@@ -64,18 +64,31 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"⚠️ خطا در ایجاد کاربر پیش‌فرض: {ex.Message}");
         }
     }
+    else if (existingAdmin.UserType == "admin")
+    {
+        try
+        {
+            await userService.UpdateUserTypeAsync(existingAdmin.Id, "manager");
+            Console.WriteLine("✅ نقش کاربر پیش‌فرض به manager به‌روزرسانی شد");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ خطا در به‌روزرسانی نقش کاربر پیش‌فرض: {ex.Message}");
+        }
+    }
 
-    var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
-    try
-    {
-        Console.WriteLine("🌱 شروع ایجاد داده‌های نمونه در راه‌اندازی برنامه...");
-        await seeder.SeedAsync();
-        Console.WriteLine("🎉 ایجاد داده‌های نمونه با موفقیت انجام شد");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"⚠️ خطا در ایجاد داده‌های نمونه: {ex.Message}");
-    }
+    // Sample data seeder is disabled; all data must be entered through the frontend.
+    // var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
+    // try
+    // {
+    //     Console.WriteLine("🌱 شروع ایجاد داده‌های نمونه در راه‌اندازی برنامه...");
+    //     await seeder.SeedAsync();
+    //     Console.WriteLine("🎉 ایجاد داده‌های نمونه با موفقیت انجام شد");
+    // }
+    // catch (Exception ex)
+    // {
+    //     Console.WriteLine($"⚠️ خطا در ایجاد داده‌های نمونه: {ex.Message}");
+    // }
 }
 
 app.Run();

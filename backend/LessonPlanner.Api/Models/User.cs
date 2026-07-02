@@ -37,7 +37,7 @@ public class User
     public string ApprovalStatus { get; set; } = "pending";
 
     [Column(TypeName = "nvarchar(50)")]
-    public string UserType { get; set; } = "student";
+    public string UserType { get; set; } = "trainee";
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

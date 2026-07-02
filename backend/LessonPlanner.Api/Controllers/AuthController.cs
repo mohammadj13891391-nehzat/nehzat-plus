@@ -32,13 +32,13 @@ public class AuthController : ControllerBase
         if (user.ApprovalStatus == "rejected")
             return BadRequest(new { message = "حساب کاربری شما رد شده است. لطفاً با مدیر سیستم تماس بگیرید" });
 
-        if (user.UserType == "student" && user.Student != null)
+        if (user.UserType == "trainee" && user.Student != null)
         {
             return Ok(new AuthResponse(
                 "Sign-in successful",
                 user.Username,
                 user.ImageUrl,
-                "student",
+                "trainee",
                 user.Student.Id,
                 new StudentInfo(
                     user.Student.FirstName,
@@ -50,22 +50,11 @@ public class AuthController : ControllerBase
             ));
         }
 
-        if (user.UserType == "admin")
-        {
-            return Ok(new AuthResponse(
-                "Sign-in successful",
-                user.Username,
-                user.ImageUrl,
-                "admin"
-            ));
-        }
-
         return Ok(new AuthResponse(
             "Sign-in successful",
             user.Username,
             user.ImageUrl,
-            "student",
-            ApprovalStatus: user.ApprovalStatus
+            user.UserType
         ));
     }
 

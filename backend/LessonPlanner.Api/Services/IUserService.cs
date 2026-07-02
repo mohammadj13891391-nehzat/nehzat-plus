@@ -13,4 +13,5 @@ public interface IUserService
     Task<User?> FindUserByStudentIdAsync(int studentId);
     Task<bool> ValidateUserAsync(string username, string password);
     Task UpdateUserProfileAsync(string username, string imageUrl);
+    Task UpdateUserTypeAsync(int userId, string userType);
 }

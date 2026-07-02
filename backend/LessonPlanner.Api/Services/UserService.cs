@@ -48,7 +48,7 @@ public class UserService : IUserService
             PhoneNumber = phoneNumber,
             ImageUrl = imageUrl,
             ApprovalStatus = "pending",
-            UserType = "student",
+            UserType = "trainee",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -128,6 +128,17 @@ public class UserService : IUserService
         if (user != null)
         {
             user.ImageUrl = imageUrl;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    public async Task UpdateUserTypeAsync(int userId, string userType)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user != null)
+        {
+            user.UserType = userType;
             user.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }

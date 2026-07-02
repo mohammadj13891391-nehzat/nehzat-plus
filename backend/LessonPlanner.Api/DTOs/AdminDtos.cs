@@ -27,3 +27,13 @@ public record AttachmentData(
     string? Url,
     int? DisplayOrder
 );
+
+public record CreateUserRequest(
+    string Username,
+    string Password,
+    string UserType,
+    string? FirstName = null,
+    string? LastName = null,
+    string? Email = null,
+    string? PhoneNumber = null
+);

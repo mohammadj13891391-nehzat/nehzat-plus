@@ -77,7 +77,7 @@ public class SampleDataSeeder
         {
             try
             {
-                await _userService.CreateUserAsync(data.Username, data.Password, null, students[data.StudentIndex].Id, "student");
+                await _userService.CreateUserAsync(data.Username, data.Password, null, students[data.StudentIndex].Id, "trainee");
             }
             catch
             {

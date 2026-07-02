@@ -11,11 +11,13 @@ public class AdminController : ControllerBase
 {
     private readonly ICourseService _courseService;
     private readonly ICoachService _coachService;
+    private readonly IUserService _userService;
 
-    public AdminController(ICourseService courseService, ICoachService coachService)
+    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService)
     {
         _courseService = courseService;
         _coachService = coachService;
+        _userService = userService;
     }
 
     // ==================== Courses ====================
@@ -235,6 +237,7 @@ public class AdminController : ControllerBase
             c.PhoneNumber,
             c.Specialization,
             AssignedCourseIds = c.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+            c.NationalCode,
             c.Status,
             c.CreatedAt
         });
@@ -255,6 +258,7 @@ public class AdminController : ControllerBase
             coach.Email,
             coach.PhoneNumber,
             coach.Specialization,
+            coach.NationalCode,
             AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
             coach.Status,
             coach.CreatedAt
@@ -265,6 +269,24 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> CreateCoach([FromBody] CreateCoachRequest request)
     {
         var coach = await _coachService.CreateAsync(request);
+
+        // Also create a User record so the coach can log in
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing == null)
+        {
+            await _userService.CreateUserAsync(
+                request.Username,
+                request.Password ?? "password123",
+                null,
+                null,
+                "coach",
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.PhoneNumber
+            );
+        }
+
         return Ok(new
         {
             coach.Id,
@@ -274,6 +296,7 @@ public class AdminController : ControllerBase
             coach.Email,
             coach.PhoneNumber,
             coach.Specialization,
+            coach.NationalCode,
             AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
             coach.Status,
             coach.CreatedAt
@@ -295,6 +318,7 @@ public class AdminController : ControllerBase
                 coach.Email,
                 coach.PhoneNumber,
                 coach.Specialization,
+                coach.NationalCode,
                 AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
                 coach.Status,
                 coach.CreatedAt
@@ -368,6 +392,40 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> RejectUser(int userId)
     {
         return Ok(await _courseService.RejectUserAsync(userId));
+    }
+
+    [HttpPost("users")]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+    {
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing != null)
+        {
+            return BadRequest(new { message = "نام کاربری قبلاً ثبت شده است" });
+        }
+
+        await _userService.CreateUserAsync(
+            request.Username,
+            request.Password,
+            null,
+            null,
+            request.UserType,
+            request.FirstName,
+            request.LastName,
+            request.Email,
+            request.PhoneNumber
+        );
+
+        var user = await _userService.FindUserAsync(request.Username);
+        return Ok(new
+        {
+            user!.Id,
+            user.Username,
+            user.UserType,
+            user.FirstName,
+            user.LastName,
+            user.Email,
+            user.PhoneNumber
+        });
     }
 
     // ==================== Helpers ====================

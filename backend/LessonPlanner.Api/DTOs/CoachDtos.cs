@@ -8,6 +8,7 @@ public record CreateCoachRequest(
     string Email,
     string? PhoneNumber,
     string? Specialization,
+    string? NationalCode,
     int[]? AssignedCourseIds
 );
 
@@ -19,6 +20,7 @@ public record UpdateCoachRequest(
     string? Email,
     string? PhoneNumber,
     string? Specialization,
+    string? NationalCode,
     int[]? AssignedCourseIds,
     string? Status
 );

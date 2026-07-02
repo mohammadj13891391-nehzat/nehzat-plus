@@ -31,6 +31,9 @@ public class Coach
     [Column(TypeName = "nvarchar(100)")]
     public string? Specialization { get; set; }
 
+    [Column(TypeName = "nvarchar(20)")]
+    public string? NationalCode { get; set; }
+
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
