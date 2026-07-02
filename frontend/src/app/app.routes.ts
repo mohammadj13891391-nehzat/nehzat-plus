@@ -23,6 +23,31 @@ export const routes: Routes = [
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES)
   },
   {
+    path: 'coach',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/coach/coach.routes').then((m) => m.COACH_ROUTES)
+  },
+  {
+    path: 'parent',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/parent/parent.routes').then((m) => m.PARENT_ROUTES)
+  },
+  {
+    path: 'branch-manager',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/branch-manager/branch-manager.routes').then((m) => m.BRANCH_MANAGER_ROUTES)
+  },
+  {
+    path: 'evaluator',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/evaluator/evaluator.routes').then((m) => m.EVALUATOR_ROUTES)
+  },
+  {
+    path: 'headquarters',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/headquarters/headquarters.routes').then((m) => m.HEADQUARTERS_ROUTES)
+  },
+  {
     path: '**',
     redirectTo: '/auth/login'
   }
