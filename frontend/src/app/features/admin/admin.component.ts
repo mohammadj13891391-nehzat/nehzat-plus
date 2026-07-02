@@ -23,6 +23,7 @@ import type {
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  CreateStudentPayload,
   EvaluationRecord,
   Evaluator,
   HeadquartersSummary,
@@ -32,9 +33,8 @@ import type {
   MaktabBranch,
   Parent,
   ParentStudentInfo,
-  PendingUser,
-  StudentInfo,
-  StudentProgressResponse
+  Student,
+  UpdateStudentPayload
 } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 import { AuthService } from '../../core/services/auth.service';
@@ -81,10 +81,23 @@ export class AdminComponent implements OnInit {
     activeCourses: 0
   };
 
-  pendingUsers: PendingUser[] = [];
-  approvalForms: Record<number, FormGroup> = {};
-  loadingPendingUsers = false;
-  processingUserIds = new Set<number>();
+  students: Student[] = [];
+  loadingStudents = false;
+  savingStudent = false;
+  showStudentModal = false;
+  studentEditMode = false;
+  selectedStudentId: number | null = null;
+  searchStudentQuery = '';
+  studentForm = this.fb.nonNullable.group({
+    nationalCode: [''],
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    firstName: ['', [Validators.required]],
+    lastName: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
+    studentId: ['']
+  });
 
   courseFilterForm = this.fb.nonNullable.group({
     query: [''],
@@ -162,41 +175,27 @@ export class AdminComponent implements OnInit {
     return [...this.makatibGirls, ...this.makatibBoys];
   }
 
-  traineesTab: 'pending' | 'all' = 'pending';
-  allStudents: StudentInfo[] = [];
-  loadingAllStudents = false;
-  searchStudentQuery = '';
-  selectedStudentId: number | null = null;
-  selectedStudentProgress: StudentProgressResponse | null = null;
-  loadingStudentProgress = false;
-
-  get filteredStudents(): StudentInfo[] {
+  get filteredStudents(): Student[] {
     const q = this.searchStudentQuery.trim().toLowerCase();
-    if (!q) return this.allStudents;
-    return this.allStudents.filter(
+    if (!q) return this.students;
+    return this.students.filter(
       (s) =>
         s.firstName.toLowerCase().includes(q) ||
         s.lastName.toLowerCase().includes(q) ||
+        s.username.toLowerCase().includes(q) ||
         s.studentId.toLowerCase().includes(q) ||
         s.email.toLowerCase().includes(q)
     );
   }
 
-  switchTraineesTab(tab: 'pending' | 'all'): void {
-    this.traineesTab = tab;
-    if (tab === 'all' && this.allStudents.length === 0) {
-      this.loadAllStudents();
-    }
-  }
-
-  loadAllStudents(): void {
-    this.loadingAllStudents = true;
+  loadStudents(): void {
+    this.loadingStudents = true;
     this.api
-      .getAllStudents()
-      .pipe(finalize(() => (this.loadingAllStudents = false)))
+      .getStudents()
+      .pipe(finalize(() => (this.loadingStudents = false)))
       .subscribe({
         next: (students) => {
-          this.allStudents = students;
+          this.students = students;
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -206,19 +205,112 @@ export class AdminComponent implements OnInit {
       });
   }
 
-  selectStudent(studentId: number): void {
-    this.selectedStudentId = studentId;
-    this.loadingStudentProgress = true;
-    this.selectedStudentProgress = null;
+  openStudentModal(student?: Student): void {
+    if (student) {
+      this.studentEditMode = true;
+      this.selectedStudentId = student.id;
+      this.studentForm.reset({
+        nationalCode: '',
+        username: student.username,
+        password: '',
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email,
+        phoneNumber: student.phoneNumber,
+        studentId: student.studentId
+      });
+      this.studentForm.get('password')?.clearValidators();
+      this.studentForm.get('password')?.updateValueAndValidity();
+    } else {
+      this.studentEditMode = false;
+      this.selectedStudentId = null;
+      this.studentForm.reset({
+        nationalCode: '',
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        studentId: ''
+      });
+      this.studentForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.studentForm.get('password')?.updateValueAndValidity();
+    }
+    this.showStudentModal = true;
+  }
+
+  onStudentNationalCodeInput(value: string): void {
+    if (this.studentEditMode) return;
+    const code = value.trim();
+    this.studentForm.patchValue({
+      username: code,
+      password: code
+    }, { emitEvent: false });
+  }
+
+  closeStudentModal(): void {
+    this.showStudentModal = false;
+    this.studentEditMode = false;
+    this.selectedStudentId = null;
+  }
+
+  saveStudent(): void {
+    if (this.studentForm.invalid) return;
+    const raw = this.studentForm.getRawValue();
+    const payload: CreateStudentPayload = {
+      username: raw.username.trim(),
+      password: raw.password.trim(),
+      firstName: raw.firstName.trim(),
+      lastName: raw.lastName.trim(),
+      email: raw.email.trim(),
+      phoneNumber: raw.phoneNumber.trim(),
+      studentId: raw.studentId.trim() || undefined,
+      nationalCode: raw.nationalCode.trim() || undefined
+    };
+
+    const isEdit = this.studentEditMode && this.selectedStudentId !== null;
+    const studentId = this.selectedStudentId;
+    this.closeStudentModal();
+    this.savingStudent = true;
+    const request$ = isEdit
+        ? this.api.updateStudent(studentId!, payload)
+        : this.api.createStudent(payload);
+
+    request$.pipe(finalize(() => (this.savingStudent = false))).subscribe({
+      next: (student) => {
+        if (isEdit) {
+          const idx = this.students.findIndex((s) => s.id === student.id);
+          if (idx >= 0) { this.students[idx] = student; }
+          else { this.students.push(student); }
+        } else {
+          this.students.push(student);
+        }
+        this.selectedStudentId = student.id;
+        this.studentEditMode = true;
+        this.setSuccess('اطلاعات متربی ذخیره شد.');
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.setError(error?.error?.message ?? 'ذخیره اطلاعات متربی با خطا مواجه شد.');
+      }
+    });
+  }
+
+  deleteStudent(studentId: number): void {
+    if (this.savingStudent) return;
+    this.savingStudent = true;
     this.api
-      .getStudentProgress(studentId)
-      .pipe(finalize(() => (this.loadingStudentProgress = false)))
+      .deleteStudent(studentId)
+      .pipe(finalize(() => (this.savingStudent = false)))
       .subscribe({
-        next: (progress) => {
-          this.selectedStudentProgress = progress;
+        next: (response) => {
+          this.setSuccess(response?.message ?? 'متربی با موفقیت حذف شد.');
+          this.closeStudentModal();
+          this.loadStudents();
         },
         error: (error) => {
-          this.setError(error?.error?.message ?? 'دریافت اطلاعات متربی با خطا مواجه شد.');
+          this.setError(error?.error?.message ?? 'حذف متربی با خطا مواجه شد.');
         }
       });
   }
@@ -1377,8 +1469,7 @@ export class AdminComponent implements OnInit {
 
     switch (key) {
       case 'trainees':
-        this.loadPendingUsers();
-        this.loadAllStudents();
+        this.loadStudents();
         break;
       case 'teachers':
         this.loadCoaches();
@@ -1419,26 +1510,13 @@ export class AdminComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.loadStatistics();
-    this.loadPendingUsers();
+    this.loadStudents();
     this.loadCourses();
     this.loadCoaches();
     this.loadBranchManagers();
     this.loadMadrasahs();
     this.loadParents();
     this.loadEvaluators();
-  }
-
-  refreshTrainees(): void {
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.loadPendingUsers();
-    if (this.traineesTab === 'all') {
-      this.loadAllStudents();
-    }
-  }
-
-  isProcessing(userId: number): boolean {
-    return this.processingUserIds.has(userId);
   }
 
   get selectedCourseTitle(): string {
@@ -1497,63 +1575,6 @@ export class AdminComponent implements OnInit {
       return 'آزمون';
     }
     return 'روزانه';
-  }
-
-  approveUser(user: PendingUser): void {
-    const form = this.approvalForms[user.id];
-    if (!form || form.invalid || this.isProcessing(user.id)) {
-      return;
-    }
-    const courseIds = this.readControlString(form, 'courseIdsInput')
-      .split(',')
-      .map((item: string) => Number(item.trim()))
-      .filter((value: number) => Number.isFinite(value) && value > 0);
-    if (courseIds.length === 0) {
-      this.setError('حداقل یک شناسه درس معتبر وارد کنید.');
-      return;
-    }
-
-    this.processingUserIds.add(user.id);
-    this.api
-      .approveUser(user.id, {
-        firstName: this.readControlString(form, 'firstName'),
-        lastName: this.readControlString(form, 'lastName'),
-        email: this.readControlString(form, 'email'),
-        phoneNumber: this.readControlString(form, 'phoneNumber'),
-        studentId: this.readControlString(form, 'studentId'),
-        courseIds
-      })
-      .pipe(finalize(() => this.processingUserIds.delete(user.id)))
-      .subscribe({
-        next: (response) => {
-          this.setSuccess(response.message);
-          this.loadPendingUsers();
-          this.loadStatistics();
-        },
-        error: (error) => {
-          this.setError(error?.error?.message ?? 'تایید کاربر با خطا مواجه شد.');
-        }
-      });
-  }
-
-  rejectUser(user: PendingUser): void {
-    if (this.isProcessing(user.id)) {
-      return;
-    }
-    this.processingUserIds.add(user.id);
-    this.api
-      .rejectUser(user.id)
-      .pipe(finalize(() => this.processingUserIds.delete(user.id)))
-      .subscribe({
-        next: (response) => {
-          this.setSuccess(response.message);
-          this.loadPendingUsers();
-          this.loadStatistics();
-        },
-        error: (error) => {
-          this.setError(error?.error?.message ?? 'رد کاربر با خطا مواجه شد.');
-        }
-      });
   }
 
   applyCourseFilters(): void {
@@ -1969,41 +1990,6 @@ export class AdminComponent implements OnInit {
         // Keep admin UI usable even if statistics endpoint fails.
       }
     });
-  }
-
-  private loadPendingUsers(): void {
-    this.loadingPendingUsers = true;
-    this.api
-      .getPendingUsers()
-      .pipe(finalize(() => (this.loadingPendingUsers = false)))
-      .subscribe({
-        next: (users) => {
-          this.pendingUsers = users;
-          this.ensureApprovalForms(users);
-          this.stats.pendingUsers = users.length;
-          this.cdr.markForCheck();
-        },
-        error: (error) => {
-          this.setError(error?.error?.message ?? 'دریافت کاربران در انتظار تایید با خطا مواجه شد.');
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  private ensureApprovalForms(users: PendingUser[]): void {
-    for (const user of users) {
-      if (this.approvalForms[user.id]) {
-        continue;
-      }
-      this.approvalForms[user.id] = this.fb.nonNullable.group({
-        firstName: [user.firstName || '', [Validators.required]],
-        lastName: [user.lastName || '', [Validators.required]],
-        email: [user.email || '', [Validators.required, Validators.email]],
-        phoneNumber: [user.phoneNumber || '', [Validators.required, Validators.pattern(/^09\\d{9}$/)]],
-        studentId: [`S-${1000 + user.id}`, [Validators.required]],
-        courseIdsInput: ['1', [Validators.required]]
-      });
-    }
   }
 
   private loadCourses(): void {

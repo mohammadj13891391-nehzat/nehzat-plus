@@ -30,6 +30,7 @@ import {
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  CreateStudentPayload,
   CreateUserPayload,
   Course,
   EvaluationRecord,
@@ -42,9 +43,11 @@ import {
   Parent,
   ParentStudentInfo,
   PendingUser,
+  Student,
   StudentInfo,
   StudentProgressResponse,
-  UpdateMadrasahPayload
+  UpdateMadrasahPayload,
+  UpdateStudentPayload
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -260,6 +263,22 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   deleteCoach(id: number): Observable<ApiMessageResponse> {
     return this.http.delete<ApiMessageResponse>(this.url(`/admin/coaches/${id}`));
+  }
+
+  getStudents(): Observable<Student[]> {
+    return this.http.get<Student[]>(this.url('/admin/students'));
+  }
+
+  createStudent(payload: CreateStudentPayload): Observable<Student> {
+    return this.http.post<Student>(this.url('/admin/students'), payload);
+  }
+
+  updateStudent(id: number, payload: UpdateStudentPayload): Observable<Student> {
+    return this.http.put<Student>(this.url(`/admin/students/${id}`), payload);
+  }
+
+  deleteStudent(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/students/${id}`));
   }
 
   getSystemStatistics(): Observable<AdminSystemStatistics> {

@@ -123,182 +123,138 @@
 
     <div class="admin-content">
       @if (activeMenu === 'trainees') {
-        <section class="card" aria-labelledby="admin-users-title">
+        <section class="card" aria-labelledby="admin-students-title">
           <header class="section-header">
-            <h2 id="admin-users-title" class="section-title">مدیریت متربیان</h2>
-            <button type="button" class="btn btn-secondary" [disabled]="loadingPendingUsers || loadingAllStudents" (click)="refreshTrainees()">
-              بروزرسانی
-            </button>
+            <h2 id="admin-students-title" class="section-title">
+              مدیریت متربیان
+              <span class="count-badge">{{ students.length }}</span>
+            </h2>
+            <button type="button" class="btn" (click)="openStudentModal()">متربی جدید</button>
           </header>
 
-          <div class="tab-bar">
-            <button
-              type="button"
-              class="tab-btn"
-              [class.active]="traineesTab === 'pending'"
-              (click)="switchTraineesTab('pending')"
-            >
-              در انتظار تایید
-              <span class="count-badge">{{ pendingUsers.length }}</span>
-            </button>
-            <button
-              type="button"
-              class="tab-btn"
-              [class.active]="traineesTab === 'all'"
-              (click)="switchTraineesTab('all')"
-            >
-              همه متربیان
-              <span class="count-badge">{{ allStudents.length }}</span>
-            </button>
+          <div class="trainee-search">
+            <input
+              type="text"
+              [ngModel]="searchStudentQuery"
+              (ngModelChange)="searchStudentQuery = $event"
+              placeholder="جستجوی متربی (نام، نام کاربری، کد، ایمیل)..."
+              class="search-input"
+            />
           </div>
 
-          @if (traineesTab === 'pending') {
-            @if (loadingPendingUsers) {
-              <p class="muted">در حال دریافت لیست کاربران...</p>
-            } @else if (pendingUsers.length === 0) {
-              <p class="muted">در حال حاضر کاربر در انتظار تایید وجود ندارد.</p>
-            } @else {
-              <div class="pending-list">
-                @for (user of pendingUsers; track user.id) {
-                  <article class="pending-item">
-                    <div class="pending-summary">
-                      <h3>{{ user.firstName }} {{ user.lastName }}</h3>
-                      <p class="muted">نام کاربری: {{ user.username }}</p>
-                      <p class="muted">ایمیل: {{ user.email || '-' }}</p>
-                      <p class="muted">موبایل: {{ user.phoneNumber || '-' }}</p>
-                    </div>
-
-                    @if (approvalForms[user.id]; as approvalForm) {
-                      <form [formGroup]="approvalForm" class="approval-form" (ngSubmit)="approveUser(user)">
-                        <label>
-                          نام
-                          <input type="text" formControlName="firstName" />
-                        </label>
-                        <label>
-                          نام خانوادگی
-                          <input type="text" formControlName="lastName" />
-                        </label>
-                        <label>
-                          ایمیل
-                          <input type="email" formControlName="email" />
-                        </label>
-                        <label>
-                          موبایل
-                          <input type="text" formControlName="phoneNumber" />
-                        </label>
-                        <label>
-                          شماره متربی
-                          <input type="text" formControlName="studentId" />
-                        </label>
-                        <label>
-                          دوره‌ها (ID با کاما)
-                          <input type="text" formControlName="courseIdsInput" placeholder="مثال: 1,2" />
-                        </label>
-
-                        <div class="row-actions">
-                          <button type="submit" class="btn" [disabled]="isProcessing(user.id) || approvalForm.invalid">
-                            {{ isProcessing(user.id) ? 'در حال تایید...' : 'تایید' }}
+          @if (loadingStudents) {
+            <p class="muted">در حال دریافت لیست متربیان...</p>
+          } @else if (students.length === 0) {
+            <p class="muted">هیچ متربی ثبت نشده است.</p>
+          } @else {
+            <div class="table-responsive">
+              <table class="data-table coach-table">
+                <thead>
+                  <tr>
+                    <th>نام و نام خانوادگی</th>
+                    <th>نام کاربری</th>
+                    <th>ایمیل</th>
+                    <th>موبایل</th>
+                    <th>کد متربی</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (student of filteredStudents; track student.id) {
+                    <tr>
+                      <td class="coach-name-cell">
+                        <strong>{{ student.firstName }} {{ student.lastName }}</strong>
+                      </td>
+                      <td>{{ student.username }}</td>
+                      <td>{{ student.email }}</td>
+                      <td>{{ student.phoneNumber }}</td>
+                      <td>{{ student.studentId }}</td>
+                      <td>
+                        <span class="status-chip" [ngClass]="'status-chip--' + student.status">
+                          {{ student.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="action-buttons">
+                          <button type="button" class="icon-btn icon-btn--edit" (click)="openStudentModal(student)" title="ویرایش">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                           </button>
-                          <button
-                            type="button"
-                            class="btn btn-secondary"
-                            [disabled]="isProcessing(user.id)"
-                            (click)="rejectUser(user)"
-                          >
-                            {{ isProcessing(user.id) ? 'در حال پردازش...' : 'رد' }}
+                          <button type="button" class="icon-btn icon-btn--delete" (click)="deleteStudent(student.id)" title="حذف">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                           </button>
                         </div>
-                      </form>
-                    }
-                  </article>
-                }
-              </div>
-            }
-          }
-
-          @if (traineesTab === 'all') {
-            <div class="trainee-search">
-              <input
-                type="text"
-                [ngModel]="searchStudentQuery"
-                (ngModelChange)="searchStudentQuery = $event"
-                placeholder="جستجوی متربی (نام، کد، ایمیل)..."
-                class="search-input"
-              />
-            </div>
-
-            @if (loadingAllStudents) {
-              <p class="muted">در حال دریافت لیست متربیان...</p>
-            } @else if (allStudents.length === 0) {
-              <p class="muted">هیچ متربی ثبت‌شده‌ای یافت نشد.</p>
-            } @else {
-              <div class="split-grid">
-                <div>
-                  <div class="select-list">
-                    @for (student of filteredStudents; track student.id) {
-                      <button
-                        type="button"
-                        class="list-item"
-                        [class.is-selected]="selectedStudentId === student.id"
-                        (click)="selectStudent(student.id)"
-                      >
-                        <div class="list-item-top">
-                          <strong>{{ student.firstName }} {{ student.lastName }}</strong>
-                        </div>
-                        <span class="list-meta">{{ student.studentId }}</span>
-                        <small class="list-meta">{{ student.email }}</small>
-                      </button>
-                    }
-                  </div>
-                </div>
-
-                <div>
-                  @if (loadingStudentProgress) {
-                    <p class="muted">در حال دریافت اطلاعات متربی...</p>
-                  } @else if (selectedStudentProgress) {
-                    <div class="editor-form">
-                      <h3>{{ selectedStudentProgress.student.firstName }} {{ selectedStudentProgress.student.lastName }}</h3>
-                      <p class="list-meta">کد: {{ selectedStudentProgress.student.studentId }}</p>
-                      <p class="list-meta">ایمیل: {{ selectedStudentProgress.student.email }}</p>
-                      <p class="list-meta">موبایل: {{ selectedStudentProgress.student.phoneNumber || '-' }}</p>
-
-                      <h4 style="margin: 0.75rem 0 0.35rem">دوره‌های ثبت‌نامی</h4>
-                      @if (selectedStudentProgress.courses.length === 0) {
-                        <p class="muted">هیچ دوره‌ای ثبت نشده است.</p>
-                      } @else {
-                        <ul class="trainee-course-list">
-                          @for (item of selectedStudentProgress.courses; track item.course.id) {
-                            <li>
-                              <strong>{{ item.course.title }}</strong>
-                              <span class="list-meta"> — {{ item.course.instructor }}</span>
-                            </li>
-                          }
-                        </ul>
-                      }
-
-                      <h4 style="margin: 0.75rem 0 0.35rem">آخرین ارسال‌ها</h4>
-                      @if (selectedStudentProgress.submissions.length === 0) {
-                        <p class="muted">هنوز ارسالی ثبت نشده است.</p>
-                      } @else {
-                        <ul class="trainee-course-list">
-                          @for (sub of selectedStudentProgress.submissions.slice(0, 5); track sub.id) {
-                            <li>
-                              <span>نمره: {{ sub.dailyScore ?? '-' }}</span>
-                              <span class="list-meta"> — {{ sub.submissionDate | date:'yyyy/MM/dd' }}</span>
-                              <span class="status-chip" [ngClass]="'status-chip--' + sub.status">{{ sub.status }}</span>
-                            </li>
-                          }
-                        </ul>
-                      }
-                    </div>
-                  } @else {
-                    <p class="muted">یک متربی را از لیست انتخاب کنید.</p>
+                      </td>
+                    </tr>
                   }
-                </div>
-              </div>
-            }
+                </tbody>
+              </table>
+            </div>
           }
         </section>
+
+        @if (showStudentModal) {
+          <div class="modal-overlay" (click)="closeStudentModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+              <div class="modal-header">
+                <h3>{{ studentEditMode ? 'ویرایش متربی' : 'متربی جدید' }}</h3>
+                <button type="button" class="modal-close" (click)="closeStudentModal()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <form [formGroup]="studentForm" class="modal-body" (ngSubmit)="saveStudent()">
+                <div class="form-grid">
+                  <label class="form-field">
+                    <span class="form-label">کد ملی</span>
+                    <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onStudentNationalCodeInput($any($event.target).value)" />
+                    @if (!studentEditMode) {
+                      <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
+                    }
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">نام کاربری *</span>
+                    <input type="text" formControlName="username" placeholder="مثال: ali.ahmadi" class="form-input" [readonly]="!studentEditMode" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">{{ studentEditMode ? 'رمز عبور (خالی = بدون تغییر)' : 'رمز عبور *' }}</span>
+                    <input type="password" formControlName="password" [placeholder]="studentEditMode ? 'خالی بگذارید = بدون تغییر' : 'حداقل ۶ کاراکتر'" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">نام *</span>
+                    <input type="text" formControlName="firstName" placeholder="مثال: علی" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">نام خانوادگی *</span>
+                    <input type="text" formControlName="lastName" placeholder="مثال: احمدی" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">ایمیل *</span>
+                    <input type="email" formControlName="email" placeholder="مثال: ali@example.com" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">شماره موبایل *</span>
+                    <input type="text" formControlName="phoneNumber" placeholder="09123456789" class="form-input" />
+                  </label>
+                  <label class="form-field">
+                    <span class="form-label">کد متربی</span>
+                    <input type="text" formControlName="studentId" placeholder="مثال: S-1001" class="form-input" />
+                  </label>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" (click)="closeStudentModal()">انصراف</button>
+                  @if (studentEditMode && selectedStudentId !== null) {
+                    <button type="button" class="btn btn-danger" [disabled]="savingStudent" (click)="deleteStudent(selectedStudentId)">
+                      حذف متربی
+                    </button>
+                  }
+                  <button type="submit" class="btn" [disabled]="studentForm.invalid || savingStudent">
+                    {{ savingStudent ? 'در حال ذخیره...' : studentEditMode ? 'ذخیره تغییرات' : 'ایجاد متربی' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        }
       }
 
       @if (activeMenu === 'teachers') {

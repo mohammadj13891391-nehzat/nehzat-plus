@@ -20,11 +20,11 @@ public class AuthController : ControllerBase
     {
         var isValid = await _userService.ValidateUserAsync(request.Username, request.Password);
         if (!isValid)
-            return BadRequest(new { message = "Invalid credentials" });
+            return BadRequest(new { message = "کاربری با این نام کاربری یا رمز عبور یافت نشد" });
 
         var user = await _userService.FindUserAsync(request.Username);
         if (user == null)
-            return BadRequest(new { message = "User not found" });
+            return BadRequest(new { message = "کاربری با این نام کاربری یافت نشد" });
 
         if (user.ApprovalStatus == "pending")
             return BadRequest(new { message = "حساب کاربری شما در انتظار تایید مدیر سیستم است" });

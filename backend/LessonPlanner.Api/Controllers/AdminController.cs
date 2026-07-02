@@ -15,8 +15,9 @@ public class AdminController : ControllerBase
     private readonly IBranchManagerService _branchManagerService;
     private readonly IParentService _parentService;
     private readonly IEvaluatorService _evaluatorService;
+    private readonly IStudentService _studentService;
 
-    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService)
+    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService, IStudentService studentService)
     {
         _courseService = courseService;
         _coachService = coachService;
@@ -24,6 +25,7 @@ public class AdminController : ControllerBase
         _branchManagerService = branchManagerService;
         _parentService = parentService;
         _evaluatorService = evaluatorService;
+        _studentService = studentService;
     }
 
     // ==================== Courses ====================
@@ -751,6 +753,153 @@ public class AdminController : ControllerBase
         try
         {
             await _evaluatorService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    // ==================== Students ====================
+
+    [HttpGet("students")]
+    public async Task<IActionResult> GetAllStudents()
+    {
+        var students = await _studentService.GetAllAsync();
+        var result = students.Select(s =>
+        {
+            var user = _userService.FindUserByStudentIdAsync(s.Id).Result;
+            return new
+            {
+                s.Id,
+                Username = user?.Username ?? "",
+                s.FirstName,
+                s.LastName,
+                s.Email,
+                s.PhoneNumber,
+                s.StudentId,
+                s.Status,
+                s.CreatedAt
+            };
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("students/{id}")]
+    public async Task<IActionResult> GetStudentById(int id)
+    {
+        var student = await _studentService.FindByIdAsync(id);
+        if (student == null) return NotFound(new { message = "متربی پیدا نشد." });
+        var user = await _userService.FindUserByStudentIdAsync(student.Id);
+        return Ok(new
+        {
+            student.Id,
+            Username = user?.Username ?? "",
+            student.FirstName,
+            student.LastName,
+            student.Email,
+            student.PhoneNumber,
+            student.StudentId,
+            student.Status,
+            student.CreatedAt
+        });
+    }
+
+    [HttpPost("students")]
+    public async Task<IActionResult> CreateStudent([FromBody] AdminCreateStudentRequest request)
+    {
+        var student = await _studentService.CreateAsync(
+            request.FirstName.Trim(),
+            request.LastName.Trim(),
+            request.Email.Trim(),
+            request.PhoneNumber?.Trim() ?? "",
+            request.StudentId?.Trim() ?? $"S-{DateTime.UtcNow.Ticks % 100000}"
+        );
+
+        var existing = await _userService.FindUserAsync(request.Username);
+        if (existing == null)
+        {
+            await _userService.CreateUserAsync(
+                request.Username,
+                request.Password,
+                null,
+                student.Id,
+                "trainee",
+                request.FirstName,
+                request.LastName,
+                request.Email,
+                request.PhoneNumber
+            );
+        }
+
+        var user = await _userService.FindUserByStudentIdAsync(student.Id);
+        return Ok(new
+        {
+            student.Id,
+            Username = user?.Username ?? request.Username,
+            student.FirstName,
+            student.LastName,
+            student.Email,
+            student.PhoneNumber,
+            student.StudentId,
+            student.Status,
+            student.CreatedAt
+        });
+    }
+
+    [HttpPut("students/{id}")]
+    public async Task<IActionResult> UpdateStudent(int id, [FromBody] AdminUpdateStudentRequest request)
+    {
+        try
+        {
+            var existing = await _studentService.FindByIdAsync(id)
+                ?? throw new KeyNotFoundException("متربی پیدا نشد.");
+
+            if (request.FirstName != null) existing.FirstName = request.FirstName.Trim();
+            if (request.LastName != null) existing.LastName = request.LastName.Trim();
+            if (request.Email != null) existing.Email = request.Email.Trim();
+            if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
+            if (request.StudentId != null) existing.StudentId = request.StudentId.Trim();
+            if (request.Status != null) existing.Status = request.Status;
+            existing.UpdatedAt = DateTime.UtcNow;
+
+            await _studentService.UpdateAsync(id, existing);
+
+            // Update user record if username changed
+            var user = await _userService.FindUserByStudentIdAsync(id);
+            if (user != null && request.Username != null && request.Username.Trim() != user.Username)
+            {
+                // Username change would need special handling - skip for now
+            }
+
+            var updated = await _studentService.FindByIdAsync(id);
+            var updatedUser = await _userService.FindUserByStudentIdAsync(id);
+            return Ok(new
+            {
+                updated!.Id,
+                Username = updatedUser?.Username ?? "",
+                updated.FirstName,
+                updated.LastName,
+                updated.Email,
+                updated.PhoneNumber,
+                updated.StudentId,
+                updated.Status,
+                updated.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("students/{id}")]
+    public async Task<IActionResult> DeleteStudent(int id)
+    {
+        try
+        {
+            await _studentService.DeleteAsync(id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)

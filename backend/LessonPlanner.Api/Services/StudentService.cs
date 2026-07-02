@@ -90,9 +90,23 @@ public class StudentService : IStudentService
 
     public async Task DeleteAsync(int id)
     {
-        var student = await _db.Students.FindAsync(id);
+        var student = await _db.Students
+            .Include(s => s.StudentCourses)
+            .Include(s => s.Submissions)
+            .FirstOrDefaultAsync(s => s.Id == id);
         if (student != null)
         {
+            // Disassociate any users linked to this student
+            var users = await _db.Users.Where(u => u.StudentId == id).ToListAsync();
+            foreach (var user in users)
+            {
+                user.StudentId = null;
+            }
+
+            // Remove enrollment and submission records
+            _db.StudentCourses.RemoveRange(student.StudentCourses);
+            _db.AssignmentSubmissions.RemoveRange(student.Submissions);
+
             _db.Students.Remove(student);
             await _db.SaveChangesAsync();
         }

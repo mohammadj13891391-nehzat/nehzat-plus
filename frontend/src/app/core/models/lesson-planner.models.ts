@@ -273,7 +273,34 @@ export interface CreatedUser {
   phoneNumber?: string;
 }
 
-export interface Student extends StudentInfo {}
+export interface Student extends StudentInfo {
+  username: string;
+  status: 'active' | 'inactive';
+  createdAt?: string;
+}
+
+export interface CreateStudentPayload {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  studentId?: string;
+  nationalCode?: string;
+}
+
+export interface UpdateStudentPayload {
+  username?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  studentId?: string;
+  nationalCode?: string;
+  status?: string;
+}
 
 export interface StudentCourseProgress {
   course: Course;

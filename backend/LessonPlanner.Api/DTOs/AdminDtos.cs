@@ -37,3 +37,26 @@ public record CreateUserRequest(
     string? Email = null,
     string? PhoneNumber = null
 );
+
+public record AdminCreateStudentRequest(
+    string Username,
+    string Password,
+    string FirstName,
+    string LastName,
+    string Email,
+    string? PhoneNumber,
+    string? StudentId,
+    string? NationalCode
+);
+
+public record AdminUpdateStudentRequest(
+    string? Username,
+    string? Password,
+    string? FirstName,
+    string? LastName,
+    string? Email,
+    string? PhoneNumber,
+    string? StudentId,
+    string? NationalCode,
+    string? Status
+);
