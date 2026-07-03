@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -17,6 +18,7 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   loading = false;
   errorMessage = '';
@@ -44,7 +46,7 @@ export class RegisterComponent {
     this.authService
       .signup(this.form.getRawValue())
       .pipe(finalize(() => (this.loading = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.successMessage = response.message;
           this.notify.show(response.message, 'success');

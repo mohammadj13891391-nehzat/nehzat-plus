@@ -206,7 +206,7 @@
                 <div class="form-grid">
                   <label class="form-field">
                     <span class="form-label">کد ملی</span>
-                    <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onStudentNationalCodeInput($any($event.target).value)" />
+                    <input #studentNc type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onStudentNationalCodeInput(studentNc.value)" />
                     @if (!studentEditMode) {
                       <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
                     }
@@ -349,7 +349,7 @@
                 <div class="form-grid">
                   <label class="form-field">
                     <span class="form-label">کد ملی</span>
-                    <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onNationalCodeInput($any($event.target).value)" />
+                    <input #coachNc type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onNationalCodeInput(coachNc.value)" />
                     @if (!coachEditMode) {
                       <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
                     }
@@ -950,7 +950,7 @@
                 <div class="form-grid">
                   <label class="form-field">
                     <span class="form-label">کد ملی</span>
-                    <input type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onBranchManagerNationalCodeInput($any($event.target).value)" />
+                    <input #bmNc type="text" formControlName="nationalCode" placeholder="مثال: 1234567890" class="form-input" (input)="onBranchManagerNationalCodeInput(bmNc.value)" />
                     @if (!branchManagerEditMode) {
                       <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
                     }
@@ -1119,7 +1119,7 @@
           <div class="province-selector">
             <label>
               انتخاب استان
-              <select (change)="selectProvince($any($event.target).value)">
+              <select #provinceSelect (change)="selectProvince(provinceSelect.value)">
                 <option value="">-- استان را انتخاب کنید --</option>
                 @for (province of provinces; track province) {
                   <option [value]="province" [selected]="selectedProvince === province">{{ province }}</option>
@@ -1215,7 +1215,7 @@
               <h3>{{ parentEditMode ? 'ویرایش والد' : 'ایجاد والد جدید' }}</h3>
               <label class="form-field">
                 <span class="form-label">کد ملی</span>
-                <input type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onParentNationalCodeInput($any($event.target).value)" />
+                <input #parentNc type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onParentNationalCodeInput(parentNc.value)" />
                 @if (!parentEditMode) {
                   <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
                 }
@@ -1340,7 +1340,7 @@
               <h3>{{ evaluatorEditMode ? 'ویرایش ارزیاب' : 'ایجاد ارزیاب جدید' }}</h3>
               <label class="form-field">
                 <span class="form-label">کد ملی</span>
-                <input type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onEvaluatorNationalCodeInput($any($event.target).value)" />
+                <input #evaluatorNc type="text" formControlName="nationalCode" dir="ltr" class="form-input" (input)="onEvaluatorNationalCodeInput(evaluatorNc.value)" />
                 @if (!evaluatorEditMode) {
                   <small class="form-hint">نام کاربری و رمز عبور به‌طور خودکار کد ملی قرار می‌گیرد</small>
                 }

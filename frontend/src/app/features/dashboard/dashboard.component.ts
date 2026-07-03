@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -24,13 +25,15 @@ type TimelineStatus = 'future' | 'today' | 'past';
   standalone: true,
   imports: [CommonModule, DashboardTrainingStepsComponent],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly router = inject(Router);
   private readonly notify = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   currentUser: CurrentUser | null = null;
   courses: Course[] = [];
@@ -149,7 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.api
       .getActiveCourses()
       .pipe(finalize(() => (this.loadingCourses = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (courses) => {
           this.courses = courses;
           if (courses.length > 0) {
@@ -183,7 +186,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.api
       .getCourseAssignments(courseId)
       .pipe(finalize(() => (this.loadingAssignments = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (assignments) => {
           this.assignments = [...assignments].sort((a, b) => a.assignmentDate.localeCompare(b.assignmentDate));
           this.updateChartSummary();
@@ -205,7 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.api
       .getStudentSubmissions(studentId)
       .pipe(finalize(() => (this.loadingSubmissions = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (submissions) => {
           this.submissions = submissions;
           this.updateChartSummary();
@@ -350,7 +353,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.api
       .submitAssignment(studentId, this.selectedAssignment.id, payload)
       .pipe(finalize(() => (this.isSubmitting = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.setSuccess('فایل صوتی با موفقیت ارسال شد.');
           this.loadSubmissions();
@@ -446,7 +449,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.selectedAssignment.instructionAudioVersion
       )
       .pipe(finalize(() => (this.listenRequestInFlight = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (progress) => {
           this.assignmentProgress = progress;
         },
@@ -467,7 +470,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
     const requestKey = `${studentId}:${assignmentId}:${Date.now()}`;
     this.lastProgressRequestKey = requestKey;
-    this.api.getAssignmentProgress(studentId, assignmentId).subscribe({
+    this.api.getAssignmentProgress(studentId, assignmentId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (progress) => {
         if (this.lastProgressRequestKey !== requestKey) {
           return;

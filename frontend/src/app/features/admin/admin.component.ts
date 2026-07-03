@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -46,7 +47,8 @@ import { NotificationService } from '../../core/services/notification.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss']
+  styleUrls: ['./admin.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminComponent implements OnInit {
   private readonly authService = inject(AuthService);
@@ -55,6 +57,7 @@ export class AdminComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly notify = inject(NotificationService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   username = '';
   errorMessage = '';
@@ -212,7 +215,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getStudents()
       .pipe(finalize(() => (this.loadingStudents = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (students) => {
           this.students = students;
           this.cdr.markForCheck();
@@ -296,7 +299,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateStudent(studentId!, payload)
         : this.api.createStudent(payload);
 
-    request$.pipe(finalize(() => (this.savingStudent = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingStudent = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (student) => {
         if (isEdit) {
           const idx = this.students.findIndex((s) => s.id === student.id);
@@ -322,7 +325,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteStudent(studentId)
       .pipe(finalize(() => (this.savingStudent = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'متربی با موفقیت حذف شد.');
           this.closeStudentModal();
@@ -363,7 +366,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getCourseEnrollments(this.selectedCourseId)
       .pipe(finalize(() => (this.loadingEnrollments = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (enrollments) => {
           this.courseEnrollments = enrollments;
           this.cdr.markForCheck();
@@ -381,7 +384,7 @@ export class AdminComponent implements OnInit {
     this.api
       .enrollStudentInCourse(this.selectedCourseId, this.enrollStudentId)
       .pipe(finalize(() => (this.enrollingStudent = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.enrollStudentId = 0;
@@ -397,7 +400,7 @@ export class AdminComponent implements OnInit {
     if (this.selectedCourseId === null) return;
     this.api
       .unenrollStudentFromCourse(this.selectedCourseId, studentId)
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadCourseEnrollments();
@@ -414,7 +417,7 @@ export class AdminComponent implements OnInit {
     this.api
       .generateCourseInviteCode(this.selectedCourseId)
       .pipe(finalize(() => (this.generatingInviteCode = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (inviteCode) => {
           this.courseInviteCode = inviteCode;
           this.setSuccess('کد دعوت با موفقیت تولید شد.');
@@ -466,7 +469,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getCoaches()
       .pipe(finalize(() => (this.loadingCoaches = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (coaches) => {
           this.coaches = coaches;
           this.cdr.markForCheck();
@@ -578,7 +581,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateCoach(coachId!, payload)
         : this.api.createCoach(payload);
 
-    request$.pipe(finalize(() => (this.savingCoach = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingCoach = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (coach) => {
         if (isEdit) {
           const idx = this.coaches.findIndex((c) => c.id === coach.id);
@@ -604,7 +607,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteCoach(coachId)
       .pipe(finalize(() => (this.savingCoach = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'مربی با موفقیت حذف شد.');
           this.closeCoachModal();
@@ -691,7 +694,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getParents()
       .pipe(finalize(() => (this.loadingParents = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (parents) => {
           this.parents = parents;
           this.cdr.markForCheck();
@@ -775,7 +778,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateParent(this.selectedParentId, payload)
         : this.api.createParent(payload);
 
-    request$.pipe(finalize(() => (this.savingParent = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingParent = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (parent) => {
         this.selectedParentId = parent.id;
         this.parentEditMode = true;
@@ -794,7 +797,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteParent(parentId)
       .pipe(finalize(() => (this.savingParent = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'والد با موفقیت حذف شد.');
           if (this.selectedParentId === parentId) {
@@ -814,7 +817,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getParentStudents(parentId)
       .pipe(finalize(() => (this.loadingParentStudents = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (students) => {
           this.parentStudents = students;
         },
@@ -871,7 +874,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getEvaluators()
       .pipe(finalize(() => (this.loadingEvaluators = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (evaluators) => {
           this.evaluators = evaluators;
           this.cdr.markForCheck();
@@ -955,7 +958,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateEvaluator(this.selectedEvaluatorId, payload)
         : this.api.createEvaluator(payload);
 
-    request$.pipe(finalize(() => (this.savingEvaluator = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingEvaluator = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (evaluator) => {
         this.selectedEvaluatorId = evaluator.id;
         this.evaluatorEditMode = true;
@@ -974,7 +977,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteEvaluator(evaluatorId)
       .pipe(finalize(() => (this.savingEvaluator = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'ارزیاب با موفقیت حذف شد.');
           if (this.selectedEvaluatorId === evaluatorId) {
@@ -994,7 +997,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getEvaluationRecords(evaluatorId)
       .pipe(finalize(() => (this.loadingEvaluationRecords = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (records) => {
           this.evaluationRecords = records;
         },
@@ -1021,7 +1024,7 @@ export class AdminComponent implements OnInit {
     this.api
       .createEvaluation(payload)
       .pipe(finalize(() => (this.savingEvaluation = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.setSuccess('رکورد ارزیابی با موفقیت ثبت شد.');
           this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
@@ -1045,7 +1048,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteEvaluation(recordId)
       .pipe(finalize(() => (this.savingEvaluation = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
@@ -1069,7 +1072,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getHeadquartersSummary()
       .pipe(finalize(() => (this.loadingHeadquarters = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (summary) => {
           this.headquartersSummary = summary;
           this.cdr.markForCheck();
@@ -1086,7 +1089,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranchPerformance()
       .pipe(finalize(() => (this.loadingBranchPerformance = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
           this.branchPerformanceData = data;
           this.cdr.markForCheck();
@@ -1103,7 +1106,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getCoachPerformance()
       .pipe(finalize(() => (this.loadingCoachPerformance = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
           this.coachPerformanceData = data;
           this.cdr.markForCheck();
@@ -1131,7 +1134,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranches()
       .pipe(finalize(() => (this.loadingRegisteredBranches = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (branches) => {
           this.registeredBranches = branches;
           this.cdr.markForCheck();
@@ -1148,7 +1151,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranchManagers()
       .pipe(finalize(() => (this.loadingBranchManagers = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (managers) => {
           this.branchManagers = managers;
           this.cdr.markForCheck();
@@ -1234,7 +1237,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateBranchManager(this.selectedBranchManagerId, payload)
         : this.api.createBranchManager(payload);
 
-    request$.pipe(finalize(() => (this.savingBranchManager = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingBranchManager = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (bm) => {
         this.closeBranchManagerModal();
         this.setSuccess('اطلاعات مسئول شعبه ذخیره شد.');
@@ -1252,7 +1255,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteBranchManager(id)
       .pipe(finalize(() => (this.savingBranchManager = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'مسئول شعبه با موفقیت حذف شد.');
           this.closeBranchManagerModal();
@@ -1316,7 +1319,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getMadrasahs()
       .pipe(finalize(() => (this.loadingMadrasahs = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (madrasahs) => {
           this.madrasahs = madrasahs;
           this.cdr.markForCheck();
@@ -1380,7 +1383,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateMadrasah(this.selectedMadrasahId, payload)
         : this.api.createMadrasah(payload);
 
-    request$.pipe(finalize(() => (this.savingMadrasah = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingMadrasah = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (madrasah) => {
         this.selectedMadrasahId = madrasah.id;
         this.madrasahEditMode = true;
@@ -1399,7 +1402,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteMadrasah(madrasahId)
       .pipe(finalize(() => (this.savingMadrasah = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           if (this.selectedMadrasahId === madrasahId) {
@@ -1427,7 +1430,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getMaktabBranches(madrasah.id)
       .pipe(finalize(() => (this.loadingBranches = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (branches) => {
           this.branches = branches;
           this.cdr.markForCheck();
@@ -1453,7 +1456,7 @@ export class AdminComponent implements OnInit {
         status: 'active'
       })
       .pipe(finalize(() => (this.savingBranch = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.newBranchName = '';
           this.setSuccess('شعبه با موفقیت اضافه شد.');
@@ -1473,7 +1476,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteMaktabBranch(madrasah.id, branchId)
       .pipe(finalize(() => (this.savingBranch = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadBranches();
@@ -1689,7 +1692,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateAdminCourse(this.selectedCourseId, payload)
         : this.api.createAdminCourse(payload);
 
-    request$.pipe(finalize(() => (this.savingCourse = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingCourse = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (course) => {
         this.selectedCourseId = course.id;
         this.courseMode = 'edit';
@@ -1710,7 +1713,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAdminCourse(this.selectedCourseId)
       .pipe(finalize(() => (this.savingCourse = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.selectedCourseId = null;
@@ -1759,7 +1762,7 @@ export class AdminComponent implements OnInit {
     this.api
       .updateAdminCourse(course.id, { status: newStatus })
       .pipe(finalize(() => (this.savingCourse = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           course.status = newStatus;
           if (wasActive) {
@@ -1833,7 +1836,7 @@ export class AdminComponent implements OnInit {
         ? this.api.updateAdminAssignment(this.selectedAssignmentId, payload)
         : this.api.createAdminAssignment(this.selectedCourseId, payload);
 
-    request$.pipe(finalize(() => (this.savingAssignment = false))).subscribe({
+    request$.pipe(finalize(() => (this.savingAssignment = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (assignment) => {
         this.selectedAssignmentId = assignment.id;
         this.assignmentMode = 'edit';
@@ -1854,7 +1857,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAdminAssignment(this.selectedAssignmentId)
       .pipe(finalize(() => (this.savingAssignment = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.startCreateAssignment();
@@ -1885,7 +1888,7 @@ export class AdminComponent implements OnInit {
         instructions: raw.instructions.trim()
       })
       .pipe(finalize(() => (this.creatingDailySeries = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (items) => {
           this.setSuccess(`${items.length} تکلیف روزانه ایجاد شد.`);
           this.loadAssignments(this.selectedCourseId ?? 0);
@@ -1920,7 +1923,7 @@ export class AdminComponent implements OnInit {
     this.api
       .createAttachment(this.selectedAssignmentId, payload)
       .pipe(finalize(() => (this.creatingAttachment = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.setSuccess('پیوست جدید افزوده شد.');
           this.createAttachmentFile = null;
@@ -1952,7 +1955,7 @@ export class AdminComponent implements OnInit {
         displayOrder: Number(this.readControlString(form, 'displayOrder')) || 1
       })
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.setSuccess('پیوست با موفقیت ویرایش شد.');
           if (this.selectedAssignmentId !== null) {
@@ -1984,7 +1987,7 @@ export class AdminComponent implements OnInit {
     this.api
       .uploadAttachmentFile(attachmentId, payload)
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.setSuccess('فایل پیوست جایگزین شد.');
           this.attachmentReplacementFiles[attachmentId] = null;
@@ -2006,7 +2009,7 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAttachment(attachmentId)
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           if (this.selectedAssignmentId !== null) {
@@ -2020,7 +2023,7 @@ export class AdminComponent implements OnInit {
   }
 
   private loadStatistics(): void {
-    this.api.getSystemStatistics().subscribe({
+    this.api.getSystemStatistics().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (systemStats) => {
         this.stats.totalCourses = systemStats.totalCourses;
         this.stats.totalAssignments = systemStats.totalAssignments;
@@ -2049,7 +2052,7 @@ export class AdminComponent implements OnInit {
       request$ = this.api.getAdminCourses();
     }
 
-    request$.pipe(finalize(() => (this.loadingCourses = false))).subscribe({
+    request$.pipe(finalize(() => (this.loadingCourses = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (courses) => {
         this.courses = query && status ? courses.filter((course) => course.status === status) : courses;
         if (!this.courses.some((course) => course.id === this.selectedCourseId)) {
@@ -2077,7 +2080,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getAdminCourseAssignments(courseId)
       .pipe(finalize(() => (this.loadingAssignments = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (assignments) => {
           this.assignments = assignments;
           if (!this.assignments.some((item) => item.id === this.selectedAssignmentId)) {
@@ -2104,7 +2107,7 @@ export class AdminComponent implements OnInit {
     this.api
       .getAssignmentAttachments(assignmentId)
       .pipe(finalize(() => (this.loadingAttachments = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (attachments) => {
           this.attachments = attachments;
           this.ensureAttachmentForms(attachments);

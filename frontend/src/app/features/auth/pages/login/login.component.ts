@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -17,6 +18,7 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly notify = inject(NotificationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required]],
@@ -36,7 +38,7 @@ export class LoginComponent {
     this.authService
       .signin(payload)
       .pipe(finalize(() => (this.isSubmitting = false)))
-      .subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
           const target = this.authService.getDashboardPathForRole(response.userType);
           void this.router.navigateByUrl(target);
