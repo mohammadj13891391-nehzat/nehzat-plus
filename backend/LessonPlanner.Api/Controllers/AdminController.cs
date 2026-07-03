@@ -16,8 +16,9 @@ public class AdminController : ControllerBase
     private readonly IParentService _parentService;
     private readonly IEvaluatorService _evaluatorService;
     private readonly IStudentService _studentService;
+    private readonly IBranchService _branchService;
 
-    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService, IStudentService studentService)
+    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService, IStudentService studentService, IBranchService branchService)
     {
         _courseService = courseService;
         _coachService = coachService;
@@ -26,6 +27,49 @@ public class AdminController : ControllerBase
         _parentService = parentService;
         _evaluatorService = evaluatorService;
         _studentService = studentService;
+        _branchService = branchService;
+    }
+
+    // ==================== Branches ====================
+
+    [HttpGet("branches")]
+    public async Task<IActionResult> GetAllBranches()
+    {
+        return Ok(await _branchService.GetAllAsync());
+    }
+
+    [HttpPost("branches")]
+    public async Task<IActionResult> CreateBranch([FromBody] CreateBranchRequest request)
+    {
+        var branch = await _branchService.CreateAsync(request.Name, request.Province, request.Description);
+        return Ok(branch);
+    }
+
+    [HttpPut("branches/{id}")]
+    public async Task<IActionResult> UpdateBranch(int id, [FromBody] UpdateBranchRequest request)
+    {
+        try
+        {
+            return Ok(await _branchService.UpdateAsync(id, request.Name, request.Province, request.Description));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpDelete("branches/{id}")]
+    public async Task<IActionResult> DeleteBranch(int id)
+    {
+        try
+        {
+            await _branchService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 
     // ==================== Courses ====================
@@ -243,6 +287,7 @@ public class AdminController : ControllerBase
             c.LastName,
             c.Email,
             c.PhoneNumber,
+            c.BranchId,
             c.Specialization,
             AssignedCourseIds = c.CoachCourses.Select(cc => cc.CourseId).ToArray(),
             c.NationalCode,
@@ -265,6 +310,7 @@ public class AdminController : ControllerBase
             coach.LastName,
             coach.Email,
             coach.PhoneNumber,
+            coach.BranchId,
             coach.Specialization,
             coach.NationalCode,
             AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
@@ -303,6 +349,7 @@ public class AdminController : ControllerBase
             coach.LastName,
             coach.Email,
             coach.PhoneNumber,
+            coach.BranchId,
             coach.Specialization,
             coach.NationalCode,
             AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
@@ -325,6 +372,7 @@ public class AdminController : ControllerBase
                 coach.LastName,
                 coach.Email,
                 coach.PhoneNumber,
+                coach.BranchId,
                 coach.Specialization,
                 coach.NationalCode,
                 AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
@@ -366,8 +414,8 @@ public class AdminController : ControllerBase
             bm.LastName,
             bm.Email,
             bm.PhoneNumber,
-            bm.AssignedBranch,
-            bm.AssignedProvince,
+            bm.BranchId,
+            BranchName = bm.Branch?.Name,
             bm.Gender,
             bm.NationalCode,
             bm.Status,
@@ -389,8 +437,8 @@ public class AdminController : ControllerBase
             bm.LastName,
             bm.Email,
             bm.PhoneNumber,
-            bm.AssignedBranch,
-            bm.AssignedProvince,
+            bm.BranchId,
+            BranchName = bm.Branch?.Name,
             bm.Gender,
             bm.NationalCode,
             bm.Status,
@@ -427,8 +475,8 @@ public class AdminController : ControllerBase
             bm.LastName,
             bm.Email,
             bm.PhoneNumber,
-            bm.AssignedBranch,
-            bm.AssignedProvince,
+            bm.BranchId,
+            BranchName = bm.Branch?.Name,
             bm.Gender,
             bm.NationalCode,
             bm.Status,
@@ -450,8 +498,8 @@ public class AdminController : ControllerBase
                 bm.LastName,
                 bm.Email,
                 bm.PhoneNumber,
-                bm.AssignedBranch,
-                bm.AssignedProvince,
+                bm.BranchId,
+                BranchName = bm.Branch?.Name,
                 bm.Gender,
                 bm.NationalCode,
                 bm.Status,
@@ -494,6 +542,7 @@ public class AdminController : ControllerBase
             p.PhoneNumber,
             p.Address,
             p.NationalCode,
+            p.BranchId,
             StudentIds = p.StudentIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(int.Parse)
@@ -519,6 +568,7 @@ public class AdminController : ControllerBase
             parent.PhoneNumber,
             parent.Address,
             parent.NationalCode,
+            parent.BranchId,
             StudentIds = parent.StudentIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(int.Parse)
@@ -559,6 +609,7 @@ public class AdminController : ControllerBase
             parent.PhoneNumber,
             parent.Address,
             parent.NationalCode,
+            parent.BranchId,
             StudentIds = parent.StudentIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(int.Parse)
@@ -641,6 +692,7 @@ public class AdminController : ControllerBase
             e.LastName,
             e.Email,
             e.PhoneNumber,
+            e.BranchId,
             e.Expertise,
             AssignedMadrasahIds = e.AssignedMadrasahIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -666,6 +718,7 @@ public class AdminController : ControllerBase
             evaluator.LastName,
             evaluator.Email,
             evaluator.PhoneNumber,
+            evaluator.BranchId,
             evaluator.Expertise,
             AssignedMadrasahIds = evaluator.AssignedMadrasahIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -706,6 +759,7 @@ public class AdminController : ControllerBase
             evaluator.LastName,
             evaluator.Email,
             evaluator.PhoneNumber,
+            evaluator.BranchId,
             evaluator.Expertise,
             AssignedMadrasahIds = evaluator.AssignedMadrasahIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -778,6 +832,7 @@ public class AdminController : ControllerBase
                 s.LastName,
                 s.Email,
                 s.PhoneNumber,
+                s.BranchId,
                 s.StudentId,
                 s.Status,
                 s.CreatedAt
@@ -800,6 +855,7 @@ public class AdminController : ControllerBase
             student.LastName,
             student.Email,
             student.PhoneNumber,
+            student.BranchId,
             student.StudentId,
             student.Status,
             student.CreatedAt
@@ -816,6 +872,13 @@ public class AdminController : ControllerBase
             request.PhoneNumber?.Trim() ?? "",
             request.StudentId?.Trim() ?? $"S-{DateTime.UtcNow.Ticks % 100000}"
         );
+
+        // Assign branch if provided
+        if (request.BranchId.HasValue)
+        {
+            student.BranchId = request.BranchId;
+            await _studentService.UpdateAsync(student.Id, student);
+        }
 
         var existing = await _userService.FindUserAsync(request.Username);
         if (existing == null)
@@ -842,6 +905,7 @@ public class AdminController : ControllerBase
             student.LastName,
             student.Email,
             student.PhoneNumber,
+            student.BranchId,
             student.StudentId,
             student.Status,
             student.CreatedAt
@@ -861,6 +925,7 @@ public class AdminController : ControllerBase
             if (request.Email != null) existing.Email = request.Email.Trim();
             if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
             if (request.StudentId != null) existing.StudentId = request.StudentId.Trim();
+            if (request.BranchId != null) existing.BranchId = request.BranchId;
             if (request.Status != null) existing.Status = request.Status;
             existing.UpdatedAt = DateTime.UtcNow;
 
@@ -883,6 +948,7 @@ public class AdminController : ControllerBase
                 updated.LastName,
                 updated.Email,
                 updated.PhoneNumber,
+                updated.BranchId,
                 updated.StudentId,
                 updated.Status,
                 updated.CreatedAt

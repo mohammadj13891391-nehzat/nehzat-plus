@@ -9,10 +9,12 @@ namespace LessonPlanner.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IBranchManagerService _branchManagerService;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, IBranchManagerService branchManagerService)
     {
         _userService = userService;
+        _branchManagerService = branchManagerService;
     }
 
     [HttpPost("signin")]
@@ -50,11 +52,19 @@ public class AuthController : ControllerBase
             ));
         }
 
+        int? branchId = null;
+        if (user.UserType == "branch_manager")
+        {
+            var bm = await _branchManagerService.FindByUsernameAsync(user.Username);
+            branchId = bm?.BranchId;
+        }
+
         return Ok(new AuthResponse(
             "Sign-in successful",
             user.Username,
             user.ImageUrl,
-            user.UserType
+            user.UserType,
+            BranchId: branchId
         ));
     }
 

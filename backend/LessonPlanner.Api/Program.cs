@@ -23,6 +23,7 @@ builder.Services.AddScoped<ICourseService, CourseService>();
     builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
     builder.Services.AddScoped<ICoachService, CoachService>();
     builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
+    builder.Services.AddScoped<IBranchService, BranchService>();
     builder.Services.AddScoped<IParentService, ParentService>();
     builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
     builder.Services.AddScoped<SampleDataSeeder>();
@@ -77,6 +78,22 @@ using (var scope = app.Services.CreateScope())
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️ خطا در به‌روزرسانی نقش کاربر پیش‌فرض: {ex.Message}");
+        }
+    }
+
+    // Seed default branch
+    var branchService = scope.ServiceProvider.GetRequiredService<IBranchService>();
+    var branches = await branchService.GetAllAsync();
+    if (branches.Count == 0)
+    {
+        try
+        {
+            await branchService.CreateAsync("شعبه مرکزی", "تهران", "شعبه اصلی و مرکزی");
+            Console.WriteLine("✅ شعبه پیش‌فرض (شعبه مرکزی) ایجاد شد");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ خطا در ایجاد شعبه پیش‌فرض: {ex.Message}");
         }
     }
 

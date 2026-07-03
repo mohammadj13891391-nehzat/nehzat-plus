@@ -37,6 +37,7 @@ public class EvaluatorService : IEvaluatorService
             Email = request.Email.Trim(),
             PhoneNumber = request.PhoneNumber?.Trim(),
             Expertise = request.Expertise?.Trim(),
+            BranchId = request.BranchId,
             AssignedMadrasahIds = request.AssignedMadrasahIds != null ? string.Join(",", request.AssignedMadrasahIds) : string.Empty,
             NationalCode = request.NationalCode?.Trim(),
             Status = "active",
@@ -62,6 +63,7 @@ public class EvaluatorService : IEvaluatorService
         if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
         if (request.Expertise != null) existing.Expertise = request.Expertise.Trim();
         if (request.AssignedMadrasahIds != null) existing.AssignedMadrasahIds = string.Join(",", request.AssignedMadrasahIds);
+        if (request.BranchId != null) existing.BranchId = request.BranchId;
         if (request.NationalCode != null) existing.NationalCode = request.NationalCode.Trim();
         if (request.Status != null) existing.Status = request.Status;
 

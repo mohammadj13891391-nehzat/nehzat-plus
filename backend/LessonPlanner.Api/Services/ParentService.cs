@@ -38,6 +38,7 @@ public class ParentService : IParentService
             PhoneNumber = request.PhoneNumber?.Trim(),
             Address = request.Address?.Trim(),
             NationalCode = request.NationalCode?.Trim(),
+            BranchId = request.BranchId,
             StudentIds = request.StudentIds != null ? string.Join(",", request.StudentIds) : string.Empty,
             Status = "active",
             CreatedAt = DateTime.UtcNow,
@@ -62,6 +63,7 @@ public class ParentService : IParentService
         if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
         if (request.Address != null) existing.Address = request.Address.Trim();
         if (request.NationalCode != null) existing.NationalCode = request.NationalCode.Trim();
+        if (request.BranchId != null) existing.BranchId = request.BranchId;
         if (request.StudentIds != null) existing.StudentIds = string.Join(",", request.StudentIds);
         if (request.Status != null) existing.Status = request.Status;
 

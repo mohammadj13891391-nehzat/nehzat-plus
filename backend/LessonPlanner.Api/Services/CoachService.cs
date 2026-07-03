@@ -41,6 +41,7 @@ public class CoachService : ICoachService
             PhoneNumber = request.PhoneNumber?.Trim(),
             Specialization = request.Specialization?.Trim(),
             NationalCode = request.NationalCode?.Trim(),
+            BranchId = request.BranchId,
             Status = "active",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -77,6 +78,7 @@ public class CoachService : ICoachService
         if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
         if (request.Specialization != null) existing.Specialization = request.Specialization.Trim();
         if (request.NationalCode != null) existing.NationalCode = request.NationalCode.Trim();
+        if (request.BranchId != null) existing.BranchId = request.BranchId;
         if (request.Status != null) existing.Status = request.Status;
 
         if (!string.IsNullOrWhiteSpace(request.Password))

@@ -17,13 +17,23 @@ public class BranchManagerService : IBranchManagerService
     public async Task<List<BranchManager>> GetAllAsync()
     {
         return await _db.BranchManagers
+            .Include(b => b.Branch)
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
     }
 
     public async Task<BranchManager?> FindByIdAsync(int id)
     {
-        return await _db.BranchManagers.FindAsync(id);
+        return await _db.BranchManagers
+            .Include(b => b.Branch)
+            .FirstOrDefaultAsync(b => b.Id == id);
+    }
+
+    public async Task<BranchManager?> FindByUsernameAsync(string username)
+    {
+        return await _db.BranchManagers
+            .Include(b => b.Branch)
+            .FirstOrDefaultAsync(b => b.Username == username);
     }
 
     public async Task<BranchManager> CreateAsync(CreateBranchManagerRequest request)
@@ -36,8 +46,7 @@ public class BranchManagerService : IBranchManagerService
             LastName = request.LastName.Trim(),
             Email = request.Email.Trim(),
             PhoneNumber = request.PhoneNumber?.Trim(),
-            AssignedBranch = request.AssignedBranch.Trim(),
-            AssignedProvince = request.AssignedProvince.Trim(),
+            BranchId = request.BranchId,
             Gender = request.Gender,
             NationalCode = request.NationalCode?.Trim(),
             Status = "active",
@@ -61,8 +70,7 @@ public class BranchManagerService : IBranchManagerService
         if (request.LastName != null) existing.LastName = request.LastName.Trim();
         if (request.Email != null) existing.Email = request.Email.Trim();
         if (request.PhoneNumber != null) existing.PhoneNumber = request.PhoneNumber.Trim();
-        if (request.AssignedBranch != null) existing.AssignedBranch = request.AssignedBranch.Trim();
-        if (request.AssignedProvince != null) existing.AssignedProvince = request.AssignedProvince.Trim();
+        if (request.BranchId != null) existing.BranchId = request.BranchId.Value;
         if (request.Gender != null) existing.Gender = request.Gender;
         if (request.NationalCode != null) existing.NationalCode = request.NationalCode.Trim();
         if (request.Status != null) existing.Status = request.Status;
