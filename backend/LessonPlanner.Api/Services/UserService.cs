@@ -1,4 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using LessonPlanner.Api.Data;
 using LessonPlanner.Api.Models;
 
@@ -7,15 +11,17 @@ namespace LessonPlanner.Api.Services;
 public class UserService : IUserService
 {
     private readonly AppDbContext _db;
+    private readonly IConfiguration _configuration;
 
-    public UserService(AppDbContext db)
+    public UserService(AppDbContext db, IConfiguration configuration)
     {
         _db = db;
+        _configuration = configuration;
     }
 
     public async Task CreateUserAsync(string username, string password, string? imageUrl, int? studentId, string userType, string? firstName = null, string? lastName = null, string? email = null, string? phoneNumber = null)
     {
-        var hash = BCrypt.Net.BCrypt.HashPassword(password);
+        var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
         var user = new User
         {
             Username = username,
@@ -37,7 +43,7 @@ public class UserService : IUserService
 
     public async Task CreatePendingUserAsync(string username, string password, string? imageUrl, string? firstName = null, string? lastName = null, string? email = null, string? phoneNumber = null)
     {
-        var hash = BCrypt.Net.BCrypt.HashPassword(password);
+        var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
         var user = new User
         {
             Username = username,
@@ -142,5 +148,34 @@ public class UserService : IUserService
             user.UpdatedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync();
         }
+    }
+
+    public string GenerateJwtToken(User user)
+    {
+        var jwtSettings = _configuration.GetSection("Jwt");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Role, user.UserType),
+            new("userId", user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+            new(JwtRegisteredClaimNames.Sub, user.Username)
+        };
+
+        if (user.StudentId.HasValue)
+            claims.Add(new Claim("studentId", user.StudentId.Value.ToString()));
+
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(double.Parse(jwtSettings["ExpireDays"] ?? "7")),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

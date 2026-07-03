@@ -1,46 +1,104 @@
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using LessonPlanner.Api.Data;
 using LessonPlanner.Api.Services;
 using LessonPlanner.Api.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// JSON serialization
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
     });
+
+// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var jwtKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
+        ClockSkew = TimeSpan.FromMinutes(5)
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("admin", "manager", "headquarters"));
+
+    options.AddPolicy("AllRoles", policy =>
+        policy.RequireRole("admin", "manager", "headquarters", "branch_manager", "coach", "parent", "evaluator", "trainee"));
+});
+
+// Application services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
-    builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
-    builder.Services.AddScoped<ICoachService, CoachService>();
-    builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
-    builder.Services.AddScoped<IBranchService, BranchService>();
-    builder.Services.AddScoped<IParentService, ParentService>();
-    builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
-    builder.Services.AddScoped<SampleDataSeeder>();
+builder.Services.AddScoped<IAssignmentSubmissionService, AssignmentSubmissionService>();
+builder.Services.AddScoped<ICoachService, CoachService>();
+builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IParentService, ParentService>();
+builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
+builder.Services.AddScoped<SampleDataSeeder>();
 
+// CORS - restricted to localhost origins
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:4200", "http://localhost:3000")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
 var app = builder.Build();
 
+// Global exception handler
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonSerializer.Serialize(new
+        {
+            message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید"
+        }));
+    });
+});
+
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
@@ -49,10 +107,18 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.MapControllers();
 
+// Database initialization - safe startup (no EnsureDeleted)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+
+    // Only seed if --seed flag is passed
+    if (args.Contains("--seed"))
+    {
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+    }
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     var existingAdmin = await userService.FindUserAsync("test");
@@ -96,19 +162,6 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"⚠️ خطا در ایجاد شعبه پیش‌فرض: {ex.Message}");
         }
     }
-
-    // Sample data seeder is disabled; all data must be entered through the frontend.
-    // var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
-    // try
-    // {
-    //     Console.WriteLine("🌱 شروع ایجاد داده‌های نمونه در راه‌اندازی برنامه...");
-    //     await seeder.SeedAsync();
-    //     Console.WriteLine("🎉 ایجاد داده‌های نمونه با موفقیت انجام شد");
-    // }
-    // catch (Exception ex)
-    // {
-    //     Console.WriteLine($"⚠️ خطا در ایجاد داده‌های نمونه: {ex.Message}");
-    // }
 }
 
 app.Run();
