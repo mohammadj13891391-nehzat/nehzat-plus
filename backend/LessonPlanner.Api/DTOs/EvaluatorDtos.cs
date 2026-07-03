@@ -8,6 +8,7 @@ public record CreateEvaluatorRequest(
     string Email,
     string? PhoneNumber,
     string? Expertise,
+    int? BranchId,
     int[]? AssignedMadrasahIds,
     string? NationalCode
 );
@@ -20,6 +21,7 @@ public record UpdateEvaluatorRequest(
     string? Email,
     string? PhoneNumber,
     string? Expertise,
+    int? BranchId,
     int[]? AssignedMadrasahIds,
     string? NationalCode,
     string? Status

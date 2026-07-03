@@ -7,7 +7,8 @@ public record CreateStudentRequest(
     string StudentId,
     string? PhoneNumber,
     string? Address,
-    DateTime? DateOfBirth
+    DateTime? DateOfBirth,
+    int? BranchId
 );
 
 public record UpdateStudentRequest(
@@ -17,7 +18,8 @@ public record UpdateStudentRequest(
     string? PhoneNumber,
     string? Address,
     DateTime? DateOfBirth,
-    string? Status
+    string? Status,
+    int? BranchId
 );
 
 public record StudentProgressResponse(

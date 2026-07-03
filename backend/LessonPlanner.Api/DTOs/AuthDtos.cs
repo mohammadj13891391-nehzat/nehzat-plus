@@ -28,7 +28,8 @@ public record AuthResponse(
     string UserType,
     int? StudentId = null,
     StudentInfo? StudentInfo = null,
-    string? ApprovalStatus = null
+    string? ApprovalStatus = null,
+    int? BranchId = null
 );
 
 public record SignupResponse(string Message, string Status);

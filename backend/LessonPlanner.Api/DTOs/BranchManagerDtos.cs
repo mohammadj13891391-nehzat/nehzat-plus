@@ -7,8 +7,7 @@ public record CreateBranchManagerRequest(
     string LastName,
     string Email,
     string? PhoneNumber,
-    string AssignedBranch,
-    string AssignedProvince,
+    int BranchId,
     string Gender,
     string? NationalCode
 );
@@ -20,8 +19,7 @@ public record UpdateBranchManagerRequest(
     string? LastName,
     string? Email,
     string? PhoneNumber,
-    string? AssignedBranch,
-    string? AssignedProvince,
+    int? BranchId,
     string? Gender,
     string? NationalCode,
     string? Status

@@ -9,6 +9,7 @@ public record CreateParentRequest(
     string? PhoneNumber,
     string? Address,
     string? NationalCode,
+    int? BranchId,
     int[]? StudentIds
 );
 
@@ -21,6 +22,7 @@ public record UpdateParentRequest(
     string? PhoneNumber,
     string? Address,
     string? NationalCode,
+    int? BranchId,
     int[]? StudentIds,
     string? Status
 );

@@ -38,6 +38,18 @@ public record CreateUserRequest(
     string? PhoneNumber = null
 );
 
+public record CreateBranchRequest(
+    string Name,
+    string Province,
+    string? Description
+);
+
+public record UpdateBranchRequest(
+    string Name,
+    string Province,
+    string? Description
+);
+
 public record AdminCreateStudentRequest(
     string Username,
     string Password,
@@ -46,7 +58,8 @@ public record AdminCreateStudentRequest(
     string Email,
     string? PhoneNumber,
     string? StudentId,
-    string? NationalCode
+    string? NationalCode,
+    int? BranchId
 );
 
 public record AdminUpdateStudentRequest(
@@ -58,5 +71,6 @@ public record AdminUpdateStudentRequest(
     string? PhoneNumber,
     string? StudentId,
     string? NationalCode,
-    string? Status
+    string? Status,
+    int? BranchId
 );
