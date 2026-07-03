@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
 
 import {
   AuthSigninPayload,
@@ -13,26 +13,26 @@ import {
 import { LESSON_PLANNER_API } from './lesson-planner-api.token';
 
 const TOKEN_KEY = 'token';
-const USER_KEY = 'current-user';
+
+interface JwtPayload {
+  sub: string;
+  userType: UserType;
+  userId?: number;
+  studentId?: number;
+  branchId?: number;
+  exp?: number;
+  iat?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(LESSON_PLANNER_API);
-  readonly useMockApi = environment.useMockApi;
+  private readonly router = inject(Router);
 
   signin(payload: AuthSigninPayload): Observable<AuthSigninResponse> {
     return this.api.signin(payload).pipe(
       tap((response) => {
-        localStorage.setItem(TOKEN_KEY, 'dummy-token');
-        const user: CurrentUser = {
-          username: response.username,
-          userType: response.userType,
-          studentId: response.studentId,
-          imageUrl: response.imageUrl,
-          studentInfo: response.studentInfo,
-          branchId: response.branchId
-        };
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        localStorage.setItem(TOKEN_KEY, response.token);
       })
     );
   }
@@ -41,28 +41,33 @@ export class AuthService {
     return this.api.signup(payload);
   }
 
-  register(payload: AuthSignupPayload): Observable<AuthSignupResponse> {
-    return this.signup(payload);
-  }
-
   isAuthenticated(): boolean {
-    return Boolean(localStorage.getItem(TOKEN_KEY));
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      return false;
+    }
+    const payload = this.decodeToken(token);
+    if (!payload || !payload.exp) {
+      return false;
+    }
+    return payload.exp * 1000 > Date.now();
   }
 
   getCurrentUser(): CurrentUser | null {
-    const raw = localStorage.getItem(USER_KEY);
-    if (!raw) {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
       return null;
     }
-    try {
-      return JSON.parse(raw) as CurrentUser;
-    } catch {
+    const payload = this.decodeToken(token);
+    if (!payload || !payload.sub || !payload.userType) {
       return null;
     }
-  }
-
-  isManager(): boolean {
-    return this.getCurrentUser()?.userType === 'manager';
+    return {
+      username: payload.sub,
+      userType: payload.userType,
+      studentId: payload.studentId,
+      branchId: payload.branchId
+    };
   }
 
   getDashboardPathForRole(userType: UserType): string {
@@ -88,6 +93,20 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
+    void this.router.navigateByUrl('/auth/login');
+  }
+
+  private decodeToken(token: string): JwtPayload | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return null;
+      }
+      const payload = parts[1];
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(json) as JwtPayload;
+    } catch {
+      return null;
+    }
   }
 }

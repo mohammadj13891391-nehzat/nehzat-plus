@@ -31,6 +31,7 @@ export interface AuthSigninPayload {
 }
 
 export interface AuthSigninResponse extends ApiMessageResponse {
+  token: string;
   username: string;
   imageUrl?: string;
   userType: UserType;
