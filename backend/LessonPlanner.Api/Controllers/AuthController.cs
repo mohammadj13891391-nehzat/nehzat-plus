@@ -22,11 +22,11 @@ public class AuthController : ControllerBase
     {
         var isValid = await _userService.ValidateUserAsync(request.Username, request.Password);
         if (!isValid)
-            return BadRequest(new { message = "کاربری با این نام کاربری یا رمز عبور یافت نشد" });
+            return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
 
         var user = await _userService.FindUserAsync(request.Username);
         if (user == null)
-            return BadRequest(new { message = "کاربری با این نام کاربری یافت نشد" });
+            return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
 
         if (user.ApprovalStatus == "pending")
             return BadRequest(new { message = "حساب کاربری شما در انتظار تایید مدیر سیستم است" });
@@ -34,23 +34,7 @@ public class AuthController : ControllerBase
         if (user.ApprovalStatus == "rejected")
             return BadRequest(new { message = "حساب کاربری شما رد شده است. لطفاً با مدیر سیستم تماس بگیرید" });
 
-        if (user.UserType == "trainee" && user.Student != null)
-        {
-            return Ok(new AuthResponse(
-                "Sign-in successful",
-                user.Username,
-                user.ImageUrl,
-                "trainee",
-                user.Student.Id,
-                new StudentInfo(
-                    user.Student.FirstName,
-                    user.Student.LastName,
-                    user.Student.Email,
-                    user.Student.StudentId,
-                    user.Student.PhoneNumber
-                )
-            ));
-        }
+        var token = _userService.GenerateJwtToken(user);
 
         int? branchId = null;
         if (user.UserType == "branch_manager")
@@ -59,11 +43,35 @@ public class AuthController : ControllerBase
             branchId = bm?.BranchId;
         }
 
-        return Ok(new AuthResponse(
-            "Sign-in successful",
-            user.Username,
-            user.ImageUrl,
-            user.UserType,
+        if (user.UserType == "trainee" && user.Student != null)
+        {
+            return Ok(new AuthTokenResponse(
+                Token: token,
+                Message: "Sign-in successful",
+                Username: user.Username,
+                ImageUrl: user.ImageUrl,
+                UserType: "trainee",
+                UserId: user.Id,
+                StudentId: user.Student.Id,
+                StudentInfo: new StudentInfo(
+                    user.Student.FirstName,
+                    user.Student.LastName,
+                    user.Student.Email,
+                    user.Student.StudentId,
+                    user.Student.PhoneNumber
+                ),
+                BranchId: branchId
+            ));
+        }
+
+        return Ok(new AuthTokenResponse(
+            Token: token,
+            Message: "Sign-in successful",
+            Username: user.Username,
+            ImageUrl: user.ImageUrl,
+            UserType: user.UserType,
+            UserId: user.Id,
+            StudentId: user.StudentId,
             BranchId: branchId
         ));
     }
@@ -71,9 +79,6 @@ public class AuthController : ControllerBase
     [HttpPost("signup")]
     public async Task<IActionResult> SignUp([FromBody] SignupRequest request)
     {
-        if (request.Password != request.RetryPassword)
-            return BadRequest(new { message = "پسوردها یکسان نیستند" });
-
         try
         {
             await _userService.CreatePendingUserAsync(
@@ -90,9 +95,9 @@ public class AuthController : ControllerBase
                 "pending"
             ));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return BadRequest(new { message = $"خطا در ثبت نام: {ex.Message}" });
+            return BadRequest(new { message = "خطا در ثبت نام. لطفاً دوباره تلاش کنید" });
         }
     }
 }
