@@ -10,6 +10,7 @@ import type {
   AssignmentStatus,
   AssignmentType,
   AttachmentKind,
+  Branch,
   BranchManager,
   Coach,
   Course,
@@ -61,17 +62,35 @@ export class AdminComponent implements OnInit {
   activeMenu: string = 'makatib';
   expandedMenus = new Set<string>(['makatib']);
   menuItems = [
-    { key: 'trainees', label: 'متربیان' },
-    { key: 'teachers', label: 'مربیان' },
-    { key: 'courses', label: 'دوره‌ها' },
-    { key: 'branch-managers', label: 'مسئولین شعب' },
-    { key: 'makatib', label: 'مکاتب تربیتی، آموزشی، مهارتی' },
-    { key: 'parents', label: 'والدین' },
-    { key: 'evaluators', label: 'ارزیاب' },
-    { key: 'headquarters', label: 'ستاد' }
+    { key: 'trainees', label: 'متربیان', roles: ['manager', 'headquarters'] },
+    { key: 'teachers', label: 'مربیان', roles: ['manager', 'headquarters'] },
+    { key: 'courses', label: 'دوره‌ها', roles: ['manager', 'headquarters'] },
+    { key: 'branch-managers', label: 'مسئولین شعب', roles: ['manager', 'headquarters'] },
+    { key: 'makatib', label: 'مکاتب تربیتی، آموزشی، مهارتی', roles: ['manager', 'headquarters'] },
+    { key: 'parents', label: 'والدین', roles: ['manager', 'headquarters'] },
+    { key: 'evaluators', label: 'ارزیاب', roles: ['manager', 'headquarters'] },
+    { key: 'headquarters', label: 'ستاد', roles: ['manager', 'headquarters'] }
   ] as const;
 
+  registeredBranches: Branch[] = [];
+  loadingRegisteredBranches = false;
 
+  get visibleMenuItems() {
+    const currentUser = this.authService.getCurrentUser();
+    const userType = currentUser?.userType ?? 'trainee';
+    const allowedRoles = ['manager', 'headquarters', 'branch_manager'] as const;
+    type AllowedRole = typeof allowedRoles[number];
+    return this.menuItems.filter(item => (item.roles as readonly string[]).includes(userType));
+  }
+
+  get isBranchManager(): boolean {
+    const currentUser = this.authService.getCurrentUser();
+    return currentUser?.userType === 'branch_manager';
+  }
+
+  get currentUserBranchId(): number | undefined {
+    return this.authService.getCurrentUser()?.branchId;
+  }
 
   stats = {
     pendingUsers: 0,
@@ -607,6 +626,7 @@ export class AdminComponent implements OnInit {
   loadingBranchManagers = false;
   savingBranchManager = false;
   searchBranchManagerQuery = '';
+  showBranchManagerModal = false;
   branchManagerEditMode = false;
   selectedBranchManagerId: number | null = null;
   branchManagerForm = this.fb.nonNullable.group({
@@ -617,8 +637,7 @@ export class AdminComponent implements OnInit {
     lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
-    assignedBranch: ['', [Validators.required]],
-    assignedProvince: ['', [Validators.required]],
+    branchId: [0, [Validators.required]],
     gender: ['mixed']
   });
 
@@ -630,8 +649,7 @@ export class AdminComponent implements OnInit {
         bm.firstName.toLowerCase().includes(q) ||
         bm.lastName.toLowerCase().includes(q) ||
         bm.username.toLowerCase().includes(q) ||
-        bm.assignedBranch.toLowerCase().includes(q) ||
-        bm.assignedProvince.toLowerCase().includes(q)
+        (bm.branchName ?? '').toLowerCase().includes(q)
     );
   }
 
@@ -778,7 +796,7 @@ export class AdminComponent implements OnInit {
       .pipe(finalize(() => (this.savingParent = false)))
       .subscribe({
         next: (response) => {
-          this.setSuccess(response.message);
+          this.setSuccess(response?.message ?? 'والد با موفقیت حذف شد.');
           if (this.selectedParentId === parentId) {
             this.startCreateParent();
             this.parentStudents = [];
@@ -958,7 +976,7 @@ export class AdminComponent implements OnInit {
       .pipe(finalize(() => (this.savingEvaluator = false)))
       .subscribe({
         next: (response) => {
-          this.setSuccess(response.message);
+          this.setSuccess(response?.message ?? 'ارزیاب با موفقیت حذف شد.');
           if (this.selectedEvaluatorId === evaluatorId) {
             this.startCreateEvaluator();
             this.evaluationRecords = [];
@@ -1108,6 +1126,23 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  loadBranchesList(): void {
+    this.loadingRegisteredBranches = true;
+    this.api
+      .getBranches()
+      .pipe(finalize(() => (this.loadingRegisteredBranches = false)))
+      .subscribe({
+        next: (branches) => {
+          this.registeredBranches = branches;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت لیست شعب با خطا مواجه شد.');
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
   loadBranchManagers(): void {
     this.loadingBranchManagers = true;
     this.api
@@ -1135,42 +1170,47 @@ export class AdminComponent implements OnInit {
     }, { emitEvent: false });
   }
 
-  startCreateBranchManager(): void {
-    this.branchManagerEditMode = false;
-    this.selectedBranchManagerId = null;
-    this.branchManagerForm.setValue({
-      nationalCode: '',
-      username: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phoneNumber: '',
-      assignedBranch: '',
-      assignedProvince: '',
-      gender: 'mixed'
-    });
+  openBranchManagerModal(bm?: BranchManager): void {
+    if (bm) {
+      this.branchManagerEditMode = true;
+      this.selectedBranchManagerId = bm.id;
+      this.branchManagerForm.setValue({
+        nationalCode: bm.nationalCode ?? '',
+        username: bm.username,
+        password: '',
+        firstName: bm.firstName,
+        lastName: bm.lastName,
+        email: bm.email,
+        phoneNumber: bm.phoneNumber,
+        branchId: bm.branchId ?? 0,
+        gender: bm.gender
+      });
+      this.branchManagerForm.get('password')?.clearValidators();
+      this.branchManagerForm.get('password')?.updateValueAndValidity();
+    } else {
+      this.branchManagerEditMode = false;
+      this.selectedBranchManagerId = null;
+      this.branchManagerForm.setValue({
+        nationalCode: '',
+        username: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        branchId: this.currentUserBranchId ?? 0,
+        gender: 'mixed'
+      });
+      this.branchManagerForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.branchManagerForm.get('password')?.updateValueAndValidity();
+    }
+    this.showBranchManagerModal = true;
   }
 
-  selectBranchManager(id: number): void {
-    const bm = this.branchManagers.find((item) => item.id === id);
-    if (!bm) return;
-    this.selectedBranchManagerId = id;
-    this.branchManagerEditMode = true;
-    this.branchManagerForm.setValue({
-      nationalCode: bm.nationalCode ?? '',
-      username: bm.username,
-      password: '',
-      firstName: bm.firstName,
-      lastName: bm.lastName,
-      email: bm.email,
-      phoneNumber: bm.phoneNumber,
-      assignedBranch: bm.assignedBranch,
-      assignedProvince: bm.assignedProvince,
-      gender: bm.gender
-    });
-    this.branchManagerForm.get('password')?.clearValidators();
-    this.branchManagerForm.get('password')?.updateValueAndValidity();
+  closeBranchManagerModal(): void {
+    this.showBranchManagerModal = false;
+    this.branchManagerEditMode = false;
+    this.selectedBranchManagerId = null;
   }
 
   saveBranchManager(): void {
@@ -1184,8 +1224,7 @@ export class AdminComponent implements OnInit {
       lastName: raw.lastName.trim(),
       email: raw.email.trim(),
       phoneNumber: raw.phoneNumber.trim(),
-      assignedBranch: raw.assignedBranch.trim(),
-      assignedProvince: raw.assignedProvince.trim(),
+      branchId: raw.branchId,
       gender: raw.gender as 'male' | 'female' | 'mixed'
     };
 
@@ -1197,8 +1236,7 @@ export class AdminComponent implements OnInit {
 
     request$.pipe(finalize(() => (this.savingBranchManager = false))).subscribe({
       next: (bm) => {
-        this.selectedBranchManagerId = bm.id;
-        this.branchManagerEditMode = true;
+        this.closeBranchManagerModal();
         this.setSuccess('اطلاعات مسئول شعبه ذخیره شد.');
         this.loadBranchManagers();
       },
@@ -1216,10 +1254,8 @@ export class AdminComponent implements OnInit {
       .pipe(finalize(() => (this.savingBranchManager = false)))
       .subscribe({
         next: (response) => {
-          this.setSuccess(response.message);
-          if (this.selectedBranchManagerId === id) {
-            this.startCreateBranchManager();
-          }
+          this.setSuccess(response?.message ?? 'مسئول شعبه با موفقیت حذف شد.');
+          this.closeBranchManagerModal();
           this.loadBranchManagers();
         },
         error: (error) => {
@@ -1455,9 +1491,15 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    if (user?.userType !== 'manager') {
+    if (user?.userType !== 'manager' && user?.userType !== 'headquarters' && user?.userType !== 'branch_manager') {
       void this.router.navigateByUrl(this.authService.getDashboardPathForRole(user?.userType ?? 'trainee'));
       return;
+    }
+
+    this.loadBranchesList();
+
+    if (this.isBranchManager) {
+      this.activeMenu = 'trainees';
     }
 
     this.loadMenuData(this.activeMenu);
