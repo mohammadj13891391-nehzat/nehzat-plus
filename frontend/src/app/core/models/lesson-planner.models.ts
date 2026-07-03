@@ -36,6 +36,7 @@ export interface AuthSigninResponse extends ApiMessageResponse {
   userType: UserType;
   studentId?: number;
   studentInfo?: StudentInfo;
+  branchId?: number;
 }
 
 export interface AuthSignupPayload {
@@ -275,6 +276,7 @@ export interface CreatedUser {
 
 export interface Student extends StudentInfo {
   username: string;
+  branchId?: number;
   status: 'active' | 'inactive';
   createdAt?: string;
 }
@@ -288,6 +290,7 @@ export interface CreateStudentPayload {
   phoneNumber: string;
   studentId?: string;
   nationalCode?: string;
+  branchId?: number;
 }
 
 export interface UpdateStudentPayload {
@@ -299,6 +302,7 @@ export interface UpdateStudentPayload {
   phoneNumber?: string;
   studentId?: string;
   nationalCode?: string;
+  branchId?: number;
   status?: string;
 }
 
@@ -342,6 +346,7 @@ export interface CurrentUser {
   studentId?: number;
   studentInfo?: StudentInfo;
   imageUrl?: string;
+  branchId?: number;
 }
 
 export type CurrentUserSession = CurrentUser;
@@ -355,6 +360,7 @@ export interface Coach {
   phoneNumber: string;
   specialization: string;
   nationalCode?: string;
+  branchId?: number;
   assignedCourseIds: number[];
   status: 'active' | 'inactive';
   createdAt?: string;
@@ -373,6 +379,14 @@ export interface CourseInviteCode {
   courseId: number;
 }
 
+export interface Branch {
+  id: number;
+  name: string;
+  province: string;
+  description?: string;
+  createdAt?: string;
+}
+
 export interface BranchManager {
   id: number;
   username: string;
@@ -380,8 +394,8 @@ export interface BranchManager {
   lastName: string;
   email: string;
   phoneNumber: string;
-  assignedBranch: string;
-  assignedProvince: string;
+  branchId: number;
+  branchName?: string;
   gender: 'male' | 'female' | 'mixed';
   nationalCode?: string;
   status: 'active' | 'inactive';
@@ -396,8 +410,7 @@ export interface CreateBranchManagerPayload {
   lastName: string;
   email: string;
   phoneNumber: string;
-  assignedBranch: string;
-  assignedProvince: string;
+  branchId: number;
   gender: 'male' | 'female' | 'mixed';
 }
 
@@ -410,6 +423,7 @@ export interface CreateCoachPayload {
   phoneNumber: string;
   specialization: string;
   nationalCode?: string;
+  branchId?: number;
   assignedCourseIds: number[];
 }
 
@@ -422,6 +436,7 @@ export interface Parent {
   phoneNumber: string;
   address: string;
   nationalCode: string;
+  branchId?: number;
   studentIds: number[];
   status: 'active' | 'inactive';
   createdAt?: string;
@@ -436,6 +451,7 @@ export interface CreateParentPayload {
   phoneNumber: string;
   address?: string;
   nationalCode?: string;
+  branchId?: number;
   studentIds?: number[];
 }
 
@@ -456,6 +472,7 @@ export interface Evaluator {
   email: string;
   phoneNumber: string;
   expertise: string;
+  branchId?: number;
   assignedMadrasahIds: number[];
   nationalCode?: string;
   status: 'active' | 'inactive';
@@ -471,6 +488,7 @@ export interface CreateEvaluatorPayload {
   email: string;
   phoneNumber: string;
   expertise?: string;
+  branchId?: number;
   assignedMadrasahIds?: number[];
 }
 

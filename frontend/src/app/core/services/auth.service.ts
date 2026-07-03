@@ -29,7 +29,8 @@ export class AuthService {
           userType: response.userType,
           studentId: response.studentId,
           imageUrl: response.imageUrl,
-          studentInfo: response.studentInfo
+          studentInfo: response.studentInfo,
+          branchId: response.branchId
         };
         localStorage.setItem(USER_KEY, JSON.stringify(user));
       })
@@ -75,7 +76,7 @@ export class AuthService {
       case 'parent':
         return '/parent';
       case 'branch_manager':
-        return '/branch-manager';
+        return '/admin';
       case 'evaluator':
         return '/evaluator';
       case 'headquarters':

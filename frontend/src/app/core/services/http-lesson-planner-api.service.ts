@@ -15,6 +15,7 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  Branch,
   BranchManager,
   Coach,
   CourseEnrollment,
@@ -259,6 +260,10 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   deleteBranchManager(id: number): Observable<ApiMessageResponse> {
     return this.http.delete<ApiMessageResponse>(this.url(`/admin/branch-managers/${id}`));
+  }
+
+  getBranches(): Observable<Branch[]> {
+    return this.http.get<Branch[]>(this.url('/admin/branches'));
   }
 
   deleteCoach(id: number): Observable<ApiMessageResponse> {
