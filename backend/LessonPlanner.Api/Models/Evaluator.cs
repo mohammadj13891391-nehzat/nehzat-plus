@@ -40,6 +40,11 @@ public class Evaluator
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
+    public int? BranchId { get; set; }
+
+    [ForeignKey(nameof(BranchId))]
+    public Branch? Branch { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

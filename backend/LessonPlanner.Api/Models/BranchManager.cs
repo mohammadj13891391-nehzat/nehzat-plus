@@ -28,11 +28,10 @@ public class BranchManager
     [Column(TypeName = "nvarchar(20)")]
     public string? PhoneNumber { get; set; }
 
-    [Column(TypeName = "nvarchar(200)")]
-    public string AssignedBranch { get; set; } = string.Empty;
+    public int BranchId { get; set; }
 
-    [Column(TypeName = "nvarchar(100)")]
-    public string AssignedProvince { get; set; } = string.Empty;
+    [ForeignKey(nameof(BranchId))]
+    public Branch Branch { get; set; } = null!;
 
     [Column(TypeName = "nvarchar(20)")]
     public string Gender { get; set; } = "mixed";

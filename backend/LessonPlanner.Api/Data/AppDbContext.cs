@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<AssignmentSubmission> AssignmentSubmissions => Set<AssignmentSubmission>();
     public DbSet<AssignmentAttachment> AssignmentAttachments => Set<AssignmentAttachment>();
     public DbSet<StudentCourse> StudentCourses => Set<StudentCourse>();
+    public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<Coach> Coaches => Set<Coach>();
     public DbSet<CoachCourse> CoachCourses => Set<CoachCourse>();
     public DbSet<BranchManager> BranchManagers => Set<BranchManager>();
@@ -44,10 +45,21 @@ public class AppDbContext : DbContext
                   .IsRequired(false);
         });
 
+        modelBuilder.Entity<Branch>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+        });
+
         modelBuilder.Entity<Student>(entity =>
         {
             entity.HasIndex(e => e.Email).IsUnique();
             entity.HasIndex(e => e.StudentId).IsUnique();
+
+            entity.HasOne(e => e.Branch)
+                  .WithMany()
+                  .HasForeignKey(e => e.BranchId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<Assignment>(entity =>
@@ -91,6 +103,12 @@ public class AppDbContext : DbContext
         {
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
+
+            entity.HasOne(e => e.Branch)
+                  .WithMany()
+                  .HasForeignKey(e => e.BranchId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<CoachCourse>(entity =>
@@ -108,18 +126,36 @@ public class AppDbContext : DbContext
         {
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
+
+            entity.HasOne(e => e.Branch)
+                  .WithMany()
+                  .HasForeignKey(e => e.BranchId)
+                  .IsRequired(true)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Parent>(entity =>
         {
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
+
+            entity.HasOne(e => e.Branch)
+                  .WithMany()
+                  .HasForeignKey(e => e.BranchId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<Evaluator>(entity =>
         {
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
+
+            entity.HasOne(e => e.Branch)
+                  .WithMany()
+                  .HasForeignKey(e => e.BranchId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

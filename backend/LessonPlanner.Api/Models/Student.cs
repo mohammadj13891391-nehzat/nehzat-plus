@@ -38,6 +38,11 @@ public class Student
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public int? BranchId { get; set; }
+
+    [ForeignKey(nameof(BranchId))]
+    public Branch? Branch { get; set; }
+
     public ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
     public ICollection<AssignmentSubmission> Submissions { get; set; } = new List<AssignmentSubmission>();
 }

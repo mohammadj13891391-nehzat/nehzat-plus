@@ -41,6 +41,11 @@ public class Coach
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public int? BranchId { get; set; }
+
+    [ForeignKey(nameof(BranchId))]
+    public Branch? Branch { get; set; }
+
     public ICollection<CoachCourse> CoachCourses { get; set; } = new List<CoachCourse>();
 }
 
