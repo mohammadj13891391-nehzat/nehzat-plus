@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using LessonPlanner.Api.DTOs;
+using LessonPlanner.Api.Helpers;
 using LessonPlanner.Api.Models;
 using LessonPlanner.Api.Services;
 
@@ -7,6 +9,7 @@ namespace LessonPlanner.Api.Controllers;
 
 [ApiController]
 [Route("students")]
+[Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
 public class StudentController : ControllerBase
 {
     private readonly IStudentService _studentService;
@@ -58,9 +61,9 @@ public class StudentController : ControllerBase
             if (result == null) return NotFound(new { message = "Student not found for this user" });
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -72,9 +75,13 @@ public class StudentController : ControllerBase
             var result = await _studentService.GetStudentProgressAsync(id);
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -86,9 +93,13 @@ public class StudentController : ControllerBase
             var result = await _submissionService.GetStudentProgressAsync(id, assignmentId);
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -106,6 +117,12 @@ public class StudentController : ControllerBase
         [FromForm] SubmissionData submissionData,
         IFormFile? audioFile)
     {
+        if (audioFile != null)
+        {
+            if (!FileUploadValidator.IsValidFile(audioFile, out var validationError))
+                return BadRequest(new { message = validationError });
+        }
+
         var submission = new AssignmentSubmission
         {
             DailyScore = submissionData.DailyScore ?? 0,
@@ -141,6 +158,9 @@ public class StudentController : ControllerBase
         if (audioFile == null)
             return BadRequest(new { message = "فایل آپلود نشده است" });
 
+        if (!FileUploadValidator.IsValidFile(audioFile, out var validationError))
+            return BadRequest(new { message = validationError });
+
         var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "public", "uploads", "submissions");
         Directory.CreateDirectory(uploadsDir);
 
@@ -164,9 +184,13 @@ public class StudentController : ControllerBase
             var result = await _studentService.UpdateAsync(id, student);
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 

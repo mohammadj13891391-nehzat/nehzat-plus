@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using LessonPlanner.Api.Data;
 using LessonPlanner.Api.DTOs;
+using LessonPlanner.Api.Helpers;
 using LessonPlanner.Api.Models;
 using LessonPlanner.Api.Services;
 
@@ -7,6 +11,7 @@ namespace LessonPlanner.Api.Controllers;
 
 [ApiController]
 [Route("admin")]
+[Authorize(Roles = "admin,manager,headquarters")]
 public class AdminController : ControllerBase
 {
     private readonly ICourseService _courseService;
@@ -17,8 +22,9 @@ public class AdminController : ControllerBase
     private readonly IEvaluatorService _evaluatorService;
     private readonly IStudentService _studentService;
     private readonly IBranchService _branchService;
+    private readonly AppDbContext _db;
 
-    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService, IStudentService studentService, IBranchService branchService)
+    public AdminController(ICourseService courseService, ICoachService coachService, IUserService userService, IBranchManagerService branchManagerService, IParentService parentService, IEvaluatorService evaluatorService, IStudentService studentService, IBranchService branchService, AppDbContext db)
     {
         _courseService = courseService;
         _coachService = coachService;
@@ -28,6 +34,7 @@ public class AdminController : ControllerBase
         _evaluatorService = evaluatorService;
         _studentService = studentService;
         _branchService = branchService;
+        _db = db;
     }
 
     // ==================== Branches ====================
@@ -113,9 +120,13 @@ public class AdminController : ControllerBase
         {
             return Ok(await _courseService.UpdateAsync(id, course));
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -155,9 +166,13 @@ public class AdminController : ControllerBase
         {
             return Ok(await _courseService.UpdateAssignmentAsync(id, assignment));
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -180,7 +195,9 @@ public class AdminController : ControllerBase
             Instructions = request.Instructions ?? "طبق دستورالعمل، تکلیف روز را انجام دهید"
         };
 
-        var startDate = DateTime.Parse(request.StartDate);
+        if (!DateTime.TryParse(request.StartDate, out var startDate))
+            return BadRequest(new { message = "فرمت تاریخ نامعتبر است" });
+
         var result = await _courseService.CreateDailyAssignmentSeriesAsync(courseId, startDate, request.Days, baseTemplate);
         return Ok(result);
     }
@@ -209,6 +226,9 @@ public class AdminController : ControllerBase
 
         if (file != null)
         {
+            if (!FileUploadValidator.IsValidFile(file, out var validationError))
+                return BadRequest(new { message = validationError });
+
             var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "public", "uploads", "attachments");
             Directory.CreateDirectory(uploadsDir);
 
@@ -236,6 +256,9 @@ public class AdminController : ControllerBase
         if (file == null)
             return BadRequest(new { message = "فایل آپلود نشده است" });
 
+        if (!FileUploadValidator.IsValidFile(file, out var validationError))
+            return BadRequest(new { message = validationError });
+
         var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "public", "uploads", "attachments");
         Directory.CreateDirectory(uploadsDir);
 
@@ -260,9 +283,13 @@ public class AdminController : ControllerBase
         {
             return Ok(await _courseService.UpdateAttachmentAsync(id, attachment));
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
@@ -322,40 +349,51 @@ public class AdminController : ControllerBase
     [HttpPost("coaches")]
     public async Task<IActionResult> CreateCoach([FromBody] CreateCoachRequest request)
     {
-        var coach = await _coachService.CreateAsync(request);
-
-        // Also create a User record so the coach can log in
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing == null)
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
         {
-            await _userService.CreateUserAsync(
-                request.Username,
-                request.Password ?? "password123",
-                null,
-                null,
-                "coach",
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.PhoneNumber
-            );
+            var coach = await _coachService.CreateAsync(request);
+
+            // Also create a User record so the coach can log in
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password ?? "password123",
+                    null,
+                    null,
+                    "coach",
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                coach.Id,
+                coach.Username,
+                coach.FirstName,
+                coach.LastName,
+                coach.Email,
+                coach.PhoneNumber,
+                coach.BranchId,
+                coach.Specialization,
+                coach.NationalCode,
+                AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
+                coach.Status,
+                coach.CreatedAt
+            });
         }
-
-        return Ok(new
+        catch
         {
-            coach.Id,
-            coach.Username,
-            coach.FirstName,
-            coach.LastName,
-            coach.Email,
-            coach.PhoneNumber,
-            coach.BranchId,
-            coach.Specialization,
-            coach.NationalCode,
-            AssignedCourseIds = coach.CoachCourses.Select(cc => cc.CourseId).ToArray(),
-            coach.Status,
-            coach.CreatedAt
-        });
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [HttpPut("coaches/{id}")]
@@ -449,39 +487,50 @@ public class AdminController : ControllerBase
     [HttpPost("branch-managers")]
     public async Task<IActionResult> CreateBranchManager([FromBody] CreateBranchManagerRequest request)
     {
-        var bm = await _branchManagerService.CreateAsync(request);
-
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing == null)
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
         {
-            await _userService.CreateUserAsync(
-                request.Username,
-                request.Password,
-                null,
-                null,
-                "branch_manager",
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.PhoneNumber
-            );
+            var bm = await _branchManagerService.CreateAsync(request);
+
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password,
+                    null,
+                    null,
+                    "branch_manager",
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                bm.Id,
+                bm.Username,
+                bm.FirstName,
+                bm.LastName,
+                bm.Email,
+                bm.PhoneNumber,
+                bm.BranchId,
+                BranchName = bm.Branch?.Name,
+                bm.Gender,
+                bm.NationalCode,
+                bm.Status,
+                bm.CreatedAt
+            });
         }
-
-        return Ok(new
+        catch
         {
-            bm.Id,
-            bm.Username,
-            bm.FirstName,
-            bm.LastName,
-            bm.Email,
-            bm.PhoneNumber,
-            bm.BranchId,
-            BranchName = bm.Branch?.Name,
-            bm.Gender,
-            bm.NationalCode,
-            bm.Status,
-            bm.CreatedAt
-        });
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [HttpPut("branch-managers/{id}")]
@@ -581,42 +630,53 @@ public class AdminController : ControllerBase
     [HttpPost("parents")]
     public async Task<IActionResult> CreateParent([FromBody] CreateParentRequest request)
     {
-        var parent = await _parentService.CreateAsync(request);
-
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing == null)
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
         {
-            await _userService.CreateUserAsync(
-                request.Username,
-                request.Password,
-                null,
-                null,
-                "parent",
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.PhoneNumber
-            );
+            var parent = await _parentService.CreateAsync(request);
+
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password,
+                    null,
+                    null,
+                    "parent",
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                parent.Id,
+                parent.Username,
+                parent.FirstName,
+                parent.LastName,
+                parent.Email,
+                parent.PhoneNumber,
+                parent.Address,
+                parent.NationalCode,
+                parent.BranchId,
+                StudentIds = parent.StudentIds
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(int.Parse)
+                    .ToArray(),
+                parent.Status,
+                parent.CreatedAt
+            });
         }
-
-        return Ok(new
+        catch
         {
-            parent.Id,
-            parent.Username,
-            parent.FirstName,
-            parent.LastName,
-            parent.Email,
-            parent.PhoneNumber,
-            parent.Address,
-            parent.NationalCode,
-            parent.BranchId,
-            StudentIds = parent.StudentIds
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(int.Parse)
-                .ToArray(),
-            parent.Status,
-            parent.CreatedAt
-        });
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [HttpPut("parents/{id}")]
@@ -733,42 +793,53 @@ public class AdminController : ControllerBase
     [HttpPost("evaluators")]
     public async Task<IActionResult> CreateEvaluator([FromBody] CreateEvaluatorRequest request)
     {
-        var evaluator = await _evaluatorService.CreateAsync(request);
-
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing == null)
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
         {
-            await _userService.CreateUserAsync(
-                request.Username,
-                request.Password,
-                null,
-                null,
-                "evaluator",
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.PhoneNumber
-            );
+            var evaluator = await _evaluatorService.CreateAsync(request);
+
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password,
+                    null,
+                    null,
+                    "evaluator",
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                evaluator.Id,
+                evaluator.Username,
+                evaluator.FirstName,
+                evaluator.LastName,
+                evaluator.Email,
+                evaluator.PhoneNumber,
+                evaluator.BranchId,
+                evaluator.Expertise,
+                AssignedMadrasahIds = evaluator.AssignedMadrasahIds
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(int.Parse)
+                    .ToArray(),
+                evaluator.NationalCode,
+                evaluator.Status,
+                evaluator.CreatedAt
+            });
         }
-
-        return Ok(new
+        catch
         {
-            evaluator.Id,
-            evaluator.Username,
-            evaluator.FirstName,
-            evaluator.LastName,
-            evaluator.Email,
-            evaluator.PhoneNumber,
-            evaluator.BranchId,
-            evaluator.Expertise,
-            AssignedMadrasahIds = evaluator.AssignedMadrasahIds
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(int.Parse)
-                .ToArray(),
-            evaluator.NationalCode,
-            evaluator.Status,
-            evaluator.CreatedAt
-        });
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [HttpPut("evaluators/{id}")]
@@ -820,25 +891,23 @@ public class AdminController : ControllerBase
     [HttpGet("students")]
     public async Task<IActionResult> GetAllStudents()
     {
-        var students = await _studentService.GetAllAsync();
-        var result = students.Select(s =>
-        {
-            var user = _userService.FindUserByStudentIdAsync(s.Id).Result;
-            return new
+        var students = await _db.Students
+            .GroupJoin(_db.Users, s => s.Id, u => u.StudentId, (s, users) => new { Student = s, Users = users })
+            .SelectMany(x => x.Users.DefaultIfEmpty(), (x, u) => new
             {
-                s.Id,
-                Username = user?.Username ?? "",
-                s.FirstName,
-                s.LastName,
-                s.Email,
-                s.PhoneNumber,
-                s.BranchId,
-                s.StudentId,
-                s.Status,
-                s.CreatedAt
-            };
-        });
-        return Ok(result);
+                x.Student.Id,
+                Username = u != null ? u.Username : "",
+                x.Student.FirstName,
+                x.Student.LastName,
+                x.Student.Email,
+                x.Student.PhoneNumber,
+                x.Student.BranchId,
+                x.Student.StudentId,
+                x.Student.Status,
+                x.Student.CreatedAt
+            })
+            .ToListAsync();
+        return Ok(students);
     }
 
     [HttpGet("students/{id}")]
@@ -865,51 +934,62 @@ public class AdminController : ControllerBase
     [HttpPost("students")]
     public async Task<IActionResult> CreateStudent([FromBody] AdminCreateStudentRequest request)
     {
-        var student = await _studentService.CreateAsync(
-            request.FirstName.Trim(),
-            request.LastName.Trim(),
-            request.Email.Trim(),
-            request.PhoneNumber?.Trim() ?? "",
-            request.StudentId?.Trim() ?? $"S-{DateTime.UtcNow.Ticks % 100000}"
-        );
-
-        // Assign branch if provided
-        if (request.BranchId.HasValue)
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
         {
-            student.BranchId = request.BranchId;
-            await _studentService.UpdateAsync(student.Id, student);
-        }
-
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing == null)
-        {
-            await _userService.CreateUserAsync(
-                request.Username,
-                request.Password,
-                null,
-                student.Id,
-                "trainee",
-                request.FirstName,
-                request.LastName,
-                request.Email,
-                request.PhoneNumber
+            var student = await _studentService.CreateAsync(
+                request.FirstName.Trim(),
+                request.LastName.Trim(),
+                request.Email.Trim(),
+                request.PhoneNumber?.Trim() ?? "",
+                request.StudentId?.Trim() ?? $"S-{DateTime.UtcNow.Ticks % 100000}"
             );
-        }
 
-        var user = await _userService.FindUserByStudentIdAsync(student.Id);
-        return Ok(new
+            // Assign branch if provided
+            if (request.BranchId.HasValue)
+            {
+                student.BranchId = request.BranchId;
+                await _studentService.UpdateAsync(student.Id, student);
+            }
+
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password,
+                    null,
+                    student.Id,
+                    "trainee",
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            var user = await _userService.FindUserByStudentIdAsync(student.Id);
+            return Ok(new
+            {
+                student.Id,
+                Username = user?.Username ?? request.Username,
+                student.FirstName,
+                student.LastName,
+                student.Email,
+                student.PhoneNumber,
+                student.BranchId,
+                student.StudentId,
+                student.Status,
+                student.CreatedAt
+            });
+        }
+        catch
         {
-            student.Id,
-            Username = user?.Username ?? request.Username,
-            student.FirstName,
-            student.LastName,
-            student.Email,
-            student.PhoneNumber,
-            student.BranchId,
-            student.StudentId,
-            student.Status,
-            student.CreatedAt
-        });
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [HttpPut("students/{id}")]
@@ -989,9 +1069,13 @@ public class AdminController : ControllerBase
         {
             return Ok(await _courseService.GetCourseStatisticsAsync(courseId));
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 

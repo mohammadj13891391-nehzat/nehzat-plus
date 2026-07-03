@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using LessonPlanner.Api.Models;
 using LessonPlanner.Api.Services;
 
@@ -6,6 +7,7 @@ namespace LessonPlanner.Api.Controllers;
 
 [ApiController]
 [Route("courses")]
+[Authorize(Roles = "admin,manager,headquarters")]
 public class CourseController : ControllerBase
 {
     private readonly ICourseService _courseService;
@@ -66,9 +68,13 @@ public class CourseController : ControllerBase
             var result = await _courseService.UpdateAsync(id, course);
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
         }
     }
 
