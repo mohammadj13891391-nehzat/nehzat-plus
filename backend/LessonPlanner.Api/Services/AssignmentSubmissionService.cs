@@ -156,7 +156,7 @@ public class AssignmentSubmissionService : IAssignmentSubmissionService
 
         var totalScore = submissions.Sum(s => s.CumulativeScore);
         var completedDays = submissions.Count(s => s.IsCompleted);
-        var totalDays = 1;
+        var totalDays = await _db.Assignments.Where(a => a.CourseId == assignment.CourseId).CountAsync();
 
         return new
         {
