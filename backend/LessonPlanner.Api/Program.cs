@@ -21,7 +21,7 @@ builder.Services.AddControllers()
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -162,6 +162,10 @@ using (var scope = app.Services.CreateScope())
             Console.WriteLine($"⚠️ خطا در ایجاد شعبه پیش‌فرض: {ex.Message}");
         }
     }
+
+    // Seed sample data
+    var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
+    await seeder.SeedAsync();
 }
 
 app.Run();
