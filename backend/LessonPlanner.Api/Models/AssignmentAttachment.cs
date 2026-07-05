@@ -13,7 +13,7 @@ public class AssignmentAttachment
     [Column(TypeName = "nvarchar(200)")]
     public string? Title { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Description { get; set; }
 
     [Column(TypeName = "nvarchar(20)")]

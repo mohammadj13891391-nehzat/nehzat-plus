@@ -21,7 +21,7 @@ public class StudentCourse
     [Column(TypeName = "nvarchar(2)")]
     public string? LetterGrade { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Notes { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

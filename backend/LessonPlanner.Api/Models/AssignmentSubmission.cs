@@ -20,7 +20,7 @@ public class AssignmentSubmission
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "pending";
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Feedback { get; set; }
 
     [Column(TypeName = "nvarchar(255)")]
@@ -29,7 +29,7 @@ public class AssignmentSubmission
     [Column(TypeName = "nvarchar(255)")]
     public string? DocumentUrl { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Notes { get; set; }
 
     public bool IsCompleted { get; set; } = false;

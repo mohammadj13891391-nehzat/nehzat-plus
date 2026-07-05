@@ -13,7 +13,7 @@ public class Assignment
     [Column(TypeName = "nvarchar(200)")]
     public string Title { get; set; } = string.Empty;
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string Description { get; set; } = string.Empty;
 
     [Column(TypeName = "nvarchar(50)")]
@@ -27,7 +27,7 @@ public class Assignment
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Instructions { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

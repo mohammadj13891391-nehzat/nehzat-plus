@@ -25,7 +25,7 @@ public class Student
     [Column(TypeName = "nvarchar(20)")]
     public string? PhoneNumber { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? Address { get; set; }
 
     [Column(TypeName = "date")]
