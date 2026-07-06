@@ -93,7 +93,7 @@ public class AssessmentController : ControllerBase
                 request.DurationMinutes,
                 request.MaxScore,
                 request.AssessmentDate,
-                request.Criteria);
+                request.Criteria ?? new Dictionary<string, object>());
             return Ok(result);
         }
         catch (Exception ex)
