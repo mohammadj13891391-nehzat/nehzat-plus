@@ -16,7 +16,8 @@ const TOKEN_KEY = 'token';
 
 interface JwtPayload {
   sub: string;
-  userType: UserType;
+  userType?: UserType;
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
   userId?: number;
   studentId?: number;
   branchId?: number;
@@ -59,12 +60,16 @@ export class AuthService {
       return null;
     }
     const payload = this.decodeToken(token);
-    if (!payload || !payload.sub || !payload.userType) {
+    if (!payload || !payload.sub) {
+      return null;
+    }
+    const userType = (payload.userType ?? payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) as UserType | undefined;
+    if (!userType) {
       return null;
     }
     return {
       username: payload.sub,
-      userType: payload.userType,
+      userType,
       studentId: payload.studentId,
       branchId: payload.branchId
     };

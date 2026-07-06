@@ -30,14 +30,50 @@ import { AuthService } from '../../../core/services/auth.service';
     </main>
   `,
   styles: [`
-    .role-page { direction: rtl; min-height: 100vh; background: var(--lp-bg, #f8f9fa); }
-    .site-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--lp-surface, #fff); border-bottom: 1px solid var(--lp-border, #e5e7eb); }
-    .brand-wrap { display: flex; align-items: center; gap: 1rem; }
-    .site-logo { width: 48px; height: 48px; object-fit: contain; }
-    h1 { margin: 0; font-size: 1.25rem; }
-    .muted { color: var(--lp-muted, #6b7280); margin: 0; }
-    .menu-trigger { background: var(--lp-primary, #2563eb); color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
-    .main-content { padding: 2rem; }
+    .role-page { direction: rtl; min-height: 100vh; padding: 1rem; display: grid; gap: 1rem; }
+    .site-header {
+      background: linear-gradient(135deg, var(--lp-primary, #1a6b3c) 0%, #0f3d22 100%);
+      border-radius: 18px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(26, 107, 60, 0.2);
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 0.75rem; }
+    .site-logo {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    h1 { margin: 0; font-size: 1.1rem; color: #fff; }
+    .muted { color: rgba(255,255,255,0.8); margin: 0.1rem 0 0; font-size: 0.85rem; }
+    .user-menu { position: relative; }
+    .menu-trigger {
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 0.45rem 0.85rem;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+      font: inherit;
+      font-weight: 600;
+    }
+    .menu-trigger:hover { background: rgba(255,255,255,0.18); }
+    .main-content {
+      background: var(--lp-surface, #fff);
+      border: 1px solid var(--lp-border, #ddd5c5);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 24px rgba(30, 27, 20, 0.06);
+    }
+    .main-content h2 { margin: 0 0 0.5rem; color: var(--lp-text, #1e1b14); }
+    .main-content .muted { color: var(--lp-muted, #7a7468); font-size: 0.95rem; }
   `]
 })
 export class RoleStubComponent implements OnInit {

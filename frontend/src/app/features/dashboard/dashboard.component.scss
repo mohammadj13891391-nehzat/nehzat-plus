@@ -9,7 +9,7 @@
   gap: 1rem;
 }
 .site-header {
-  background: linear-gradient(135deg, var(--primary) 0%, #0f3d22 100%);
+  background: linear-gradient(135deg, var(--lp-primary) 0%, #0f3d22 100%);
   border-radius: 18px;
   padding: 0.75rem 1rem;
   display: flex;
@@ -65,7 +65,7 @@
   top: calc(100% + 8px);
   left: 0;
   min-width: 180px;
-  background: var(--surface);
+  background: var(--lp-surface);
   border: 1px solid var(--lp-border);
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(30, 27, 20, 0.12);
@@ -80,7 +80,7 @@
   text-align: right;
   border-radius: 10px;
   cursor: pointer;
-  color: var(--text);
+  color: var(--lp-text);
 }
 .menu-dropdown button:hover {
   background: #f0ece4;
@@ -92,16 +92,16 @@
 }
 .sidebar,
 .main-content {
-  background: var(--surface);
+  background: var(--lp-surface);
   border: 1px solid var(--lp-border);
   border-radius: 18px;
   padding: 1rem;
 }
 .sidebar h3 {
   margin: 0 0 0.75rem;
-  color: var(--text);
+  color: var(--lp-text);
   font-size: 0.95rem;
-  border-bottom: 2px solid var(--gold);
+  border-bottom: 2px solid var(--lp-gold);
   padding-bottom: 0.5rem;
 }
 .lesson-menu {
@@ -110,16 +110,16 @@
 }
 .lesson-btn {
   border: 1px solid var(--lp-border);
-  background: var(--surface);
+  background: var(--lp-surface);
   border-radius: 12px;
   padding: 0.55rem 0.65rem;
   text-align: right;
   cursor: pointer;
-  color: var(--text);
+  color: var(--lp-text);
   transition: border-color 0.2s, background 0.2s;
 }
 .lesson-btn:hover {
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
   background: #faf8f5;
 }
 .lesson-btn.active {
@@ -130,7 +130,7 @@
 }
 .main-content h2 {
   margin: 0 0 1rem;
-  color: var(--text);
+  color: var(--lp-text);
   font-size: 1.1rem;
 }
 .lesson-info,
@@ -153,7 +153,7 @@
 }
 .lesson-info h3 {
   margin: 0 0 0.3rem;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .timeline-horizontal {
   display: flex;
@@ -206,11 +206,11 @@
   display: none;
 }
 .chart-placeholder {
-  border: 1px dashed var(--gold);
-  background: var(--gold-light);
+  border: 1px dashed var(--lp-gold);
+  background: var(--lp-gold-light);
   border-radius: 12px;
   padding: 0.7rem;
-  color: var(--gold);
+  color: var(--lp-gold);
 }
 .recorder-controls {
   display: flex;
@@ -231,7 +231,7 @@
   transform: scale(1.08);
 }
 .record-btn.recording {
-  background: var(--primary);
+  background: var(--lp-primary);
 }
 .record-btn:disabled {
   opacity: 0.55;
@@ -264,7 +264,7 @@
 }
 .submission-card h6 {
   margin: 0;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .modal-backdrop {
   position: fixed;
@@ -282,7 +282,7 @@
   overflow-y: auto;
   border-radius: 20px;
   border: 1px solid var(--lp-border);
-  background: var(--surface);
+  background: var(--lp-surface);
   padding: 1rem;
   box-shadow: 0 20px 40px rgba(30, 27, 20, 0.15);
 }
@@ -295,7 +295,7 @@
 }
 .modal-header h5 {
   margin: 0;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .modal-body {
   display: grid;
