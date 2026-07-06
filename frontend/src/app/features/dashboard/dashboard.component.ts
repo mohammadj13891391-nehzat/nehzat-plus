@@ -17,13 +17,14 @@ import { AuthService } from '../../core/services/auth.service';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 import { NotificationService } from '../../core/services/notification.service';
 import { DashboardTrainingStepsComponent } from './dashboard-training-steps/dashboard-training-steps.component';
+import { AssessmentTakerComponent } from './assessment-taker/assessment-taker.component';
 
 type TimelineStatus = 'future' | 'today' | 'past';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DashboardTrainingStepsComponent],
+  imports: [CommonModule, DashboardTrainingStepsComponent, AssessmentTakerComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -65,6 +66,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isUserMenuOpen = false;
   isUserModalOpen = false;
   isAssignmentModalOpen = false;
+  isAssessmentTakerOpen = false;
 
   private listenSession = {
     active: false,
@@ -145,6 +147,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     void this.router.navigateByUrl('/auth/login');
+  }
+
+  openAssessmentTaker(): void {
+    this.isAssessmentTakerOpen = true;
+  }
+
+  onAssessmentTakerClosed(): void {
+    this.isAssessmentTakerOpen = false;
   }
 
   loadCourses(): void {
@@ -507,6 +517,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private getStudentId(): number | null {
     const session = this.authService.getCurrentUser();
     return session?.studentId ?? session?.studentInfo?.id ?? null;
+  }
+
+  authStudentId(): number | null {
+    return this.getStudentId();
   }
 
   private updateChartSummary(): void {

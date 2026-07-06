@@ -208,8 +208,6 @@ public class AssessmentService : IAssessmentService
         var course = await _courseService.FindByIdAsync(courseId)
             ?? throw new KeyNotFoundException("Course not found");
 
-        var assignments = await _courseService.GetCourseAssignmentsAsync(courseId);
-
         var assessment = new Assessment
         {
             CourseId = courseId,
@@ -224,94 +222,94 @@ public class AssessmentService : IAssessmentService
             GeneratedByUserId = generatedByUserId,
             GenerationCriteria = JsonSerializer.Serialize(criteria),
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
+            Questions = new List<AssessmentQuestion>()
         };
 
+        // Save assessment first to get a real ID before creating questions
         _db.Assessments.Add(assessment);
         await _db.SaveChangesAsync();
 
-        var questions = await GenerateQuestionsFromCourseContentAsync(assessment.Id, courseId, criteria);
-        
-        return (await FindByIdAsync(assessment.Id))!;
+        // Now assessment.Id is set — generate questions with the real ID
+        var questions = GenerateQuestionsSynchronously(assessment.Id, criteria);
+        _db.AssessmentQuestions.AddRange(questions);
+        await _db.SaveChangesAsync();
+
+        // Reload with navigation properties populated
+        var loaded = await FindByIdAsync(assessment.Id);
+        if (loaded == null)
+            throw new InvalidOperationException("Assessment not found after creation.");
+        return loaded;
     }
 
-    public async Task<List<AssessmentQuestion>> GenerateQuestionsFromCourseContentAsync(int assessmentId, int courseId, Dictionary<string, object> criteria)
+    private static int GetIntFromValue(object value, int defaultValue)
     {
-        var course = await _courseService.FindByIdAsync(courseId)
-            ?? throw new KeyNotFoundException("Course not found");
+        if (value is int i) return i;
+        if (value is JsonElement je)
+        {
+            if (je.ValueKind == JsonValueKind.Number) return je.GetInt32();
+            if (je.ValueKind == JsonValueKind.String && int.TryParse(je.GetString(), out var parsed)) return parsed;
+        }
+        if (value is long l) return (int)l;
+        if (value is string s && int.TryParse(s, out var parsed2)) return parsed2;
+        return defaultValue;
+    }
 
-        var assignments = await _courseService.GetCourseAssignmentsAsync(courseId);
-        var criteriaDate = criteria?.ContainsKey("assessmentDate") == true ? Convert.ToDateTime(criteria["assessmentDate"]) : DateTime.UtcNow;
-        var recentAssignments = assignments
-            .Where(a => a.AssignmentDate >= criteriaDate.AddDays(-14) && a.AssignmentDate <= criteriaDate)
-            .ToList();
+    private static Dictionary<string, int> GetDifficultyDistribution(Dictionary<string, object> criteria)
+    {
+        var dist = new Dictionary<string, int> { ["easy"] = 3, ["medium"] = 5, ["hard"] = 2 };
+        if (criteria?.ContainsKey("difficultyDistribution") != true) return dist;
+        var raw = criteria["difficultyDistribution"];
+        Dictionary<string, object>? ddo = null;
+        if (raw is Dictionary<string, object> ddo1) ddo = ddo1;
+        else if (raw is JsonElement je && je.ValueKind == JsonValueKind.Object)
+            ddo = JsonSerializer.Deserialize<Dictionary<string, object>>(je.GetRawText());
+        if (ddo == null) return dist;
+        foreach (var kvp in ddo) dist[kvp.Key] = GetIntFromValue(kvp.Value, 3);
+        return dist;
+    }
 
+    private List<AssessmentQuestion> GenerateQuestionsSynchronously(int assessmentId, Dictionary<string, object> criteria)
+    {
         var questions = new List<AssessmentQuestion>();
+        var random = new Random();
         var order = 0;
         var totalPoints = 100;
-        var questionCount = criteria?.ContainsKey("questionCount") == true ? Convert.ToInt32(criteria["questionCount"]) : 10;
-        var difficultyDistributionObj = criteria?.ContainsKey("difficultyDistribution") == true ? criteria["difficultyDistribution"] : null;
-        var difficultyDistribution = new Dictionary<string, int>
-        {
-            ["easy"] = 3,
-            ["medium"] = 5,
-            ["hard"] = 2
-        };
-        
-        if (difficultyDistributionObj is Dictionary<string, int> dd)
-        {
-            difficultyDistribution = dd;
-        }
-        else if (difficultyDistributionObj is Dictionary<string, object> ddo)
-        {
-            foreach (var kvp in ddo)
-            {
-                difficultyDistribution[kvp.Key] = Convert.ToInt32(kvp.Value);
-            }
-        }
+
+        var questionCount = criteria != null && criteria.ContainsKey("questionCount") ? GetIntFromValue(criteria["questionCount"], 10) : 10;
+        var difficultyDistribution = GetDifficultyDistribution(criteria ?? new Dictionary<string, object>());
 
         int easyCount = difficultyDistribution.GetValueOrDefault("easy", 3);
         int mediumCount = difficultyDistribution.GetValueOrDefault("medium", 5);
         int hardCount = difficultyDistribution.GetValueOrDefault("hard", 2);
 
-        var topics = recentAssignments
-            .SelectMany(a => ExtractTopicsFromAssignment(a))
-            .GroupBy(t => t)
-            .OrderByDescending(g => g.Count())
-            .Select(g => g.Key)
-            .ToList();
-
-        if (!topics.Any())
-        {
-            topics.AddRange(new[] { "مفاهیم پایه", "حل مسئله", "درک مطلب", "اعمال دانش" });
-        }
+        var defaultTopics = new[] { "مفاهیم پایه", "حل مسئله", "درک مطلب", "اعمال دانش" };
 
         var difficulties = new List<string>();
         for (int i = 0; i < easyCount; i++) difficulties.Add("easy");
         for (int i = 0; i < mediumCount; i++) difficulties.Add("medium");
         for (int i = 0; i < hardCount; i++) difficulties.Add("hard");
 
-        var random = new Random();
         difficulties = difficulties.OrderBy(x => random.Next()).ToList();
 
-        for (int i = 0; i < Math.Min(questionCount, difficulties.Count()); i++)
+        for (int i = 0; i < Math.Min(questionCount, difficulties.Count); i++)
         {
             var difficulty = difficulties[i];
-            var topic = topics[i % topics.Count];
+            var topic = defaultTopics[i % defaultTopics.Length];
             var points = difficulty == "easy" ? 8 : (difficulty == "medium" ? 12 : 15);
 
             var question = new AssessmentQuestion
             {
                 AssessmentId = assessmentId,
                 Type = "multiple_choice",
-                QuestionText = GenerateQuestionText(topic, difficulty),
+                QuestionText = GenerateQuestionText(topic, difficulty, random),
                 OptionsJson = GenerateOptionsJson(),
                 CorrectAnswerJson = JsonSerializer.Serialize(new { correctOption = 0 }),
                 Points = points,
                 Order = order++,
                 Difficulty = difficulty,
                 Topic = topic,
-                Explanation = GenerateExplanation(topic, difficulty),
+                Explanation = GenerateExplanation(difficulty, random),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -320,83 +318,54 @@ public class AssessmentService : IAssessmentService
         }
 
         var totalQuestionPoints = questions.Sum(q => q.Points);
-        var scaleFactor = (double)totalPoints / totalQuestionPoints;
-        
-        foreach (var q in questions)
+        if (totalQuestionPoints > 0)
         {
-            q.Points = (int)Math.Round(q.Points * scaleFactor);
+            var scaleFactor = (double)totalPoints / totalQuestionPoints;
+            foreach (var q in questions)
+            {
+                q.Points = (int)Math.Round(q.Points * scaleFactor);
+            }
         }
-
-        _db.AssessmentQuestions.AddRange(questions);
-        await _db.SaveChangesAsync();
 
         return questions;
     }
 
-    private List<string> ExtractTopicsFromAssignment(Assignment assignment)
+    // Keeping GenerateQuestionsFromCourseContentAsync for backward compatibility - delegates to sync version
+    public async Task<List<AssessmentQuestion>> GenerateQuestionsFromCourseContentAsync(int assessmentId, int courseId, Dictionary<string, object> criteria)
     {
-        var topics = new List<string>();
-        var words = assignment.Title.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        
-        foreach (var word in words)
-        {
-            if (word.Length > 2 && !word.All(char.IsDigit))
-            {
-                topics.Add(word);
-            }
-        }
-
-        if (assignment.Description.Length > 0)
-        {
-            var descWords = assignment.Description.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Where(w => w.Length > 3)
-                .Take(3);
-            topics.AddRange(descWords);
-        }
-
-        return topics.Distinct().ToList();
+        var questions = GenerateQuestionsSynchronously(assessmentId, criteria);
+        return questions;
     }
 
-    private string GenerateQuestionText(string topic, string difficulty)
+    private string GenerateQuestionText(string topic, string difficulty, Random random)
     {
-        var templates = new Dictionary<string, Dictionary<string, string[]>>
+        var templates = new Dictionary<string, string[]>
         {
-            ["easy"] = new Dictionary<string, string[]>
+            ["easy"] = new[]
             {
-                ["default"] = new[]
-                {
-                    "کدام یک از موارد زیر مربوط به {0} است؟",
-                    "تعریف {0} چیست؟",
-                    "مثالی از {0} کدام است؟",
-                    "در مورد {0} کدام جمله درست است؟"
-                }
+                "کدام یک از موارد زیر مربوط به {0} است؟",
+                "تعریف {0} چیست؟",
+                "مثالی از {0} کدام است؟",
+                "در مورد {0} کدام جمله درست است؟"
             },
-            ["medium"] = new Dictionary<string, string[]>
+            ["medium"] = new[]
             {
-                ["default"] = new[]
-                {
-                    "تفاوت {0} با مفاهیم مشابه چیست؟",
-                    "چگونه {0} را در مسئله‌های واقعی اعمال می‌کنیم؟",
-                    "نتیجه اعمال {0} در شرایط {1} چیست؟",
-                    "مهم‌ترین نکته در استفاده از {0} چیست؟"
-                }
+                "تفاوت {0} با مفاهیم مشابه چیست؟",
+                "چگونه {0} را در مسئله‌های واقعی اعمال می‌کنیم؟",
+                "نتیجه اعمال {0} در شرایط مختلف چیست؟",
+                "مهم‌ترین نکته در استفاده از {0} چیست؟"
             },
-            ["hard"] = new Dictionary<string, string[]>
+            ["hard"] = new[]
             {
-                ["default"] = new[]
-                {
-                    "با توجه به سناریوی زیر، بهترین راهکار برای {0} چیست؟",
-                    "تحلیل کنید چرا {0} در این شرایط نتیجه {1} را دارد؟",
-                    "طراحی یک راه‌حل با استفاده از {0} برای حل مسئله {1}?",
-                    "مقایسه و تقابل {0} و {1} در موقعیت پیچیده چیست؟"
-                }
+                "با توجه به سناریوی زیر، بهترین راهکار برای {0} چیست؟",
+                "تحلیل کنید چرا {0} در این شرایط نتیجه متفاوت دارد؟",
+                "راه‌حلی با استفاده از {0} برای حل مسئله پیشنهاد دهید.",
+                "مقایسه {0} با سایر مفاهیم مشابه در موقعیت پیچیده"
             }
         };
 
         var diffTemplates = templates.GetValueOrDefault(difficulty, templates["easy"]);
-        var topicTemplates = diffTemplates.GetValueOrDefault("default", diffTemplates["default"]);
-        var random = new Random();
-        var template = topicTemplates[random.Next(topicTemplates.Length)];
+        var template = diffTemplates[random.Next(diffTemplates.Length)];
 
         return string.Format(template, topic);
     }
@@ -413,7 +382,7 @@ public class AssessmentService : IAssessmentService
         return JsonSerializer.Serialize(options);
     }
 
-    private string GenerateExplanation(string topic, string difficulty)
+    private string GenerateExplanation(string difficulty, Random random)
     {
         var explanations = new Dictionary<string, string[]>
         {
@@ -435,7 +404,6 @@ public class AssessmentService : IAssessmentService
         };
 
         var diffExplanations = explanations.GetValueOrDefault(difficulty, explanations["easy"]);
-        var random = new Random();
         return diffExplanations[random.Next(diffExplanations.Length)];
     }
 

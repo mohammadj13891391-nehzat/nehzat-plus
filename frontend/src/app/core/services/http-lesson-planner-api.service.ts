@@ -465,6 +465,10 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
     return this.http.post<AssessmentResult>(this.url(`/assessments/${assessmentId}/submit`), payload);
   }
 
+  startAssessment(assessmentId: number, studentId: number): Observable<AssessmentResult> {
+    return this.http.post<AssessmentResult>(this.url(`/assessments/${assessmentId}/start/${studentId}`), {});
+  }
+
   getAssessmentResults(assessmentId: number): Observable<AssessmentResult[]> {
     return this.http.get<AssessmentResult[]>(this.url(`/assessments/${assessmentId}/results`));
   }

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using LessonPlanner.Api.Models;
 using LessonPlanner.Api.Services;
 using LessonPlanner.Api.DTOs;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace LessonPlanner.Api.Controllers;
 
@@ -39,16 +41,28 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Assessment assessment)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateAssessmentRequest request)
     {
         try
         {
-            var result = await _assessmentService.UpdateAsync(id, assessment);
+            // Map DTO to minimal Assessment object — only non-null fields are passed
+            var assessmentUpdate = new Assessment();
+            if (request.Title != null) assessmentUpdate.Title = request.Title;
+            if (request.Description != null) assessmentUpdate.Description = request.Description;
+            if (request.Type != null) assessmentUpdate.Type = request.Type;
+            if (request.MaxScore.HasValue) assessmentUpdate.MaxScore = request.MaxScore.Value;
+            if (request.DurationMinutes.HasValue) assessmentUpdate.DurationMinutes = request.DurationMinutes.Value;
+            if (request.AssessmentDate.HasValue) assessmentUpdate.AssessmentDate = request.AssessmentDate.Value;
+            if (request.Status != null) assessmentUpdate.Status = request.Status;
+            if (request.Instructions != null) assessmentUpdate.Instructions = request.Instructions;
+            if (request.Criteria != null) assessmentUpdate.GenerationCriteria = JsonSerializer.Serialize(request.Criteria);
+
+            var result = await _assessmentService.UpdateAsync(id, assessmentUpdate);
             return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException)
         {
-            return NotFound(new { message = ex.Message });
+            return NotFound(new { message = "Assessment not found" });
         }
     }
 
@@ -85,9 +99,14 @@ public class AssessmentController : ControllerBase
     {
         try
         {
+            // Extract user ID from JWT claims so the client doesn't need to send it
+            var userIdClaim = User.FindFirstValue("userId");
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User ID not found in token." });
+
             var result = await _assessmentService.GenerateWeeklyAssessmentAsync(
                 request.CourseId,
-                request.GeneratedByUserId,
+                userId,
                 request.Title,
                 request.Description,
                 request.DurationMinutes,
@@ -98,7 +117,8 @@ public class AssessmentController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            var detail = ex.InnerException?.Message ?? ex.Message;
+            return BadRequest(new { message = detail });
         }
     }
 
@@ -153,6 +173,51 @@ public class AssessmentController : ControllerBase
             AnswersJson = request.AnswersJson,
             Feedback = request.Feedback,
             TimeSpentMinutes = request.TimeSpentMinutes,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var created = await _assessmentService.CreateResultAsync(result);
+        return Ok(created);
+    }
+
+    [HttpPost("{id}/archive")]
+    public async Task<IActionResult> Archive(int id)
+    {
+        try
+        {
+            var result = await _assessmentService.UpdateAsync(id, new Assessment { Status = "archived" });
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Assessment not found" });
+        }
+    }
+
+    [HttpPost("{id}/start/{studentId}")]
+    public async Task<IActionResult> StartAssessment(int id, int studentId)
+    {
+        var existing = await _assessmentService.GetResultByAssessmentAndStudentAsync(id, studentId);
+        if (existing != null)
+        {
+            return Ok(existing);
+        }
+
+        var assessment = await _assessmentService.FindByIdAsync(id);
+        if (assessment == null)
+            return NotFound(new { message = "Assessment not found" });
+
+        var result = new AssessmentResult
+        {
+            AssessmentId = id,
+            StudentId = studentId,
+            Status = "in_progress",
+            Score = 0,
+            MaxPossibleScore = assessment.MaxScore,
+            Percentage = 0,
+            CompletedAt = DateTime.UtcNow,
+            TimeSpentMinutes = 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

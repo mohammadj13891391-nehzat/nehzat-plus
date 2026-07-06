@@ -6,8 +6,7 @@ public record GenerateWeeklyAssessmentRequest(
     [Required(ErrorMessage = "شناسه دوره الزامی است")]
     int CourseId,
 
-    [Required(ErrorMessage = "شناسه کاربر تولیدکننده الزامی است")]
-    int GeneratedByUserId,
+    int? GeneratedByUserId, // Kept for backward compatibility; controller now extracts userId from JWT
 
     [Required(ErrorMessage = "عنوان ارزیابی الزامی است")]
     [StringLength(200, ErrorMessage = "عنوان نباید بیشتر از ۲۰۰ کاراکتر باشد")]
@@ -94,6 +93,18 @@ public record AssessmentQuestionResponse(
     string Difficulty,
     string? Topic,
     string? Explanation
+);
+
+public record UpdateAssessmentRequest(
+    string? Title,
+    string? Description,
+    string? Type,
+    int? MaxScore,
+    int? DurationMinutes,
+    DateTime? AssessmentDate,
+    string? Status,
+    string? Instructions,
+    Dictionary<string, object>? Criteria
 );
 
 public record AssessmentResponse(

@@ -137,6 +137,7 @@
 .chart-container,
 .audio-recorder,
 .submissions-container,
+.assessments-container,
 .timeline-container {
   border: 1px solid var(--lp-border);
   border-radius: 16px;
@@ -148,6 +149,7 @@
 .chart-container:hover,
 .audio-recorder:hover,
 .submissions-container:hover,
+.assessments-container:hover,
 .timeline-container:hover {
   box-shadow: 0 4px 12px rgba(30, 27, 20, 0.04);
 }
@@ -243,6 +245,13 @@
   gap: 0.55rem;
 }
 .submissions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.assessments-header {
   display: flex;
   justify-content: space-between;
   align-items: center;

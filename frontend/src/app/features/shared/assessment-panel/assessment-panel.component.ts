@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 
 import type {
+  ApiMessageResponse,
   Assessment,
   AssessmentQuestion,
   AssessmentResult,
@@ -16,12 +17,20 @@ import type {
 import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.token';
 import { AuthService } from '../../../core/services/auth.service';
 
+interface Toast {
+  message: string;
+  type: 'success' | 'error';
+}
+
 @Component({
   selector: 'app-assessment-panel',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <main class="assessment-page">
+      <!-- Toast notification -->
+      <div class="toast" *ngIf="toast" [class]="'toast-' + toast.type">{{ toast.message }}</div>
+
       <header class="page-header">
         <div class="header-content">
           <img src="assets/nehzat.png" alt="لوگو" class="logo" (error)="logoHidden = true" />
@@ -86,7 +95,7 @@ import { AuthService } from '../../../core/services/auth.service';
             هنوز ارزیابی‌ای ایجاد نشده است.
           </div>
           <div class="assessment-list">
-            <div *ngFor="let a of assessments" class="assessment-item" (click)="selectAssessment(a)">
+            <div *ngFor="let a of assessments" class="assessment-item" [class.active]="selectedAssessment?.id === a.id" (click)="selectAssessment(a)">
               <div class="assessment-header">
                 <h3>{{ a.title }}</h3>
                 <span class="badge" [class]="a.status">{{ statusLabel(a.status) }}</span>
@@ -103,7 +112,26 @@ import { AuthService } from '../../../core/services/auth.service';
         </section>
 
         <section class="card detail-card" *ngIf="selectedAssessment">
-          <h2>{{ selectedAssessment.title }} - جزئیات</h2>
+          <div class="detail-header">
+            <h2>{{ selectedAssessment.title }} - جزئیات</h2>
+            <div class="detail-actions">
+              <button type="button" class="btn-action btn-publish" *ngIf="selectedAssessment.status === 'draft'"
+                (click)="publishAssessment()" [disabled]="actionLoading">
+                {{ actionLoading ? '...' : 'انتشار' }}
+              </button>
+              <button type="button" class="btn-action btn-delete"
+                (click)="deleteAssessment()" [disabled]="actionLoading">
+                {{ actionLoading ? '...' : 'حذف' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="detail-meta">
+            <span>وضعیت: <strong>{{ statusLabel(selectedAssessment.status) }}</strong></span>
+            <span>نمره کل: {{ selectedAssessment.maxScore }}</span>
+            <span>مدت: {{ selectedAssessment.durationMinutes }} دقیقه</span>
+            <span *ngIf="selectedAssessment.assessmentDate">تاریخ: {{ selectedAssessment.assessmentDate | date:'yyyy/MM/dd' }}</span>
+          </div>
 
           <div class="questions-section" *ngIf="selectedAssessment.questions?.length">
             <h3>سوالات ({{ selectedAssessment.questions!.length }})</h3>
@@ -114,7 +142,15 @@ import { AuthService } from '../../../core/services/auth.service';
                 <span class="q-points">{{ q.points }} امتیاز</span>
               </div>
               <p class="q-text">{{ q.questionText }}</p>
+              <div class="q-options" *ngIf="q.optionsJson">
+                <div *ngFor="let opt of parseOptions(q.optionsJson); let oi = index" class="q-option" [class.correct]="isCorrectOption(oi, q.correctAnswerJson)">
+                  <span class="opt-label">{{ optionLabel(oi) }}</span>
+                  <span>{{ opt }}</span>
+                  <span class="opt-correct" *ngIf="isCorrectOption(oi, q.correctAnswerJson)">✓</span>
+                </div>
+              </div>
               <p class="q-topic" *ngIf="q.topic">موضوع: {{ q.topic }}</p>
+              <p class="q-explanation" *ngIf="q.explanation">توضیح: {{ q.explanation }}</p>
             </div>
           </div>
 
@@ -128,9 +164,9 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
           </div>
 
-          <button type="button" class="btn-secondary" (click)="publishAssessment()" *ngIf="selectedAssessment.status === 'draft'">
-            انتشار ارزیابی
-          </button>
+          <p class="detail-empty" *ngIf="!selectedAssessment.questions?.length && !selectedAssessment.results?.length">
+            جزئیاتی برای نمایش وجود ندارد.
+          </p>
         </section>
       </div>
     </main>
@@ -142,6 +178,25 @@ import { AuthService } from '../../../core/services/auth.service';
       padding: 1rem;
       display: grid;
       gap: 1rem;
+    }
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      animation: slideDown 0.3s ease;
+    }
+    .toast-success { background: #065f46; color: #fff; }
+    .toast-error { background: #991b1b; color: #fff; }
+    @keyframes slideDown {
+      from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
     .page-header {
       background: linear-gradient(135deg, var(--lp-primary, #1a6b3c) 0%, #0f3d22 100%);
@@ -210,18 +265,6 @@ import { AuthService } from '../../../core/services/auth.service';
     }
     .btn-primary:hover:not(:disabled) { background: var(--lp-primary-hover); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-secondary {
-      background: var(--lp-surface);
-      color: var(--lp-text);
-      border: 1px solid var(--lp-border);
-      border-radius: 12px;
-      padding: 0.6rem 1rem;
-      cursor: pointer;
-      font-weight: 600;
-      font: inherit;
-      margin-top: 1rem;
-    }
-    .btn-secondary:hover { background: #f0ece4; }
     .loading, .empty { color: var(--lp-muted); text-align: center; padding: 2rem 0; }
     .assessment-list { display: grid; gap: 0.6rem; margin-top: 0.75rem; }
     .assessment-item {
@@ -235,6 +278,7 @@ import { AuthService } from '../../../core/services/auth.service';
       border-color: var(--lp-gold);
       box-shadow: 0 4px 12px rgba(30, 27, 20, 0.06);
     }
+    .assessment-item.active { border-color: var(--lp-primary); background: #f0f7f0; }
     .assessment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
     .assessment-header h3 { margin: 0; font-size: 0.95rem; }
     .assessment-desc { color: var(--lp-muted); font-size: 0.85rem; margin: 0 0 0.5rem; }
@@ -249,6 +293,34 @@ import { AuthService } from '../../../core/services/auth.service';
     .badge.published { background: #eaf5ed; color: #065f46; }
     .badge.completed { background: #dbeafe; color: #1e40af; }
     .badge.archived { background: #f0ece4; color: #5b5348; }
+    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+    .detail-actions { display: flex; gap: 0.5rem; }
+    .btn-action {
+      border: 0;
+      border-radius: 10px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      font: inherit;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-publish { background: var(--lp-primary); color: #fff; }
+    .btn-publish:hover:not(:disabled) { background: var(--lp-primary-hover); }
+    .btn-delete { background: #fee2e2; color: #991b1b; }
+    .btn-delete:hover:not(:disabled) { background: #fecaca; }
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--lp-muted);
+      margin: 0.75rem 0;
+      padding: 0.75rem 0;
+      border-top: 1px solid var(--lp-border);
+      border-bottom: 1px solid var(--lp-border);
+    }
     .questions-section, .results-section { margin-top: 1rem; }
     .questions-section h3, .results-section h3 { font-size: 0.95rem; margin: 0 0 0.5rem; }
     .question-item {
@@ -269,7 +341,21 @@ import { AuthService } from '../../../core/services/auth.service';
     .q-difficulty.hard { background: #fee2e2; color: #991b1b; }
     .q-points { font-size: 0.8rem; color: var(--lp-muted); margin-right: auto; }
     .q-text { margin: 0.3rem 0; font-size: 0.9rem; }
-    .q-topic { margin: 0; font-size: 0.8rem; color: var(--lp-muted); }
+    .q-options { margin: 0.4rem 0 0.2rem; display: grid; gap: 0.25rem; }
+    .q-option {
+      padding: 0.3rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      background: #faf8f4;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .q-option.correct { background: #eaf5ed; border: 1px solid #86b99b; }
+    .opt-label { font-weight: 600; color: var(--lp-muted); min-width: 1.2rem; }
+    .opt-correct { color: #065f46; font-weight: 700; margin-right: auto; }
+    .q-topic { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--lp-muted); }
+    .q-explanation { margin: 0.2rem 0 0; font-size: 0.8rem; color: var(--lp-text); font-style: italic; }
     .result-item {
       display: flex;
       gap: 0.75rem;
@@ -279,6 +365,7 @@ import { AuthService } from '../../../core/services/auth.service';
       font-size: 0.85rem;
     }
     .result-item:last-child { border-bottom: none; }
+    .detail-empty { color: var(--lp-muted); text-align: center; padding: 1rem 0; margin: 0; }
   `]
 })
 export class AssessmentPanelComponent implements OnInit {
@@ -298,6 +385,8 @@ export class AssessmentPanelComponent implements OnInit {
   selectedAssessment: Assessment | null = null;
   loadingAssessments = false;
   generating = false;
+  actionLoading = false;
+  toast: Toast | null = null;
 
   generateForm: FormGroup = this.fb.group({
     courseId: [0, Validators.required],
@@ -348,15 +437,18 @@ export class AssessmentPanelComponent implements OnInit {
     });
   }
 
+  showToast(message: string, type: 'success' | 'error'): void {
+    this.toast = { message, type };
+    setTimeout(() => { this.toast = null; }, 3000);
+  }
+
   onGenerate(): void {
     if (this.generateForm.invalid) return;
     this.generating = true;
 
     const formValue = this.generateForm.value;
-    const user = this.authService.getCurrentUser();
     const payload: GenerateWeeklyAssessmentPayload = {
       courseId: Number(formValue.courseId),
-      generatedByUserId: 1,
       title: formValue.title,
       description: formValue.description,
       durationMinutes: formValue.durationMinutes,
@@ -373,9 +465,11 @@ export class AssessmentPanelComponent implements OnInit {
         this.assessments.unshift(assessment);
         this.selectedAssessment = assessment;
         this.generating = false;
+        this.showToast('ارزیابی با موفقیت تولید شد', 'success');
       },
       error: () => {
         this.generating = false;
+        this.showToast('خطا در تولید ارزیابی', 'error');
       }
     });
   }
@@ -385,7 +479,8 @@ export class AssessmentPanelComponent implements OnInit {
   }
 
   publishAssessment(): void {
-    if (!this.selectedAssessment) return;
+    if (!this.selectedAssessment || this.actionLoading) return;
+    this.actionLoading = true;
     this.api.updateAssessment(this.selectedAssessment.id, { status: 'published' })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -393,8 +488,58 @@ export class AssessmentPanelComponent implements OnInit {
           this.selectedAssessment = updated;
           const idx = this.assessments.findIndex((a) => a.id === updated.id);
           if (idx >= 0) this.assessments[idx] = updated;
+          this.actionLoading = false;
+          this.showToast('ارزیابی با موفقیت منتشر شد', 'success');
+        },
+        error: () => {
+          this.actionLoading = false;
+          this.showToast('خطا در انتشار ارزیابی', 'error');
         }
       });
+  }
+
+  deleteAssessment(): void {
+    if (!this.selectedAssessment || this.actionLoading) return;
+    if (!confirm('آیا از حذف این ارزیابی اطمینان دارید؟')) return;
+    this.actionLoading = true;
+    this.api.deleteAssessment(this.selectedAssessment.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const id = this.selectedAssessment!.id;
+          this.assessments = this.assessments.filter((a) => a.id !== id);
+          this.selectedAssessment = null;
+          this.actionLoading = false;
+          this.showToast('ارزیابی با موفقیت حذف شد', 'success');
+        },
+        error: () => {
+          this.actionLoading = false;
+          this.showToast('خطا در حذف ارزیابی', 'error');
+        }
+      });
+  }
+
+  parseOptions(optionsJson: string): string[] {
+    try {
+      const parsed = JSON.parse(optionsJson);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  isCorrectOption(optionIndex: number, correctAnswerJson?: string): boolean {
+    if (!correctAnswerJson) return false;
+    try {
+      const correct = JSON.parse(correctAnswerJson);
+      return correct.correctOption === optionIndex;
+    } catch {
+      return false;
+    }
+  }
+
+  optionLabel(index: number): string {
+    return String.fromCharCode(65 + index); // A, B, C, D, ...
   }
 
   statusLabel(status: string): string {

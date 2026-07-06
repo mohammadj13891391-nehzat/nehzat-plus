@@ -192,6 +192,7 @@ export abstract class LessonPlannerApi {
   abstract deleteAssessmentQuestion(questionId: number): Observable<ApiMessageResponse>;
 
   abstract submitAssessmentResult(assessmentId: number, payload: SubmitAssessmentResultPayload): Observable<AssessmentResult>;
+  abstract startAssessment(assessmentId: number, studentId: number): Observable<AssessmentResult>;
   abstract getAssessmentResults(assessmentId: number): Observable<AssessmentResult[]>;
   abstract getStudentAssessmentResults(studentId: number): Observable<AssessmentResult[]>;
   abstract getAssessmentAnalytics(assessmentId: number): Observable<AssessmentAnalytics>;

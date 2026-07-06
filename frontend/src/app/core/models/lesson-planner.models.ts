@@ -633,7 +633,7 @@ export interface AssessmentResult {
 
 export interface GenerateWeeklyAssessmentPayload {
   courseId: number;
-  generatedByUserId: number;
+  generatedByUserId?: number;
   title: string;
   description: string;
   durationMinutes: number;

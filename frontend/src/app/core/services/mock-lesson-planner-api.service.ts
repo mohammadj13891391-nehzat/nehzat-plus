@@ -1420,6 +1420,33 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     return this.delayed(result);
   }
 
+  startAssessment(assessmentId: number, studentId: number): Observable<AssessmentResult> {
+    const assessment = this.assessments.find((a) => a.id === assessmentId);
+    if (!assessment) {
+      return this.delayed(null as unknown as AssessmentResult);
+    }
+    const existing = (assessment.results ?? []).find((r) => r.studentId === studentId);
+    if (existing) {
+      return this.delayed(existing);
+    }
+    const result: AssessmentResult = {
+      id: this.nextId('result'),
+      assessmentId,
+      studentId,
+      status: 'in_progress',
+      score: 0,
+      maxPossibleScore: assessment?.maxScore ?? 100,
+      percentage: 0,
+      completedAt: this.now(),
+      timeSpentMinutes: 0,
+      createdAt: this.now(),
+      updatedAt: this.now()
+    };
+    assessment.results = assessment.results ?? [];
+    assessment.results.push(result);
+    return this.delayed(result);
+  }
+
   getAssessmentResults(assessmentId: number): Observable<AssessmentResult[]> {
     const assessment = this.assessments.find((a) => a.id === assessmentId);
     return this.delayed(assessment?.results ?? []);

@@ -42,7 +42,7 @@ public class Assessment
     [ForeignKey(nameof(GeneratedByUserId))]
     public User? GeneratedByUser { get; set; }
 
-    [Column(TypeName = "nvarchar(max)")]
+    [Column(TypeName = "text")]
     public string? GenerationCriteria { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
