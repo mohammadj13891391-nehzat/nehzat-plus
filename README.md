@@ -212,7 +212,7 @@ npx cap open android
 ### Versioning
 
 - **Versions:** v1.0.0, v1.1.0, v1.2.0, v1.2.1, v1.2.2, v1.2.3, v1.2.4, v1.2.5, v1.3.0, v1.4.0
-- **Current Version:** v1.4.0
+- **Current Version:** v2.5.0
 - **CI/CD:** GitHub Actions (see .github/workflows/deploy.yml) for automatic: Build & deploy to GitHub Pages, Build APK, Create Release on Tags
 
 **Git Repo:** https://github.com/mohammadj13891391-nehzat/nehzat-plus.git
