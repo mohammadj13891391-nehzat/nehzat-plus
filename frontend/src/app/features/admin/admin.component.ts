@@ -1,7 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -36,19 +49,20 @@ import type {
   Parent,
   ParentStudentInfo,
   Student,
-  UpdateStudentPayload
+  UpdateStudentPayload,
 } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { PersianDateInputComponent } from '../shared/persian-date-input/persian-date-input.component';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PersianDateInputComponent],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent implements OnInit {
   private readonly authService = inject(AuthService);
@@ -72,7 +86,7 @@ export class AdminComponent implements OnInit {
     { key: 'makatib', label: 'مکاتب تربیتی، آموزشی، مهارتی', roles: ['manager', 'headquarters'] },
     { key: 'parents', label: 'والدین', roles: ['manager', 'headquarters'] },
     { key: 'evaluators', label: 'ارزیاب', roles: ['manager', 'headquarters'] },
-    { key: 'headquarters', label: 'ستاد', roles: ['manager', 'headquarters'] }
+    { key: 'headquarters', label: 'ستاد', roles: ['manager', 'headquarters'] },
   ] as const;
 
   registeredBranches: Branch[] = [];
@@ -82,8 +96,8 @@ export class AdminComponent implements OnInit {
     const currentUser = this.authService.getCurrentUser();
     const userType = currentUser?.userType ?? 'trainee';
     const allowedRoles = ['manager', 'headquarters', 'branch_manager'] as const;
-    type AllowedRole = typeof allowedRoles[number];
-    return this.menuItems.filter(item => (item.roles as readonly string[]).includes(userType));
+    type AllowedRole = (typeof allowedRoles)[number];
+    return this.menuItems.filter((item) => (item.roles as readonly string[]).includes(userType));
   }
 
   get isBranchManager(): boolean {
@@ -100,7 +114,7 @@ export class AdminComponent implements OnInit {
     totalCourses: 0,
     totalAssignments: 0,
     totalAttachments: 0,
-    activeCourses: 0
+    activeCourses: 0,
   };
 
   students: Student[] = [];
@@ -118,12 +132,12 @@ export class AdminComponent implements OnInit {
     lastName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
-    studentId: ['']
+    studentId: [''],
   });
 
   courseFilterForm = this.fb.nonNullable.group({
     query: [''],
-    status: ['']
+    status: [''],
   });
   courseForm = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
@@ -134,7 +148,7 @@ export class AdminComponent implements OnInit {
     startDate: [this.todayIsoDate(), [Validators.required]],
     endDate: [this.todayIsoDate(), [Validators.required]],
     credits: [2, [Validators.required, Validators.min(1)]],
-    maxStudents: [30, [Validators.required, Validators.min(1)]]
+    maxStudents: [30, [Validators.required, Validators.min(1)]],
   });
   courses: Course[] = [];
   selectedCourseId: number | null = null;
@@ -149,7 +163,7 @@ export class AdminComponent implements OnInit {
     type: ['daily'],
     status: ['published'],
     maxScore: [20, [Validators.required, Validators.min(0)]],
-    instructions: ['']
+    instructions: [''],
   });
   dailySeriesForm = this.fb.nonNullable.group({
     startDate: [this.todayIsoDate(), [Validators.required]],
@@ -158,7 +172,7 @@ export class AdminComponent implements OnInit {
     descriptionPrefix: [''],
     type: ['daily'],
     maxScore: [20, [Validators.required, Validators.min(0)]],
-    instructions: ['']
+    instructions: [''],
   });
   assignments: Assignment[] = [];
   selectedAssignmentId: number | null = null;
@@ -171,7 +185,7 @@ export class AdminComponent implements OnInit {
     title: ['', [Validators.required]],
     description: [''],
     kind: ['document'],
-    displayOrder: [1, [Validators.required, Validators.min(1)]]
+    displayOrder: [1, [Validators.required, Validators.min(1)]],
   });
   attachments: AssignmentAttachment[] = [];
   attachmentMetaForms: Record<number, FormGroup> = {};
@@ -183,14 +197,30 @@ export class AdminComponent implements OnInit {
 
   readonly makatibGirls = [
     { key: 'maktab-roqieh', label: 'مکتب حضرت رقیه علیها السلام (7 سال اول)', level: '7 سال اول' },
-    { key: 'maktab-sakineh', label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)', level: '7 سال دوم' },
-    { key: 'maktab-fatemeh', label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)', level: '7 سال سوم' }
+    {
+      key: 'maktab-sakineh',
+      label: 'مکتب حضرت سکینه علیها السلام (7 سال دوم)',
+      level: '7 سال دوم',
+    },
+    {
+      key: 'maktab-fatemeh',
+      label: 'مکتب حضرت فاطمه بنت الحسین علیها السلام (7 سال سوم)',
+      level: '7 سال سوم',
+    },
   ];
 
   readonly makatibBoys = [
-    { key: 'maktab-ali-asghar', label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)', level: '7 سال اول' },
+    {
+      key: 'maktab-ali-asghar',
+      label: 'مکتب حضرت علی اصغر علیه السلام (7 سال اول)',
+      level: '7 سال اول',
+    },
     { key: 'maktab-ghasem', label: 'مکتب حضرت قاسم علیه السلام (7 سال دوم)', level: '7 سال دوم' },
-    { key: 'maktab-ali-akbar', label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)', level: '7 سال سوم' }
+    {
+      key: 'maktab-ali-akbar',
+      label: 'مکتب حضرت علی اکبر علیه السلام (7 سال سوم)',
+      level: '7 سال سوم',
+    },
   ];
 
   get allMakatib(): { key: string; label: string; level: string }[] {
@@ -206,7 +236,7 @@ export class AdminComponent implements OnInit {
         s.lastName.toLowerCase().includes(q) ||
         s.username.toLowerCase().includes(q) ||
         s.studentId.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q)
+        s.email.toLowerCase().includes(q),
     );
   }
 
@@ -215,7 +245,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getStudents()
       .pipe(finalize(() => (this.loadingStudents = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (students) => {
           this.students = students;
           this.cdr.markForCheck();
@@ -223,7 +254,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست متربیان با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -239,7 +270,7 @@ export class AdminComponent implements OnInit {
         lastName: student.lastName,
         email: student.email,
         phoneNumber: student.phoneNumber,
-        studentId: student.studentId
+        studentId: student.studentId,
       });
       this.studentForm.get('password')?.clearValidators();
       this.studentForm.get('password')?.updateValueAndValidity();
@@ -254,9 +285,11 @@ export class AdminComponent implements OnInit {
         lastName: '',
         email: '',
         phoneNumber: '',
-        studentId: ''
+        studentId: '',
       });
-      this.studentForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.studentForm
+        .get('password')
+        ?.setValidators([Validators.required, Validators.minLength(6)]);
       this.studentForm.get('password')?.updateValueAndValidity();
     }
     this.showStudentModal = true;
@@ -265,10 +298,13 @@ export class AdminComponent implements OnInit {
   onStudentNationalCodeInput(value: string): void {
     if (this.studentEditMode) return;
     const code = value.trim();
-    this.studentForm.patchValue({
-      username: code,
-      password: code
-    }, { emitEvent: false });
+    this.studentForm.patchValue(
+      {
+        username: code,
+        password: code,
+      },
+      { emitEvent: false },
+    );
   }
 
   closeStudentModal(): void {
@@ -288,7 +324,7 @@ export class AdminComponent implements OnInit {
       email: raw.email.trim(),
       phoneNumber: raw.phoneNumber.trim(),
       studentId: raw.studentId.trim() || undefined,
-      nationalCode: raw.nationalCode.trim() || undefined
+      nationalCode: raw.nationalCode.trim() || undefined,
     };
 
     const isEdit = this.studentEditMode && this.selectedStudentId !== null;
@@ -296,27 +332,33 @@ export class AdminComponent implements OnInit {
     this.closeStudentModal();
     this.savingStudent = true;
     const request$ = isEdit
-        ? this.api.updateStudent(studentId!, payload)
-        : this.api.createStudent(payload);
+      ? this.api.updateStudent(studentId!, payload)
+      : this.api.createStudent(payload);
 
-    request$.pipe(finalize(() => (this.savingStudent = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (student) => {
-        if (isEdit) {
-          const idx = this.students.findIndex((s) => s.id === student.id);
-          if (idx >= 0) { this.students[idx] = student; }
-          else { this.students.push(student); }
-        } else {
-          this.students.push(student);
-        }
-        this.selectedStudentId = student.id;
-        this.studentEditMode = true;
-        this.setSuccess('اطلاعات متربی ذخیره شد.');
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات متربی با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingStudent = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (student) => {
+          if (isEdit) {
+            const idx = this.students.findIndex((s) => s.id === student.id);
+            if (idx >= 0) {
+              this.students[idx] = student;
+            } else {
+              this.students.push(student);
+            }
+          } else {
+            this.students.push(student);
+          }
+          this.selectedStudentId = student.id;
+          this.studentEditMode = true;
+          this.setSuccess('اطلاعات متربی ذخیره شد.');
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات متربی با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteStudent(studentId: number): void {
@@ -325,7 +367,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteStudent(studentId)
       .pipe(finalize(() => (this.savingStudent = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'متربی با موفقیت حذف شد.');
           this.closeStudentModal();
@@ -333,7 +376,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف متربی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -350,12 +393,13 @@ export class AdminComponent implements OnInit {
     const totalAssignments = this.assignments.length;
     const totalEnrolled = this.courseEnrollments.length;
     return {
-      'وضعیت': course.status === 'active' ? 'فعال' : course.status === 'inactive' ? 'غیرفعال' : 'آرشیو',
-      'مدرس': course.instructor,
-      'کد': course.courseCode,
-      'تکالیف': String(totalAssignments),
-      'متربیان': String(totalEnrolled),
-      'ظرفیت': `${totalEnrolled} / ${course.maxStudents ?? '—'}`
+      وضعیت:
+        course.status === 'active' ? 'فعال' : course.status === 'inactive' ? 'غیرفعال' : 'آرشیو',
+      مدرس: course.instructor,
+      کد: course.courseCode,
+      تکالیف: String(totalAssignments),
+      متربیان: String(totalEnrolled),
+      ظرفیت: `${totalEnrolled} / ${course.maxStudents ?? '—'}`,
     };
   }
 
@@ -366,7 +410,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getCourseEnrollments(this.selectedCourseId)
       .pipe(finalize(() => (this.loadingEnrollments = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (enrollments) => {
           this.courseEnrollments = enrollments;
           this.cdr.markForCheck();
@@ -374,7 +419,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست متربیان دوره با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -384,7 +429,8 @@ export class AdminComponent implements OnInit {
     this.api
       .enrollStudentInCourse(this.selectedCourseId, this.enrollStudentId)
       .pipe(finalize(() => (this.enrollingStudent = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.enrollStudentId = 0;
@@ -392,7 +438,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'ثبت‌نام متربی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -400,14 +446,15 @@ export class AdminComponent implements OnInit {
     if (this.selectedCourseId === null) return;
     this.api
       .unenrollStudentFromCourse(this.selectedCourseId, studentId)
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadCourseEnrollments();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف متربی از دوره با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -417,14 +464,15 @@ export class AdminComponent implements OnInit {
     this.api
       .generateCourseInviteCode(this.selectedCourseId)
       .pipe(finalize(() => (this.generatingInviteCode = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (inviteCode) => {
           this.courseInviteCode = inviteCode;
           this.setSuccess('کد دعوت با موفقیت تولید شد.');
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'تولید کد دعوت با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -446,7 +494,7 @@ export class AdminComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
     specialization: [''],
-    assignedCourseIds: ['']
+    assignedCourseIds: [''],
   });
   coachEditMode = false;
   selectedCoachId: number | null = null;
@@ -459,7 +507,7 @@ export class AdminComponent implements OnInit {
         c.firstName.toLowerCase().includes(q) ||
         c.lastName.toLowerCase().includes(q) ||
         c.username.toLowerCase().includes(q) ||
-        c.specialization.toLowerCase().includes(q)
+        c.specialization.toLowerCase().includes(q),
     );
   }
   searchCoachQuery = '';
@@ -469,7 +517,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getCoaches()
       .pipe(finalize(() => (this.loadingCoaches = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (coaches) => {
           this.coaches = coaches;
           this.cdr.markForCheck();
@@ -477,7 +526,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مربیان با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -494,7 +543,7 @@ export class AdminComponent implements OnInit {
         email: coach.email,
         phoneNumber: coach.phoneNumber,
         specialization: coach.specialization,
-        assignedCourseIds: coach.assignedCourseIds.join(',')
+        assignedCourseIds: coach.assignedCourseIds.join(','),
       });
       this.coachForm.get('password')?.clearValidators();
       this.coachForm.get('password')?.updateValueAndValidity();
@@ -510,7 +559,7 @@ export class AdminComponent implements OnInit {
         email: '',
         phoneNumber: '',
         specialization: '',
-        assignedCourseIds: ''
+        assignedCourseIds: '',
       });
       this.coachForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
       this.coachForm.get('password')?.updateValueAndValidity();
@@ -522,10 +571,13 @@ export class AdminComponent implements OnInit {
   onNationalCodeInput(value: string): void {
     if (this.coachEditMode) return;
     const code = value.trim();
-    this.coachForm.patchValue({
-      username: code,
-      password: code
-    }, { emitEvent: false });
+    this.coachForm.patchValue(
+      {
+        username: code,
+        password: code,
+      },
+      { emitEvent: false },
+    );
   }
 
   closeCoachModal(): void {
@@ -548,7 +600,7 @@ export class AdminComponent implements OnInit {
       email: coach.email,
       phoneNumber: coach.phoneNumber,
       specialization: coach.specialization,
-      assignedCourseIds: coach.assignedCourseIds.join(',')
+      assignedCourseIds: coach.assignedCourseIds.join(','),
     });
     this.coachForm.get('password')?.clearValidators();
     this.coachForm.get('password')?.updateValueAndValidity();
@@ -570,7 +622,7 @@ export class AdminComponent implements OnInit {
       phoneNumber: raw.phoneNumber.trim(),
       specialization: raw.specialization.trim(),
       nationalCode: raw.nationalCode.trim(),
-      assignedCourseIds: courseIds
+      assignedCourseIds: courseIds,
     };
 
     const isEdit = this.coachEditMode && this.selectedCoachId !== null;
@@ -578,27 +630,33 @@ export class AdminComponent implements OnInit {
     this.closeCoachModal();
     this.savingCoach = true;
     const request$ = isEdit
-        ? this.api.updateCoach(coachId!, payload)
-        : this.api.createCoach(payload);
+      ? this.api.updateCoach(coachId!, payload)
+      : this.api.createCoach(payload);
 
-    request$.pipe(finalize(() => (this.savingCoach = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (coach) => {
-        if (isEdit) {
-          const idx = this.coaches.findIndex((c) => c.id === coach.id);
-          if (idx >= 0) { this.coaches[idx] = coach; }
-          else { this.coaches.push(coach); }
-        } else {
-          this.coaches.push(coach);
-        }
-        this.selectedCoachId = coach.id;
-        this.coachEditMode = true;
-        this.setSuccess('اطلاعات مربی ذخیره شد.');
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مربی با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingCoach = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (coach) => {
+          if (isEdit) {
+            const idx = this.coaches.findIndex((c) => c.id === coach.id);
+            if (idx >= 0) {
+              this.coaches[idx] = coach;
+            } else {
+              this.coaches.push(coach);
+            }
+          } else {
+            this.coaches.push(coach);
+          }
+          this.selectedCoachId = coach.id;
+          this.coachEditMode = true;
+          this.setSuccess('اطلاعات مربی ذخیره شد.');
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات مربی با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteCoach(coachId: number): void {
@@ -607,7 +665,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteCoach(coachId)
       .pipe(finalize(() => (this.savingCoach = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'مربی با موفقیت حذف شد.');
           this.closeCoachModal();
@@ -615,14 +674,16 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف مربی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
   getCourseNamesForCoach(coach: Coach): string {
-    return coach.assignedCourseIds
-      .map((id) => this.courses.find((c) => c.id === id)?.title ?? `#${id}`)
-      .join('، ') || '—';
+    return (
+      coach.assignedCourseIds
+        .map((id) => this.courses.find((c) => c.id === id)?.title ?? `#${id}`)
+        .join('، ') || '—'
+    );
   }
 
   branchManagers: BranchManager[] = [];
@@ -641,7 +702,7 @@ export class AdminComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
     branchId: [0, [Validators.required]],
-    gender: ['mixed']
+    gender: ['mixed'],
   });
 
   get filteredBranchManagers(): BranchManager[] {
@@ -652,7 +713,7 @@ export class AdminComponent implements OnInit {
         bm.firstName.toLowerCase().includes(q) ||
         bm.lastName.toLowerCase().includes(q) ||
         bm.username.toLowerCase().includes(q) ||
-        (bm.branchName ?? '').toLowerCase().includes(q)
+        (bm.branchName ?? '').toLowerCase().includes(q),
     );
   }
 
@@ -673,7 +734,7 @@ export class AdminComponent implements OnInit {
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
     address: [''],
     nationalCode: [''],
-    studentIds: ['']
+    studentIds: [''],
   });
 
   get filteredParents(): Parent[] {
@@ -685,7 +746,7 @@ export class AdminComponent implements OnInit {
         p.lastName.toLowerCase().includes(q) ||
         p.username.toLowerCase().includes(q) ||
         p.email.toLowerCase().includes(q) ||
-        p.phoneNumber.includes(q)
+        p.phoneNumber.includes(q),
     );
   }
 
@@ -694,7 +755,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getParents()
       .pipe(finalize(() => (this.loadingParents = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (parents) => {
           this.parents = parents;
           this.cdr.markForCheck();
@@ -702,7 +764,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست والدین با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -710,10 +772,13 @@ export class AdminComponent implements OnInit {
   onParentNationalCodeInput(value: string): void {
     if (this.parentEditMode) return;
     const code = value.trim();
-    this.parentForm.patchValue({
-      username: code,
-      password: code
-    }, { emitEvent: false });
+    this.parentForm.patchValue(
+      {
+        username: code,
+        password: code,
+      },
+      { emitEvent: false },
+    );
   }
 
   startCreateParent(): void {
@@ -728,7 +793,7 @@ export class AdminComponent implements OnInit {
       phoneNumber: '',
       address: '',
       nationalCode: '',
-      studentIds: ''
+      studentIds: '',
     });
   }
 
@@ -746,7 +811,7 @@ export class AdminComponent implements OnInit {
       phoneNumber: parent.phoneNumber,
       address: parent.address ?? '',
       nationalCode: parent.nationalCode ?? '',
-      studentIds: parent.studentIds.join(',')
+      studentIds: parent.studentIds.join(','),
     });
     this.parentForm.get('password')?.clearValidators();
     this.parentForm.get('password')?.updateValueAndValidity();
@@ -769,7 +834,7 @@ export class AdminComponent implements OnInit {
       phoneNumber: raw.phoneNumber.trim(),
       address: raw.address.trim(),
       nationalCode: raw.nationalCode.trim(),
-      studentIds
+      studentIds,
     };
 
     this.savingParent = true;
@@ -778,17 +843,20 @@ export class AdminComponent implements OnInit {
         ? this.api.updateParent(this.selectedParentId, payload)
         : this.api.createParent(payload);
 
-    request$.pipe(finalize(() => (this.savingParent = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (parent) => {
-        this.selectedParentId = parent.id;
-        this.parentEditMode = true;
-        this.setSuccess('اطلاعات والد ذخیره شد.');
-        this.loadParents();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات والد با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingParent = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (parent) => {
+          this.selectedParentId = parent.id;
+          this.parentEditMode = true;
+          this.setSuccess('اطلاعات والد ذخیره شد.');
+          this.loadParents();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات والد با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteParent(parentId: number): void {
@@ -797,7 +865,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteParent(parentId)
       .pipe(finalize(() => (this.savingParent = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'والد با موفقیت حذف شد.');
           if (this.selectedParentId === parentId) {
@@ -808,7 +877,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف والد با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -817,13 +886,14 @@ export class AdminComponent implements OnInit {
     this.api
       .getParentStudents(parentId)
       .pipe(finalize(() => (this.loadingParentStudents = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (students) => {
           this.parentStudents = students;
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت اطلاعات فرزندان با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -843,7 +913,7 @@ export class AdminComponent implements OnInit {
     targetId: [0, [Validators.required]],
     score: [10, [Validators.required, Validators.min(0), Validators.max(20)]],
     feedback: ['', [Validators.required]],
-    evaluationDate: [this.todayIsoDate(), [Validators.required]]
+    evaluationDate: [this.todayIsoDate(), [Validators.required]],
   });
   evaluatorForm = this.fb.nonNullable.group({
     nationalCode: [''],
@@ -854,7 +924,7 @@ export class AdminComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.pattern(/^09\d{9}$/)]],
     expertise: [''],
-    assignedMadrasahIds: ['']
+    assignedMadrasahIds: [''],
   });
 
   get filteredEvaluators(): Evaluator[] {
@@ -865,7 +935,7 @@ export class AdminComponent implements OnInit {
         e.firstName.toLowerCase().includes(q) ||
         e.lastName.toLowerCase().includes(q) ||
         e.username.toLowerCase().includes(q) ||
-        e.expertise.toLowerCase().includes(q)
+        e.expertise.toLowerCase().includes(q),
     );
   }
 
@@ -874,7 +944,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getEvaluators()
       .pipe(finalize(() => (this.loadingEvaluators = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (evaluators) => {
           this.evaluators = evaluators;
           this.cdr.markForCheck();
@@ -882,7 +953,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست ارزیابان با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -890,10 +961,13 @@ export class AdminComponent implements OnInit {
   onEvaluatorNationalCodeInput(value: string): void {
     if (this.evaluatorEditMode) return;
     const code = value.trim();
-    this.evaluatorForm.patchValue({
-      username: code,
-      password: code
-    }, { emitEvent: false });
+    this.evaluatorForm.patchValue(
+      {
+        username: code,
+        password: code,
+      },
+      { emitEvent: false },
+    );
   }
 
   startCreateEvaluator(): void {
@@ -908,7 +982,7 @@ export class AdminComponent implements OnInit {
       email: '',
       phoneNumber: '',
       expertise: '',
-      assignedMadrasahIds: ''
+      assignedMadrasahIds: '',
     });
   }
 
@@ -926,7 +1000,7 @@ export class AdminComponent implements OnInit {
       email: evaluator.email,
       phoneNumber: evaluator.phoneNumber,
       expertise: evaluator.expertise,
-      assignedMadrasahIds: evaluator.assignedMadrasahIds.join(',')
+      assignedMadrasahIds: evaluator.assignedMadrasahIds.join(','),
     });
     this.evaluatorForm.get('password')?.clearValidators();
     this.evaluatorForm.get('password')?.updateValueAndValidity();
@@ -949,7 +1023,7 @@ export class AdminComponent implements OnInit {
       email: raw.email.trim(),
       phoneNumber: raw.phoneNumber.trim(),
       expertise: raw.expertise.trim(),
-      assignedMadrasahIds: madrasahIds
+      assignedMadrasahIds: madrasahIds,
     };
 
     this.savingEvaluator = true;
@@ -958,17 +1032,20 @@ export class AdminComponent implements OnInit {
         ? this.api.updateEvaluator(this.selectedEvaluatorId, payload)
         : this.api.createEvaluator(payload);
 
-    request$.pipe(finalize(() => (this.savingEvaluator = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (evaluator) => {
-        this.selectedEvaluatorId = evaluator.id;
-        this.evaluatorEditMode = true;
-        this.setSuccess('اطلاعات ارزیاب ذخیره شد.');
-        this.loadEvaluators();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات ارزیاب با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingEvaluator = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (evaluator) => {
+          this.selectedEvaluatorId = evaluator.id;
+          this.evaluatorEditMode = true;
+          this.setSuccess('اطلاعات ارزیاب ذخیره شد.');
+          this.loadEvaluators();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات ارزیاب با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteEvaluator(evaluatorId: number): void {
@@ -977,7 +1054,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteEvaluator(evaluatorId)
       .pipe(finalize(() => (this.savingEvaluator = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'ارزیاب با موفقیت حذف شد.');
           if (this.selectedEvaluatorId === evaluatorId) {
@@ -988,7 +1066,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف ارزیاب با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -997,13 +1075,14 @@ export class AdminComponent implements OnInit {
     this.api
       .getEvaluationRecords(evaluatorId)
       .pipe(finalize(() => (this.loadingEvaluationRecords = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (records) => {
           this.evaluationRecords = records;
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت رکوردهای ارزیابی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1017,14 +1096,15 @@ export class AdminComponent implements OnInit {
       targetId: raw.targetId,
       score: raw.score,
       feedback: raw.feedback.trim(),
-      evaluationDate: raw.evaluationDate
+      evaluationDate: raw.evaluationDate,
     };
 
     this.savingEvaluation = true;
     this.api
       .createEvaluation(payload)
       .pipe(finalize(() => (this.savingEvaluation = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.setSuccess('رکورد ارزیابی با موفقیت ثبت شد.');
           this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
@@ -1033,12 +1113,12 @@ export class AdminComponent implements OnInit {
             targetId: 0,
             score: 10,
             feedback: '',
-            evaluationDate: this.todayIsoDate()
+            evaluationDate: this.todayIsoDate(),
           });
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'ثبت رکورد ارزیابی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1048,14 +1128,15 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteEvaluation(recordId)
       .pipe(finalize(() => (this.savingEvaluation = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadEvaluationRecords(this.selectedEvaluatorId ?? undefined);
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف رکورد ارزیابی با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1072,7 +1153,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getHeadquartersSummary()
       .pipe(finalize(() => (this.loadingHeadquarters = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (summary) => {
           this.headquartersSummary = summary;
           this.cdr.markForCheck();
@@ -1080,7 +1162,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت خلاصه ستاد با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1089,7 +1171,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranchPerformance()
       .pipe(finalize(() => (this.loadingBranchPerformance = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (data) => {
           this.branchPerformanceData = data;
           this.cdr.markForCheck();
@@ -1097,7 +1180,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت عملکرد شعب با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1106,7 +1189,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getCoachPerformance()
       .pipe(finalize(() => (this.loadingCoachPerformance = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (data) => {
           this.coachPerformanceData = data;
           this.cdr.markForCheck();
@@ -1114,7 +1198,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت عملکرد مربیان با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1134,7 +1218,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranches()
       .pipe(finalize(() => (this.loadingRegisteredBranches = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (branches) => {
           this.registeredBranches = branches;
           this.cdr.markForCheck();
@@ -1142,7 +1227,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست شعب با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1151,7 +1236,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getBranchManagers()
       .pipe(finalize(() => (this.loadingBranchManagers = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (managers) => {
           this.branchManagers = managers;
           this.cdr.markForCheck();
@@ -1159,7 +1245,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مسئولین شعب با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1167,10 +1253,13 @@ export class AdminComponent implements OnInit {
   onBranchManagerNationalCodeInput(value: string): void {
     if (this.branchManagerEditMode) return;
     const code = value.trim();
-    this.branchManagerForm.patchValue({
-      username: code,
-      password: code
-    }, { emitEvent: false });
+    this.branchManagerForm.patchValue(
+      {
+        username: code,
+        password: code,
+      },
+      { emitEvent: false },
+    );
   }
 
   openBranchManagerModal(bm?: BranchManager): void {
@@ -1186,7 +1275,7 @@ export class AdminComponent implements OnInit {
         email: bm.email,
         phoneNumber: bm.phoneNumber,
         branchId: bm.branchId ?? 0,
-        gender: bm.gender
+        gender: bm.gender,
       });
       this.branchManagerForm.get('password')?.clearValidators();
       this.branchManagerForm.get('password')?.updateValueAndValidity();
@@ -1202,9 +1291,11 @@ export class AdminComponent implements OnInit {
         email: '',
         phoneNumber: '',
         branchId: this.currentUserBranchId ?? 0,
-        gender: 'mixed'
+        gender: 'mixed',
       });
-      this.branchManagerForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.branchManagerForm
+        .get('password')
+        ?.setValidators([Validators.required, Validators.minLength(6)]);
       this.branchManagerForm.get('password')?.updateValueAndValidity();
     }
     this.showBranchManagerModal = true;
@@ -1228,7 +1319,7 @@ export class AdminComponent implements OnInit {
       email: raw.email.trim(),
       phoneNumber: raw.phoneNumber.trim(),
       branchId: raw.branchId,
-      gender: raw.gender as 'male' | 'female' | 'mixed'
+      gender: raw.gender as 'male' | 'female' | 'mixed',
     };
 
     this.savingBranchManager = true;
@@ -1237,16 +1328,19 @@ export class AdminComponent implements OnInit {
         ? this.api.updateBranchManager(this.selectedBranchManagerId, payload)
         : this.api.createBranchManager(payload);
 
-    request$.pipe(finalize(() => (this.savingBranchManager = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (bm) => {
-        this.closeBranchManagerModal();
-        this.setSuccess('اطلاعات مسئول شعبه ذخیره شد.');
-        this.loadBranchManagers();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مسئول شعبه با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingBranchManager = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (bm) => {
+          this.closeBranchManagerModal();
+          this.setSuccess('اطلاعات مسئول شعبه ذخیره شد.');
+          this.loadBranchManagers();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات مسئول شعبه با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteBranchManager(id: number): void {
@@ -1255,7 +1349,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteBranchManager(id)
       .pipe(finalize(() => (this.savingBranchManager = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response?.message ?? 'مسئول شعبه با موفقیت حذف شد.');
           this.closeBranchManagerModal();
@@ -1263,17 +1358,42 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف مسئول شعبه با خطا مواجه شد.');
-        }
+        },
       });
   }
 
   readonly provinces = [
-    'آذربایجان شرقی', 'آذربایجان غربی', 'اردبیل', 'اصفهان', 'البرز',
-    'ایلام', 'بوشهر', 'تهران', 'چهارمحال و بختیاری', 'خراسان جنوبی',
-    'خراسان رضوی', 'خراسان شمالی', 'خوزستان', 'زنجان', 'سمنان',
-    'سیستان و بلوچستان', 'فارس', 'قزوین', 'قم', 'کردستان',
-    'کرمان', 'کرمانشاه', 'کهگیلویه و بویراحمد', 'گلستان', 'گیلان',
-    'لرستان', 'مازندران', 'مرکزی', 'هرمزگان', 'همدان', 'یزد'
+    'آذربایجان شرقی',
+    'آذربایجان غربی',
+    'اردبیل',
+    'اصفهان',
+    'البرز',
+    'ایلام',
+    'بوشهر',
+    'تهران',
+    'چهارمحال و بختیاری',
+    'خراسان جنوبی',
+    'خراسان رضوی',
+    'خراسان شمالی',
+    'خوزستان',
+    'زنجان',
+    'سمنان',
+    'سیستان و بلوچستان',
+    'فارس',
+    'قزوین',
+    'قم',
+    'کردستان',
+    'کرمان',
+    'کرمانشاه',
+    'کهگیلویه و بویراحمد',
+    'گلستان',
+    'گیلان',
+    'لرستان',
+    'مازندران',
+    'مرکزی',
+    'هرمزگان',
+    'همدان',
+    'یزد',
   ];
 
   madrasahs: Madrasah[] = [];
@@ -1289,7 +1409,7 @@ export class AdminComponent implements OnInit {
     gender: ['girls'],
     grade: [1, [Validators.required, Validators.min(1), Validators.max(7)]],
     capacity: [30, [Validators.required, Validators.min(1)]],
-    status: ['active']
+    status: ['active'],
   });
 
   get madrasahGirls(): Madrasah[] {
@@ -1319,7 +1439,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getMadrasahs()
       .pipe(finalize(() => (this.loadingMadrasahs = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (madrasahs) => {
           this.madrasahs = madrasahs;
           this.cdr.markForCheck();
@@ -1327,7 +1448,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت لیست مکاتب با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1342,7 +1463,7 @@ export class AdminComponent implements OnInit {
       gender: 'girls',
       grade: 1,
       capacity: 30,
-      status: 'active'
+      status: 'active',
     });
   }
 
@@ -1359,7 +1480,7 @@ export class AdminComponent implements OnInit {
       gender: m.gender,
       grade: m.grade,
       capacity: m.capacity ?? 30,
-      status: m.status
+      status: m.status,
     });
   }
 
@@ -1374,7 +1495,7 @@ export class AdminComponent implements OnInit {
       gender: raw.gender as 'boys' | 'girls',
       grade: raw.grade as 1 | 2 | 3 | 4 | 5 | 6 | 7,
       capacity: raw.capacity,
-      status: raw.status as 'active' | 'inactive'
+      status: raw.status as 'active' | 'inactive',
     };
 
     this.savingMadrasah = true;
@@ -1383,17 +1504,20 @@ export class AdminComponent implements OnInit {
         ? this.api.updateMadrasah(this.selectedMadrasahId, payload)
         : this.api.createMadrasah(payload);
 
-    request$.pipe(finalize(() => (this.savingMadrasah = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (madrasah) => {
-        this.selectedMadrasahId = madrasah.id;
-        this.madrasahEditMode = true;
-        this.setSuccess('اطلاعات مکتب ذخیره شد.');
-        this.loadMadrasahs();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره اطلاعات مکتب با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingMadrasah = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (madrasah) => {
+          this.selectedMadrasahId = madrasah.id;
+          this.madrasahEditMode = true;
+          this.setSuccess('اطلاعات مکتب ذخیره شد.');
+          this.loadMadrasahs();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره اطلاعات مکتب با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteMadrasah(madrasahId: number): void {
@@ -1402,7 +1526,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteMadrasah(madrasahId)
       .pipe(finalize(() => (this.savingMadrasah = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           if (this.selectedMadrasahId === madrasahId) {
@@ -1416,7 +1541,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف مکتب با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1430,7 +1555,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getMaktabBranches(madrasah.id)
       .pipe(finalize(() => (this.loadingBranches = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (branches) => {
           this.branches = branches;
           this.cdr.markForCheck();
@@ -1438,7 +1564,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت شعب با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -1453,10 +1579,11 @@ export class AdminComponent implements OnInit {
       .createMaktabBranch(madrasah.id, {
         province: this.selectedProvince,
         name,
-        status: 'active'
+        status: 'active',
       })
       .pipe(finalize(() => (this.savingBranch = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.newBranchName = '';
           this.setSuccess('شعبه با موفقیت اضافه شد.');
@@ -1464,7 +1591,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'افزودن شعبه با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1476,14 +1603,15 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteMaktabBranch(madrasah.id, branchId)
       .pipe(finalize(() => (this.savingBranch = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.loadBranches();
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف شعبه با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1494,8 +1622,14 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    if (user?.userType !== 'manager' && user?.userType !== 'headquarters' && user?.userType !== 'branch_manager') {
-      void this.router.navigateByUrl(this.authService.getDashboardPathForRole(user?.userType ?? 'trainee'));
+    if (
+      user?.userType !== 'manager' &&
+      user?.userType !== 'headquarters' &&
+      user?.userType !== 'branch_manager'
+    ) {
+      void this.router.navigateByUrl(
+        this.authService.getDashboardPathForRole(user?.userType ?? 'trainee'),
+      );
       return;
     }
 
@@ -1568,14 +1702,20 @@ export class AdminComponent implements OnInit {
     if (this.selectedCourseId === null) {
       return 'انتخاب نشده';
     }
-    return this.courses.find((item) => item.id === this.selectedCourseId)?.title ?? `#${this.selectedCourseId}`;
+    return (
+      this.courses.find((item) => item.id === this.selectedCourseId)?.title ??
+      `#${this.selectedCourseId}`
+    );
   }
 
   get selectedAssignmentTitle(): string {
     if (this.selectedAssignmentId === null) {
       return 'انتخاب نشده';
     }
-    return this.assignments.find((item) => item.id === this.selectedAssignmentId)?.title ?? `#${this.selectedAssignmentId}`;
+    return (
+      this.assignments.find((item) => item.id === this.selectedAssignmentId)?.title ??
+      `#${this.selectedAssignmentId}`
+    );
   }
 
   courseStatusLabel(status: CourseStatus | undefined): string {
@@ -1642,7 +1782,7 @@ export class AdminComponent implements OnInit {
       startDate: this.todayIsoDate(),
       endDate: this.todayIsoDate(),
       credits: 2,
-      maxStudents: 30
+      maxStudents: 30,
     });
   }
 
@@ -1660,7 +1800,7 @@ export class AdminComponent implements OnInit {
         startDate: course.startDate ?? this.todayIsoDate(),
         endDate: course.endDate ?? this.todayIsoDate(),
         credits: Number(course.credits ?? 2),
-        maxStudents: Number(course.maxStudents ?? 30)
+        maxStudents: Number(course.maxStudents ?? 30),
       });
     }
     this.startCreateAssignment();
@@ -1683,7 +1823,7 @@ export class AdminComponent implements OnInit {
       startDate: raw.startDate,
       endDate: raw.endDate,
       credits: Number(raw.credits),
-      maxStudents: Number(raw.maxStudents)
+      maxStudents: Number(raw.maxStudents),
     };
 
     this.savingCourse = true;
@@ -1692,17 +1832,22 @@ export class AdminComponent implements OnInit {
         ? this.api.updateAdminCourse(this.selectedCourseId, payload)
         : this.api.createAdminCourse(payload);
 
-    request$.pipe(finalize(() => (this.savingCourse = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (course) => {
-        this.selectedCourseId = course.id;
-        this.courseMode = 'edit';
-        this.setSuccess(this.courseMode === 'edit' ? 'دوره با موفقیت ذخیره شد.' : 'دوره جدید ایجاد شد.');
-        this.loadCourses();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره دوره با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingCourse = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (course) => {
+          this.selectedCourseId = course.id;
+          this.courseMode = 'edit';
+          this.setSuccess(
+            this.courseMode === 'edit' ? 'دوره با موفقیت ذخیره شد.' : 'دوره جدید ایجاد شد.',
+          );
+          this.loadCourses();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره دوره با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteSelectedCourse(): void {
@@ -1713,7 +1858,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAdminCourse(this.selectedCourseId)
       .pipe(finalize(() => (this.savingCourse = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.selectedCourseId = null;
@@ -1722,7 +1868,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف دوره با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1762,7 +1908,8 @@ export class AdminComponent implements OnInit {
     this.api
       .updateAdminCourse(course.id, { status: newStatus })
       .pipe(finalize(() => (this.savingCourse = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           course.status = newStatus;
           if (wasActive) {
@@ -1770,11 +1917,13 @@ export class AdminComponent implements OnInit {
           } else {
             this.stats.activeCourses++;
           }
-          this.setSuccess(`وضعیت دوره "${course.title}" به ${newStatus === 'active' ? 'فعال' : 'غیرفعال'} تغییر یافت.`);
+          this.setSuccess(
+            `وضعیت دوره "${course.title}" به ${newStatus === 'active' ? 'فعال' : 'غیرفعال'} تغییر یافت.`,
+          );
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'تغییر وضعیت دوره با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1789,7 +1938,7 @@ export class AdminComponent implements OnInit {
       type: 'daily',
       status: 'published',
       maxScore: 20,
-      instructions: ''
+      instructions: '',
     });
     this.attachments = [];
     this.attachmentMetaForms = {};
@@ -1810,7 +1959,7 @@ export class AdminComponent implements OnInit {
       type: this.normalizeAssignmentType(assignment.type),
       status: this.normalizeAssignmentStatus(assignment.status),
       maxScore: Number(assignment.maxScore ?? 20),
-      instructions: assignment.instructions ?? ''
+      instructions: assignment.instructions ?? '',
     });
     this.loadAttachments(assignmentId);
   }
@@ -1827,7 +1976,7 @@ export class AdminComponent implements OnInit {
       type: raw.type as AssignmentType,
       status: raw.status as AssignmentStatus,
       maxScore: Number(raw.maxScore),
-      instructions: raw.instructions.trim()
+      instructions: raw.instructions.trim(),
     };
 
     this.savingAssignment = true;
@@ -1836,17 +1985,20 @@ export class AdminComponent implements OnInit {
         ? this.api.updateAdminAssignment(this.selectedAssignmentId, payload)
         : this.api.createAdminAssignment(this.selectedCourseId, payload);
 
-    request$.pipe(finalize(() => (this.savingAssignment = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (assignment) => {
-        this.selectedAssignmentId = assignment.id;
-        this.assignmentMode = 'edit';
-        this.setSuccess('تکلیف با موفقیت ذخیره شد.');
-        this.loadAssignments(this.selectedCourseId ?? assignment.courseId);
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'ذخیره تکلیف با خطا مواجه شد.');
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.savingAssignment = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (assignment) => {
+          this.selectedAssignmentId = assignment.id;
+          this.assignmentMode = 'edit';
+          this.setSuccess('تکلیف با موفقیت ذخیره شد.');
+          this.loadAssignments(this.selectedCourseId ?? assignment.courseId);
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'ذخیره تکلیف با خطا مواجه شد.');
+        },
+      });
   }
 
   deleteSelectedAssignment(): void {
@@ -1857,7 +2009,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAdminAssignment(this.selectedAssignmentId)
       .pipe(finalize(() => (this.savingAssignment = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           this.startCreateAssignment();
@@ -1867,7 +2020,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف تکلیف با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1885,17 +2038,18 @@ export class AdminComponent implements OnInit {
         descriptionPrefix: raw.descriptionPrefix.trim(),
         type: raw.type as AssignmentType,
         maxScore: Number(raw.maxScore),
-        instructions: raw.instructions.trim()
+        instructions: raw.instructions.trim(),
       })
       .pipe(finalize(() => (this.creatingDailySeries = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (items) => {
           this.setSuccess(`${items.length} تکلیف روزانه ایجاد شد.`);
           this.loadAssignments(this.selectedCourseId ?? 0);
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'ایجاد سری روزانه با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1923,7 +2077,8 @@ export class AdminComponent implements OnInit {
     this.api
       .createAttachment(this.selectedAssignmentId, payload)
       .pipe(finalize(() => (this.creatingAttachment = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.setSuccess('پیوست جدید افزوده شد.');
           this.createAttachmentFile = null;
@@ -1931,13 +2086,13 @@ export class AdminComponent implements OnInit {
             title: '',
             description: '',
             kind: 'document',
-            displayOrder: 1
+            displayOrder: 1,
           });
           this.loadAttachments(this.selectedAssignmentId ?? 0);
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'افزودن پیوست با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1952,10 +2107,11 @@ export class AdminComponent implements OnInit {
         title: this.readControlString(form, 'title'),
         description: this.readControlString(form, 'description'),
         kind: this.normalizeAttachmentKind(this.readControlString(form, 'kind')),
-        displayOrder: Number(this.readControlString(form, 'displayOrder')) || 1
+        displayOrder: Number(this.readControlString(form, 'displayOrder')) || 1,
       })
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.setSuccess('پیوست با موفقیت ویرایش شد.');
           if (this.selectedAssignmentId !== null) {
@@ -1964,7 +2120,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'ویرایش پیوست با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -1987,7 +2143,8 @@ export class AdminComponent implements OnInit {
     this.api
       .uploadAttachmentFile(attachmentId, payload)
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: () => {
           this.setSuccess('فایل پیوست جایگزین شد.');
           this.attachmentReplacementFiles[attachmentId] = null;
@@ -1997,7 +2154,7 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'جایگزینی فایل با خطا مواجه شد.');
-        }
+        },
       });
   }
 
@@ -2009,7 +2166,8 @@ export class AdminComponent implements OnInit {
     this.api
       .deleteAttachment(attachmentId)
       .pipe(finalize(() => this.updatingAttachmentIds.delete(attachmentId)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (response) => {
           this.setSuccess(response.message);
           if (this.selectedAssignmentId !== null) {
@@ -2018,23 +2176,26 @@ export class AdminComponent implements OnInit {
         },
         error: (error) => {
           this.setError(error?.error?.message ?? 'حذف پیوست با خطا مواجه شد.');
-        }
+        },
       });
   }
 
   private loadStatistics(): void {
-    this.api.getSystemStatistics().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (systemStats) => {
-        this.stats.totalCourses = systemStats.totalCourses;
-        this.stats.totalAssignments = systemStats.totalAssignments;
-        this.stats.totalAttachments = systemStats.totalAttachments;
-        this.stats.activeCourses = systemStats.activeCourses;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        // Keep admin UI usable even if statistics endpoint fails.
-      }
-    });
+    this.api
+      .getSystemStatistics()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (systemStats) => {
+          this.stats.totalCourses = systemStats.totalCourses;
+          this.stats.totalAssignments = systemStats.totalAssignments;
+          this.stats.totalAttachments = systemStats.totalAttachments;
+          this.stats.activeCourses = systemStats.activeCourses;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          // Keep admin UI usable even if statistics endpoint fails.
+        },
+      });
   }
 
   private loadCourses(): void {
@@ -2052,27 +2213,31 @@ export class AdminComponent implements OnInit {
       request$ = this.api.getAdminCourses();
     }
 
-    request$.pipe(finalize(() => (this.loadingCourses = false))).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (courses) => {
-        this.courses = query && status ? courses.filter((course) => course.status === status) : courses;
-        if (!this.courses.some((course) => course.id === this.selectedCourseId)) {
-          this.selectedCourseId = this.courses[0]?.id ?? null;
-        }
-        if (this.selectedCourseId !== null) {
-          this.selectCourse(this.selectedCourseId);
-        } else {
-          this.assignments = [];
-          this.attachments = [];
-          this.selectedAssignmentId = null;
-          this.startCreateCourse();
-        }
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        this.setError(error?.error?.message ?? 'دریافت دوره‌ها با خطا مواجه شد.');
-        this.cdr.markForCheck();
-      }
-    });
+    request$
+      .pipe(finalize(() => (this.loadingCourses = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (courses) => {
+          this.courses =
+            query && status ? courses.filter((course) => course.status === status) : courses;
+          if (!this.courses.some((course) => course.id === this.selectedCourseId)) {
+            this.selectedCourseId = this.courses[0]?.id ?? null;
+          }
+          if (this.selectedCourseId !== null) {
+            this.selectCourse(this.selectedCourseId);
+          } else {
+            this.assignments = [];
+            this.attachments = [];
+            this.selectedAssignmentId = null;
+            this.startCreateCourse();
+          }
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.setError(error?.error?.message ?? 'دریافت دوره‌ها با خطا مواجه شد.');
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   private loadAssignments(courseId: number): void {
@@ -2080,7 +2245,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getAdminCourseAssignments(courseId)
       .pipe(finalize(() => (this.loadingAssignments = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (assignments) => {
           this.assignments = assignments;
           if (!this.assignments.some((item) => item.id === this.selectedAssignmentId)) {
@@ -2098,7 +2264,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت تکالیف با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -2107,7 +2273,8 @@ export class AdminComponent implements OnInit {
     this.api
       .getAssignmentAttachments(assignmentId)
       .pipe(finalize(() => (this.loadingAttachments = false)))
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
         next: (attachments) => {
           this.attachments = attachments;
           this.ensureAttachmentForms(attachments);
@@ -2116,7 +2283,7 @@ export class AdminComponent implements OnInit {
         error: (error) => {
           this.setError(error?.error?.message ?? 'دریافت پیوست‌ها با خطا مواجه شد.');
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
@@ -2137,7 +2304,7 @@ export class AdminComponent implements OnInit {
         title: [item.title || '', [Validators.required]],
         description: [item.description || ''],
         kind: [item.kind || 'document'],
-        displayOrder: [Number(item.displayOrder ?? 1), [Validators.required, Validators.min(1)]]
+        displayOrder: [Number(item.displayOrder ?? 1), [Validators.required, Validators.min(1)]],
       });
       this.attachmentReplacementFiles[item.id] = null;
     }
@@ -2172,21 +2339,27 @@ export class AdminComponent implements OnInit {
     return new Date().toISOString().slice(0, 10);
   }
 
-  private normalizeCourseStatus(status: CourseStatus | undefined): 'active' | 'inactive' | 'archived' {
+  private normalizeCourseStatus(
+    status: CourseStatus | undefined,
+  ): 'active' | 'inactive' | 'archived' {
     if (status === 'inactive' || status === 'archived') {
       return status;
     }
     return 'active';
   }
 
-  private normalizeAssignmentType(type: AssignmentType | undefined): 'daily' | 'homework' | 'project' | 'exam' {
+  private normalizeAssignmentType(
+    type: AssignmentType | undefined,
+  ): 'daily' | 'homework' | 'project' | 'exam' {
     if (type === 'homework' || type === 'project' || type === 'exam') {
       return type;
     }
     return 'daily';
   }
 
-  private normalizeAssignmentStatus(status: AssignmentStatus | undefined): 'draft' | 'published' | 'closed' {
+  private normalizeAssignmentStatus(
+    status: AssignmentStatus | undefined,
+  ): 'draft' | 'published' | 'closed' {
     if (status === 'draft' || status === 'closed') {
       return status;
     }

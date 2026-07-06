@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.persian-date-picker {
+  display: block;
+  width: 100%;
+
+  ::ng-deep .datepicker-content {
+    position: relative;
+    width: 100%;
+  }
+
+  ::ng-deep input {
+    width: 100%;
+    direction: rtl;
+    text-align: right;
+  }
+
+  ::ng-deep .datepicker-outer-container {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 100;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(30, 27, 20, 0.12);
+    border-width: 1px;
+    border-style: solid;
+    min-width: 260px;
+    font-family: inherit;
+  }
+
+  ::ng-deep .datepicker-inner-container {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  ::ng-deep .dp-btn {
+    border-radius: 8px;
+  }
+
+  ::ng-deep .day-item,
+  ::ng-deep .month-item,
+  ::ng-deep .year-item {
+    border-radius: 8px;
+    font-family: inherit;
+  }
+}
+
+.persian-date-input {
+  width: 100%;
+}
+
+:host.ng-invalid.ng-touched .persian-date-input,
+:host.ng-invalid.ng-touched ::ng-deep input {
+  border-color: var(--lp-danger, #dc2626);
+}

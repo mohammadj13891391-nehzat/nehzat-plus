@@ -11,7 +11,7 @@
   border: 1px solid var(--lp-border);
   border-radius: 16px;
   padding: 0.75rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   transition: box-shadow 0.2s;
 }
 .stat-card:hover {
@@ -24,7 +24,7 @@
 }
 .stat-card strong {
   font-size: 1.3rem;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .section-header {
   display: flex;
@@ -46,15 +46,15 @@
   border: 1px solid var(--lp-border);
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
-  color: var(--text);
-  background: var(--surface);
+  color: var(--lp-text);
+  background: var(--lp-surface);
   text-decoration: none;
   font-size: 0.82rem;
   white-space: nowrap;
   flex: 0 0 auto;
 }
 .nav-chip:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--lp-gold);
   outline-offset: 2px;
 }
 .section-title {
@@ -62,11 +62,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  color: var(--text);
+  color: var(--lp-text);
 }
 .count-badge {
-  background: var(--gold-light);
-  color: var(--gold);
+  background: var(--lp-gold-light);
+  color: var(--lp-gold);
   border-radius: 999px;
   padding: 0.15rem 0.55rem;
   font-size: 0.75rem;
@@ -88,7 +88,7 @@
   display: grid;
   gap: 0.25rem;
   font-size: 0.85rem;
-  color: var(--text);
+  color: var(--lp-text);
 }
 .split-grid {
   display: grid;
@@ -103,7 +103,7 @@
   text-align: right;
   border: 1px solid var(--lp-border);
   border-radius: 14px;
-  background: var(--surface);
+  background: var(--lp-surface);
   padding: 0.65rem;
   display: grid;
   gap: 0.2rem;
@@ -111,10 +111,10 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .list-item:hover {
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
 }
 .list-item:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--lp-gold);
   outline-offset: 2px;
 }
 .list-item.is-selected {
@@ -155,7 +155,7 @@
 .status-chip--inactive,
 .status-chip--draft {
   color: #92400e;
-  background: var(--gold-light);
+  background: var(--lp-gold-light);
   border-color: #e8d5a0;
 }
 .status-chip--archived,
@@ -171,7 +171,7 @@
 }
 .status-chip--submitted {
   color: #92400e;
-  background: var(--gold-light);
+  background: var(--lp-gold-light);
   border-color: #e8d5a0;
 }
 .status-chip--pending {
@@ -227,7 +227,7 @@
   border: 1px solid var(--lp-border);
   border-radius: 16px;
   padding: 0.75rem;
-  background: var(--surface);
+  background: var(--lp-surface);
 }
 .pending-summary h3 {
   margin: 0 0 0.35rem;
@@ -247,21 +247,21 @@ select {
   border-radius: 10px;
   padding: 0.5rem;
   font: inherit;
-  background: var(--surface);
+  background: var(--lp-surface);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
   box-shadow: 0 0 0 3px rgba(184, 148, 46, 0.1);
 }
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--lp-gold);
   outline-offset: 2px;
 }
 .row-actions {
@@ -299,13 +299,13 @@ button:focus-visible {
   padding: 0.6rem 0.75rem;
   cursor: pointer;
   font-size: 0.87rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   transition: background 0.15s, border-color 0.15s;
   user-select: none;
 }
 .sidebar-item:hover {
   background: #f0ece4;
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
 }
 .sidebar-item.active {
   border-color: var(--lp-primary);
@@ -314,7 +314,7 @@ button:focus-visible {
   font-weight: 600;
 }
 .sidebar-item:focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--lp-gold);
   outline-offset: 2px;
 }
 .sidebar-parent-label {
@@ -374,7 +374,7 @@ button:focus-visible {
   gap: 0.35rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--lp-text);
 }
 .province-selector select {
   width: 100%;
@@ -388,7 +388,7 @@ button:focus-visible {
 .branch-province-title {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .branch-add-form {
   display: flex;
@@ -410,11 +410,11 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 10px;
   padding: 0.5rem 0.65rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   transition: border-color 0.2s;
 }
 .branch-item:hover {
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
 }
 .branch-name {
   font-size: 0.9rem;
@@ -457,7 +457,7 @@ button:focus-visible {
 }
 .tab-btn:hover {
   background: #f0ece4;
-  color: var(--text);
+  color: var(--lp-text);
 }
 .tab-btn.active {
   color: var(--lp-primary);
@@ -485,7 +485,7 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 10px;
   padding: 0.5rem 0.65rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -500,7 +500,7 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 10px;
   padding: 0.5rem 0.65rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -516,7 +516,7 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 10px;
   padding: 0.5rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   text-align: center;
 }
 .course-stat-label {
@@ -527,7 +527,7 @@ button:focus-visible {
 }
 .course-stat-value {
   font-size: 1.1rem;
-  color: var(--primary);
+  color: var(--lp-primary);
 }
 .enroll-list {
   display: grid;
@@ -543,7 +543,7 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 8px;
   padding: 0.4rem 0.55rem;
-  background: var(--surface);
+  background: var(--lp-surface);
 }
 .enroll-name {
   flex: 1;
@@ -566,16 +566,16 @@ button:focus-visible {
   display: grid;
   gap: 0.5rem;
   padding: 0.65rem;
-  border: 2px dashed var(--gold);
+  border: 2px dashed var(--lp-gold);
   border-radius: 12px;
-  background: var(--gold-light);
+  background: var(--lp-gold-light);
   text-align: center;
 }
 .invite-code-text {
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--primary);
+  color: var(--lp-primary);
   direction: ltr;
 }
 .invite-code-box .row-actions {
@@ -629,7 +629,7 @@ button:focus-visible {
   overflow-x: auto;
   border: 1px solid var(--lp-border);
   border-radius: 14px;
-  background: var(--surface);
+  background: var(--lp-surface);
 }
 
 .data-table {
@@ -652,7 +652,7 @@ button:focus-visible {
 .data-table td {
   padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--lp-border);
-  color: var(--text);
+  color: var(--lp-text);
 }
 
 .data-table tbody tr:last-child td {
@@ -664,14 +664,14 @@ button:focus-visible {
 }
 
 .coach-name-cell strong {
-  color: var(--text);
+  color: var(--lp-text);
   font-weight: 600;
 }
 
 .course-count-badge {
   display: inline-block;
-  background: var(--gold-light);
-  color: var(--gold);
+  background: var(--lp-gold-light);
+  color: var(--lp-gold);
   border: 1px solid #e8d5a0;
   border-radius: 999px;
   padding: 0.15rem 0.55rem;
@@ -693,7 +693,7 @@ button:focus-visible {
   height: 32px;
   border: 1px solid var(--lp-border);
   border-radius: 8px;
-  background: var(--surface);
+  background: var(--lp-surface);
   cursor: pointer;
   transition: all 0.15s ease;
   color: var(--lp-muted);
@@ -706,13 +706,13 @@ button:focus-visible {
 }
 
 .icon-btn--delete:hover {
-  border-color: var(--danger);
-  color: var(--danger);
+  border-color: var(--lp-danger);
+  color: var(--lp-danger);
   background: rgba(185, 28, 28, 0.05);
 }
 
 .btn-danger {
-  background: var(--danger);
+  background: var(--lp-danger);
   color: #fff;
   border: 0;
   border-radius: 10px;
@@ -744,7 +744,7 @@ button:focus-visible {
 }
 
 .modal-content {
-  background: var(--surface);
+  background: var(--lp-surface);
   border-radius: 18px;
   width: min(560px, 100%);
   max-height: 90vh;
@@ -764,7 +764,7 @@ button:focus-visible {
 .modal-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: var(--text);
+  color: var(--lp-text);
 }
 
 .modal-close {
@@ -783,7 +783,7 @@ button:focus-visible {
 
 .modal-close:hover {
   background: var(--lp-bg);
-  color: var(--text);
+  color: var(--lp-text);
 }
 
 .modal-body {
@@ -808,7 +808,7 @@ button:focus-visible {
 .form-label {
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--lp-text);
 }
 
 .form-input {
@@ -816,19 +816,19 @@ button:focus-visible {
   border: 1px solid var(--lp-border);
   border-radius: 10px;
   padding: 0.6rem 0.75rem;
-  background: var(--surface);
+  background: var(--lp-surface);
   font-size: 0.88rem;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--lp-gold);
   box-shadow: 0 0 0 3px rgba(184, 148, 46, 0.12);
 }
 
 .form-input.ng-invalid.ng-touched {
-  border-color: var(--danger);
+  border-color: var(--lp-danger);
 }
 
 .modal-footer {
@@ -859,7 +859,7 @@ button:focus-visible {
 .form-hint {
   display: block;
   font-size: 0.75rem;
-  color: var(--gold, #b8942e);
+  color: var(--lp-gold, #b8942e);
   margin-top: 0.25rem;
   line-height: 1.4;
 }
