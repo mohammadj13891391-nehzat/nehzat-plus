@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/guards/role.guard';
-import { RoleStubComponent } from '../shared/role-stub/role-stub.component';
+import { AssessmentPanelComponent } from '../shared/assessment-panel/assessment-panel.component';
 
 @Component({
   standalone: true,
-  imports: [RoleStubComponent],
-  template: '<app-role-stub [title]="\'پنل ارزیاب\'" [role]="\'evaluator\'" />'
+  imports: [AssessmentPanelComponent],
+  template: '<app-assessment-panel />'
 })
 export class EvaluatorPageComponent {}
 
