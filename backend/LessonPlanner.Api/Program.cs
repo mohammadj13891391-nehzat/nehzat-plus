@@ -66,6 +66,7 @@ builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
+builder.Services.AddScoped<IAssessmentService, AssessmentService>();
 builder.Services.AddScoped<SampleDataSeeder>();
 
 // CORS - restricted to localhost origins
