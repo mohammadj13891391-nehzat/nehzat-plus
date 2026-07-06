@@ -61,10 +61,10 @@ nehzat-plus/
 cd backend/LessonPlanner.Api
 dotnet run
 ```
-- سرور روی `http://localhost:5253` اجرا می‌شود (پورت در `Properties/launchSettings.json`)
+- سرور روی `http://localhost:3000` اجرا می‌شود (پورت در `Properties/launchSettings.json`)
 - پایگاه‌داده SQLite `lesson-planner.db` با `EnsureCreated()` ساخته می‌شود
 - کاربر ادمین `test` / `password` و داده‌های نمونه به‌صورت خودکار ایجاد می‌شوند
-- CORS کاملاً باز است (`AllowAnyOrigin`)
+- CORS محدود به `http://localhost:4200` و `http://localhost:3000`
 - API کاملاً مشابه نسخه NestJS است (همان endpointها، همان رفتار)
 
 ### اجرای فرانت‌اند Angular (`frontend/`)
@@ -171,7 +171,7 @@ npm start
 
 برنامه `config.json` را در ریشه (`/config.json`) در زمان اجرا بارگذاری می‌کند:
 ```json
-{ "apiUrl": "http://localhost:5253" }
+{ "apiUrl": "http://localhost:3000" }
 ```
 این فایل می‌تواند در هر محیط (توسعه، استیجینگ، production) متفاوت باشد.
 در صورت نبود فایل، برنامه همچنان کار می‌کند (API URL خالی می‌ماند).
