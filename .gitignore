@@ -1,0 +1,13 @@
+# Log files
+*.log
+*.err
+stderr.txt
+stdout.txt
+
+# Build output
+dist/
+**/dist/
+
+# IDE
+.omo/
+.playwright-mcp/
