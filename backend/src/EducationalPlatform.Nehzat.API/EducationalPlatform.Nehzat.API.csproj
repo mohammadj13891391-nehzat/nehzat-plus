@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EducationalPlatform.Nehzat.Domain\EducationalPlatform.Nehzat.Domain.csproj" />
+    <ProjectReference Include="..\EducationalPlatform.Nehzat.Application\EducationalPlatform.Nehzat.Application.csproj" />
+    <ProjectReference Include="..\EducationalPlatform.Nehzat.Infrastructure\EducationalPlatform.Nehzat.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
