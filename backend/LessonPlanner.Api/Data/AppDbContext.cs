@@ -20,6 +20,9 @@ public class AppDbContext : DbContext
     public DbSet<BranchManager> BranchManagers => Set<BranchManager>();
     public DbSet<Parent> Parents => Set<Parent>();
     public DbSet<Evaluator> Evaluators => Set<Evaluator>();
+    public DbSet<Assessment> Assessments => Set<Assessment>();
+    public DbSet<AssessmentQuestion> AssessmentQuestions => Set<AssessmentQuestion>();
+    public DbSet<AssessmentResult> AssessmentResults => Set<AssessmentResult>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -145,6 +148,53 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.BranchId)
                   .IsRequired(false)
                   .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<Assessment>(entity =>
+        {
+            entity.HasOne(e => e.Course)
+                  .WithMany()
+                  .HasForeignKey(e => e.CourseId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.GeneratedByUser)
+                  .WithMany()
+                  .HasForeignKey(e => e.GeneratedByUserId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.CourseId);
+            entity.HasIndex(e => e.AssessmentDate);
+            entity.HasIndex(e => e.Status);
+        });
+
+        modelBuilder.Entity<AssessmentQuestion>(entity =>
+        {
+            entity.HasOne(e => e.Assessment)
+                  .WithMany(a => a.Questions)
+                  .HasForeignKey(e => e.AssessmentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.AssessmentId);
+            entity.HasIndex(e => e.Topic);
+            entity.HasIndex(e => e.Difficulty);
+        });
+
+        modelBuilder.Entity<AssessmentResult>(entity =>
+        {
+            entity.HasOne(e => e.Assessment)
+                  .WithMany(a => a.Results)
+                  .HasForeignKey(e => e.AssessmentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Student)
+                  .WithMany()
+                  .HasForeignKey(e => e.StudentId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.AssessmentId);
+            entity.HasIndex(e => e.StudentId);
+            entity.HasIndex(e => e.CompletedAt);
         });
     }
 }
