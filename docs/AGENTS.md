@@ -1,17 +1,17 @@
 # AGENTS.md — Nehzat Plus (Lesson Planner)
 
-Two sub-projects: `backend/` (ASP.NET Core 8) and `frontend/` (Angular 21).
+Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend/` (Angular 21).
 
 ---
 
-## @backend/ (ASP.NET Core 8 + EF Core + SQLite)
+## @backend/ (ASP.NET Core 10 + EF Core + SQLite — Clean Architecture)
 
 ### Commands
 ```bash
-cd backend/LessonPlanner.Api
+cd backend/src/EducationalPlatform.Nehzat.API
 dotnet run            # dev server on port 3000 (see launchSettings.json)
 dotnet run --urls http://localhost:3000
-dotnet build          # compile
+dotnet build          # compile (root: EducationalPlatform.Nehzat.slnx)
 dotnet test           # (no tests yet)
 ```
 
@@ -25,7 +25,8 @@ dotnet test           # (no tests yet)
 - `EnsureDeleted()` only runs when `--seed` flag is passed
 
 ### Authentication & Authorization
-- JWT authentication via `Microsoft.AspNetCore.Authentication.JwtBearer`
+- JWT authentication via `Microsoft.AspNetCore.Authentication.JwtBearer` (production)
+- Mock auth via `MockAuthHandler` (development, controlled by `UseMockAuth: true` in `appsettings.Development.json`)
 - Symmetric key from `appsettings.json` → `Jwt.Key`
 - Token lifetime: 7 days (`Jwt.ExpireDays`)
 - Claims: `sub` (username), `userId`, `ClaimTypes.Role` (maps to Microsoft role claim URI)
@@ -37,20 +38,33 @@ dotnet test           # (no tests yet)
 ### Supported Roles
 `manager`, `headquarters`, `branch_manager`, `coach`, `parent`, `evaluator`, `trainee`, `admin` (legacy, migrated to `manager` on startup)
 
-### Project structure
+### Project structure — Clean Architecture (4 layers)
 ```
 backend/
-└── LessonPlanner.Api/
-    ├── Models/          # EF Core entities
-    ├── Data/            # AppDbContext (SQLite)
-    ├── DTOs/            # Request/response records
-    ├── Helpers/         # FileUploadValidator
-    ├── Services/        # Service interfaces + implementations
-    ├── Controllers/     # Auth, Admin, Student, Course, Seeder
-    └── Seeders/         # Sample data seeder
+├── EducationalPlatform.Nehzat.slnx
+└── src/
+    ├── EducationalPlatform.Nehzat.Domain/          # Pure entities, no dependencies
+    │   └── Entities/               # 15 entity classes (EF Core, [Table("Nehzat_*")])
+    ├── EducationalPlatform.Nehzat.Application/     # DTOs + service interfaces
+    │   ├── DTOs/                   # Request/response records
+    │   └── Interfaces/             # IXxxService interfaces
+    ├── EducationalPlatform.Nehzat.Infrastructure/  # EF Core, services, seeders
+    │   ├── Data/AppDbContext.cs    # DbContext (SQLite)
+    │   ├── Services/               # Service implementations
+    │   └── Seeders/                # Sample data seeder
+    └── EducationalPlatform.Nehzat.API/             # Controllers, auth, config
+        ├── Controllers/            # Auth, Admin, Student, Course, Assessment, Seeder
+        ├── Middleware/             # MockAuthHandler (dev only)
+        ├── Helpers/                # FileUploadValidator
+        ├── Program.cs              # DI, middleware, DB init, mock auth switch
+        ├── appsettings.json
+        └── appsettings.Development.json
 ```
 
 ### Architecture notes
+- **Clean Architecture**: Domain → Application → Infrastructure → API (dependency flows inward)
+- **Database schema prefix**: All table names use `Nehzat_` prefix (e.g., `Nehzat_users`, `Nehzat_courses`) for future multi-service isolation
+- **Mock Auth**: Development mode uses `MockAuthHandler` when `UseMockAuth: true`; production uses real JWT Bearer
 - Circular UserService ↔ StudentService resolved with interface-based DI
 - `SensitiveDataLogging` enabled for dev
 - BCrypt work factor: 12
@@ -85,6 +99,7 @@ npx cap open android  # open in Android Studio
 - `authGuard` checks `isAuthenticated()`
 - `adminGuard` allows `manager`, `headquarters`, `branch_manager`
 - `roleGuard('role')` restricts specific role routes
+- Development mode supports `useMockAuth: true` in `environment.ts`
 
 ### Project structure
 - Standalone components, `app.ts` class-based
@@ -133,6 +148,11 @@ npx cap open android  # open in Android Studio
 
 ## Recent significant changes
 
+- **Clean Architecture restructuring**: Backend split into 4 layers (Domain, Application, Infrastructure, API)
+- **.NET 10 upgrade**: All projects target .NET 10
+- **Mock auth**: `MockAuthHandler` for development mode (switched via `UseMockAuth: true`)
+- **Database schema prefix**: All tables prefixed with `Nehzat_` (e.g., `Nehzat_users`)
+- **Solution renamed**: `EducationalPlatform.Nehzat.slnx`
 - Real JWT authentication implemented in backend + frontend
 - `[Authorize(Roles)]` added to all non-auth controllers
 - CORS restricted from `AllowAnyOrigin` to localhost origins
@@ -157,12 +177,13 @@ npx cap open android  # open in Android Studio
 ## Relevant files
 
 ### Backend
-- `backend/LessonPlanner.Api/Program.cs` — middleware, JWT, CORS, DB init
-- `backend/LessonPlanner.Api/Services/UserService.cs` — `GenerateJwtToken`, BCrypt
-- `backend/LessonPlanner.Api/Controllers/AuthController.cs` — signin/signup
-- `backend/LessonPlanner.Api/Controllers/AdminController.cs` — admin APIs (large)
-- `backend/LessonPlanner.Api/Helpers/FileUploadValidator.cs`
-- `backend/LessonPlanner.Api/appsettings.json` — JWT config + connection string
+- `backend/src/EducationalPlatform.Nehzat.API/Program.cs` — middleware, JWT, CORS, DB init, mock auth switch
+- `backend/src/EducationalPlatform.Nehzat.Infrastructure/Services/UserService.cs` — `GenerateJwtToken`, BCrypt
+- `backend/src/EducationalPlatform.Nehzat.API/Controllers/AuthController.cs` — signin/signup
+- `backend/src/EducationalPlatform.Nehzat.API/Controllers/AdminController.cs` — admin APIs (large)
+- `backend/src/EducationalPlatform.Nehzat.API/Helpers/FileUploadValidator.cs`
+- `backend/src/EducationalPlatform.Nehzat.API/appsettings.json` — JWT config + connection string
+- `backend/src/EducationalPlatform.Nehzat.API/Middleware/MockAuthHandler.cs` — mock auth (dev mode)
 
 ### Frontend
 - `frontend/src/app/core/services/auth.service.ts` — JWT decode, session

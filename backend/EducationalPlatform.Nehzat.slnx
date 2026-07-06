@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EducationalPlatform.Nehzat.API/EducationalPlatform.Nehzat.API.csproj" />
+    <Project Path="src/EducationalPlatform.Nehzat.Application/EducationalPlatform.Nehzat.Application.csproj" />
+    <Project Path="src/EducationalPlatform.Nehzat.Domain/EducationalPlatform.Nehzat.Domain.csproj" />
+    <Project Path="src/EducationalPlatform.Nehzat.Infrastructure/EducationalPlatform.Nehzat.Infrastructure.csproj" />
+  </Folder>
+</Solution>
