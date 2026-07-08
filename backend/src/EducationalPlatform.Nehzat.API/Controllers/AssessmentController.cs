@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Application.Interfaces;
@@ -9,6 +10,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("assessments")]
+[Authorize]
 public class AssessmentController : ControllerBase
 {
     private readonly IAssessmentService _assessmentService;

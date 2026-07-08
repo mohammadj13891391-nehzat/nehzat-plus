@@ -17,65 +17,8 @@ public class AuthController : ControllerBase
         _branchManagerService = branchManagerService;
     }
 
-    [HttpPost("signin")]
-    public async Task<IActionResult> SignIn([FromBody] LoginRequest request)
-    {
-        var isValid = await _userService.ValidateUserAsync(request.Username, request.Password);
-        if (!isValid)
-            return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
-
-        var user = await _userService.FindUserAsync(request.Username);
-        if (user == null)
-            return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
-
-        if (user.ApprovalStatus == "pending")
-            return BadRequest(new { message = "حساب کاربری شما در انتظار تایید مدیر سیستم است" });
-
-        if (user.ApprovalStatus == "rejected")
-            return BadRequest(new { message = "حساب کاربری شما رد شده است. لطفاً با مدیر سیستم تماس بگیرید" });
-
-        var token = _userService.GenerateJwtToken(user);
-
-        int? branchId = null;
-        if (user.UserType == "branch_manager")
-        {
-            var bm = await _branchManagerService.FindByUsernameAsync(user.Username);
-            branchId = bm?.BranchId;
-        }
-
-        if (user.UserType == "trainee" && user.Student != null)
-        {
-            return Ok(new AuthTokenResponse(
-                Token: token,
-                Message: "Sign-in successful",
-                Username: user.Username,
-                ImageUrl: user.ImageUrl,
-                UserType: "trainee",
-                UserId: user.Id,
-                StudentId: user.Student.Id,
-                StudentInfo: new StudentInfo(
-                    user.Student.FirstName,
-                    user.Student.LastName,
-                    user.Student.Email,
-                    user.Student.StudentId,
-                    user.Student.PhoneNumber
-                ),
-                BranchId: branchId
-            ));
-        }
-
-        return Ok(new AuthTokenResponse(
-            Token: token,
-            Message: "Sign-in successful",
-            Username: user.Username,
-            ImageUrl: user.ImageUrl,
-            UserType: user.UserType,
-            UserId: user.Id,
-            StudentId: user.StudentId,
-            BranchId: branchId
-        ));
-    }
-
+    // TODO: Delegate signup to OTUH2 — for now, create local pending user record.
+    // Password is accepted in the request for backward compatibility but not stored locally.
     [HttpPost("signup")]
     public async Task<IActionResult> SignUp([FromBody] SignupRequest request)
     {
