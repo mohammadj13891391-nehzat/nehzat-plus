@@ -400,7 +400,7 @@ export class AssessmentPanelComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.username = user?.username ?? '';
-    this.role = user?.userType ?? 'coach';
+    this.role = (user?.userType ?? 'coach') as UserType;
     this.panelTitle = this.getPanelTitle();
     this.loadCourses();
     this.loadAssessments();
