@@ -2,6 +2,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000',
   apiPublicUrl: 'http://localhost:3000',
+  otuh2Url: 'http://localhost:5000',
   useMockApi: false,
   useMockAuth: true,
   mockUser: {

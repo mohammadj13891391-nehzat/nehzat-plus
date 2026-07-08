@@ -5,9 +5,13 @@ export function loadApiConfig(): () => Promise<void> {
 
     return fetch(configUrl)
       .then((response) => (response.ok ? response.json() : {}))
-      .then((config: { apiUrl?: string }) => {
+      .then((config: { apiUrl?: string; otuh2Url?: string }) => {
+        const win = window as unknown as { __apiBase?: string; __otuh2Base?: string };
         if (typeof config.apiUrl === 'string') {
-          (window as unknown as { __apiBase?: string }).__apiBase = config.apiUrl;
+          win.__apiBase = config.apiUrl;
+        }
+        if (typeof config.otuh2Url === 'string') {
+          win.__otuh2Base = config.otuh2Url;
         }
       })
       .catch(() => undefined);

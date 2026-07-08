@@ -1,3 +1,4 @@
 {
-  "apiUrl": "http://localhost:3000"
+  "apiUrl": "http://localhost:3000",
+  "otuh2Url": "http://localhost:5000"
 }
