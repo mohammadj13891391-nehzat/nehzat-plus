@@ -31,6 +31,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasIndex(e => e.Username).IsUnique();
+            entity.HasIndex(e => e.OidcSubject).IsUnique().HasFilter("[OidcSubject] IS NOT NULL");
             entity.HasOne(e => e.Student)
                   .WithMany()
                   .HasForeignKey(e => e.StudentId)

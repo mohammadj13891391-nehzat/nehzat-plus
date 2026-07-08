@@ -1,9 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Application.Interfaces;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
@@ -13,21 +8,19 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services;
 public class UserService : IUserService
 {
     private readonly AppDbContext _db;
-    private readonly IConfiguration _configuration;
 
-    public UserService(AppDbContext db, IConfiguration configuration)
+    public UserService(AppDbContext db)
     {
         _db = db;
-        _configuration = configuration;
     }
 
     public async Task CreateUserAsync(string username, string password, string? imageUrl, int? studentId, string userType, string? firstName = null, string? lastName = null, string? email = null, string? phoneNumber = null)
     {
-        var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
+        // Password is no longer stored locally — OTUH2 handles authentication
+        // The password parameter is kept for backward compatibility but ignored
         var user = new User
         {
             Username = username,
-            PasswordHash = hash,
             FirstName = firstName,
             LastName = lastName,
             Email = email,
@@ -45,11 +38,10 @@ public class UserService : IUserService
 
     public async Task CreatePendingUserAsync(string username, string password, string? imageUrl, string? firstName = null, string? lastName = null, string? email = null, string? phoneNumber = null)
     {
-        var hash = BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
+        // Password is no longer stored locally — OTUH2 handles authentication
         var user = new User
         {
             Username = username,
-            PasswordHash = hash,
             FirstName = firstName,
             LastName = lastName,
             Email = email,
@@ -123,11 +115,12 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(u => u.StudentId == studentId);
     }
 
-    public async Task<bool> ValidateUserAsync(string username, string password)
+    public Task<bool> ValidateUserAsync(string username, string password)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (user?.PasswordHash == null) return false;
-        return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+        // Password validation is handled by OTUH2 OAuth service
+        // This method remains for backward compatibility but always returns false
+        // since local password storage has been removed
+        return Task.FromResult(false);
     }
 
     public async Task UpdateUserProfileAsync(string username, string imageUrl)
@@ -152,32 +145,52 @@ public class UserService : IUserService
         }
     }
 
+    public async Task<User?> FindByOidcSubjectAsync(string oidcSubject)
+    {
+        return await _db.Users
+            .Include(u => u.Student)
+            .FirstOrDefaultAsync(u => u.OidcSubject == oidcSubject);
+    }
+
+    public async Task<User> CreateLocalUserAsync(string username, string userType, string? oidcSubject = null)
+    {
+        var user = new User
+        {
+            Username = username,
+            OidcSubject = oidcSubject,
+            ApprovalStatus = "approved",
+            UserType = userType,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync();
+        return user;
+    }
+
+    public async Task SyncOidcSubjectAsync(string username, string oidcSubject)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (user != null && user.OidcSubject != oidcSubject)
+        {
+            user.OidcSubject = oidcSubject;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    public async Task<User?> FindByUsernameAsync(string username)
+    {
+        return await _db.Users
+            .Include(u => u.Student)
+            .FirstOrDefaultAsync(u => u.Username == username);
+    }
+
     public string GenerateJwtToken(User user)
     {
-        var jwtSettings = _configuration.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.Username),
-            new(ClaimTypes.Role, user.UserType),
-            new("userId", user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
-            new(JwtRegisteredClaimNames.Sub, user.Username)
-        };
-
-        if (user.StudentId.HasValue)
-            claims.Add(new Claim("studentId", user.StudentId.Value.ToString()));
-
-        var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddDays(double.Parse(jwtSettings["ExpireDays"] ?? "7")),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        // JWT generation is now handled by OTUH2 OAuth service.
+        // This method is kept for backward compatibility with AuthController.
+        throw new InvalidOperationException(
+            "Local JWT generation is disabled. Authentication is handled by OTUH2 OAuth service.");
     }
 }
