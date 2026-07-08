@@ -1,7 +1,7 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
@@ -13,10 +13,11 @@ import { NotificationService } from '../../../../core/services/notification.serv
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly notify = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -26,6 +27,12 @@ export class LoginComponent {
   });
   protected isSubmitting = false;
   protected errorMessage = '';
+  private returnUrl = '';
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] ?? '';
+  }
+
   protected onSubmit(): void {
     if (this.form.invalid || this.isSubmitting) {
       return;
@@ -33,18 +40,27 @@ export class LoginComponent {
 
     this.errorMessage = '';
     this.isSubmitting = true;
-    const payload = this.form.getRawValue();
+    const { username, password } = this.form.getRawValue();
 
     this.authService
-      .signin(payload)
+      .signin(username, password)
       .pipe(finalize(() => (this.isSubmitting = false)))
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (response) => {
-          const target = this.authService.getDashboardPathForRole(response.userType);
+        next: () => {
+          if (this.returnUrl) {
+            window.location.href = this.returnUrl;
+            return;
+          }
+          const user = this.authService.getCurrentUser();
+          const target = user
+            ? this.authService.getDashboardPathForRole(user.userType)
+            : '/dashboard';
           void this.router.navigateByUrl(target);
         },
         error: (error) => {
-          this.errorMessage = error?.error?.message ?? 'خطا در ورود. دوباره تلاش کنید.';
+          this.errorMessage = error?.error?.error_description
+            ?? error?.error?.message
+            ?? 'نام کاربری یا رمز عبور اشتباه است';
           this.notify.show(this.errorMessage, 'error');
         }
       });
