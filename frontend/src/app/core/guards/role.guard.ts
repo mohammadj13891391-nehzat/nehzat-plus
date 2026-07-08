@@ -1,10 +1,9 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
-import { UserType } from '../models/lesson-planner.models';
 import { AuthService } from '../services/auth.service';
 
-export const roleGuard = (allowedRole: UserType): CanActivateFn => () => {
+export const roleGuard = (allowedRole: string): CanActivateFn => () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -12,10 +11,11 @@ export const roleGuard = (allowedRole: UserType): CanActivateFn => () => {
     return router.createUrlTree(['/auth/login']);
   }
 
-  const user = authService.getCurrentUser();
-  if (user?.userType === allowedRole) {
+  if (authService.hasRole(allowedRole)) {
     return true;
   }
+
+  const user = authService.getCurrentUser();
   const target = user ? authService.getDashboardPathForRole(user.userType) : '/auth/login';
   return router.createUrlTree([target]);
 };
