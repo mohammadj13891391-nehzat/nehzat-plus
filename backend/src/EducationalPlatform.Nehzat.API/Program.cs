@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using EducationalPlatform.Nehzat.API.Middleware;
 using EducationalPlatform.Nehzat.Application.Interfaces;
+using EducationalPlatform.Nehzat.Infrastructure.Clients;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
 using EducationalPlatform.Nehzat.Infrastructure.Services;
 using EducationalPlatform.Nehzat.Infrastructure.Seeders;
@@ -21,9 +21,10 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var useMockAuth = builder.Configuration.GetValue<bool>("UseMockAuth");
+var oidcConfig = builder.Configuration.GetSection("Oidc");
 
 if (useMockAuth)
 {
@@ -36,9 +37,6 @@ if (useMockAuth)
 }
 else
 {
-    var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var jwtKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
-
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,28 +44,23 @@ else
     })
     .AddJwtBearer(options =>
     {
+        options.Authority = oidcConfig["Authority"];
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
-            ClockSkew = TimeSpan.FromMinutes(5)
+            ValidateAudience = false,
+            ValidTypes = new[] { "at+jwt" },
+            NameClaimType = "sub",
+            RoleClaimType = "role"
         };
+        options.RequireHttpsMetadata = oidcConfig.GetValue<bool>("RequireHttpsMetadata");
     });
 }
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("admin", "manager", "headquarters"));
+builder.Services.AddAuthorization();
 
-    options.AddPolicy("AllRoles", policy =>
-        policy.RequireRole("admin", "manager", "headquarters", "branch_manager", "coach", "parent", "evaluator", "trainee"));
-});
+var otuh2ClientConfig = builder.Configuration.GetSection("Otuh2Client");
+var otuh2BaseUrl = otuh2ClientConfig["BaseUrl"] ?? oidcConfig["Authority"] ?? "http://localhost:5000";
+builder.Services.AddOtuh2AuthClient(otuh2BaseUrl);
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
@@ -85,7 +78,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://localhost:3000")
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:3000")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -109,6 +102,7 @@ app.UseExceptionHandler(errorApp =>
 
 app.UseCors();
 app.UseAuthentication();
+app.UseMiddleware<OidcSyncMiddleware>();
 app.UseAuthorization();
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -130,31 +124,7 @@ using (var scope = app.Services.CreateScope())
     }
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-    var existingAdmin = await userService.FindUserAsync("test");
-    if (existingAdmin == null)
-    {
-        try
-        {
-            await userService.CreateUserAsync("test", "password", null, null, "manager");
-            Console.WriteLine("✅ کاربر پیش‌فرض (مدیر) ایجاد شد");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"⚠️ خطا در ایجاد کاربر پیش‌فرض: {ex.Message}");
-        }
-    }
-    else if (existingAdmin.UserType == "admin")
-    {
-        try
-        {
-            await userService.UpdateUserTypeAsync(existingAdmin.Id, "manager");
-            Console.WriteLine("✅ نقش کاربر پیش‌فرض به manager به‌روزرسانی شد");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"⚠️ خطا در به‌روزرسانی نقش کاربر پیش‌فرض: {ex.Message}");
-        }
-    }
+    // Users are synced from OTUH2 via OidcSyncMiddleware on first request
 
     var branchService = scope.ServiceProvider.GetRequiredService<IBranchService>();
     var branches = await branchService.GetAllAsync();
@@ -173,6 +143,19 @@ using (var scope = app.Services.CreateScope())
 
     var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
     await seeder.SeedAsync();
+
+    // Seed Nehzat Plus roles in OTUH2 (non-blocking — failure is logged, not fatal)
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            await Otuh2RoleSeeder.SeedAsync(scope.ServiceProvider);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ OTUH2 role seeding failed: {ex.Message}");
+        }
+    });
 }
 
 app.Run();
