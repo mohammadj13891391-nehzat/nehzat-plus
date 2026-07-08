@@ -15,12 +15,13 @@ public class MockAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier, "usr_dev_mock_01H7X8Z5M3P"),
-            new Claim(ClaimTypes.Name, "Developer Sandbox Account"),
-            new Claim(ClaimTypes.Email, "sandbox-dev@nehzat128.ir"),
-            new Claim(ClaimTypes.Role, "manager"),
-            new Claim("permissions", "nehzat:courses:create"),
-            new Claim("permissions", "personality:assessments:evaluate")
+            new Claim("sub", "test"),
+            new Claim("name", "مدیر سیستم"),
+            new Claim("preferred_username", "test"),
+            new Claim("email", "admin@nehzat.local"),
+            new Claim("userId", "1"),
+            new Claim("role", "manager"),
+            new Claim("role", "admin")
         };
 
         var identity = new ClaimsIdentity(claims, "MockScheme");
