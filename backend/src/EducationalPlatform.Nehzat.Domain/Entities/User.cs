@@ -14,7 +14,7 @@ public class User
     public string Username { get; set; } = string.Empty;
 
     [Column(TypeName = "nvarchar(255)")]
-    public string? PasswordHash { get; set; }
+    public string? OidcSubject { get; set; }
 
     [Column(TypeName = "nvarchar(100)")]
     public string? FirstName { get; set; }
