@@ -2,82 +2,113 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
-import {
-  AuthSigninPayload,
-  AuthSigninResponse,
-  AuthSignupPayload,
-  AuthSignupResponse,
-  CurrentUser,
-  UserType
-} from '../models/lesson-planner.models';
-import { LESSON_PLANNER_API } from './lesson-planner-api.token';
+import { OTUH2_API } from './otuh2-api.token';
+import { AuthTokenResponse, RegisterPayload, ApiMessageResponse } from '../models/otuh2.models';
+import { CurrentUser } from '../models/lesson-planner.models';
 
-const TOKEN_KEY = 'token';
+const ACCESS_TOKEN_KEY = 'otuh2_access_token';
+const ID_TOKEN_KEY = 'otuh2_id_token';
+const REFRESH_TOKEN_KEY = 'otuh2_refresh_token';
 
 interface JwtPayload {
-  sub: string;
-  userType?: UserType;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
-  userId?: number;
-  studentId?: number;
-  branchId?: number;
+  sub?: string;
+  name?: string;
+  email?: string;
+  role?: string | string[];
+  userId?: string;
+  studentId?: string;
+  branchId?: string;
   exp?: number;
   iat?: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly api = inject(LESSON_PLANNER_API);
+  private readonly api = inject(OTUH2_API);
   private readonly router = inject(Router);
 
-  signin(payload: AuthSigninPayload): Observable<AuthSigninResponse> {
-    return this.api.signin(payload).pipe(
-      tap((response) => {
-        localStorage.setItem(TOKEN_KEY, response.token);
+  signin(username: string, password: string): Observable<AuthTokenResponse> {
+    return this.api.signin(username, password).pipe(
+      tap(response => {
+        sessionStorage.setItem(ACCESS_TOKEN_KEY, response.access_token);
+        if (response.id_token) {
+          sessionStorage.setItem(ID_TOKEN_KEY, response.id_token);
+        }
+        if (response.refresh_token) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+        }
       })
     );
   }
 
-  signup(payload: AuthSignupPayload): Observable<AuthSignupResponse> {
+  signup(payload: RegisterPayload): Observable<ApiMessageResponse> {
     return this.api.signup(payload);
   }
 
+  logout(): void {
+    sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem(ID_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    void this.router.navigateByUrl('/auth/login');
+  }
+
   isAuthenticated(): boolean {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
+    const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
+    if (!idToken) {
+      console.warn('[AuthService.isAuthenticated] NO id_token in sessionStorage');
       return false;
     }
-    const payload = this.decodeToken(token);
-    if (!payload || !payload.exp) {
+    const payload = this.decodeToken(idToken);
+    if (!payload?.exp) {
+      console.warn('[AuthService.isAuthenticated] id_token found but NO exp claim:', payload);
       return false;
     }
-    return payload.exp * 1000 > Date.now();
+    const valid = payload.exp * 1000 > Date.now();
+    console.log('[AuthService.isAuthenticated] id_token exp=', new Date(payload.exp * 1000).toISOString(), 'now=', new Date().toISOString(), 'valid=', valid);
+    return valid;
+  }
+
+  getAccessToken(): string | null {
+    return sessionStorage.getItem(ACCESS_TOKEN_KEY);
   }
 
   getCurrentUser(): CurrentUser | null {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
+    const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
+    if (!idToken) {
+      console.log('[AuthService.getCurrentUser] no id_token');
       return null;
     }
-    const payload = this.decodeToken(token);
-    if (!payload || !payload.sub) {
+    const payload = this.decodeToken(idToken);
+    if (!payload?.sub) {
+      console.warn('[AuthService.getCurrentUser] id_token decoded but no sub:', payload);
       return null;
     }
-    const userType = (payload.userType ?? payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) as UserType | undefined;
-    if (!userType) {
-      return null;
-    }
-    return {
+    const roles = typeof payload.role === 'string'
+      ? [payload.role]
+      : (payload.role ?? []);
+    const user: CurrentUser = {
       username: payload.sub,
-      userType,
-      studentId: payload.studentId,
-      branchId: payload.branchId
+      roles,
+      userType: this.resolvePrimaryRole(roles),
+      studentId: payload.studentId ? parseInt(payload.studentId, 10) : undefined,
+      branchId: payload.branchId ? parseInt(payload.branchId, 10) : undefined
     };
+    console.log('[AuthService.getCurrentUser] user:', user);
+    return user;
   }
 
-  getDashboardPathForRole(userType: UserType): string {
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    if (!user?.roles) {
+      return false;
+    }
+    return user.roles.some(r => r.toLowerCase() === role.toLowerCase());
+  }
+
+  getDashboardPathForRole(userType: string): string {
     switch (userType) {
       case 'manager':
+      case 'admin':
         return '/admin';
       case 'trainee':
         return '/dashboard';
@@ -96,9 +127,15 @@ export class AuthService {
     }
   }
 
-  logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    void this.router.navigateByUrl('/auth/login');
+  private resolvePrimaryRole(roles: string[]): string {
+    const priority = ['admin', 'manager', 'headquarters', 'branch_manager', 'coach', 'parent', 'evaluator', 'trainee'];
+    const lowerRoles = roles.map(r => r.toLowerCase());
+    for (const role of priority) {
+      if (lowerRoles.includes(role)) {
+        return role;
+      }
+    }
+    return roles[0]?.toLowerCase() ?? 'trainee';
   }
 
   private decodeToken(token: string): JwtPayload | null {
@@ -107,8 +144,7 @@ export class AuthService {
       if (parts.length !== 3) {
         return null;
       }
-      const payload = parts[1];
-      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      const json = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
       return JSON.parse(json) as JwtPayload;
     } catch {
       return null;

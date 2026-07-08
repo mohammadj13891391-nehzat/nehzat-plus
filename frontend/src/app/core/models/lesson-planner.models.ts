@@ -343,7 +343,8 @@ export interface AdminCourseStatistics {
 
 export interface CurrentUser {
   username: string;
-  userType: UserType;
+  roles: string[];
+  userType: string;
   studentId?: number;
   studentInfo?: StudentInfo;
   imageUrl?: string;
