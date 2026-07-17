@@ -55,6 +55,7 @@ nehzat-plus/
 - Service interfaces in `Application`, implementations in `Infrastructure` (Clean Architecture dependency inward).
 - JSON: `ReferenceHandler.IgnoreCycles`, `UnsafeRelaxedJsonEscaping` (Persian text).
 - Frontend API layer is interface-based — swap HTTP/Mock via `environment.ts` `useMockApi` (per docs; confirm current flag name before editing).
+- Auth is **redirect-based OIDC** via EhrazHoviat (OTUH2) — see [docs/OTUH2_AUTH.md](docs/OTUH2_AUTH.md) for the exact flow, client IDs, and scopes. `auth.guard` redirects to OTUH2's hosted `/auth/login`; tokens return to `/auth/callback`.
 - Tokens: access+id in `sessionStorage`, refresh in `localStorage`; 401 → auto-logout.
 
 ## ANTI-PATTERNS (THIS PROJECT)

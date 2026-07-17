@@ -1,27 +1,11 @@
 <main class="page-container">
   <section class="card auth-card">
     <h1 class="title">ورود به پنل متربی</h1>
-    <p class="subtitle">برای نسخه نمایشی از حساب‌های زیر استفاده کنید:</p>
-    <ul class="demo-accounts">
-      <li>مدیر: <code>test / password</code></li>
-    </ul>
+    <p class="subtitle">برای ورود به سامانه احراز هویت مرکزی هزارهوت، روی دکمه زیر کلیک کنید.</p>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
-      <label class="field">
-        <span>نام کاربری</span>
-        <input formControlName="username" type="text" />
-      </label>
-      <label class="field">
-        <span>رمز عبور</span>
-        <input formControlName="password" type="password" />
-      </label>
-      @if (errorMessage) {
-        <p class="error-text">{{ errorMessage }}</p>
-      }
-      <button class="btn-primary" type="submit" [disabled]="form.invalid || isSubmitting">
-        {{ isSubmitting ? 'در حال ورود...' : 'ورود' }}
-      </button>
-    </form>
+    <button class="btn-primary" type="button" (click)="redirectToOtuh2()">
+      ورود از طریق احراز هویت مرکزی
+    </button>
 
     <p class="helper-text">
       حساب ندارید؟

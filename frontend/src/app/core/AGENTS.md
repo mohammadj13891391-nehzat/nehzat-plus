@@ -24,13 +24,16 @@ core/
 ## WHERE TO LOOK
 | Task | Location |
 |------|----------|
-| Login / role checks | `auth.service.ts` (`hasRole()`) |
+| Login / role checks | `auth.service.ts` (`hasRole()`, `isAuthenticated()`) |
 | Add API method | `lesson-planner-api.interface.ts` + BOTH http & mock impls |
 | Change token storage | `auth.service.ts` (sessionStorage access/id, localStorage refresh) |
+| Redirect-to-OTUH2 URL | `api-url.util.ts` → `resolveOtuh2BaseUrl()`; `auth.guard.ts` builds the `/auth/login?returnUrl=` link |
 | Route protection | `guards/` |
-| Shared TS types | `models/lesson-planner.models.ts` |
+| Shared TS types | `models/lesson-planner.models.ts`, `models/otuh2.models.ts` |
 
 ## CONVENTIONS
+- Auth is **redirect-based**: `auth.guard` sends the browser to `{otuh2Url}/auth/login?returnUrl={callback}`; OTUH2 redirects back to `/auth/callback` with tokens in the query string (handled by `auth-callback.component.ts`). The SPA never collects credentials.
+- `OTUH2_API` (`otuh2-api.interface.ts`) still exposes `signin`/`signup` for the registration/signup path via `/connect/token` + `/api/register`.
 - API methods MUST be added to the interface AND both `http-*` and `mock-*` implementations to stay in sync.
 - `api-url.util.ts` resolves URL: runtime `/config.json` → `environment.ts` (apiUrl/otuh2Url).
 - Auth interceptor attaches Bearer from sessionStorage.

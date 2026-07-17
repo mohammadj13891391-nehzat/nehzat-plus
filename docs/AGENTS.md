@@ -14,6 +14,7 @@ Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend
 ### Auth — OTUH2 OIDC (CRITICAL)
 - **Production**: JWT Bearer validated against OTUH2 Authority (`https://api.nehzat128.ir/oauth`)
 - **Development**: `MockAuthHandler` when `UseMockAuth: true` in `appsettings.Development.json`
+- **Login flow is redirect-based** — see [OTUH2_AUTH.md](OTUH2_AUTH.md) for the exact flow, client IDs, and scopes. `auth.guard` redirects to OTUH2's hosted `/auth/login`; tokens return to `/auth/callback`.
 - Token type MUST be `at+jwt` (gateway rejects typed JWT)
 - Claims mapping: `sub` → username, `userId` → user ID, `role` (NOT `ClaimTypes.Role`)
 - `OidcSyncMiddleware` auto-creates a local `User` row on first authenticated request

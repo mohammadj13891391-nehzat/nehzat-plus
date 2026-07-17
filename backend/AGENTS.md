@@ -39,6 +39,8 @@ src/EducationalPlatform.Nehzat.Domain/
 - JSON serialization: `IgnoreCycles` + `UnsafeRelaxedJsonEscaping` (Persian).
 - Service registration is explicit per-interface in `Program.cs` (scoped).
 - `Otuh2RoleSeeder` runs non-blocking on startup; failure is logged, not fatal.
+- Auth is **redirect-based OIDC** (frontend redirects to OTUH2 `/auth/login`, tokens returned to `/auth/callback`). Backend only validates `at+jwt` via JWKS + syncs users in `OidcSyncMiddleware`. No credential handling here.
+- Service-to-service client (confidential): `ClientId=nehzat-plus` (from `Otuh2Client` config). SPA client: `otuh2-spa-client` (password/refresh for signup path).
 
 ## ANTI-PATTERNS
 - NEVER add EF Core Sqlite package — SQL Server only.

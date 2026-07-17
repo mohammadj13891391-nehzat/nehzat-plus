@@ -33,9 +33,10 @@ src/
 
 ## CONVENTIONS
 - API layer is interface-based: `LessonPlannerApi` token swaps `HttpLessonPlannerApiService` / `MockLessonPlannerApiService` via `useMockApi`.
+- Auth is **redirect-based OIDC** via `OTUH2_API` injection token → `HttpOtuh2Api`. `auth.guard` redirects to OTUH2's hosted `/auth/login` (real URL from `resolveOtuh2BaseUrl()`); tokens return to `/auth/callback` in query params. See [docs/OTUH2_AUTH.md](docs/OTUH2_AUTH.md).
 - Tokens: access+id in `sessionStorage`, refresh in `localStorage`; 401 → auto-logout.
 - `hasRole()` is case-insensitive — use it, never compare roles manually.
-- Routes lazy-loaded per role; `authGuard` supports `returnUrl`, `adminGuard`/`roleGuard('role')` for protection.
+- Routes lazy-loaded per role; `authGuard` redirects unauthenticated users to OTUH2, `adminGuard`/`roleGuard('role')` for protection.
 - OnPush CD on admin/dashboard components.
 
 ## ANTI-PATTERNS
