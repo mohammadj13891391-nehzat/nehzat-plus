@@ -11,3 +11,10 @@ dist/
 # IDE
 .omo/
 .playwright-mcp/
+.opencode/
+
+# Agent-generated artifacts
+CURRICULUM-DESIGN.md
+docs/PAGE_DEVELOPMENT_PLAN.md
+docs/PAGE_DEVELOPMENT_PLAN.md.bak
+docs/plans/

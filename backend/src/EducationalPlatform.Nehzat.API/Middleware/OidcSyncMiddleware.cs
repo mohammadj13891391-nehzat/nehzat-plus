@@ -17,7 +17,11 @@ public class OidcSyncMiddleware
         {
             var sub = context.User.FindFirst("sub")?.Value;
             var userIdClaim = context.User.FindFirst("userId")?.Value;
-            var username = sub ?? userIdClaim;
+            // Always use 'sub' (username) as the local user key, never 'userId'.
+            // 'userId' is OTUH2's internal ID and is stored in OidcSubject.
+            var username = sub;
+            if (string.IsNullOrEmpty(username))
+                username = userIdClaim;
 
             if (!string.IsNullOrEmpty(username))
             {

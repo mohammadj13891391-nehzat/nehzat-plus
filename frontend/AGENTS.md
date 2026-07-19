@@ -3,7 +3,7 @@
 Angular 21 standalone + Capacitor 8 (Android). ~137 files. 8 lazy role-feature modules + shared.
 
 ## OVERVIEW
-Standalone-component SPA. Interface-based API layer (HTTP ⇄ Mock swap). OTUH2 password-grant auth. OnPush on admin/dashboard. Vitest + jsdom tests.
+Standalone-component SPA. Interface-based API layer (HTTP ⇄ Mock swap). OTUH2 redirect-based OIDC auth. OnPush on admin/dashboard. Vitest + jsdom tests.
 
 ## STRUCTURE
 ```

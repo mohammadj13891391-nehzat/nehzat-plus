@@ -44,6 +44,9 @@ else
     })
     .AddJwtBearer(options =>
     {
+        // Keep JWT claim names as-is (sub, role) instead of remapping to WIF URIs,
+        // so NameClaimType="sub" and RoleClaimType="role" match the OTUH2 token.
+        options.MapInboundClaims = false;
         options.Authority = oidcConfig["Authority"];
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -73,6 +76,7 @@ builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
 builder.Services.AddScoped<IAssessmentService, AssessmentService>();
 builder.Services.AddScoped<SampleDataSeeder>();
+builder.Services.AddScoped<ILogService, LogService>();
 
 builder.Services.AddCors(options =>
 {
@@ -87,18 +91,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(new
-        {
-            message = "خطای داخلی سرور. لطفاً بعداً دوباره تلاش کنید"
-        }));
-    });
-});
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseCors();
 app.UseAuthentication();
@@ -144,6 +137,8 @@ using (var scope = app.Services.CreateScope())
     var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
     await seeder.SeedAsync();
 
+    var logService = scope.ServiceProvider.GetRequiredService<ILogService>();
+
     // Seed Nehzat Plus roles in OTUH2 (non-blocking — failure is logged, not fatal)
     _ = Task.Run(async () =>
     {
@@ -154,6 +149,7 @@ using (var scope = app.Services.CreateScope())
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️ OTUH2 role seeding failed: {ex.Message}");
+            await logService.LogErrorAsync("Otuh2RoleSeeder", ex);
         }
     });
 }

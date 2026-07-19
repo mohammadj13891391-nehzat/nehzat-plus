@@ -45,7 +45,8 @@ Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend
 ## Frontend — Angular 21 standalone + Capacitor
 
 ### Auth flow
-- OTUH2 OAuth2 password grant via `OTUH2_API` injection token → `HttpOtuh2Api`
+- **Redirect-based OIDC** via EhrazHoviat (OTUH2) — `auth.guard` sends the browser to OTUH2's hosted `/auth/login`; tokens return to `/auth/callback`. See [OTUH2_AUTH.md](OTUH2_AUTH.md).
+- `OTUH2_API` injection token → `HttpOtuh2Api` is still used for the signup/registration path (`/api/register`) and service-to-service calls.
 - **Access + ID tokens** → `sessionStorage` (lost on tab close)
 - **Refresh token** → `localStorage` (persists)
 - 401 responses trigger auto-logout

@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<Assessment> Assessments => Set<Assessment>();
     public DbSet<AssessmentQuestion> AssessmentQuestions => Set<AssessmentQuestion>();
     public DbSet<AssessmentResult> AssessmentResults => Set<AssessmentResult>();
+    public DbSet<LogEntry> LogEntries => Set<LogEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
