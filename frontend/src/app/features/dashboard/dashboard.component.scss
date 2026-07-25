@@ -60,6 +60,10 @@
 .menu-trigger:hover {
   background: rgba(255,255,255,0.18);
 }
+.header-nav { display: flex; align-items: center; gap: 0.5rem; }
+.nav-link { color: rgba(255,255,255,0.9); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-weight: 500; transition: background 0.2s; }
+.nav-link:hover { background: rgba(255,255,255,0.12); }
+.nav-link-active { background: rgba(255,255,255,0.18); font-weight: 700; }
 .menu-dropdown {
   position: absolute;
   top: calc(100% + 8px);

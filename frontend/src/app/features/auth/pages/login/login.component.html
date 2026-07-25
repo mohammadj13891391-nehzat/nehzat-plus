@@ -1,15 +1,32 @@
 <main class="page-container">
-  <section class="card auth-card">
-    <h1 class="title">ورود به پنل متربی</h1>
-    <p class="subtitle">برای ورود به سامانه احراز هویت مرکزی هزارهوت، روی دکمه زیر کلیک کنید.</p>
+  @if (useMockAuth) {
+    <section class="card auth-card">
+      <h1 class="title">ورود به سامانه</h1>
+      <p class="subtitle">حالت توسعه — نقشی را که می‌خواهید تست کنید انتخاب کنید.</p>
 
-    <button class="btn-primary" type="button" (click)="redirectToOtuh2()">
-      ورود از طریق احراز هویت مرکزی
-    </button>
+      <div class="role-grid">
+        @for (role of roles; track role.key) {
+          <button class="role-btn" type="button" (click)="loginAs(role.key)">
+            <span class="role-icon">{{ role.icon }}</span>
+            <span class="role-label">{{ role.label }}</span>
+            <span class="role-desc">{{ role.description }}</span>
+          </button>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="card auth-card">
+      <h1 class="title">ورود به پنل متربی</h1>
+      <p class="subtitle">برای ورود به سامانه احراز هویت مرکزی هزارهوت، روی دکمه زیر کلیک کنید.</p>
 
-    <p class="helper-text">
-      حساب ندارید؟
-      <a routerLink="/auth/register">ثبت‌نام</a>
-    </p>
-  </section>
+      <button class="btn-primary" type="button" (click)="redirectToOtuh2()">
+        ورود از طریق احراز هویت مرکزی
+      </button>
+
+      <p class="helper-text">
+        حساب ندارید؟
+        <a routerLink="/auth/register">ثبت‌نام</a>
+      </p>
+    </section>
+  }
 </main>

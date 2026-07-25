@@ -1,0 +1,74 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "zen": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenCode Zen (Free)",
+      "options": {
+        "baseURL": "https://opencode.ai/zen/v1"
+      },
+      "models": {
+        "ling-3.0-flash-free": { "name": "Ling 3.0 Flash (Free)" },
+        "big-pickle": { "name": "Big Pickle (Free)" },
+        "deepseek-v4-flash-free": { "name": "DeepSeek V4 Flash (Free)" },
+        "mimo-v2.5-free": { "name": "MiMo V2.5 (Free)" },
+        "nemotron-3-ultra-free": { "name": "Nemotron 3 Ultra (Free)" },
+        "north-mini-code-free": { "name": "North Mini Code (Free)" },
+        "hy3-free": { "name": "Hy3 Preview (Free)" }
+      }
+    },
+    "google": {
+      "npm": "@ai-sdk/google",
+      "name": "Google AI Studio",
+      "apiKey": "AIza...",
+      "models": {
+        "gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash (Free)"
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro"
+        }
+      }
+    },
+    "groq": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Groq (Ultra-Fast)",
+      "options": {
+        "baseURL": "https://api.groq.com/openai/v1"
+      },
+      "apiKey": "${GROQ_API_KEY}",
+      "models": {
+        "llama-3.1-70b-versatile": {
+          "name": "Llama 3.1 70B (Fast)"
+        },
+        "llama-3.1-8b-instant": {
+          "name": "Llama 3.1 8B (Instant)"
+        },
+        "mixtral-8x7b-32768": {
+          "name": "Mixtral 8x7B (32K)"
+        }
+      }
+    },
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11436/v1"
+      },
+      "models": {
+        "qwen2.5-coder:14b": {
+          "name": "Qwen 2.5 Coder 14B (local)"
+        },
+        "qwen2.5-coder:7b": {
+          "name": "Qwen 2.5 Coder 7B (local)"
+        },
+        "deepseek-coder-v2:16b-lite-base-q4_0": {
+          "name": "DeepSeek Coder V2 16B (local)"
+        },
+        "llama3.2:3b": {
+          "name": "Llama 3.2 3B (local)"
+        }
+      }
+    }
+  }
+}

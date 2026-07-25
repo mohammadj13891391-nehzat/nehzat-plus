@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 
 import {
   AdminSystemStatistics,
+  AgeGroup,
   ApiMessageResponse,
   ApproveUserPayload,
   Assessment,
@@ -16,6 +17,8 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  BiweeklyProgressResponse,
+  Book,
   Branch,
   BranchManager,
   Coach,
@@ -24,6 +27,7 @@ import {
   CourseInviteCode,
   CreatedUser,
   CreateAssignmentPayload,
+  CreateBookPayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
   CreateCoursePayload,
@@ -33,8 +37,19 @@ import {
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
   CreateParentPayload,
+  CreateRingPayload,
+  CreateRingBookPayload,
+  CreateRingStudentPayload,
+  CreateRingTeachingMethodPayload,
   CreateStudentPayload,
+  CreateSubjectAreaPayload,
+  CreateTeachingMethodPayload,
+  CreateCurriculumObjectivePayload,
   CreateUserPayload,
+  CurriculumObjective,
+  CurriculumVersion,
+  CreateCurriculumVersionPayload,
+  UpdateCurriculumVersionPayload,
   EvaluationRecord,
   Evaluator,
   GenerateWeeklyAssessmentPayload,
@@ -43,18 +58,68 @@ import {
   CoachPerformance,
   Madrasah,
   MaktabBranch,
+  MonthlyBooklet,
+  CreateMonthlyBookletPayload,
+  UpdateMonthlyBookletPayload,
   Parent,
   ParentStudentInfo,
   PendingUser,
+  ProgressionResult,
+  Ring,
+  RingStudent,
   Student,
   StudentAssessmentHistory,
   StudentAssignmentGateState,
   StudentInfo,
   StudentProgressResponse,
+  StudentProgressSummary,
+  StudentSkillProgress,
+  RingDashboardDto,
+  SubjectArea,
   SubmitAssessmentResultPayload,
+  TeachingMethod,
   UpdateAttachmentPayload,
   UpdateMadrasahPayload,
-  UpdateStudentPayload
+  UpdateStudentPayload,
+  UpdateSubjectAreaPayload,
+  UpdateTeachingMethodPayload,
+  UpdateCurriculumObjectivePayload,
+  UpdateBookPayload,
+  UpdateRingPayload,
+  UpdateSkillProgressPayload,
+  SpiritualPracticeItem,
+  SpiritualOccasion,
+  SpiritualOccasionDetail,
+  DailySpiritualEntry,
+  UpsertDailySpiritualEntryPayload,
+  UserOccasionProgress,
+  MarkOccasionPracticePayload,
+  SpiritualPath,
+  StudentPathSelection,
+  StudentPathHistory,
+  PathRankingPayload,
+  FinalizePathPayload,
+  AvailablePath,
+  CreateTeacherPayload,
+  UpdateTeacherPayload,
+  GradeSubmissionPayload,
+  TeacherDashboardSummary,
+  Teacher,
+  AssignmentGrading,
+  Competition,
+  CompetitionDetail,
+  CompetitionParticipant,
+  CompetitionResult,
+  CreateCompetitionPayload,
+  UpdateCompetitionPayload,
+  RegisterParticipantPayload,
+  UpdateParticipantScorePayload,
+  League,
+  LeagueDetail,
+  LeagueRanking,
+  CreateLeaguePayload,
+  UpdateLeaguePayload,
+  UpdateLeagueRankingPayload
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -158,6 +223,52 @@ export abstract class LessonPlannerApi {
   abstract createMaktabBranch(madrasahId: number, payload: CreateMaktabBranchPayload): Observable<MaktabBranch>;
   abstract deleteMaktabBranch(madrasahId: number, branchId: number): Observable<ApiMessageResponse>;
 
+  abstract getSubjectAreas(): Observable<SubjectArea[]>;
+  abstract createSubjectArea(payload: CreateSubjectAreaPayload): Observable<SubjectArea>;
+  abstract updateSubjectArea(id: number, payload: UpdateSubjectAreaPayload): Observable<SubjectArea>;
+  abstract deleteSubjectArea(id: number): Observable<ApiMessageResponse>;
+
+  abstract getTeachingMethods(): Observable<TeachingMethod[]>;
+  abstract createTeachingMethod(payload: CreateTeachingMethodPayload): Observable<TeachingMethod>;
+  abstract updateTeachingMethod(id: number, payload: UpdateTeachingMethodPayload): Observable<TeachingMethod>;
+  abstract deleteTeachingMethod(id: number): Observable<ApiMessageResponse>;
+
+  abstract getRings(): Observable<Ring[]>;
+  abstract getRingById(id: number): Observable<Ring>;
+  abstract createRing(payload: CreateRingPayload): Observable<Ring>;
+  abstract updateRing(id: number, payload: UpdateRingPayload): Observable<Ring>;
+  abstract deleteRing(id: number): Observable<ApiMessageResponse>;
+
+  // Coach-specific ring endpoints
+  abstract getMyRings(): Observable<Ring[]>;
+  abstract getMyRingStudents(): Observable<RingStudent[]>;
+  abstract getRingDashboard(ringId: number): Observable<RingDashboardDto>;
+
+  abstract getRingStudents(ringId: number): Observable<RingStudent[]>;
+  abstract addRingStudent(ringId: number, payload: CreateRingStudentPayload): Observable<RingStudent>;
+  abstract removeRingStudent(ringId: number, studentId: number): Observable<ApiMessageResponse>;
+
+  abstract addRingBook(ringId: number, payload: CreateRingBookPayload): Observable<ApiMessageResponse>;
+  abstract removeRingBook(ringId: number, bookId: number): Observable<ApiMessageResponse>;
+
+  abstract addRingTeachingMethod(ringId: number, payload: CreateRingTeachingMethodPayload): Observable<ApiMessageResponse>;
+  abstract removeRingTeachingMethod(ringId: number, teachingMethodId: number): Observable<ApiMessageResponse>;
+
+  abstract getObjectives(): Observable<CurriculumObjective[]>;
+  abstract createObjective(payload: CreateCurriculumObjectivePayload): Observable<CurriculumObjective>;
+  abstract updateObjective(id: number, payload: UpdateCurriculumObjectivePayload): Observable<CurriculumObjective>;
+  abstract deleteObjective(id: number): Observable<ApiMessageResponse>;
+
+  abstract getBooks(): Observable<Book[]>;
+  abstract createBook(payload: CreateBookPayload): Observable<Book>;
+  abstract updateBook(id: number, payload: UpdateBookPayload): Observable<Book>;
+  abstract deleteBook(id: number): Observable<ApiMessageResponse>;
+
+  abstract getAgeGroups(): Observable<AgeGroup[]>;
+  abstract getSkillProgressByStudent(studentId: number): Observable<StudentSkillProgress[]>;
+  abstract getSkillProgressByRing(ringId: number): Observable<StudentSkillProgress[]>;
+  abstract updateSkillProgress(id: number, payload: UpdateSkillProgressPayload): Observable<StudentSkillProgress>;
+
   abstract getParents(): Observable<Parent[]>;
   abstract createParent(payload: CreateParentPayload): Observable<Parent>;
   abstract updateParent(id: number, payload: Partial<CreateParentPayload>): Observable<Parent>;
@@ -197,4 +308,83 @@ export abstract class LessonPlannerApi {
   abstract getStudentAssessmentResults(studentId: number): Observable<AssessmentResult[]>;
   abstract getAssessmentAnalytics(assessmentId: number): Observable<AssessmentAnalytics>;
   abstract getStudentAssessmentHistory(studentId: number, courseId: number): Observable<StudentAssessmentHistory>;
+
+  abstract getProgressSummary(studentId: number): Observable<StudentProgressSummary>;
+  abstract syncFromSubmission(submissionId: number): Observable<ApiMessageResponse>;
+
+  // Spiritual Practice & Path
+  abstract getSpiritualPractices(): Observable<SpiritualPracticeItem[]>;
+  abstract getSpiritualPracticesForMe(age?: number, gender?: string, role?: string): Observable<SpiritualPracticeItem[]>;
+  abstract getSpiritualOccasions(): Observable<SpiritualOccasion[]>;
+  abstract getSpiritualOccasionDetail(occasionId: number): Observable<SpiritualOccasionDetail>;
+  abstract getDailySpiritualEntry(userId: number, date: string): Observable<DailySpiritualEntry>;
+  abstract upsertDailySpiritualEntry(payload: UpsertDailySpiritualEntryPayload): Observable<DailySpiritualEntry>;
+  abstract getSpiritualEntryHistory(userId: number, fromDate?: string, toDate?: string): Observable<DailySpiritualEntry[]>;
+  abstract getSpiritualStreak(userId: number): Observable<{ streak: number }>;
+  abstract getUserOccasionProgress(userId: number, occasionId?: number, hijriYear?: number): Observable<UserOccasionProgress[]>;
+  abstract markOccasionPractice(payload: MarkOccasionPracticePayload): Observable<UserOccasionProgress>;
+  abstract getAvailablePaths(studentId: number): Observable<AvailablePath[]>;
+  abstract submitPathRanking(studentId: number, payload: PathRankingPayload): Observable<StudentPathSelection>;
+  abstract finalizePath(payload: FinalizePathPayload): Observable<StudentPathSelection>;
+  abstract switchFinalizedPath(payload: FinalizePathPayload): Observable<StudentPathSelection>;
+  abstract getStudentPathSelection(studentId: number): Observable<StudentPathSelection>;
+  abstract getStudentPathHistory(studentId: number): Observable<unknown[]>;
+
+  // Monthly Booklets (Phase 3.6)
+  abstract getMonthlyBooklets(studentId?: number): Observable<MonthlyBooklet[]>;
+  abstract getMonthlyBookletById(id: number): Observable<MonthlyBooklet>;
+  abstract getMonthlyBookletsByStudent(studentId: number): Observable<MonthlyBooklet[]>;
+  abstract getMonthlyBookletByPeriod(studentId: number, year: number, month: number): Observable<MonthlyBooklet>;
+  abstract createMonthlyBooklet(payload: CreateMonthlyBookletPayload): Observable<MonthlyBooklet>;
+  abstract updateMonthlyBooklet(id: number, payload: UpdateMonthlyBookletPayload): Observable<MonthlyBooklet>;
+  abstract deleteMonthlyBooklet(id: number): Observable<ApiMessageResponse>;
+
+  // Curriculum Versions (Phase 3.3)
+  abstract getCurriculumVersions(): Observable<CurriculumVersion[]>;
+  abstract getCurriculumVersionById(id: number): Observable<CurriculumVersion>;
+  abstract getActiveCurriculumVersion(): Observable<CurriculumVersion>;
+  abstract createCurriculumVersion(payload: CreateCurriculumVersionPayload): Observable<CurriculumVersion>;
+  abstract updateCurriculumVersion(id: number, payload: UpdateCurriculumVersionPayload): Observable<CurriculumVersion>;
+  abstract deleteCurriculumVersion(id: number): Observable<ApiMessageResponse>;
+
+  // Progression (Phase 3.1)
+  abstract checkProgression(studentId: number): Observable<ProgressionResult>;
+  abstract checkRingProgression(ringId: number): Observable<ProgressionResult[]>;
+  abstract recordProgression(payload: { studentId: number; fromLevel: string; toLevel: string }): Observable<StudentPathHistory>;
+
+  // Biweekly Progress (Phase 4)
+  abstract getBiweeklyProgress(studentId: number): Observable<BiweeklyProgressResponse>;
+
+  // Teacher (Phase 5)
+  abstract getTeachers(): Observable<Teacher[]>;
+  abstract getTeacherById(id: number): Observable<Teacher>;
+  abstract createTeacher(payload: CreateTeacherPayload): Observable<Teacher>;
+  abstract updateTeacher(id: number, payload: UpdateTeacherPayload): Observable<Teacher>;
+  abstract deleteTeacher(id: number): Observable<ApiMessageResponse>;
+  abstract getTeachersByCourse(courseId: number): Observable<Teacher[]>;
+  abstract getTeacherDashboardSummary(teacherId: number): Observable<TeacherDashboardSummary>;
+  abstract getTeacherCourses(teacherId: number): Observable<any[]>;
+  abstract getTeacherGradings(teacherId: number): Observable<AssignmentGrading[]>;
+  abstract getPendingGradings(teacherId: number): Observable<any[]>;
+  abstract gradeSubmission(payload: GradeSubmissionPayload): Observable<AssignmentGrading>;
+
+  abstract getCompetitions(): Observable<Competition[]>;
+  abstract getActiveCompetitions(): Observable<Competition[]>;
+  abstract getCompetitionById(id: number): Observable<CompetitionDetail>;
+  abstract createCompetition(payload: CreateCompetitionPayload): Observable<Competition>;
+  abstract updateCompetition(id: number, payload: UpdateCompetitionPayload): Observable<Competition>;
+  abstract deleteCompetition(id: number): Observable<ApiMessageResponse>;
+  abstract registerParticipant(competitionId: number, payload: RegisterParticipantPayload): Observable<CompetitionParticipant>;
+  abstract removeParticipant(competitionId: number, studentId: number): Observable<ApiMessageResponse>;
+  abstract updateParticipantScore(competitionId: number, studentId: number, payload: UpdateParticipantScorePayload): Observable<CompetitionParticipant>;
+  abstract getCompetitionResults(competitionId: number): Observable<CompetitionResult>;
+
+  abstract getLeagues(): Observable<League[]>;
+  abstract getActiveLeagues(): Observable<League[]>;
+  abstract getLeagueById(id: number): Observable<LeagueDetail>;
+  abstract createLeague(payload: CreateLeaguePayload): Observable<League>;
+  abstract updateLeague(id: number, payload: UpdateLeaguePayload): Observable<League>;
+  abstract deleteLeague(id: number): Observable<ApiMessageResponse>;
+  abstract getLeagueRankings(leagueId: number): Observable<LeagueRanking[]>;
+  abstract updateLeagueRanking(leagueId: number, payload: UpdateLeagueRankingPayload): Observable<LeagueRanking>;
 }

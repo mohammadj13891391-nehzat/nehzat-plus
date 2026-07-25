@@ -30,6 +30,11 @@ public class Assignment
     [Column(TypeName = "text")]
     public string? Instructions { get; set; }
 
+    public int? ObjectiveId { get; set; }
+
+    [ForeignKey(nameof(ObjectiveId))]
+    public CurriculumObjective? Objective { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

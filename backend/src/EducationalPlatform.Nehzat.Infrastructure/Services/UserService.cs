@@ -73,6 +73,7 @@ public class UserService : IUserService
             Email = email,
             PhoneNumber = phoneNumber,
             StudentId = studentId,
+            Gender = "mixed",
             Status = "active",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow

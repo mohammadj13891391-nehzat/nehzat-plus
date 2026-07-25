@@ -39,7 +39,6 @@ public class EvaluatorService : IEvaluatorService
             PhoneNumber = request.PhoneNumber?.Trim(),
             Expertise = request.Expertise?.Trim(),
             BranchId = request.BranchId,
-            AssignedMadrasahIds = string.Empty,
             NationalCode = request.NationalCode?.Trim(),
             Status = "active",
             CreatedAt = DateTime.UtcNow,

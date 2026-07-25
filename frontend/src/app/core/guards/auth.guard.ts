@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { resolveOtuh2BaseUrl } from '../services/api-url.util';
 
@@ -9,8 +10,15 @@ const CALLBACK_PATH = '/auth/callback';
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+
+  if (environment.useMockAuth) {
+    if (!authService.isAuthenticated()) {
+      authService.mockLogin();
+    }
+    return true;
+  }
+
   const isAuth = authService.isAuthenticated();
-  console.log('[authGuard] fired at path:', window.location.pathname, 'isAuthenticated:', isAuth);
   if (isAuth) {
     return true;
   }

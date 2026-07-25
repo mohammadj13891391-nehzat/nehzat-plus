@@ -34,9 +34,6 @@ public class Parent
     [Column(TypeName = "nvarchar(20)")]
     public string? NationalCode { get; set; }
 
-    [Column(TypeName = "nvarchar(500)")]
-    public string StudentIds { get; set; } = string.Empty;
-
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 
@@ -44,6 +41,8 @@ public class Parent
 
     [ForeignKey(nameof(BranchId))]
     public Branch? Branch { get; set; }
+
+    public ICollection<ParentStudent> ParentStudents { get; set; } = new List<ParentStudent>();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

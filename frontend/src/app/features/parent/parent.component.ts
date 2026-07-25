@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import type { CurrentUser } from '../../core/models/lesson-planner.models';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   selector: 'app-parent',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <main class="role-page">
       <header class="site-header">
@@ -18,6 +18,9 @@ import { AuthService } from '../../core/services/auth.service';
             <h1>پنل والدین</h1>
             <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
           </div>
+        </div>
+        <div class="header-nav">
+          <a class="nav-link" routerLink="/parent/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
         </div>
         <div class="user-menu">
           <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
@@ -37,6 +40,10 @@ import { AuthService } from '../../core/services/auth.service';
     h1 { margin: 0; font-size: 1.25rem; }
     .muted { color: var(--lp-muted, #6b7280); margin: 0; }
     .menu-trigger { background: var(--lp-primary, #2563eb); color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
+    .header-nav { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-link { color: var(--lp-primary, #2563eb); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-weight: 500; }
+    .nav-link:hover { background: rgba(37, 99, 235, 0.08); }
+    .nav-link-active { background: rgba(37, 99, 235, 0.12); font-weight: 700; }
     .main-content { padding: 2rem; }
   `]
 })

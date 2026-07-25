@@ -31,9 +31,6 @@ public class Evaluator
     [Column(TypeName = "nvarchar(200)")]
     public string? Expertise { get; set; }
 
-    [Column(TypeName = "nvarchar(500)")]
-    public string AssignedMadrasahIds { get; set; } = string.Empty;
-
     [Column(TypeName = "nvarchar(20)")]
     public string? NationalCode { get; set; }
 
@@ -44,6 +41,8 @@ public class Evaluator
 
     [ForeignKey(nameof(BranchId))]
     public Branch? Branch { get; set; }
+
+    public ICollection<EvaluatorMadrasah> EvaluatorMadrasahs { get; set; } = new List<EvaluatorMadrasah>();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

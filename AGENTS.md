@@ -43,7 +43,7 @@ nehzat-plus/
 | `AppDbContext` | DbContext | `backend/.../Infrastructure/Data` | EF model, `EnsureCreated()` |
 | `OidcSyncMiddleware` | middleware | `backend/.../API/Middleware` | auto-creates local `User` on first auth request |
 | `MockAuthHandler` | auth scheme | `backend/.../API` | dev auth when `UseMockAuth:true` (returns manager claims) |
-| `AdminController` | controller | `backend/.../API/Controllers/AdminController.cs` | ~1130 lines — LARGEST landmine |
+| `AdminBranchesController` .. `AdminStatisticsController` | controllers | `backend/.../API/Controllers/Admin*.cs` | 8 domain-split controllers (was one ~1130-line file) |
 | `IUserService`..`IAssessmentService` | interfaces | `backend/.../Application/Interfaces` | 10 domain service contracts |
 | `AuthService` | service | `frontend/.../core/services/auth.service.ts` | `hasRole()` (case-insensitive) — use instead of manual compare |
 | `LessonPlannerApi` (interface) | token | `frontend/.../core/services/lesson-planner-api.interface.ts` | HTTP + Mock swappable impls |
@@ -63,7 +63,7 @@ nehzat-plus/
 - NEVER return `ex.Message` to client (global handler returns generic Persian error).
 - NEVER use bare CSS vars `--gold/--primary/--danger` — use `--lp-*` prefixed.
 - NEVER compare roles manually — use `hasRole()`.
-- NEVER edit `AdminController.cs` by appending — split into sub-controllers by domain first.
+- NEVER append to a single admin controller — split into domain sub-controllers. (`AdminController.cs` already split into 8 sub-controllers.)
 - Token type MUST be `at+jwt` (gateway rejects typed JWT).
 
 ## COMMANDS

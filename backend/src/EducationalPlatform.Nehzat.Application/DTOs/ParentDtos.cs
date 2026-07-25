@@ -34,9 +34,6 @@ public record CreateParentRequest(
     [StringLength(20)]
     string? NationalCode,
 
-    [StringLength(500)]
-    string? StudentIds,
-
     int? BranchId
 );
 
@@ -59,9 +56,6 @@ public record UpdateParentRequest(
 
     [StringLength(20)]
     string? NationalCode,
-
-    [StringLength(500)]
-    string? StudentIds,
 
     [RegularExpression(@"^(active|inactive)$", ErrorMessage = "وضعیت معتبر نیست")]
     string? Status,

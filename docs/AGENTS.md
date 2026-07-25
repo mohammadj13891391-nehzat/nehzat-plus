@@ -92,8 +92,8 @@ With `MockAuthHandler` enabled, any username/password works — the handler alwa
 ## Known landmines
 
 - **No process manager**: dev servers die when the session ends and must be restarted
-- **`AdminController.cs`**: single large file (~1K+ lines), split into sub-controllers before adding more endpoints
-- **CSV columns**: `Parent.StudentIds` stores comma-separated IDs. Migrate to junction tables.
+- **`AdminController.cs`**: was ~1K+ lines, now split into 8 domain sub-controllers (`AdminBranches*`, `AdminCourses*`, `AdminCoaches*`, `AdminBranchManagers*`, `AdminParents*`, `AdminEvaluators*`, `AdminStudents*`, `AdminStatistics*`)
+- **CSV columns**: `Parent.StudentIds` was a comma-separated CSV column — already migrated to `ParentStudent` junction table (`Nehzat_parent_students`).
 - **One default branch**: multi-branch workflows are only partially implemented
 - **`EnsureCreated()`**: no migration history; schema changes require manual DB drops or `--seed`
 - **Backend csproj**: had `Microsoft.EntityFrameworkCore.Sqlite` — replaced with `SqlServer`. If you see Sqlite package added back, remove it.

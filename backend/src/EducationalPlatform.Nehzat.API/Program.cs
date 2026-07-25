@@ -74,9 +74,24 @@ builder.Services.AddScoped<IBranchManagerService, BranchManagerService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IEvaluatorService, EvaluatorService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IAssessmentService, AssessmentService>();
-builder.Services.AddScoped<SampleDataSeeder>();
-builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<IMadrasahService, MadrasahService>();
+builder.Services.AddScoped<ICurriculumService, CurriculumService>();
+builder.Services.AddScoped<IRingService, RingService>();
+builder.Services.AddScoped<ISkillProgressService, SkillProgressService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
+    builder.Services.AddScoped<ISpiritualCatalogService, SpiritualCatalogService>();
+    builder.Services.AddScoped<ISpiritualEntryService, SpiritualEntryService>();
+    builder.Services.AddScoped<ISpiritualOccasionService, SpiritualOccasionService>();
+    builder.Services.AddScoped<ISpiritualPathService, SpiritualPathService>();
+    builder.Services.AddScoped<ICurriculumVersionService, CurriculumVersionService>();
+    builder.Services.AddScoped<IMonthlyBookletService, MonthlyBookletService>();
+    builder.Services.AddScoped<ICompetitionService, CompetitionService>();
+    builder.Services.AddScoped<ILeagueService, LeagueService>();
+    builder.Services.AddScoped<IProgressionService, ProgressionService>();
+    builder.Services.AddScoped<SampleDataSeeder>();
+    builder.Services.AddScoped<ILogService, LogService>();
 
 builder.Services.AddCors(options =>
 {

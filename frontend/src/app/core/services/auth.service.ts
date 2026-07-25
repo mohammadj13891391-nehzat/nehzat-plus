@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, InjectionToken } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { OTUH2_API } from './otuh2-api.token';
 import { AuthTokenResponse, RegisterPayload, ApiMessageResponse } from '../models/otuh2.models';
 import { CurrentUser } from '../models/lesson-planner.models';
@@ -9,6 +10,17 @@ import { CurrentUser } from '../models/lesson-planner.models';
 const ACCESS_TOKEN_KEY = 'otuh2_access_token';
 const ID_TOKEN_KEY = 'otuh2_id_token';
 const REFRESH_TOKEN_KEY = 'otuh2_refresh_token';
+
+export const LOCAL_STORAGE = new InjectionToken<Storage>('LOCAL_STORAGE', {
+  providedIn: 'root',
+  factory: () => {
+    try {
+      const ls = localStorage;
+      if (ls) return ls;
+    } catch { }
+    return { getItem: () => null, setItem: () => {}, removeItem: () => {}, clear: () => {}, get length() { return 0; }, key: () => null } as Storage;
+  },
+});
 
 interface JwtPayload {
   sub?: string;
@@ -26,6 +38,7 @@ interface JwtPayload {
 export class AuthService {
   private readonly api = inject(OTUH2_API);
   private readonly router = inject(Router);
+  private readonly storage = inject(LOCAL_STORAGE);
 
   signin(username: string, password: string): Observable<AuthTokenResponse> {
     return this.api.signin(username, password).pipe(
@@ -35,7 +48,7 @@ export class AuthService {
           sessionStorage.setItem(ID_TOKEN_KEY, response.id_token);
         }
         if (response.refresh_token) {
-          localStorage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+          this.storage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
         }
       })
     );
@@ -45,10 +58,36 @@ export class AuthService {
     return this.api.signup(payload);
   }
 
+  /** Create mock JWT session (dev only). Accepts role override. */
+  mockLogin(role?: string): void {
+    const mockUser = environment.mockUser;
+    if (!mockUser) {
+      console.warn('[AuthService.mockLogin] no mockUser in environment');
+      return;
+    }
+    const finalRole = role ?? 'admin';
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify({
+      sub: mockUser.name,
+      name: mockUser.name,
+      email: mockUser.email,
+      role: finalRole,
+      userId: mockUser.id,
+      studentId: finalRole === 'trainee' ? '42' : null,
+      branchId: finalRole === 'branch_manager' || finalRole === 'admin' ? '1' : null,
+      exp: Math.floor(Date.now() / 1000) + 365 * 24 * 3600,
+      iat: Math.floor(Date.now() / 1000),
+    }));
+    const mockToken = `${header}.${payload}.mock-signature`;
+    sessionStorage.setItem(ID_TOKEN_KEY, mockToken);
+    sessionStorage.setItem(ACCESS_TOKEN_KEY, mockToken);
+    console.log('[AuthService.mockLogin] mock session created role=' + finalRole + ' for:', mockUser.name);
+  }
+
   logout(): void {
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(ID_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    this.storage.removeItem(REFRESH_TOKEN_KEY);
     void this.router.navigateByUrl('/auth/login');
   }
 
@@ -117,7 +156,7 @@ export class AuthService {
       case 'parent':
         return '/parent';
       case 'branch_manager':
-        return '/admin';
+        return '/branch-manager';
       case 'evaluator':
         return '/evaluator';
       case 'headquarters':

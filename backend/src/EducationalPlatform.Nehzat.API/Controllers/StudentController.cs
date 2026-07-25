@@ -85,6 +85,24 @@ public class StudentController : ControllerBase
         }
     }
 
+    [HttpGet("{id}/progress/biweekly")]
+    public async Task<IActionResult> GetBiweeklyProgress(int id)
+    {
+        try
+        {
+            var result = await _studentService.GetBiweeklyProgressAsync(id);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "خطای داخلی سرور" });
+        }
+    }
+
     [HttpGet("{id}/assignments/{assignmentId}/progress")]
     public async Task<IActionResult> GetAssignmentProgress(int id, int assignmentId)
     {

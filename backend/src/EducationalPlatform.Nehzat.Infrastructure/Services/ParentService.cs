@@ -40,7 +40,6 @@ public class ParentService : IParentService
             Address = request.Address?.Trim(),
             NationalCode = request.NationalCode?.Trim(),
             BranchId = request.BranchId,
-            StudentIds = request.StudentIds ?? string.Empty,
             Status = "active",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -64,7 +63,6 @@ public class ParentService : IParentService
         if (request.Address != null) existing.Address = request.Address.Trim();
         if (request.NationalCode != null) existing.NationalCode = request.NationalCode.Trim();
         if (request.BranchId != null) existing.BranchId = request.BranchId;
-        if (request.StudentIds != null) existing.StudentIds = request.StudentIds;
         if (request.Status != null) existing.Status = request.Status;
 
         existing.UpdatedAt = DateTime.UtcNow;
@@ -80,5 +78,14 @@ public class ParentService : IParentService
 
         _db.Parents.Remove(entity);
         await _db.SaveChangesAsync();
+    }
+
+    public async Task<List<Student>> GetStudentsAsync(int parentId)
+    {
+        return await _db.ParentStudents
+            .Where(ps => ps.ParentId == parentId)
+            .Include(ps => ps.Student)
+            .Select(ps => ps.Student!)
+            .ToListAsync();
     }
 }

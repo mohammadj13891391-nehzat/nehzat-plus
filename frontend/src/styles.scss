@@ -440,3 +440,217 @@ hr {
     align-items: stretch;
   }
 }
+
+@media (max-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .main-content {
+    padding: 1rem;
+  }
+  
+  .site-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .brand-wrap {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .site-header {
+    padding: 0.75rem;
+  }
+  
+  .site-logo {
+    width: 40px;
+    height: 40px;
+  }
+  
+  h1 {
+    font-size: 1.1rem;
+  }
+  
+  .main-content {
+    padding: 0.75rem;
+  }
+  
+  h2 {
+    font-size: 1.1rem;
+  }
+  
+  .stat-card {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .stat-icon {
+    font-size: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}
+
+/* Responsive tables for mobile */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
+  
+  .data-table {
+    min-width: 700px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+
+/* Card view alternative for very small screens */
+@media (max-width: 480px) {
+  .data-table th {
+    display: none;
+  }
+  
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+    width: 100%;
+  }
+  
+  .data-table tr {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--lp-surface);
+    border: 1px solid var(--lp-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .data-table td {
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 1px solid var(--lp-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .data-table td:last-child {
+    border-bottom: none;
+  }
+  
+  .data-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--lp-muted);
+    font-size: 0.85rem;
+  }
+  
+  .status-badge {
+    align-self: flex-start;
+  }
+}
+
+/* Touch-friendly buttons */
+@media (hover: none) and (pointer: coarse) {
+  .menu-trigger,
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .lp-btn,
+  .lp-link-btn,
+  .logout-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    min-height: 44px;
+  }
+}
+
+/* Improved focus states for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Role selection grid for dev login */
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem 0.75rem;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  direction: rtl;
+}
+
+.role-btn:hover {
+  border-color: var(--lp-primary);
+  background: #f0f7f3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 107, 60, 0.12);
+}
+
+.role-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.role-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--lp-text);
+}
+
+.role-desc {
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+}

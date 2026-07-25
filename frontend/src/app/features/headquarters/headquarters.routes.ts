@@ -1,19 +1,38 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/guards/role.guard';
-import { RoleStubComponent } from '../shared/role-stub/role-stub.component';
+import { SpiritualShellComponent } from '../shared/spiritual-shell/spiritual-shell.component';
+import { HeadquartersDashboardComponent } from './headquarters-dashboard.component';
+import { MonthlyBookletComponent } from './monthly-booklet.component';
 
 @Component({
   standalone: true,
-  imports: [RoleStubComponent],
-  template: '<app-role-stub [title]="\'پنل ستاد\'" [role]="\'headquarters\'" />'
+  imports: [SpiritualShellComponent],
+  template: '<app-spiritual-shell />'
 })
-export class HeadquartersPageComponent {}
+export class HeadquartersSpiritualPageComponent {}
+
+@Component({
+  standalone: true,
+  imports: [MonthlyBookletComponent],
+  template: '<app-monthly-booklet />'
+})
+export class HeadquartersMonthlyBookletPageComponent {}
 
 export const HEADQUARTERS_ROUTES: Routes = [
   {
     path: '',
     canActivate: [roleGuard('headquarters')],
-    component: HeadquartersPageComponent
+    component: HeadquartersDashboardComponent
+  },
+  {
+    path: 'spiritual',
+    canActivate: [roleGuard('headquarters')],
+    component: HeadquartersSpiritualPageComponent
+  },
+  {
+    path: 'monthly-booklets',
+    canActivate: [roleGuard('headquarters')],
+    component: HeadquartersMonthlyBookletPageComponent
   }
 ];

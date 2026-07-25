@@ -1,19 +1,31 @@
 import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/guards/role.guard';
-import { AssessmentPanelComponent } from '../shared/assessment-panel/assessment-panel.component';
+import { SpiritualShellComponent } from '../shared/spiritual-shell/spiritual-shell.component';
+import { CoachComponent } from './coach.component';
+import { CoachDashboardComponent } from './coach-dashboard.component';
 
 @Component({
   standalone: true,
-  imports: [AssessmentPanelComponent],
-  template: '<app-assessment-panel />'
+  imports: [SpiritualShellComponent],
+  template: '<app-spiritual-shell />'
 })
-export class CoachPageComponent {}
+export class CoachSpiritualPageComponent {}
 
 export const COACH_ROUTES: Routes = [
   {
     path: '',
     canActivate: [roleGuard('coach')],
-    component: CoachPageComponent
+    component: CoachComponent
+  },
+  {
+    path: 'rings',
+    canActivate: [roleGuard('coach')],
+    component: CoachDashboardComponent
+  },
+  {
+    path: 'spiritual',
+    canActivate: [roleGuard('coach')],
+    component: CoachSpiritualPageComponent
   }
 ];

@@ -8,6 +8,7 @@ import type {
   Assignment,
   AssignmentAttachment,
   AssignmentSubmission,
+  BiweeklyProgressResponse,
   Course,
   CurrentUser,
   StudentAssignmentGateState
@@ -18,6 +19,7 @@ import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token
 import { NotificationService } from '../../core/services/notification.service';
 import { DashboardTrainingStepsComponent } from './dashboard-training-steps/dashboard-training-steps.component';
 import { AssessmentTakerComponent } from './assessment-taker/assessment-taker.component';
+import { ProgressChartComponent, BiweeklyProgressData } from './progress-chart/progress-chart.component';
 
 type TimelineStatus = 'future' | 'today' | 'past';
 
@@ -44,6 +46,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   selectedAssignment: Assignment | null = null;
   assignmentProgress: StudentAssignmentGateState | null = null;
   primaryInstructionAudioUrl: string | null = null;
+  biweeklyProgress: BiweeklyProgressData | null = null;
 
   loadingCourses = false;
   loadingAssignments = false;
@@ -189,6 +192,40 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isAssignmentModalOpen = false;
     this.loadAssignments(course.id);
     this.loadSubmissions();
+    this.loadBiweeklyProgress();
+  }
+
+  private loadBiweeklyProgress(): void {
+    const studentId = this.getStudentId();
+    if (studentId === null) return;
+
+    this.api
+      .getBiweeklyProgress(studentId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (progress) => {
+          this.biweeklyProgress = this.mapToChartData(progress);
+        },
+        error: (error) => {
+          console.error('Failed to load biweekly progress:', error);
+        }
+      });
+  }
+
+  private mapToChartData(progress: BiweeklyProgressResponse): BiweeklyProgressData {
+    return {
+      studentId: progress.studentId,
+      studentName: progress.studentName,
+      periodStart: progress.periodStart,
+      periodEnd: progress.periodEnd,
+      totalAssignments: progress.totalAssignments,
+      completedAssignments: progress.completedAssignments,
+      pendingAssignments: progress.pendingAssignments,
+      completionPercentage: progress.completionPercentage,
+      averageScore: progress.averageScore,
+      totalSubmissions: progress.totalSubmissions,
+      assignments: progress.assignments
+    };
   }
 
   loadAssignments(courseId: number): void {

@@ -31,6 +31,9 @@ public class Student
     [Column(TypeName = "date")]
     public DateTime? DateOfBirth { get; set; }
 
+    [Column(TypeName = "nvarchar(20)")]
+    public string Gender { get; set; } = "mixed";
+
     [Column(TypeName = "nvarchar(50)")]
     public string Status { get; set; } = "active";
 

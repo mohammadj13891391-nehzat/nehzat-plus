@@ -1,10 +1,11 @@
+using EducationalPlatform.Nehzat.Application.DTOs;
 using EducationalPlatform.Nehzat.Domain.Entities;
 
 namespace EducationalPlatform.Nehzat.Application.Interfaces;
 
 public interface IStudentService
 {
-    Task<Student> CreateAsync(string firstName, string lastName, string email, string phoneNumber, string studentId);
+    Task<Student> CreateAsync(string firstName, string lastName, string email, string phoneNumber, string studentId, string? gender = null);
     Task<Student> CreateAsync(Student student);
     Task<List<Student>> GetAllAsync();
     Task<Student?> FindByIdAsync(int id);
@@ -13,4 +14,5 @@ public interface IStudentService
     Task<Student> UpdateAsync(int id, Student student);
     Task DeleteAsync(int id);
     Task<object> GetStudentProgressAsync(int studentId);
+    Task<BiweeklyProgressResponse> GetBiweeklyProgressAsync(int studentId);
 }

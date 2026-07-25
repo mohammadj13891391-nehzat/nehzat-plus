@@ -6,6 +6,7 @@ import { LessonPlannerApi } from './lesson-planner-api.interface';
 import {
   AdminCourseStatistics,
   AdminSystemStatistics,
+  AgeGroup,
   ApiMessageResponse,
   ApproveUserPayload,
   Assessment,
@@ -15,6 +16,7 @@ import {
   AssessmentResult,
   Assignment,
   AssignmentAttachment,
+  AssignmentProgressItem,
   AssignmentProgressResponse,
   AssignmentSubmission,
   AttachmentKind,
@@ -22,6 +24,8 @@ import {
   AuthSigninResponse,
   AuthSignupPayload,
   AuthSignupResponse,
+  BiweeklyProgressResponse,
+  Book,
   Branch,
   BranchManager,
   Coach,
@@ -30,17 +34,29 @@ import {
   CourseInviteCode,
   CreatedUser,
   CreateAssignmentPayload,
+  CreateBookPayload,
   CreateBranchManagerPayload,
   CreateCoachPayload,
   CreateCoursePayload,
+  CreateCurriculumVersionPayload,
   CreateDailySeriesPayload,
   CreateEvaluationPayload,
   CreateEvaluatorPayload,
   CreateMadrasahPayload,
   CreateMaktabBranchPayload,
+  CreateMonthlyBookletPayload,
   CreateParentPayload,
+  CreateRingPayload,
+  CreateRingBookPayload,
+  CreateRingStudentPayload,
+  CreateRingTeachingMethodPayload,
   CreateStudentPayload,
+  CreateSubjectAreaPayload,
+  CreateTeachingMethodPayload,
+  CreateCurriculumObjectivePayload,
   CreateUserPayload,
+  CurriculumObjective,
+  CurriculumVersion,
   EvaluationRecord,
   Evaluator,
   GenerateWeeklyAssessmentPayload,
@@ -52,17 +68,77 @@ import {
   MadrasahGrade,
   MadrasahStatus,
   MaktabBranch,
+  MonthlyBooklet,
   Parent,
   ParentStudentInfo,
   PendingUser,
+  ProgressionResult,
+  Ring,
+  RingBook,
+  RingStudent,
+  RingTeachingMethod,
   Student,
   StudentAssessmentHistory,
   StudentInfo,
+  StudentPathHistory,
   StudentProgressResponse,
+  StudentProgressSummary,
+  StudentSkillProgress,
+  ProgressSummary,
+  SubjectAreaProgress,
+  SubjectArea,
+  RingDashboardDto,
+  RingStudentProgressDto,
   SubmitAssessmentResultPayload,
+  TeachingMethod,
   UpdateMadrasahPayload,
   UpdateStudentPayload,
-  UserType
+  UpdateSubjectAreaPayload,
+  UpdateTeachingMethodPayload,
+  UpdateCurriculumVersionPayload,
+  UpdateMonthlyBookletPayload,
+  UpdateCurriculumObjectivePayload,
+  UpdateBookPayload,
+  UpdateRingPayload,
+  UpdateSkillProgressPayload,
+  UserType,
+  SpiritualPracticeItem,
+  SpiritualOccasion,
+  SpiritualOccasionDetail,
+  DailySpiritualEntry,
+  UpsertDailySpiritualEntryPayload,
+  UserOccasionProgress,
+  MarkOccasionPracticePayload,
+  SpiritualPath,
+  StudentPathSelection,
+  PathRankingPayload,
+  FinalizePathPayload,
+  AvailablePath,
+  Teacher,
+  TeacherCourse,
+  AssignmentGrading,
+  CreateTeacherPayload,
+  UpdateTeacherPayload,
+  TeacherDashboardSummary,
+  GradeSubmissionPayload,
+  Competition,
+  CompetitionDetail,
+  CompetitionParticipant,
+  CompetitionResult,
+  CompetitionStatus,
+  CompetitionType,
+  CreateCompetitionPayload,
+  UpdateCompetitionPayload,
+  RegisterParticipantPayload,
+  UpdateParticipantScorePayload,
+  League,
+  LeagueDetail,
+  LeagueRanking,
+  LeagueStatus,
+  CreateLeaguePayload,
+  UpdateLeaguePayload,
+  UpdateLeagueRankingPayload,
+  RankingTrend
 } from '../models/lesson-planner.models';
 
 function base64UrlEncode(value: string): string {
@@ -239,14 +315,141 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
   private evaluators: Evaluator[] = [];
   private madrasahs: Madrasah[] = [];
   private maktabBranches: MaktabBranch[] = [];
+  private subjectAreas: SubjectArea[] = [];
+  private teachingMethods: TeachingMethod[] = [];
+  private rings: Ring[] = [];
+  private ringStudents: RingStudent[] = [];
+  private objectives: CurriculumObjective[] = [];
+  private books: Book[] = [];
+  private ringBooks: RingBook[] = [];
+  private ringTeachingMethods: RingTeachingMethod[] = [];
   private evaluations: EvaluationRecord[] = [];
   private assessments: Assessment[] = [];
   private courseEnrollments: Map<number, number[]> = new Map([[1, [1, 2, 3]], [2, [1, 2]]]);
   private inviteCodes: Map<number, CourseInviteCode> = new Map();
 
+  private spiritualPracticeItems: SpiritualPracticeItem[] = [];
+  private spiritualOccasions: SpiritualOccasion[] = [];
+  private spiritualPaths: SpiritualPath[] = [];
+  private dailySpiritualEntries: DailySpiritualEntry[] = [];
+  private userOccasionProgress: UserOccasionProgress[] = [];
+  private studentPathSelections: StudentPathSelection[] = [];
+  private monthlyBooklets: MonthlyBooklet[] = [];
+  private curriculumVersions: CurriculumVersion[] = [];
+  private progressionRecords: StudentPathHistory[] = [];
+  private teachers: Teacher[] = [
+    {
+      id: 1,
+      username: 'teacher.ahmadi',
+      firstName: 'احمد',
+      lastName: 'احمدی',
+      email: 'ahmadi@example.com',
+      phoneNumber: '09123333333',
+      specialization: 'قرآن و تجوید',
+      nationalCode: '1234567890',
+      branchId: 1,
+      status: 'active',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      teacherCourses: [],
+      gradedSubmissions: []
+    }
+  ];
+  private teacherCourses: TeacherCourse[] = [
+    { id: 1, teacherId: 1, courseId: 1, createdAt: '2026-01-01T00:00:00.000Z' }
+  ];
+  private assignmentGradings: AssignmentGrading[] = [];
+
   constructor() {
     super();
     this.seedAssignments();
+    this.seedCurriculumData();
+    this.seedSpiritualData();
+  }
+
+  private seedSpiritualData(): void {
+    const now = this.now();
+    this.spiritualPracticeItems = [
+      { id: 1, key: 'pledge.child.daily', titleFa: 'تعهد روزانه', descriptionFa: 'تعهد می‌کنم امروز نمازهایم را اول وقت بخوانم', stepKind: 'pledge', minAge: 6, maxAge: 9, genderMask: 'mixed', roleMask: '*', sortOrder: 1, createdAt: now, updatedAt: now },
+      { id: 2, key: 'pledge.child.quran', titleFa: 'تعهد قرآنی', descriptionFa: 'تعهد می‌کنم امروز حداقل ۵ آیه از قرآن را بخوانم', stepKind: 'pledge', minAge: 6, maxAge: 9, genderMask: 'mixed', roleMask: '*', sortOrder: 2, createdAt: now, updatedAt: now },
+      { id: 3, key: 'pledge.youth.morning', titleFa: 'تعهد صبحگاهی', descriptionFa: 'تعهد می‌کنم امروز نماز صبح را اول وقت بخوانم', stepKind: 'pledge', minAge: 10, maxAge: 14, genderMask: 'mixed', roleMask: '*', sortOrder: 3, createdAt: now, updatedAt: now },
+      { id: 4, key: 'pledge.youth.study', titleFa: 'تعهد تحصیلی', descriptionFa: 'تعهد می‌کنم امروز حداقل ۲ ساعت مطالعه مفید داشته باشم', stepKind: 'pledge', minAge: 10, maxAge: 14, genderMask: 'mixed', roleMask: '*', sortOrder: 4, createdAt: now, updatedAt: now },
+      { id: 5, key: 'pledge.adult.self', titleFa: 'تعهد خودسازی', descriptionFa: 'تعهد می‌کنم امروز یک گام در مسیر خودسازی بردارم', stepKind: 'pledge', minAge: 15, genderMask: 'mixed', roleMask: '*', sortOrder: 5, createdAt: now, updatedAt: now },
+      { id: 6, key: 'monitor.child.prayer', titleFa: 'مراقبه نماز', descriptionFa: 'آیا نمازهای امروز را اول وقت خواندی؟', stepKind: 'monitoring', minAge: 6, maxAge: 9, genderMask: 'mixed', roleMask: '*', sortOrder: 6, createdAt: now, updatedAt: now },
+      { id: 7, key: 'monitor.youth.prayer', titleFa: 'مراقبه نماز اول وقت', descriptionFa: 'آیا تمام نمازهای امروز را در اول وقت خواندی؟', stepKind: 'monitoring', minAge: 10, maxAge: 14, genderMask: 'mixed', roleMask: '*', sortOrder: 7, createdAt: now, updatedAt: now },
+      { id: 8, key: 'monitor.youth.screen', titleFa: 'مراقبه فضای مجازی', descriptionFa: 'آیا استفاده از فضای مجازی امروز در حد مجاز بود؟', stepKind: 'monitoring', minAge: 10, maxAge: 14, genderMask: 'mixed', roleMask: '*', sortOrder: 8, createdAt: now, updatedAt: now },
+      { id: 9, key: 'account.daily', titleFa: 'حساب‌کشی روزانه', descriptionFa: 'امروز را محاسبه کن: چند ساعت مفید، چند ساعت بیهوده؟', stepKind: 'accounting', minAge: 8, genderMask: 'mixed', roleMask: '*', sortOrder: 9, createdAt: now, updatedAt: now },
+      { id: 10, key: 'reprimand.self', titleFa: 'عاتبه نفس', descriptionFa: 'آیا از عملکرد امروز خود راضی هستی؟ اگر نه، خود را ملامت کن', stepKind: 'reprimand', minAge: 8, genderMask: 'mixed', roleMask: '*', sortOrder: 10, createdAt: now, updatedAt: now },
+      { id: 11, key: 'discipline.extra', titleFa: 'عمل اضافه', descriptionFa: 'یک کار نیک اضافی امروز انجام بده', stepKind: 'discipline', minAge: 6, genderMask: 'mixed', roleMask: '*', sortOrder: 11, createdAt: now, updatedAt: now },
+    ];
+    this.spiritualOccasions = [
+      { id: 1, key: 'ramadan', titleFa: 'ماه رمضان', descriptionFa: 'ماه مبارک رمضان', hijriMonth: 9, hijriDay: 1, genderMask: 'mixed', sortOrder: 1, createdAt: now, updatedAt: now },
+      { id: 2, key: 'eid-fitr', titleFa: 'عید فطر', descriptionFa: 'عید پایان ماه رمضان', hijriMonth: 10, hijriDay: 1, genderMask: 'mixed', sortOrder: 2, createdAt: now, updatedAt: now },
+      { id: 3, key: 'eid-adha', titleFa: 'عید قربان', descriptionFa: 'عید قربان', hijriMonth: 12, hijriDay: 10, genderMask: 'mixed', sortOrder: 3, createdAt: now, updatedAt: now },
+      { id: 4, key: 'ashura', titleFa: 'عاشورا', descriptionFa: 'روز شهادت امام حسین (ع)', hijriMonth: 1, hijriDay: 10, genderMask: 'mixed', sortOrder: 4, createdAt: now, updatedAt: now },
+      { id: 5, key: 'mabath', titleFa: 'مبعث', descriptionFa: 'مبعث رسول اکرم (ص)', hijriMonth: 7, hijriDay: 27, genderMask: 'mixed', sortOrder: 5, createdAt: now, updatedAt: now },
+    ];
+    this.spiritualPaths = [
+      { id: 1, key: 'quran', titleFa: 'مسیر قرآنی', descriptionFa: 'حفظ و تفسیر قرآن', genderMask: 'mixed', sortOrder: 1, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+      { id: 2, key: 'talabgi', titleFa: 'مسیر طلبگی', descriptionFa: 'تحصیل علوم حوزوی', genderMask: 'mixed', sortOrder: 2, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+      { id: 3, key: 'morabbegi', titleFa: 'مسیر مربی‌گری', descriptionFa: 'تربیت مربی', genderMask: 'mixed', sortOrder: 3, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+      { id: 4, key: 'business', titleFa: 'مسیر کسب و کار', descriptionFa: 'کارآفرینی', genderMask: 'male', sortOrder: 4, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+      { id: 5, key: 'standard_academic', titleFa: 'مسیر تحصیلی متعارف', descriptionFa: 'تحصیل دانشگاهی', genderMask: 'mixed', sortOrder: 5, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+      { id: 6, key: 'home_children', titleFa: 'مسیر خانه‌داری و تربیت فرزند', descriptionFa: 'مهارت‌های همسرداری', genderMask: 'female', sortOrder: 1, ageEntryPoint: 9, ageFinalizePoint: 10, status: 'active', createdAt: now, updatedAt: now },
+    ];
+  }
+
+  private seedCurriculumData(): void {
+    const now = this.now();
+    const subjectAreaData = [
+      { key: 'quran', name: 'قرآن', description: 'آموزش قرآن کریم شامل روخوانی، روان‌خوانی، تجوید و حفظ', sortOrder: 1 },
+      { key: 'ahkam', name: 'احکام', description: 'آموزش احکام شرعی بر اساس رساله مرجع تقلید', sortOrder: 2 },
+      { key: 'aqayed', name: 'عقاید', description: 'آموزش مبانی اعتقادی و اصول دین', sortOrder: 3 },
+      { key: 'akhlaq', name: 'اخلاق', description: 'آموزش مبانی اخلاقی و تهذیب نفس', sortOrder: 4 },
+      { key: 'tarikh', name: 'تاریخ', description: 'آموزش تاریخ اسلام و تشیع', sortOrder: 5 },
+      { key: 'sireh', name: 'سیره معصومین', description: 'آموزش سیره و زندگی معصومین', sortOrder: 6 },
+      { key: 'manteq', name: 'منطق', description: 'آموزش علم منطق و قواعد استدلال', sortOrder: 7 },
+      { key: 'falsafeh', name: 'فلسفه', description: 'آموزش مبانی فلسفه اسلامی', sortOrder: 8 },
+      { key: 'feqh', name: 'فقه', description: 'آموزش فقه استدلالی و مسائل شرعی', sortOrder: 9 },
+      { key: 'osul', name: 'اصول', description: 'آموزش اصول فقه و مبانی استنباط', sortOrder: 10 },
+      { key: 'tajvid', name: 'تجوید', description: 'آموزش قواعد تجوید و قرائت صحیح قرآن', sortOrder: 11 },
+      { key: 'tfsir', name: 'تفسیر', description: 'آموزش تفسیر قرآن کریم', sortOrder: 12 },
+      { key: 'hadith', name: 'حدیث', description: 'آموزش علوم حدیث و متون روایی', sortOrder: 13 },
+      { key: 'erfan', name: 'عرفان', description: 'آموزش عرفان اسلامی و سیر و سلوک', sortOrder: 14 },
+      { key: 'lughat', name: 'لغت عربی', description: 'آموزش لغت و صرف و نحو عربی', sortOrder: 15 },
+      { key: 'balaghah', name: 'بلاغت', description: 'آموزش علوم بلاغی (معانی، بیان، بدیع)', sortOrder: 16 },
+      { key: 'tarbiat', name: 'تربیت', description: 'آموزش مبانی تربیتی و روش‌های پرورش', sortOrder: 17 },
+      { key: 'ejtemae', name: 'اجتماعی', description: 'آموزش مبانی اجتماعی و سیاسی اسلام', sortOrder: 18 },
+      { key: 'tarbiat-badani', name: 'تربیت بدنی', description: 'آموزش ورزش و تربیت بدنی', sortOrder: 19 },
+      { key: 'fani-va-herfeh', name: 'فنی و حرفه‌ای', description: 'آموزش مهارت‌های فنی و حرفه‌ای', sortOrder: 20 }
+    ];
+    subjectAreaData.forEach((d, i) => {
+      this.subjectAreas.push({ id: i + 1, ...d, createdAt: now });
+    });
+
+    const teachingMethodData = [
+      { key: 'lecture', name: 'سخنرانی', description: 'ارائه مطالب توسط مربی به صورت شفاهی', sortOrder: 1 },
+      { key: 'qa', name: 'پرسش و پاسخ', description: 'تعامل دوسویه مربی و متربی', sortOrder: 2 },
+      { key: 'discussion', name: 'بحث گروهی', description: 'بحث و گفتگوی گروهی', sortOrder: 3 },
+      { key: 'memorization', name: 'حفظ', description: 'حفظ آیات، روایات یا اشعار', sortOrder: 4 },
+      { key: 'practice', name: 'تمرین عملی', description: 'انجام تمرین عملی توسط متربی', sortOrder: 5 },
+      { key: 'storytelling', name: 'قصه‌گویی', description: 'بیان داستان‌های آموزنده', sortOrder: 6 },
+      { key: 'roleplay', name: 'نقش‌آفرینی', description: 'ایفای نقش توسط متربیان', sortOrder: 7 },
+      { key: 'project', name: 'پروژه تحقیقاتی', description: 'انجام تحقیق و پروژه', sortOrder: 8 },
+      { key: 'visual', name: 'تصویری', description: 'استفاده از تصاویر و فیلم‌های آموزشی', sortOrder: 9 },
+      { key: 'recitation', name: 'تلاوت', description: 'تلاوت و شنیدن قرآن', sortOrder: 10 },
+      { key: 'writing', name: 'نوشتاری', description: 'انجام تکالیف کتبی و انشا', sortOrder: 11 },
+      { key: 'gamification', name: 'بازی و سرگرمی', description: 'آموزش از طریق بازی و مسابقه', sortOrder: 12 },
+      { key: 'field-trip', name: 'بازدید و اردو', description: 'آموزش در محیط بیرون', sortOrder: 13 },
+      { key: 'peer-learning', name: 'یادگیری همتا', description: 'آموزش توسط هم‌کلاسی‌ها', sortOrder: 14 },
+      { key: 'questionnaire', name: 'پرسشنامه', description: 'استفاده از پرسشنامه', sortOrder: 15 },
+      { key: 'demonstration', name: 'نمایش عملی', description: 'اجرای عملی توسط مربی', sortOrder: 16 },
+      { key: 'brainstorming', name: 'طوفان فکری', description: 'تولید ایده توسط گروه', sortOrder: 17 },
+      { key: 'problem-solving', name: 'حل مسئله', description: 'ارائه مسئله و یافتن راه حل', sortOrder: 18 }
+    ];
+    teachingMethodData.forEach((d, i) => {
+      this.teachingMethods.push({ id: i + 1, ...d, createdAt: now });
+    });
   }
 
   private seedAssignments(): void {
@@ -884,6 +1087,7 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       email: payload.email,
       phoneNumber: payload.phoneNumber,
       branchId: payload.branchId,
+      gender: payload.gender ?? 'mixed',
       status: 'active',
       createdAt: this.now()
     };
@@ -1088,6 +1292,336 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       (b) => !(b.madrasahId === madrasahId && b.id === branchId)
     );
     return this.delayed({ message: 'شعبه مکتب حذف شد' });
+  }
+
+  getSubjectAreas(): Observable<SubjectArea[]> {
+    return this.delayed([...this.subjectAreas]);
+  }
+
+  createSubjectArea(payload: CreateSubjectAreaPayload): Observable<SubjectArea> {
+    const area: SubjectArea = {
+      id: this.nextId(this.subjectAreas),
+      key: payload.key,
+      name: payload.name,
+      description: payload.description ?? '',
+      sortOrder: payload.sortOrder ?? 0,
+      createdAt: this.now()
+    };
+    this.subjectAreas.push(area);
+    return this.delayed(area);
+  }
+
+  updateSubjectArea(id: number, payload: UpdateSubjectAreaPayload): Observable<SubjectArea> {
+    const area = this.subjectAreas.find((a) => a.id === id);
+    if (!area) throw new Error('SubjectArea not found');
+    Object.assign(area, payload);
+    return this.delayed(area);
+  }
+
+  deleteSubjectArea(id: number): Observable<ApiMessageResponse> {
+    this.subjectAreas = this.subjectAreas.filter((a) => a.id !== id);
+    return this.delayed({ message: 'حوزه درسی حذف شد' });
+  }
+
+  getTeachingMethods(): Observable<TeachingMethod[]> {
+    return this.delayed([...this.teachingMethods]);
+  }
+
+  createTeachingMethod(payload: CreateTeachingMethodPayload): Observable<TeachingMethod> {
+    const method: TeachingMethod = {
+      id: this.nextId(this.teachingMethods),
+      key: payload.key,
+      name: payload.name,
+      description: payload.description ?? '',
+      sortOrder: payload.sortOrder ?? 0,
+      createdAt: this.now()
+    };
+    this.teachingMethods.push(method);
+    return this.delayed(method);
+  }
+
+  updateTeachingMethod(id: number, payload: UpdateTeachingMethodPayload): Observable<TeachingMethod> {
+    const method = this.teachingMethods.find((m) => m.id === id);
+    if (!method) throw new Error('TeachingMethod not found');
+    Object.assign(method, payload);
+    return this.delayed(method);
+  }
+
+  deleteTeachingMethod(id: number): Observable<ApiMessageResponse> {
+    this.teachingMethods = this.teachingMethods.filter((m) => m.id !== id);
+    return this.delayed({ message: 'روش تدریس حذف شد' });
+  }
+
+  getRings(): Observable<Ring[]> {
+    return this.delayed([...this.rings]);
+  }
+
+  getRingById(id: number): Observable<Ring> {
+    const ring = this.rings.find((r) => r.id === id);
+    if (!ring) throw new Error('Ring not found');
+    return this.delayed(ring);
+  }
+
+  createRing(payload: CreateRingPayload): Observable<Ring> {
+    const ring: Ring = {
+      id: this.nextId(this.rings),
+      key: payload.key,
+      name: payload.name,
+      description: payload.description ?? '',
+      madrasahId: payload.madrasahId,
+      coachId: payload.coachId,
+      courseId: payload.courseId,
+      status: payload.status ?? 'active',
+      gender: payload.gender,
+      createdAt: this.now()
+    };
+    this.rings.push(ring);
+    return this.delayed(ring);
+  }
+
+  updateRing(id: number, payload: UpdateRingPayload): Observable<Ring> {
+    const ring = this.rings.find((r) => r.id === id);
+    if (!ring) throw new Error('Ring not found');
+    Object.assign(ring, payload, { updatedAt: this.now() });
+    return this.delayed(ring);
+  }
+
+  deleteRing(id: number): Observable<ApiMessageResponse> {
+    this.rings = this.rings.filter((r) => r.id !== id);
+    this.ringStudents = this.ringStudents.filter((rs) => rs.ringId !== id);
+    this.ringBooks = this.ringBooks.filter((rb) => rb.ringId !== id);
+    this.ringTeachingMethods = this.ringTeachingMethods.filter((rtm) => rtm.ringId !== id);
+    return this.delayed({ message: 'حلقه حذف شد' });
+  }
+
+  getRingStudents(ringId: number): Observable<RingStudent[]> {
+    return this.delayed(this.ringStudents.filter((rs) => rs.ringId === ringId));
+  }
+
+  addRingStudent(ringId: number, payload: CreateRingStudentPayload): Observable<RingStudent> {
+    const rs: RingStudent = {
+      id: this.nextId(this.ringStudents),
+      ringId,
+      studentId: payload.studentId,
+      joinedAt: this.now(),
+      status: payload.status ?? 'active'
+    };
+    this.ringStudents.push(rs);
+    return this.delayed(rs);
+  }
+
+  removeRingStudent(ringId: number, studentId: number): Observable<ApiMessageResponse> {
+    this.ringStudents = this.ringStudents.filter(
+      (rs) => !(rs.ringId === ringId && rs.studentId === studentId)
+    );
+    return this.delayed({ message: 'دانش‌آموز از حلقه حذف شد' });
+  }
+
+  addRingBook(ringId: number, payload: CreateRingBookPayload): Observable<ApiMessageResponse> {
+    const rb: RingBook = {
+      id: this.nextId(this.ringBooks),
+      ringId,
+      bookId: payload.bookId,
+      sortOrder: payload.sortOrder ?? 0
+    };
+    this.ringBooks.push(rb);
+    return this.delayed({ message: 'کتاب به حلقه اضافه شد' });
+  }
+
+  removeRingBook(ringId: number, bookId: number): Observable<ApiMessageResponse> {
+    this.ringBooks = this.ringBooks.filter(
+      (rb) => !(rb.ringId === ringId && rb.bookId === bookId)
+    );
+    return this.delayed({ message: 'کتاب از حلقه حذف شد' });
+  }
+
+  addRingTeachingMethod(ringId: number, payload: CreateRingTeachingMethodPayload): Observable<ApiMessageResponse> {
+    const rtm: RingTeachingMethod = {
+      id: this.nextId(this.ringTeachingMethods),
+      ringId,
+      teachingMethodId: payload.teachingMethodId
+    };
+    this.ringTeachingMethods.push(rtm);
+    return this.delayed({ message: 'روش تدریس به حلقه اضافه شد' });
+  }
+
+  removeRingTeachingMethod(ringId: number, teachingMethodId: number): Observable<ApiMessageResponse> {
+    this.ringTeachingMethods = this.ringTeachingMethods.filter(
+      (rtm) => !(rtm.ringId === ringId && rtm.teachingMethodId === teachingMethodId)
+    );
+    return this.delayed({ message: 'روش تدریس از حلقه حذف شد' });
+  }
+
+  getObjectives(): Observable<CurriculumObjective[]> {
+    return this.delayed([...this.objectives]);
+  }
+
+  createObjective(payload: CreateCurriculumObjectivePayload): Observable<CurriculumObjective> {
+    const obj: CurriculumObjective = {
+      id: this.nextId(this.objectives),
+      key: payload.key,
+      title: payload.title,
+      description: payload.description ?? '',
+      subjectAreaId: payload.subjectAreaId,
+      parentObjectiveId: payload.parentObjectiveId,
+      sortOrder: payload.sortOrder ?? 0,
+      level: payload.level ?? 'beginner',
+      createdAt: this.now()
+    };
+    this.objectives.push(obj);
+    return this.delayed(obj);
+  }
+
+  updateObjective(id: number, payload: UpdateCurriculumObjectivePayload): Observable<CurriculumObjective> {
+    const obj = this.objectives.find((o) => o.id === id);
+    if (!obj) throw new Error('CurriculumObjective not found');
+    Object.assign(obj, payload);
+    return this.delayed(obj);
+  }
+
+  deleteObjective(id: number): Observable<ApiMessageResponse> {
+    this.objectives = this.objectives.filter((o) => o.id !== id);
+    return this.delayed({ message: 'هدف آموزشی حذف شد' });
+  }
+
+  getBooks(): Observable<Book[]> {
+    return this.delayed([...this.books]);
+  }
+
+  createBook(payload: CreateBookPayload): Observable<Book> {
+    const book: Book = {
+      id: this.nextId(this.books),
+      key: payload.key,
+      title: payload.title,
+      author: payload.author ?? '',
+      subjectAreaId: payload.subjectAreaId,
+      level: payload.level ?? '',
+      publisher: payload.publisher ?? '',
+      pages: payload.pages,
+      createdAt: this.now()
+    };
+    this.books.push(book);
+    return this.delayed(book);
+  }
+
+  updateBook(id: number, payload: UpdateBookPayload): Observable<Book> {
+    const book = this.books.find((b) => b.id === id);
+    if (!book) throw new Error('Book not found');
+    Object.assign(book, payload);
+    return this.delayed(book);
+  }
+
+  deleteBook(id: number): Observable<ApiMessageResponse> {
+    this.books = this.books.filter((b) => b.id !== id);
+    return this.delayed({ message: 'کتاب حذف شد' });
+  }
+
+  /* ─── Skill Progress ─── */
+
+  private skillProgressRecords: StudentSkillProgress[] = [];
+  private ageGroupData: AgeGroup[] = [
+    { id: 1, key: '7-10', name: 'کودک (۷-۱۰ سال)', description: 'گروه سنی کودک', minAge: 7, maxAge: 10, sortOrder: 1 },
+    { id: 2, key: '11-14', name: 'نوجوان (۱۱-۱۴ سال)', description: 'گروه سنی نوجوان', minAge: 11, maxAge: 14, sortOrder: 2 },
+    { id: 3, key: '15-18', name: 'جوان (۱۵-۱۸ سال)', description: 'گروه سنی جوان', minAge: 15, maxAge: 18, sortOrder: 3 },
+    { id: 4, key: '19-plus', name: 'بزرگسال (۱۹+ سال)', description: 'گروه سنی بزرگسال', minAge: 19, maxAge: 99, sortOrder: 4 },
+  ];
+
+  getAgeGroups(): Observable<AgeGroup[]> {
+    return this.delayed([...this.ageGroupData]);
+  }
+
+  getSkillProgressByStudent(studentId: number): Observable<StudentSkillProgress[]> {
+    return this.delayed(this.skillProgressRecords.filter((p) => p.studentId === studentId));
+  }
+
+  getSkillProgressByRing(ringId: number): Observable<StudentSkillProgress[]> {
+    return this.delayed(this.skillProgressRecords.filter((p) => p.ringId === ringId));
+  }
+
+  updateSkillProgress(id: number, payload: UpdateSkillProgressPayload): Observable<StudentSkillProgress> {
+    const record = this.skillProgressRecords.find((p) => p.id === id);
+    if (!record) throw new Error('SkillProgress not found');
+    Object.assign(record, payload);
+    return this.delayed(record);
+  }
+
+  getProgressSummary(studentId: number): Observable<StudentProgressSummary> {
+    const records = this.skillProgressRecords.filter((p) => p.studentId === studentId);
+
+    const subjectAreas = records
+      .filter((p) => p.objectiveTitle)
+      .reduce((acc, p) => {
+        const key = p.objectiveTitle.split(' ')[0]; // simple grouping
+        if (!acc[key]) acc[key] = { scores: [], mastered: 0, total: 0 };
+        acc[key].scores.push(p.score);
+        if (p.proficiencyLevel === 'mastered') acc[key].mastered++;
+        acc[key].total++;
+        return acc;
+      }, {} as Record<string, { scores: number[]; mastered: number; total: number }>);
+
+    const subjectAreaList: SubjectAreaProgress[] = Object.entries(subjectAreas).map(([title, data], idx) => ({
+      subjectAreaId: idx + 1,
+      subjectAreaTitle: title,
+      subjectAreaKey: title.toLowerCase().replace(/\s+/g, '-'),
+      averageScore: data.scores.length ? data.scores.reduce((a, b) => a + b, 0) / data.scores.length : 0,
+      masteredCount: data.mastered,
+      totalObjectives: data.total,
+    }));
+
+    const summary: ProgressSummary = {
+      totalObjectives: records.length,
+      masteredCount: records.filter((p) => p.proficiencyLevel === 'mastered').length,
+      achievedCount: records.filter((p) => p.proficiencyLevel === 'achieved').length,
+      inProgressCount: records.filter((p) => p.proficiencyLevel === 'in_progress').length,
+      notStartedCount: records.filter((p) => p.proficiencyLevel === 'not_started').length,
+      averageScore: records.length ? Math.round(records.reduce((a, p) => a + p.score, 0) / records.length) : 0,
+    };
+
+    return this.delayed({
+      studentId,
+      summary,
+      subjectAreas: subjectAreaList,
+    });
+  }
+
+  syncFromSubmission(submissionId: number): Observable<ApiMessageResponse> {
+    // Mock: just return success message
+    return this.delayed({ message: 'پیشرفت مهارتی با موفقیت همگام‌سازی شد' });
+  }
+
+  getMyRings(): Observable<Ring[]> {
+    // Mock: return coach's rings (for now return all rings as mock)
+    return this.delayed([...this.rings]);
+  }
+
+  getMyRingStudents(): Observable<RingStudent[]> {
+    // Mock: return all ring students for coach's rings
+    return this.delayed([...this.ringStudents]);
+  }
+
+  getRingDashboard(ringId: number): Observable<RingDashboardDto> {
+    // Mock: return dashboard data for a ring
+    const ring = this.rings.find(r => r.id === ringId);
+    const students = this.ringStudents.filter(rs => rs.ringId === ringId);
+    
+    const mockDashboard: RingDashboardDto = {
+      ringId: ringId,
+      ringName: ring?.name || '',
+      studentCount: students.length,
+      averageScore: 75,
+      masteredCount: 0,
+      achievedCount: 0,
+      inProgressCount: 0,
+      notStartedCount: 0,
+      students: students.map(s => ({
+        studentId: s.studentId,
+        studentName: this.students.find(st => st.id === s.studentId)?.firstName + ' ' + this.students.find(st => st.id === s.studentId)?.lastName || '',
+        score: 75,
+        proficiencyLevel: 'in_progress',
+        lastAssessedAt: undefined
+      }))
+    };
+    return this.delayed(mockDashboard);
   }
 
   getParents(): Observable<Parent[]> {
@@ -1531,6 +2065,653 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
         bestScore: completedResults.length > 0 ? Math.max(...completedResults.map((r) => r.score)) : 0
       }
     });
+  }
+
+  getSpiritualPractices(): Observable<SpiritualPracticeItem[]> {
+    return this.delayed([...this.spiritualPracticeItems]);
+  }
+
+  getSpiritualPracticesForMe(age?: number, gender?: string, role?: string): Observable<SpiritualPracticeItem[]> {
+    let items = [...this.spiritualPracticeItems];
+    if (age !== undefined) {
+      items = items.filter(p => (p.minAge === undefined || p.minAge <= age) && (p.maxAge === undefined || p.maxAge >= age));
+    }
+    if (gender) {
+      items = items.filter(p => p.genderMask === 'mixed' || p.genderMask === gender);
+    }
+    if (role) {
+      items = items.filter(p => p.roleMask === '*' || p.roleMask === role);
+    }
+    return this.delayed(items);
+  }
+
+  getSpiritualOccasions(): Observable<SpiritualOccasion[]> {
+    return this.delayed([...this.spiritualOccasions]);
+  }
+
+  getSpiritualOccasionDetail(occasionId: number): Observable<SpiritualOccasionDetail> {
+    const occasion = this.spiritualOccasions.find(o => o.id === occasionId);
+    if (!occasion) return this.delayed({} as SpiritualOccasionDetail);
+    return this.delayed({
+      ...occasion,
+      practices: this.spiritualPracticeItems.slice(0, 3)
+    });
+  }
+
+  getDailySpiritualEntry(userId: number, date: string): Observable<DailySpiritualEntry> {
+    const entry = this.dailySpiritualEntries.find(e => e.userId === userId && e.entryDate === date);
+    if (!entry) return this.delayed({} as DailySpiritualEntry);
+    return this.delayed(entry);
+  }
+
+  upsertDailySpiritualEntry(payload: UpsertDailySpiritualEntryPayload): Observable<DailySpiritualEntry> {
+    const now = this.now();
+    const existing = this.dailySpiritualEntries.find(e => e.userId === payload.userId && e.entryDate === payload.entryDate);
+    if (existing) {
+      existing.moodScore = payload.moodScore;
+      existing.notes = payload.notes;
+      existing.completedSteps = payload.completedSteps;
+      existing.updatedAt = now;
+      return this.delayed(existing);
+    }
+    const entry: DailySpiritualEntry = {
+      id: this.nextId(this.dailySpiritualEntries),
+      userId: payload.userId,
+      entryDate: payload.entryDate,
+      moodScore: payload.moodScore,
+      notes: payload.notes,
+      completedSteps: payload.completedSteps,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dailySpiritualEntries.push(entry);
+    return this.delayed(entry);
+  }
+
+  getSpiritualEntryHistory(userId: number, fromDate?: string, toDate?: string): Observable<DailySpiritualEntry[]> {
+    let entries = this.dailySpiritualEntries.filter(e => e.userId === userId);
+    if (fromDate) entries = entries.filter(e => e.entryDate >= fromDate!);
+    if (toDate) entries = entries.filter(e => e.entryDate <= toDate!);
+    entries.sort((a, b) => b.entryDate.localeCompare(a.entryDate));
+    return this.delayed(entries);
+  }
+
+  getSpiritualStreak(userId: number): Observable<{ streak: number }> {
+    const entries = this.dailySpiritualEntries
+      .filter(e => e.userId === userId)
+      .sort((a, b) => b.entryDate.localeCompare(a.entryDate));
+    let streak = 0;
+    if (entries.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      if (entries[0].entryDate === today || entries[0].entryDate === this.yesterday()) {
+        streak = 1;
+        for (let i = 1; i < entries.length; i++) {
+          const prev = new Date(entries[i - 1].entryDate);
+          const curr = new Date(entries[i].entryDate);
+          const diff = (prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24);
+          if (diff === 1) streak++;
+          else break;
+        }
+      }
+    }
+    return this.delayed({ streak });
+  }
+
+  private yesterday(): string {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().split('T')[0];
+  }
+
+  getUserOccasionProgress(userId: number, occasionId?: number, hijriYear?: number): Observable<UserOccasionProgress[]> {
+    let items = this.userOccasionProgress.filter(p => p.userId === userId);
+    if (occasionId !== undefined) items = items.filter(p => p.occasionId === occasionId);
+    if (hijriYear !== undefined) items = items.filter(p => p.hijriYear === hijriYear);
+    return this.delayed(items);
+  }
+
+  markOccasionPractice(payload: MarkOccasionPracticePayload): Observable<UserOccasionProgress> {
+    const now = this.now();
+    const existing = this.userOccasionProgress.find(p =>
+      p.userId === payload.userId && p.occasionId === payload.occasionId &&
+      p.practiceItemId === payload.practiceItemId && p.hijriYear === payload.hijriYear);
+    if (existing) {
+      existing.isCompleted = payload.isCompleted;
+      existing.completedAt = payload.isCompleted ? now : undefined;
+      existing.notes = payload.notes;
+      existing.updatedAt = now;
+      return this.delayed(existing);
+    }
+    const progress: UserOccasionProgress = {
+      id: this.nextId(this.userOccasionProgress),
+      userId: payload.userId,
+      occasionId: payload.occasionId,
+      practiceItemId: payload.practiceItemId,
+      hijriYear: payload.hijriYear,
+      isCompleted: payload.isCompleted,
+      completedAt: payload.isCompleted ? now : undefined,
+      notes: payload.notes,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.userOccasionProgress.push(progress);
+    return this.delayed(progress);
+  }
+
+  getAvailablePaths(studentId: number): Observable<AvailablePath[]> {
+    const student = this.students.find(s => s.id === studentId);
+    const gender = student?.gender ?? 'mixed';
+    const paths = this.spiritualPaths
+      .filter(p => p.status === 'active' && (p.genderMask === 'mixed' || p.genderMask === gender))
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map(p => ({ ...p }));
+    return this.delayed(paths);
+  }
+
+  submitPathRanking(studentId: number, payload: PathRankingPayload): Observable<StudentPathSelection> {
+    const now = this.now();
+    let selection = this.studentPathSelections.find(s => s.studentId === studentId);
+    if (!selection) {
+      selection = {
+        id: this.nextId(this.studentPathSelections),
+        studentId,
+        hijriSelectionYear: new Date().getFullYear(),
+        stage: 'ranking',
+        selectedAt: now,
+        updatedAt: now
+      };
+      this.studentPathSelections.push(selection);
+    }
+    selection.stage = 'ranking';
+    selection.updatedAt = now;
+    return this.delayed({ ...selection });
+  }
+
+  finalizePath(payload: FinalizePathPayload): Observable<StudentPathSelection> {
+    const now = this.now();
+    let selection = this.studentPathSelections.find(s => s.studentId === payload.studentId);
+    if (!selection) {
+      selection = {
+        id: this.nextId(this.studentPathSelections),
+        studentId: payload.studentId,
+        hijriSelectionYear: new Date().getFullYear(),
+        stage: 'finalized',
+        finalizedPathId: payload.pathId,
+        selectedAt: now,
+        finalizedAt: now,
+        updatedAt: now
+      };
+      this.studentPathSelections.push(selection);
+    } else {
+      selection.stage = 'finalized';
+      selection.finalizedPathId = payload.pathId;
+      selection.finalizedAt = now;
+      selection.updatedAt = now;
+    }
+    return this.delayed({ ...selection });
+  }
+
+  switchFinalizedPath(payload: FinalizePathPayload): Observable<StudentPathSelection> {
+    const now = this.now();
+    const selection = this.studentPathSelections.find(s => s.studentId === payload.studentId);
+    if (!selection) return this.delayed({} as StudentPathSelection);
+    selection.finalizedPathId = payload.pathId;
+    selection.updatedAt = now;
+    return this.delayed({ ...selection });
+  }
+
+  getStudentPathSelection(studentId: number): Observable<StudentPathSelection> {
+    const selection = this.studentPathSelections.find(s => s.studentId === studentId);
+    if (!selection) return this.delayed({} as StudentPathSelection);
+    return this.delayed({ ...selection });
+  }
+
+  getStudentPathHistory(studentId: number): Observable<unknown[]> {
+    return this.delayed([]);
+  }
+
+  // Monthly Booklets
+  getMonthlyBooklets(studentId?: number): Observable<MonthlyBooklet[]> {
+    let booklets = [...this.monthlyBooklets];
+    if (studentId !== undefined) {
+      booklets = booklets.filter((b) => b.studentId === studentId);
+    }
+    return this.delayed(booklets);
+  }
+
+  getMonthlyBookletById(id: number): Observable<MonthlyBooklet> {
+    const booklet = this.monthlyBooklets.find((b) => b.id === id);
+    return this.delayed(booklet ?? ({} as MonthlyBooklet));
+  }
+
+  getMonthlyBookletsByStudent(studentId: number): Observable<MonthlyBooklet[]> {
+    return this.delayed(this.monthlyBooklets.filter((b) => b.studentId === studentId));
+  }
+
+  getMonthlyBookletByPeriod(studentId: number, year: number, month: number): Observable<MonthlyBooklet> {
+    const booklet = this.monthlyBooklets.find(
+      (b) => b.studentId === studentId && b.month === month && b.year === year
+    );
+    return this.delayed(booklet ?? ({} as MonthlyBooklet));
+  }
+
+  createMonthlyBooklet(payload: CreateMonthlyBookletPayload): Observable<MonthlyBooklet> {
+    const booklet: MonthlyBooklet = {
+      id: this.nextId(this.monthlyBooklets),
+      studentId: payload.studentId,
+      studentName: '',
+      month: payload.month,
+      year: payload.year,
+      title: payload.title,
+      content: payload.content,
+      status: 'draft',
+      createdByUserId: payload.createdByUserId,
+      createdAt: this.now(),
+      updatedAt: this.now()
+    };
+    this.monthlyBooklets.push(booklet);
+    return this.delayed(booklet);
+  }
+
+  updateMonthlyBooklet(id: number, payload: UpdateMonthlyBookletPayload): Observable<MonthlyBooklet> {
+    const booklet = this.monthlyBooklets.find((b) => b.id === id);
+    if (!booklet) throw new Error('MonthlyBooklet not found');
+    if (payload.title !== undefined) booklet.title = payload.title;
+    if (payload.content !== undefined) booklet.content = payload.content;
+    if (payload.status !== undefined) booklet.status = payload.status;
+    booklet.updatedAt = this.now();
+    return this.delayed(booklet);
+  }
+
+  deleteMonthlyBooklet(id: number): Observable<ApiMessageResponse> {
+    this.monthlyBooklets = this.monthlyBooklets.filter((b) => b.id !== id);
+    return this.delayed({ message: 'دفترچه ماهانه حذف شد' });
+  }
+
+  // Curriculum Versions
+  getCurriculumVersions(): Observable<CurriculumVersion[]> {
+    return this.delayed([...this.curriculumVersions]);
+  }
+
+  getCurriculumVersionById(id: number): Observable<CurriculumVersion> {
+    const version = this.curriculumVersions.find((v) => v.id === id);
+    return this.delayed(version ?? ({} as CurriculumVersion));
+  }
+
+  getActiveCurriculumVersion(): Observable<CurriculumVersion> {
+    const now = new Date();
+    const active = this.curriculumVersions.find(
+      (v) => v.status === 'published' && new Date(v.validFrom) <= now && (!v.validTo || new Date(v.validTo) >= now)
+    );
+    return this.delayed(active ?? ({} as CurriculumVersion));
+  }
+
+  createCurriculumVersion(payload: CreateCurriculumVersionPayload): Observable<CurriculumVersion> {
+    const version: CurriculumVersion = {
+      id: this.nextId(this.curriculumVersions),
+      key: payload.key,
+      versionNumber: payload.versionNumber,
+      description: payload.description,
+      status: payload.status,
+      validFrom: payload.validFrom,
+      validTo: payload.validTo,
+      createdAt: this.now(),
+      updatedAt: this.now()
+    };
+    this.curriculumVersions.push(version);
+    return this.delayed(version);
+  }
+
+  updateCurriculumVersion(id: number, payload: UpdateCurriculumVersionPayload): Observable<CurriculumVersion> {
+    const version = this.curriculumVersions.find((v) => v.id === id);
+    if (!version) throw new Error('CurriculumVersion not found');
+    if (payload.versionNumber !== undefined) version.versionNumber = payload.versionNumber;
+    if (payload.description !== undefined) version.description = payload.description;
+    if (payload.status !== undefined) version.status = payload.status;
+    if (payload.validFrom !== undefined) version.validFrom = payload.validFrom;
+    if (payload.validTo !== undefined) version.validTo = payload.validTo;
+    version.updatedAt = this.now();
+    return this.delayed(version);
+  }
+
+  deleteCurriculumVersion(id: number): Observable<ApiMessageResponse> {
+    this.curriculumVersions = this.curriculumVersions.filter((v) => v.id !== id);
+    return this.delayed({ message: 'نسخه برنامه درسی حذف شد' });
+  }
+
+  // Progression
+  checkProgression(studentId: number): Observable<ProgressionResult> {
+    const student = this.students.find((s) => s.id === studentId);
+    if (!student) throw new Error('Student not found');
+    return this.delayed({
+      studentId,
+      studentName: `${student.firstName} ${student.lastName}`,
+      currentLevel: 'intermediate',
+      currentRing: 'ring-beginner',
+      canProgress: true,
+      blockingReasons: [],
+      skillMasteryRates: {},
+      checkedAt: this.now()
+    });
+  }
+
+  checkRingProgression(ringId: number): Observable<ProgressionResult[]> {
+    const ringStudents = this.ringStudents
+      .filter((rs) => rs.ringId === ringId && rs.status === 'active')
+      .map((rs) => rs.studentId);
+    const results: ProgressionResult[] = ringStudents.map((studentId) => {
+      const student = this.students.find((s) => s.id === studentId);
+      return {
+        studentId,
+        studentName: student ? `${student.firstName} ${student.lastName}` : `Student ${studentId}`,
+        currentLevel: 'beginner',
+        currentRing: 'ring-beginner',
+        canProgress: false,
+        blockingReasons: ['پیشرفت کافی نیست'],
+        skillMasteryRates: {},
+        checkedAt: this.now()
+      };
+    });
+    return this.delayed(results);
+  }
+
+  recordProgression(payload: { studentId: number; fromLevel: string; toLevel: string }): Observable<StudentPathHistory> {
+    const history: StudentPathHistory = {
+      id: this.nextId(this.progressionRecords),
+      studentId: payload.studentId,
+      studentName: '',
+      changedByUserId: 0,
+      previousStage: payload.fromLevel,
+      newStage: payload.toLevel,
+      reason: `پیشرفت از ${payload.fromLevel} به ${payload.toLevel}`,
+      changedAt: this.now()
+    };
+    this.progressionRecords.push(history);
+    return this.delayed(history);
+  }
+
+  // Biweekly Progress (Phase 4)
+  getBiweeklyProgress(studentId: number): Observable<BiweeklyProgressResponse> {
+    const student = this.students.find((s) => s.id === studentId);
+    if (!student) throw new Error('Student not found');
+
+    const now = new Date();
+    const periodEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const periodStart = new Date(periodEnd);
+    periodStart.setDate(periodStart.getDate() - 13);
+
+    // Generate mock data points for 14 days
+    const dataPoints: AssignmentProgressItem[] = [];
+    const courses = this.courses.filter((c) => c.status === 'active');
+    let totalAssignments = 0;
+    let completedAssignments = 0;
+    let totalScore = 0;
+    let scoredCount = 0;
+
+    for (let i = 0; i < 14; i++) {
+      const date = new Date(periodStart);
+      date.setDate(date.getDate() + i);
+      
+      const dayAssignments = this.assignments.filter((a) => {
+        const assignmentDate = new Date(a.assignmentDate);
+        return assignmentDate.getDate() === date.getDate() && 
+               assignmentDate.getMonth() === date.getMonth() && 
+               assignmentDate.getFullYear() === date.getFullYear();
+      });
+
+      const dayCompleted = dayAssignments.filter((a) => 
+        this.submissions.some((s) => s.assignmentId === a.id && s.studentId === studentId)
+      ).length;
+      
+      totalAssignments += dayAssignments.length;
+      completedAssignments += dayCompleted;
+      
+      const daySubmissions = this.submissions.filter((s) => 
+        dayAssignments.some((a) => a.id === s.assignmentId) && s.studentId === studentId
+      );
+      
+      daySubmissions.forEach((sub) => {
+        if (sub.dailyScore && sub.dailyScore > 0) {
+          totalScore += sub.dailyScore;
+          scoredCount++;
+        }
+      });
+
+      dataPoints.push({
+        assignmentId: dayAssignments[0]?.id ?? 0,
+        assignmentTitle: dayAssignments[0]?.title ?? `تکلیف ${date.getDate()}/${date.getMonth() + 1}`,
+        assignmentDate: date.toISOString().split('T')[0],
+        isSubmitted: dayCompleted > 0,
+        dailyScore: daySubmissions[0]?.dailyScore ?? undefined,
+        cumulativeScore: daySubmissions[0]?.cumulativeScore ?? undefined,
+        status: dayCompleted > 0 ? 'submitted' : 'pending'
+      });
+    }
+
+    const completionPercentage = totalAssignments > 0 ? (completedAssignments / totalAssignments) * 100 : 0;
+    const averageScore = scoredCount > 0 ? totalScore / scoredCount : 0;
+
+    return this.delayed({
+      studentId,
+      studentName: `${student.firstName} ${student.lastName}`,
+      periodStart: periodStart.toISOString().split('T')[0],
+      periodEnd: periodEnd.toISOString().split('T')[0],
+      totalAssignments,
+      completedAssignments,
+      pendingAssignments: totalAssignments - completedAssignments,
+      completionPercentage: Math.round(completionPercentage * 10) / 10,
+      averageScore: Math.round(averageScore * 10) / 10,
+      totalSubmissions: this.submissions.filter((s) => s.studentId === studentId).length,
+      assignments: dataPoints
+    });
+  }
+
+  getTeachers(): Observable<Teacher[]> {
+    return this.delayed([...this.teachers]);
+  }
+
+  getTeacherById(id: number): Observable<Teacher> {
+    const teacher = this.teachers.find(t => t.id === id);
+    return this.delayed(teacher ?? ({} as Teacher));
+  }
+
+  createTeacher(payload: CreateTeacherPayload): Observable<Teacher> {
+    const teacher: Teacher = {
+      id: this.nextId(this.teachers),
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      specialization: payload.specialization,
+      nationalCode: payload.nationalCode,
+      branchId: payload.branchId,
+      status: 'active',
+      createdAt: this.now(),
+      updatedAt: this.now()
+    };
+    this.teachers.push(teacher);
+    return this.delayed(teacher);
+  }
+
+  updateTeacher(id: number, payload: UpdateTeacherPayload): Observable<Teacher> {
+    const teacher = this.teachers.find(t => t.id === id);
+    if (!teacher) throw new Error('Teacher not found');
+    Object.assign(teacher, payload, { updatedAt: this.now() });
+    return this.delayed(teacher);
+  }
+
+  deleteTeacher(id: number): Observable<ApiMessageResponse> {
+    this.teachers = this.teachers.filter(t => t.id !== id);
+    return this.delayed({ message: 'استاد حذف شد' });
+  }
+
+  getTeachersByCourse(courseId: number): Observable<Teacher[]> {
+    const teacherIds = this.teacherCourses.filter(tc => tc.courseId === courseId).map(tc => tc.teacherId);
+    return this.delayed(this.teachers.filter(t => teacherIds.includes(t.id)));
+  }
+
+  getTeacherDashboardSummary(teacherId: number): Observable<TeacherDashboardSummary> {
+    const courses = this.teacherCourses.filter(tc => tc.teacherId === teacherId);
+    const gradings = this.assignmentGradings.filter(g => g.teacherId === teacherId);
+    return this.delayed({
+      totalCourses: courses.length,
+      totalStudents: 0,
+      pendingGradings: gradings.filter(g => g.status === 'pending').length,
+      completedGradings: gradings.filter(g => g.status === 'completed').length,
+      averageScore: gradings.length > 0 ? Math.round(gradings.reduce((sum, g) => sum + (g.dailyScore ?? 0), 0) / gradings.length) : 0
+    });
+  }
+
+  getTeacherCourses(teacherId: number): Observable<TeacherCourse[]> {
+    return this.delayed(this.teacherCourses.filter(tc => tc.teacherId === teacherId));
+  }
+
+  getTeacherGradings(teacherId: number): Observable<AssignmentGrading[]> {
+    return this.delayed(this.assignmentGradings.filter(g => g.teacherId === teacherId));
+  }
+
+  getPendingGradings(teacherId: number): Observable<AssignmentGrading[]> {
+    return this.delayed(this.assignmentGradings.filter(g => g.teacherId === teacherId && g.status === 'pending'));
+  }
+
+  gradeSubmission(payload: GradeSubmissionPayload): Observable<AssignmentGrading> {
+    const grading: AssignmentGrading = {
+      id: this.nextId(this.assignmentGradings),
+      submissionId: payload.submissionId,
+      teacherId: payload.teacherId,
+      dailyScore: payload.dailyScore,
+      cumulativeScore: payload.cumulativeScore,
+      status: payload.status ?? 'completed',
+      feedback: payload.feedback,
+      gradedAt: this.now()
+    };
+    this.assignmentGradings.push(grading);
+    return this.delayed(grading);
+  }
+
+  private competitions: Competition[] = [
+    { id: 1, title: 'مسابقه ریاضی پیشرفته', description: 'مسابقه مفاهیم پیشرفته ریاضی', type: 'assignment_based', startDate: '2026-07-01', endDate: '2026-07-30', status: 'published', courseId: 1, courseName: 'ریاضی', participantCount: 12, createdAt: '2026-06-25' },
+    { id: 2, title: 'مسابقه علوم تجربی', description: 'آزمون جامع علوم', type: 'assessment_based', startDate: '2026-07-15', endDate: '2026-08-15', status: 'draft', participantCount: 0, createdAt: '2026-07-10' }
+  ];
+
+  private competitionParticipants: CompetitionParticipant[] = [
+    { id: 1, studentId: 1, studentName: 'علی احمدی', score: 92, rank: 1, completedAt: '2026-07-20' },
+    { id: 2, studentId: 2, studentName: 'فاطمه محمدی', score: 85, rank: 2, completedAt: '2026-07-20' }
+  ];
+
+  private leagues: League[] = [
+    { id: 1, name: 'لیگ ریاضی تابستان', description: 'رقابت گروهی ریاضی', season: 'تابستان ۱۴۰۵', startDate: '2026-07-01', endDate: '2026-09-30', status: 'active', courseId: 1, courseName: 'ریاضی', participantCount: 8, createdAt: '2026-06-20' }
+  ];
+
+  private leagueRankings: LeagueRanking[] = [
+    { id: 1, studentId: 1, studentName: 'علی احمدی', score: 280, rank: 1, previousRank: 2, trend: 'up', lastUpdated: '2026-07-23' },
+    { id: 2, studentId: 2, studentName: 'فاطمه محمدی', score: 245, rank: 2, previousRank: 1, trend: 'down', lastUpdated: '2026-07-23' },
+    { id: 3, studentId: 3, studentName: 'محمد رضایی', score: 210, rank: 3, trend: 'stable', lastUpdated: '2026-07-23' }
+  ];
+
+  getCompetitions(): Observable<Competition[]> {
+    return this.delayed(this.competitions);
+  }
+
+  getActiveCompetitions(): Observable<Competition[]> {
+    return this.delayed(this.competitions.filter(c => c.status === 'published' || c.status === 'in_progress'));
+  }
+
+  getCompetitionById(id: number): Observable<CompetitionDetail> {
+    const comp = this.competitions.find(c => c.id === id);
+    if (!comp) throw new Error('مسابقه یافت نشد');
+    return this.delayed({ ...comp, participants: this.competitionParticipants.filter(p => p.studentId <= (comp.participantCount || 2)) });
+  }
+
+  createCompetition(payload: CreateCompetitionPayload): Observable<Competition> {
+    const comp: Competition = { id: this.nextId(this.competitions), ...payload, status: 'draft', participantCount: 0, createdAt: this.now() };
+    this.competitions.push(comp);
+    return this.delayed(comp);
+  }
+
+  updateCompetition(id: number, payload: UpdateCompetitionPayload): Observable<Competition> {
+    const idx = this.competitions.findIndex(c => c.id === id);
+    if (idx < 0) throw new Error('مسابقه یافت نشد');
+    this.competitions[idx] = { ...this.competitions[idx], ...payload };
+    return this.delayed(this.competitions[idx]);
+  }
+
+  deleteCompetition(id: number): Observable<ApiMessageResponse> {
+    this.competitions = this.competitions.filter(c => c.id !== id);
+    return this.delayed({ message: 'مسابقه حذف شد' });
+  }
+
+  registerParticipant(competitionId: number, payload: RegisterParticipantPayload): Observable<CompetitionParticipant> {
+    const p: CompetitionParticipant = { id: this.nextId('cp'), studentId: payload.studentId, studentName: `دانش‌آموز ${payload.studentId}` };
+    this.competitionParticipants.push(p);
+    const comp = this.competitions.find(c => c.id === competitionId);
+    if (comp) comp.participantCount++;
+    return this.delayed(p);
+  }
+
+  removeParticipant(competitionId: number, studentId: number): Observable<ApiMessageResponse> {
+    this.competitionParticipants = this.competitionParticipants.filter(p => !(p.studentId === studentId));
+    return this.delayed({ message: 'شرکت‌کننده حذف شد' });
+  }
+
+  updateParticipantScore(competitionId: number, studentId: number, payload: UpdateParticipantScorePayload): Observable<CompetitionParticipant> {
+    const idx = this.competitionParticipants.findIndex(p => p.studentId === studentId);
+    if (idx < 0) throw new Error('شرکت‌کننده یافت نشد');
+    this.competitionParticipants[idx] = { ...this.competitionParticipants[idx], ...payload };
+    return this.delayed(this.competitionParticipants[idx]);
+  }
+
+  getCompetitionResults(competitionId: number): Observable<CompetitionResult> {
+    const comp = this.competitions.find(c => c.id === competitionId);
+    return this.delayed({ competitionId, competitionTitle: comp?.title ?? '', rankings: this.competitionParticipants.sort((a, b) => (a.rank ?? 999) - (b.rank ?? 999)).filter(p => p.score != null) });
+  }
+
+  getLeagues(): Observable<League[]> {
+    return this.delayed(this.leagues);
+  }
+
+  getActiveLeagues(): Observable<League[]> {
+    return this.delayed(this.leagues.filter(l => l.status === 'active'));
+  }
+
+  getLeagueById(id: number): Observable<LeagueDetail> {
+    const league = this.leagues.find(l => l.id === id);
+    if (!league) throw new Error('لیگ یافت نشد');
+    return this.delayed({ ...league, rankings: this.leagueRankings.sort((a, b) => a.rank - b.rank) });
+  }
+
+  createLeague(payload: CreateLeaguePayload): Observable<League> {
+    const league: League = { id: this.nextId(this.leagues), ...payload, status: 'active', participantCount: 0, createdAt: this.now() };
+    this.leagues.push(league);
+    return this.delayed(league);
+  }
+
+  updateLeague(id: number, payload: UpdateLeaguePayload): Observable<League> {
+    const idx = this.leagues.findIndex(l => l.id === id);
+    if (idx < 0) throw new Error('لیگ یافت نشد');
+    this.leagues[idx] = { ...this.leagues[idx], ...payload };
+    return this.delayed(this.leagues[idx]);
+  }
+
+  deleteLeague(id: number): Observable<ApiMessageResponse> {
+    this.leagues = this.leagues.filter(l => l.id !== id);
+    return this.delayed({ message: 'لیگ حذف شد' });
+  }
+
+  getLeagueRankings(leagueId: number): Observable<LeagueRanking[]> {
+    return this.delayed(this.leagueRankings.sort((a, b) => a.rank - b.rank));
+  }
+
+  updateLeagueRanking(leagueId: number, payload: UpdateLeagueRankingPayload): Observable<LeagueRanking> {
+    const idx = this.leagueRankings.findIndex(r => r.studentId === payload.studentId);
+    if (idx < 0) {
+      const newRanking: LeagueRanking = { id: this.nextId('lr'), studentId: payload.studentId, studentName: `دانش‌آموز ${payload.studentId}`, score: payload.score, rank: this.leagueRankings.length + 1, trend: payload.trend ?? 'stable', lastUpdated: this.now() };
+      this.leagueRankings.push(newRanking);
+      return this.delayed(newRanking);
+    }
+    this.leagueRankings[idx] = { ...this.leagueRankings[idx], score: payload.score, previousRank: payload.previousRank, trend: payload.trend ?? this.leagueRankings[idx].trend, lastUpdated: this.now() };
+    return this.delayed(this.leagueRankings[idx]);
   }
 
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {

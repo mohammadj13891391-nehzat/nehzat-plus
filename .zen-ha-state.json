@@ -1,0 +1,569 @@
+{
+  "task": "Build a simple auth system",
+  "currentIndex": 70,
+  "cycleCount": 10,
+  "history": [
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:16:39.476Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:16:47.065Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:16:50.629Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:16:54.190Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:16:57.757Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:17:05.330Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:17:08.875Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:17:16.443Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:17:24.016Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:17:27.556Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:17:31.103Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:17:34.635Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:17:42.183Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:17:45.716Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:17:53.296Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:18:00.861Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:18:04.426Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:18:07.970Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:18:11.505Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:18:19.068Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:18:22.603Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:18:30.154Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:18:37.733Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:18:41.282Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:18:44.824Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:18:48.374Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:18:55.951Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:18:59.500Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:19:07.087Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:19:14.661Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:19:18.206Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:19:21.743Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:19:25.300Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:19:32.863Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:19:36.418Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:19:43.997Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:19:51.563Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:19:55.101Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:19:58.642Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:20:02.197Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:20:09.750Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:20:13.304Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:20:20.860Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:20:28.434Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:20:31.979Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:20:35.513Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:20:39.051Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:20:46.610Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:20:50.146Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:20:57.705Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:21:05.292Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:21:08.835Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:21:12.383Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:21:15.920Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:21:23.516Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:21:27.067Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:21:34.654Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:21:42.246Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:21:45.805Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:21:49.369Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:21:52.916Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:22:00.482Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:22:04.020Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "ling-3.0-flash-free",
+      "name": "Ling 3.0 Flash Free",
+      "timestamp": "2026-07-24T20:22:11.612Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "big-pickle",
+      "name": "Big Pickle",
+      "timestamp": "2026-07-24T20:22:19.194Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "deepseek-v4-flash-free",
+      "name": "DeepSeek V4 Flash",
+      "timestamp": "2026-07-24T20:22:22.739Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "mimo-v2.5-free",
+      "name": "MiMo V2.5",
+      "timestamp": "2026-07-24T20:22:26.294Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "nemotron-3-ultra-free",
+      "name": "Nemotron 3 Ultra",
+      "timestamp": "2026-07-24T20:22:29.855Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "north-mini-code-free",
+      "name": "North Mini Code",
+      "timestamp": "2026-07-24T20:22:37.453Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    },
+    {
+      "model": "hy3-free",
+      "name": "Hy3 Preview",
+      "timestamp": "2026-07-24T20:22:41.014Z",
+      "success": false,
+      "outputLength": 0,
+      "error": "Failed with exit code 1"
+    }
+  ],
+  "isRunning": false,
+  "lastCheckpoint": "2026-07-24T20:22:42.515Z"
+}
