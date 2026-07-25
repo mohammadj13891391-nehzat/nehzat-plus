@@ -22,12 +22,7 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES)
   },
-  {
-    path: 'survey',
-    loadChildren: () => import('./features/survey/survey.routes').then((m) => m.SERVICE_SURVEY_ROUTES),
-    canActivate: [authGuard]
-  },
-  {
+   {
     path: 'coach',
     canActivate: [authGuard],
     loadChildren: () => import('./features/coach/coach.routes').then((m) => m.COACH_ROUTES)
