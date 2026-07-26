@@ -1404,3 +1404,223 @@ export interface UpdateLeagueRankingPayload {
   previousRank?: number;
   trend?: RankingTrend;
 }
+
+
+
+export type SurveyStatus = 'draft' | 'active' | 'closed' | 'archived';
+export type SurveyType = 'general' | 'follow_up' | 'targeted';
+export type ActionPriority = 'critical' | 'high' | 'medium' | 'low';
+export type ActionStatus = 'proposed' | 'approved' | 'in_progress' | 'completed' | 'cancelled';
+export type IssueSeverity = 'critical' | 'problem' | 'solvable';
+
+export interface IssueSurvey {
+  id: number;
+  title: string;
+  description: string;
+  surveyType: SurveyType;
+  targetRole: string;
+  status: SurveyStatus;
+  startDate: string;
+  endDate: string;
+  isAnonymous: boolean;
+  scoreScaleMin: number;
+  scoreScaleMax: number;
+  createdById: number;
+  createdByName?: string;
+  createdAt: string;
+  updatedAt: string;
+  questionCount: number;
+  responseCount: number;
+  questions?: IssueSurveyQuestion[];
+  responses?: IssueSurveyResponse[];
+  comments?: IssueSurveyComment[];
+  actions?: IssueAction[];
+}
+
+export interface CreateIssueSurveyPayload {
+  title: string;
+  description: string;
+  surveyType: SurveyType;
+  targetRole: string;
+  startDate: string;
+  endDate: string;
+  isAnonymous: boolean;
+  scoreScaleMin: number;
+  scoreScaleMax: number;
+}
+
+export interface UpdateIssueSurveyPayload {
+  title?: string;
+  description?: string;
+  surveyType?: SurveyType;
+  targetRole?: string;
+  startDate?: string;
+  endDate?: string;
+  isAnonymous?: boolean;
+  status?: SurveyStatus;
+  scoreScaleMin?: number;
+  scoreScaleMax?: number;
+}
+
+export interface IssueSurveyQuestion {
+  id: number;
+  surveyId: number;
+  itemPoolId?: number;
+  questionText: string;
+  category: string;
+  subCategory?: string;
+  targetAudience?: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateIssueQuestionPayload {
+  surveyId: number;
+  itemPoolId?: number;
+  questionText: string;
+  category: string;
+  subCategory?: string;
+  targetAudience?: string;
+  sortOrder: number;
+}
+
+export interface IssueItemPool {
+  id: number;
+  questionText: string;
+  category: string;
+  subCategory?: string;
+  targetAudience?: string;
+  suggestedActions?: string;
+  source: string;
+  usageCount: number;
+  avgScore?: number;
+  trend: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateIssueItemPoolPayload {
+  questionText: string;
+  category: string;
+  subCategory?: string;
+  targetAudience?: string;
+  suggestedActions?: string;
+  source: string;
+}
+
+export interface IssueSurveyResponse {
+  id: number;
+  surveyId: number;
+  questionId: number;
+  questionText?: string;
+  respondentId?: number;
+  respondentRole?: string;
+  respondentBranchId?: number;
+  score: number;
+  answeredAt: string;
+}
+
+export interface SubmitAnswerItem {
+  questionId: number;
+  score: number;
+}
+
+export interface SubmitSurveyResponsePayload {
+  surveyId: number;
+  answers: SubmitAnswerItem[];
+  comment?: string;
+}
+
+export interface IssueSurveyComment {
+  id: number;
+  surveyId: number;
+  respondentId?: number;
+  respondentName?: string;
+  comment: string;
+  isPublic: boolean;
+  createdAt: string;
+}
+
+export interface IssueAction {
+  id: number;
+  surveyId: number;
+  questionId?: number;
+  questionText?: string;
+  category: string;
+  title: string;
+  description: string;
+  priority: ActionPriority;
+  status: ActionStatus;
+  assignedToId?: number;
+  assignedToName?: string;
+  assignedTeam?: string;
+  targetDate?: string;
+  completedAt?: string;
+  kpiDefinition?: string;
+  createdAt: string;
+  updatedAt: string;
+  updateCount: number;
+  updates?: IssueActionUpdate[];
+}
+
+export interface CreateIssueActionPayload {
+  surveyId: number;
+  questionId?: number;
+  title: string;
+  description: string;
+  category: string;
+  priority: ActionPriority;
+  assignedToId?: number;
+  assignedTeam?: string;
+  targetDate?: string;
+  kpiDefinition?: string;
+}
+
+export interface IssueActionUpdate {
+  id: number;
+  actionId: number;
+  updatedById: number;
+  updatedByName?: string;
+  previousStatus: ActionStatus;
+  newStatus: ActionStatus;
+  note: string;
+  progressPercent?: number;
+  createdAt: string;
+}
+
+export interface SurveyAnalytics {
+  surveyId: number;
+  title: string;
+  totalRespondents: number;
+  totalQuestions: number;
+  overallAverage: number;
+  categoryBreakdown: CategoryAnalytics[];
+  topCriticalIssues: QuestionAnalytics[];
+  topStrengths: QuestionAnalytics[];
+}
+
+export interface CategoryAnalytics {
+  category: string;
+  averageScore: number;
+  questionCount: number;
+  severity: IssueSeverity;
+}
+
+export interface QuestionAnalytics {
+  questionId: number;
+  questionText: string;
+  category: string;
+  averageScore: number;
+  standardDeviation: number;
+  responseCount: number;
+  severity: IssueSeverity;
+}
+
+export interface IssueDashboardSummary {
+  activeSurveys: number;
+  openActions: number;
+  completedActions: number;
+  criticalIssuePercentage: number;
+  improvingTrendPercentage: number;
+}

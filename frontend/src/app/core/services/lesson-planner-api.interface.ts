@@ -119,7 +119,22 @@ import {
   LeagueRanking,
   CreateLeaguePayload,
   UpdateLeaguePayload,
-  UpdateLeagueRankingPayload
+  UpdateLeagueRankingPayload,
+  IssueSurvey,
+  CreateIssueSurveyPayload,
+  UpdateIssueSurveyPayload,
+  IssueSurveyQuestion,
+  CreateIssueQuestionPayload,
+  IssueSurveyResponse,
+  SubmitSurveyResponsePayload,
+  IssueSurveyComment,
+  IssueAction,
+  CreateIssueActionPayload,
+  IssueItemPool,
+  CreateIssueItemPoolPayload,
+  IssueDashboardSummary,
+  SurveyAnalytics,
+  CategoryAnalytics
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -387,4 +402,41 @@ export abstract class LessonPlannerApi {
   abstract deleteLeague(id: number): Observable<ApiMessageResponse>;
   abstract getLeagueRankings(leagueId: number): Observable<LeagueRanking[]>;
   abstract updateLeagueRanking(leagueId: number, payload: UpdateLeagueRankingPayload): Observable<LeagueRanking>;
+
+  abstract getIssueSurveys(): Observable<IssueSurvey[]>;
+  abstract getIssueSurveyById(id: number): Observable<IssueSurvey>;
+  abstract createIssueSurvey(payload: CreateIssueSurveyPayload): Observable<IssueSurvey>;
+  abstract updateIssueSurvey(id: number, payload: UpdateIssueSurveyPayload): Observable<IssueSurvey>;
+  abstract deleteIssueSurvey(id: number): Observable<ApiMessageResponse>;
+  abstract publishIssueSurvey(id: number): Observable<IssueSurvey>;
+  abstract closeIssueSurvey(id: number): Observable<IssueSurvey>;
+  abstract duplicateIssueSurvey(id: number): Observable<IssueSurvey>;
+
+  abstract getIssueSurveyQuestions(surveyId: number): Observable<IssueSurveyQuestion[]>;
+  abstract createIssueSurveyQuestion(surveyId: number, payload: CreateIssueQuestionPayload): Observable<IssueSurveyQuestion>;
+  abstract updateIssueSurveyQuestion(surveyId: number, questionId: number, payload: Partial<CreateIssueQuestionPayload>): Observable<IssueSurveyQuestion>;
+  abstract deleteIssueSurveyQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse>;
+  abstract reorderIssueQuestions(surveyId: number, questionIds: number[]): Observable<void>;
+
+  abstract getIssueSurveysForRespond(surveyId: number): Observable<IssueSurvey>;
+  abstract submitSurveyResponses(surveyId: number, payload: SubmitSurveyResponsePayload): Observable<IssueSurveyResponse[]>;
+
+  abstract getSurveyAnalytics(surveyId: number): Observable<SurveyAnalytics>;
+  abstract getSurveyCategoryBreakdown(surveyId: number): Observable<CategoryAnalytics[]>;
+  abstract getSurveyTrends(): Observable<any[]>;
+  abstract exportSurveyJson(surveyId: number): Observable<any[]>;
+
+  abstract getSurveyComments(surveyId: number): Observable<IssueSurveyComment[]>;
+  abstract addSurveyComment(surveyId: number, payload: { comment: string }): Observable<IssueSurveyComment>;
+
+  abstract getSurveyActions(surveyId: number): Observable<IssueAction[]>;
+  abstract createSurveyAction(surveyId: number, payload: CreateIssueActionPayload): Observable<IssueAction>;
+  abstract updateIssueAction(id: number, payload: Partial<IssueAction>): Observable<IssueAction>;
+  abstract updateIssueActionStatus(id: number, status: string, updatedById: number, note?: string, progressPercent?: number): Observable<IssueAction>;
+
+  abstract getIssueItemPool(category?: string): Observable<IssueItemPool[]>;
+  abstract createIssueItemPool(payload: CreateIssueItemPoolPayload): Observable<IssueItemPool>;
+  abstract addPoolItemToSurvey(poolItemId: number, surveyId: number, sortOrder?: number): Observable<IssueItemPool>;
+
+  abstract getIssueDashboardSummary(): Observable<IssueDashboardSummary>;
 }
