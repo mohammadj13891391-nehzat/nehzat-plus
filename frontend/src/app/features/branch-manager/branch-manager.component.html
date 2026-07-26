@@ -1,0 +1,323 @@
+<main class="role-page">
+  <header class="site-header">
+    <div class="brand-wrap">
+      <img
+        src="assets/nehzat.png"
+        alt="لوگو سایت"
+        class="site-logo"
+        [hidden]="logoHidden"
+        (error)="logoHidden = true"
+      />
+      <div>
+        <h1>پنل مسئول شعبه</h1>
+        <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
+      </div>
+    </div>
+    <div class="header-nav">
+      <a class="nav-link" routerLink="/branch-manager/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
+      <a class="nav-link" routerLink="/branch-manager/competitions" routerLinkActive="nav-link-active">مسابقات</a>
+      <a class="nav-link" routerLink="/branch-manager/leagues" routerLinkActive="nav-link-active">لیگ‌ها</a>
+    </div>
+    <div class="user-menu">
+      <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'info'"
+      (click)="activeTab.set('info')"
+    >
+      اطلاعات شعبه
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'performance'"
+      (click)="activeTab.set('performance')"
+    >
+      عملکرد
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'coaches'"
+      (click)="activeTab.set('coaches')"
+    >
+      مربیان
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'students'"
+      (click)="activeTab.set('students')"
+    >
+      دانش‌آموزان
+    </button>
+  </nav>
+
+  <section class="main-content">
+    @if (loading()) {
+      <p class="muted">در حال بارگذاری اطلاعات…</p>
+    } @else if (errorMessage()) {
+      <p class="error-text">{{ errorMessage() }}</p>
+    } @else {
+      <!-- اطلاعات شعبه -->
+      @if (activeTab() === 'info') {
+        @if (branch(); as b) {
+          <article class="card">
+            <h2 class="card-title">مشخصات شعبه</h2>
+            <dl class="info-grid">
+              <div class="info-item"><dt>نام شعبه</dt><dd>{{ b.name }}</dd></div>
+              <div class="info-item"><dt>استان</dt><dd>{{ b.province }}</dd></div>
+              <div class="info-item"><dt>شناسه</dt><dd>{{ b.id }}</dd></div>
+              @if (b.description) {
+                <div class="info-item info-item-wide"><dt>توضیحات</dt><dd>{{ b.description }}</dd></div>
+              }
+            </dl>
+          </article>
+        } @else {
+          <p class="muted">شعبه‌ای برای شما ثبت نشده است.</p>
+        }
+
+        @if (manager(); as m) {
+          <article class="card">
+            <h2 class="card-title">اطلاعات مسئول شعبه</h2>
+            <dl class="info-grid">
+              <div class="info-item"><dt>نام</dt><dd>{{ m.firstName }} {{ m.lastName }}</dd></div>
+              <div class="info-item"><dt>نام کاربری</dt><dd>{{ m.username }}</dd></div>
+              <div class="info-item"><dt>ایمیل</dt><dd>{{ m.email }}</dd></div>
+              <div class="info-item"><dt>تلفن</dt><dd>{{ m.phoneNumber }}</dd></div>
+              <div class="info-item"><dt>جنسیت</dt><dd>{{ genderLabel(m.gender) }}</dd></div>
+              <div class="info-item"><dt>وضعیت</dt><dd>{{ statusLabel(m.status) }}</dd></div>
+            </dl>
+          </article>
+        }
+      }
+
+      <!-- عملکرد -->
+      @if (activeTab() === 'performance') {
+        @if (branchPerformance(); as bp) {
+          <article class="card">
+            <h2 class="card-title">عملکرد شعبه</h2>
+            <div class="metrics-grid">
+              <div class="metric">
+                <span class="metric-value">{{ bp.studentCount }}</span>
+                <span class="metric-label">دانش‌آموزان</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ bp.averageScore | number: '1.0-1' }}</span>
+                <span class="metric-label">میانگین نمره</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ (bp.attendanceRate * 100) | number: '1.0-0' }}٪</span>
+                <span class="metric-label">نرخ حضور</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ bp.activeCourses }}</span>
+                <span class="metric-label">دوره‌های فعال</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ bp.evaluationCount }}</span>
+                <span class="metric-label">ارزیابی‌ها</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">{{ bp.averageEvaluationScore | number: '1.0-1' }}</span>
+                <span class="metric-label">میانگین نمره ارزیابی</span>
+              </div>
+            </div>
+          </article>
+        } @else {
+          <p class="muted">داده عملکردی برای شعبه شما موجود نیست.</p>
+        }
+
+        <article class="card">
+          <h2 class="card-title">عملکرد مربیان</h2>
+          @if (coachPerformance().length > 0) {
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>مربی</th>
+                    <th>تخصص</th>
+                    <th>دوره‌ها</th>
+                    <th>دانش‌آموزان</th>
+                    <th>میانگین نمره</th>
+                    <th>ارزیابی‌ها</th>
+                    <th>وضعیت</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (cp of coachPerformance(); track cp.coachId) {
+                    <tr>
+                      <td>{{ cp.coachName }}</td>
+                      <td>{{ cp.specialization }}</td>
+                      <td>{{ cp.assignedCourseCount }}</td>
+                      <td>{{ cp.studentCount }}</td>
+                      <td>{{ cp.averageStudentScore | number: '1.0-1' }}</td>
+                      <td>{{ cp.evaluationCount }}</td>
+                      <td>{{ statusLabel(cp.status) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="muted">هیچ داده عملکرد مربی موجود نیست.</p>
+          }
+        </article>
+      }
+
+      <!-- مربیان -->
+      @if (activeTab() === 'coaches') {
+        <article class="card">
+          <h2 class="card-title">فهرست مربیان شعبه</h2>
+          @if (coaches().length > 0) {
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>نام</th>
+                    <th>نام کاربری</th>
+                    <th>تخصص</th>
+                    <th>ایمیل</th>
+                    <th>تلفن</th>
+                    <th>دوره‌ها</th>
+                    <th>وضعیت</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (c of coaches(); track c.id) {
+                    <tr>
+                      <td>{{ c.firstName }} {{ c.lastName }}</td>
+                      <td>{{ c.username }}</td>
+                      <td>{{ c.specialization }}</td>
+                      <td>{{ c.email }}</td>
+                      <td>{{ c.phoneNumber }}</td>
+                      <td>{{ c.assignedCourseIds.length }}</td>
+                      <td>{{ statusLabel(c.status) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="muted">هیچ مربی‌ای در این شعبه ثبت نشده است.</p>
+          }
+        </article>
+      }
+
+      <!-- دانش‌آموزان -->
+      @if (activeTab() === 'students') {
+        <article class="card">
+          <div class="card-header-row">
+            <h2 class="card-title">مدیریت دانش‌آموزان شعبه</h2>
+            <button type="button" class="btn-primary" (click)="openCreateForm()">
+              افزودن دانش‌آموز
+            </button>
+          </div>
+
+          @if (students().length > 0) {
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>نام</th>
+                    <th>نام کاربری</th>
+                    <th>کد دانش‌آموزی</th>
+                    <th>ایمیل</th>
+                    <th>تلفن</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of students(); track s.id) {
+                    <tr>
+                      <td>{{ s.firstName }} {{ s.lastName }}</td>
+                      <td>{{ s.username }}</td>
+                      <td>{{ s.studentId }}</td>
+                      <td>{{ s.email }}</td>
+                      <td>{{ s.phoneNumber }}</td>
+                      <td>{{ statusLabel(s.status) }}</td>
+                      <td>
+                        <button type="button" class="btn-link" (click)="openEditForm(s)">ویرایش</button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="muted">هیچ دانش‌آموزی در این شعبه ثبت نشده است.</p>
+          }
+        </article>
+
+        @if (formVisible()) {
+          <article class="card form-card">
+            <h2 class="card-title">{{ editingId() === null ? 'افزودن دانش‌آموز' : 'ویرایش دانش‌آموز' }}</h2>
+            <form (ngSubmit)="submitForm()" class="student-form">
+              <div class="form-row">
+                <label class="form-field">
+                  <span>نام</span>
+                  <input type="text" name="firstName" [(ngModel)]="formModel.firstName" required />
+                </label>
+                <label class="form-field">
+                  <span>نام خانوادگی</span>
+                  <input type="text" name="lastName" [(ngModel)]="formModel.lastName" required />
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>نام کاربری</span>
+                  <input type="text" name="username" [(ngModel)]="formModel.username" required />
+                </label>
+                @if (editingId() === null) {
+                  <label class="form-field">
+                    <span>رمز عبور</span>
+                    <input type="password" name="password" [(ngModel)]="formModel.password" required />
+                  </label>
+                }
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>ایمیل</span>
+                  <input type="email" name="email" [(ngModel)]="formModel.email" />
+                </label>
+                <label class="form-field">
+                  <span>تلفن</span>
+                  <input type="text" name="phoneNumber" [(ngModel)]="formModel.phoneNumber" />
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>کد دانش‌آموزی</span>
+                  <input type="text" name="studentId" [(ngModel)]="formModel.studentId" />
+                </label>
+                <label class="form-field">
+                  <span>کد ملی</span>
+                  <input type="text" name="nationalCode" [(ngModel)]="formModel.nationalCode" />
+                </label>
+              </div>
+              @if (formError()) {
+                <p class="error-text">{{ formError() }}</p>
+              }
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="submitting()">
+                  {{ submitting() ? 'در حال ذخیره…' : 'ذخیره' }}
+                </button>
+                <button type="button" class="btn-secondary" (click)="closeForm()" [disabled]="submitting()">انصراف</button>
+              </div>
+            </form>
+          </article>
+        }
+      }
+    }
+  </section>
+</main>

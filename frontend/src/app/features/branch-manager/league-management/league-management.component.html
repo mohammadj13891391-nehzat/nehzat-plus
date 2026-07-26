@@ -1,0 +1,141 @@
+<main class="league-page">
+  <header class="page-header">
+    <div class="header-content">
+      <img src="assets/nehzat.png" alt="لوگو" class="logo" (error)="logoHidden = true" />
+      <div>
+        <h1>مدیریت لیگ‌ها</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-primary" (click)="showCreateForm.set(true)">+ لیگ جدید</button>
+    </div>
+  </header>
+
+  @if (toast(); as t) {
+    <div class="toast" [class.toast-success]="t.type === 'success'" [class.toast-error]="t.type === 'error'">{{ t.message }}</div>
+  }
+
+  <!-- Create/Edit Form -->
+  @if (showCreateForm() || editingLeague()) {
+    <section class="card form-card">
+      <h2 class="card-title">{{ editingLeague() ? 'ویرایش لیگ' : 'لیگ جدید' }}</h2>
+      <form #f="ngForm" (ngSubmit)="saveLeague()" class="form-layout">
+        <div class="form-group">
+          <label for="name">نام لیگ</label>
+          <input id="name" name="name" [(ngModel)]="formData.name" required #name="ngModel" class="form-control" />
+          @if (name.invalid && name.touched) { <span class="field-error">نام الزامی است</span> }
+        </div>
+        <div class="form-group">
+          <label for="desc">توضیحات</label>
+          <textarea id="desc" name="description" [(ngModel)]="formData.description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="season">فصل</label>
+          <input id="season" name="season" [(ngModel)]="formData.season" required class="form-control" placeholder="مثال: تابستان ۱۴۰۵" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">تاریخ شروع</label>
+            <input id="startDate" name="startDate" type="date" [(ngModel)]="formData.startDate" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="endDate">تاریخ پایان</label>
+            <input id="endDate" name="endDate" type="date" [(ngModel)]="formData.endDate" required class="form-control" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="f.invalid || saving()">ذخیره</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">انصراف</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- League List -->
+  <section class="card">
+    <h2 class="card-title">لیست لیگ‌ها</h2>
+    @if (loading()) {
+      <p class="muted">در حال بارگذاری…</p>
+    } @else if (leagues().length === 0) {
+      <p class="muted">هیچ لیگی ثبت نشده است.</p>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>نام</th>
+              <th>فصل</th>
+              <th>تاریخ شروع</th>
+              <th>تاریخ پایان</th>
+              <th>وضعیت</th>
+              <th>شرکت‌کنندگان</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (league of leagues(); track league.id) {
+              <tr>
+                <td>{{ league.name }}</td>
+                <td>{{ league.season }}</td>
+                <td>{{ league.startDate }}</td>
+                <td>{{ league.endDate }}</td>
+                <td><span class="badge" [class.badge-active]="league.status === 'active'">{{ league.status === 'active' ? 'فعال' : 'تکمیل شده' }}</span></td>
+                <td>{{ league.participantCount }}</td>
+                <td class="actions-cell">
+                  <button type="button" class="btn btn-sm btn-secondary" (click)="viewLeague(league.id)">رتبه‌بندی</button>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="editLeague(league)">ویرایش</button>
+                  <button type="button" class="btn btn-sm btn-danger" (click)="deleteLeague(league.id)">حذف</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <!-- League Rankings -->
+  @if (selectedLeague(); as detail) {
+    <section class="card">
+      <h2 class="card-title">رتبه‌بندی: {{ detail.name }}</h2>
+      <p class="muted">{{ detail.season }} — {{ detail.status === 'active' ? 'فعال' : 'تکمیل شده' }}</p>
+
+      @if (detail.rankings.length === 0) {
+        <p class="muted">هنوز رتبه‌بندی ثبت نشده است.</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>رتبه</th><th>نام دانش‌آموز</th><th>امتیاز</th><th>تغییرات</th></tr>
+            </thead>
+            <tbody>
+              @for (r of detail.rankings; track r.id) {
+                <tr>
+                  <td><strong>{{ r.rank }}</strong></td>
+                  <td>{{ r.studentName }}</td>
+                  <td>
+                    @if (editingScoreFor() === r.studentId) {
+                      <div class="inline-edit-group">
+                        <input type="number" [(ngModel)]="editScoreValue" class="form-control inline-input-sm" placeholder="امتیاز" />
+                        <button type="button" class="btn btn-sm btn-success" (click)="saveRankingScore(detail.id)">ذخیره</button>
+                        <button type="button" class="btn btn-sm btn-secondary" (click)="editingScoreFor.set(0)">انصراف</button>
+                      </div>
+                    } @else {
+                      {{ r.score }}
+                    }
+                  </td>
+                  <td>
+                    @if (r.trend === 'up') { <span class="trend-up">صعود</span> }
+                    @else if (r.trend === 'down') { <span class="trend-down">نزول</span> }
+                    @else { <span class="trend-stable">ثابت</span> }
+                    <button type="button" class="btn btn-sm btn-secondary" style="margin-right:8px" (click)="startEditScore(r.studentId, r.score)">ثبت امتیاز</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</main>

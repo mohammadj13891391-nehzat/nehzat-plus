@@ -1,0 +1,186 @@
+<main class="competition-page">
+  <header class="page-header">
+    <div class="header-content">
+      <img src="assets/nehzat.png" alt="لوگو" class="logo" (error)="logoHidden = true" />
+      <div>
+        <h1>مدیریت مسابقات</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-primary" (click)="showCreateForm.set(true)">+ مسابقه جدید</button>
+    </div>
+  </header>
+
+  @if (toast(); as t) {
+    <div class="toast" [class.toast-success]="t.type === 'success'" [class.toast-error]="t.type === 'error'">{{ t.message }}</div>
+  }
+
+  <!-- Create/Edit Form -->
+  @if (showCreateForm() || editingCompetition()) {
+    <section class="card form-card">
+      <h2 class="card-title">{{ editingCompetition() ? 'ویرایش مسابقه' : 'مسابقه جدید' }}</h2>
+      <form #f="ngForm" (ngSubmit)="saveCompetition()" class="form-layout">
+        <div class="form-group">
+          <label for="title">عنوان</label>
+          <input id="title" name="title" [(ngModel)]="formData.title" required #title="ngModel" class="form-control" />
+          @if (title.invalid && title.touched) { <span class="field-error">عنوان الزامی است</span> }
+        </div>
+        <div class="form-group">
+          <label for="description">توضیحات</label>
+          <textarea id="description" name="description" [(ngModel)]="formData.description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="type">نوع مسابقه</label>
+          <select id="type" name="type" [(ngModel)]="formData.type" required class="form-control">
+            <option value="assignment_based">مبتنی بر تکلیف</option>
+            <option value="assessment_based">مبتنی بر آزمون</option>
+            <option value="mixed">ترکیبی</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">تاریخ شروع</label>
+            <input id="startDate" name="startDate" type="date" [(ngModel)]="formData.startDate" required class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="endDate">تاریخ پایان</label>
+            <input id="endDate" name="endDate" type="date" [(ngModel)]="formData.endDate" required class="form-control" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="f.invalid || saving()">ذخیره</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">انصراف</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  <!-- Competition List -->
+  <section class="card">
+    <h2 class="card-title">لیست مسابقات</h2>
+    @if (loading()) {
+      <p class="muted">در حال بارگذاری…</p>
+    } @else if (competitions().length === 0) {
+      <p class="muted">هیچ مسابقه‌ای ثبت نشده است.</p>
+    } @else {
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>عنوان</th>
+              <th>نوع</th>
+              <th>تاریخ شروع</th>
+              <th>تاریخ پایان</th>
+              <th>وضعیت</th>
+              <th>شرکت‌کنندگان</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (comp of competitions(); track comp.id) {
+              <tr>
+                <td>{{ comp.title }}</td>
+                <td>{{ typeLabel(comp.type) }}</td>
+                <td>{{ comp.startDate }}</td>
+                <td>{{ comp.endDate }}</td>
+                <td><span class="badge" [class.badge-active]="comp.status === 'published' || comp.status === 'in_progress'" [class.badge-success]="comp.status === 'completed'">{{ statusLabel(comp.status) }}</span></td>
+                <td>{{ comp.participantCount }}</td>
+                <td class="actions-cell">
+                  <button type="button" class="btn btn-sm btn-secondary" (click)="viewCompetition(comp.id)">جزئیات</button>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="editCompetition(comp)">ویرایش</button>
+                  <button type="button" class="btn btn-sm btn-danger" (click)="deleteCompetition(comp.id)">حذف</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  <!-- Competition Detail -->
+  @if (selectedCompetition(); as detail) {
+    <section class="card">
+      <h2 class="card-title">جزئیات مسابقه: {{ detail.title }}</h2>
+      <dl class="info-grid">
+        <div class="info-item"><dt>وضعیت</dt><dd><span class="badge" [class.badge-success]="detail.status === 'completed'">{{ statusLabel(detail.status) }}</span></dd></div>
+        <div class="info-item"><dt>شرکت‌کنندگان</dt><dd>{{ detail.participants.length }}</dd></div>
+      </dl>
+
+      <h3 class="section-title">شرکت‌کنندگان</h3>
+      @if (detail.participants.length === 0) {
+        <p class="muted">هیچ شرکت‌کننده‌ای ثبت نشده است.</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>نام دانش‌آموز</th><th>امتیاز</th><th>رتبه</th><th>عملیات</th></tr>
+            </thead>
+            <tbody>
+              @for (p of detail.participants; track p.id) {
+                <tr>
+                  <td>{{ p.studentName }}</td>
+                  <td>
+                    @if (editingScoreFor() === p.studentId) {
+                      <div class="inline-edit-group">
+                        <input type="number" [(ngModel)]="editScoreValue" class="form-control inline-input-sm" placeholder="امتیاز" />
+                        <input type="number" [(ngModel)]="editRankValue" class="form-control inline-input-sm" placeholder="رتبه" />
+                        <button type="button" class="btn btn-sm btn-success" (click)="saveScore(detail.id)">ذخیره</button>
+                        <button type="button" class="btn btn-sm btn-secondary" (click)="editingScoreFor.set(0)">انصراف</button>
+                      </div>
+                    } @else {
+                      {{ p.score ?? '-' }}
+                    }
+                  </td>
+                  <td>{{ p.rank ?? '-' }}</td>
+                  <td class="actions-cell">
+                    <button type="button" class="btn btn-sm btn-secondary" (click)="startEditScore(p.studentId, p.score, p.rank)">ثبت امتیاز</button>
+                    <button type="button" class="btn btn-sm btn-danger" (click)="removeParticipant(detail.id, p.studentId)">حذف</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Register Participant -->
+      <div class="inline-form">
+        <input type="number" placeholder="شناسه دانش‌آموز" [(ngModel)]="studentIdToAdd" class="form-control inline-input" />
+        <button type="button" class="btn btn-sm btn-primary" (click)="registerParticipant(detail.id)">ثبت شرکت‌کننده</button>
+      </div>
+
+      <!-- View Results -->
+      <div class="section-actions">
+        <button type="button" class="btn btn-secondary" (click)="viewResults(detail.id)">مشاهده نتایج</button>
+      </div>
+    </section>
+  }
+
+  <!-- Competition Results -->
+  @if (competitionResults(); as result) {
+    <section class="card">
+      <h2 class="card-title">نتایج: {{ result.competitionTitle }}</h2>
+      @if (result.rankings.length === 0) {
+        <p class="muted">نتیجه‌ای ثبت نشده است.</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>رتبه</th><th>نام دانش‌آموز</th><th>امتیاز</th></tr>
+            </thead>
+            <tbody>
+              @for (r of result.rankings; track r.id) {
+                <tr>
+                  <td><strong>{{ r.rank }}</strong></td>
+                  <td>{{ r.studentName }}</td>
+                  <td>{{ r.score }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
+</main>
