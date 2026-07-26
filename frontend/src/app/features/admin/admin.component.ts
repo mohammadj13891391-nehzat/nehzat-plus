@@ -47,6 +47,7 @@ import { AdminHeadquartersComponent } from './admin-headquarters/admin-headquart
 import { AdminMakatibComponent } from './admin-makatib/admin-makatib.component';
 import { AdminCurriculumComponent } from './admin-curriculum/admin-curriculum.component';
 import { AdminRingsComponent } from './admin-rings/admin-rings.component';
+import { AdminSurveysComponent } from './admin-surveys/admin-surveys.component';
 
 @Component({
   selector: 'app-admin',
@@ -65,6 +66,7 @@ import { AdminRingsComponent } from './admin-rings/admin-rings.component';
     AdminMakatibComponent,
     AdminCurriculumComponent,
     AdminRingsComponent,
+    AdminSurveysComponent,
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
@@ -96,6 +98,7 @@ export class AdminComponent implements OnInit {
     { key: 'evaluators', label: 'ارزیاب', roles: ['manager', 'headquarters'] },
     { key: 'headquarters', label: 'ستاد', roles: ['manager', 'headquarters'] },
     { key: 'spiritual', label: 'مسیر معنوی', roles: ['manager', 'headquarters'] },
+    { key: 'surveys', label: 'نظرسنجی‌ها', roles: ['manager', 'headquarters'] },
   ] as const;
 
   registeredBranches: Branch[] = [];

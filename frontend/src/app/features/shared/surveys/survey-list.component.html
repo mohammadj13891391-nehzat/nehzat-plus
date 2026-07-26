@@ -1,0 +1,43 @@
+<main class="survey-page">
+  <header class="page-header">
+    <h1>نظرسنجی‌های فعال</h1>
+    <p class="subtitle">لیست نظرسنجی‌های منتشر شده برای شرکت</p>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+
+  @if (loading) {
+    <p class="muted">در حال بارگذاری نظرسنجی‌ها...</p>
+  } @else if (surveys.length === 0) {
+    <div class="empty-state">
+      <p>هنوز نظرسنجی فعالی وجود ندارد.</p>
+    </div>
+  } @else {
+    <div class="survey-grid">
+      @for (survey of surveys; track survey.id) {
+        <div class="survey-card" (click)="takeSurvey(survey)">
+          <div class="survey-card-header">
+            <h3>{{ survey.title }}</h3>
+            <span class="{{ statusClass(survey.status) }}">{{ statusLabel(survey.status) }}</span>
+          </div>
+          @if (survey.description) {
+            <p class="survey-desc">{{ survey.description }}</p>
+          }
+          <div class="survey-meta">
+            <span>{{ survey.questionCount }} سوال</span>
+            <span>{{ survey.responseCount }} پاسخ</span>
+            @if (survey.isAnonymous) {
+              <span>ناشناس</span>
+            }
+          </div>
+          <div class="survey-dates">
+            <span>{{ survey.startDate }} تا {{ survey.endDate }}</span>
+          </div>
+          <button type="button" class="btn btn-primary">شرکت در نظرسنجی</button>
+        </div>
+      }
+    </div>
+  }
+</main>

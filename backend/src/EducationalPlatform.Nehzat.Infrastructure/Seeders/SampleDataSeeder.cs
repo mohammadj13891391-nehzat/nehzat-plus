@@ -35,6 +35,7 @@ public class SampleDataSeeder
         await SeedSpiritualPracticeItemsAsync();
         await SeedSpiritualOccasionsAsync();
         await SeedSpiritualPathsAsync();
+        await new SurveyDataSeeder(_db).SeedAsync();
     }
 
     private async Task<List<Student>> CreateStudentsAsync()

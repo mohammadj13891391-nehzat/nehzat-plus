@@ -48,6 +48,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/headquarters/headquarters.routes').then((m) => m.HEADQUARTERS_ROUTES)
   },
   {
+    path: 'surveys',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/surveys/surveys.routes').then((m) => m.SURVEYS_ROUTES),
+  },
+  {
     path: '**',
     redirectTo: '/auth/login'
   }

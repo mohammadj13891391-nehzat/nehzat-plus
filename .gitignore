@@ -4,10 +4,6 @@
 stderr.txt
 stdout.txt
 
-# Build artifacts (backend)
-backend-err.txt
-backend-output.txt
-
 # Build output
 dist/
 **/dist/

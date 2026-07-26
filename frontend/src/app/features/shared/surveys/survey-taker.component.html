@@ -1,0 +1,79 @@
+<main class="survey-taker-page">
+  <header class="page-header">
+    <button type="button" class="btn btn-back" (click)="goBack()">← بازگشت</button>
+    <h1>{{ survey?.title ?? 'نظرسنجی' }}</h1>
+    @if (survey?.description) {
+      <p class="subtitle">{{ survey?.description }}</p>
+    }
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+
+  @if (successMessage) {
+    <p class="lp-success" role="status">{{ successMessage }}</p>
+  }
+
+  @if (loading) {
+    <p class="muted">در حال بارگذاری نظرسنجی...</p>
+  } @else if (survey && successMessage) {
+    <div class="success-card">
+      <p>پاسخ‌های شما ثبت شد.</p>
+      <button type="button" class="btn btn-primary" (click)="goBack()">بازگشت به لیست</button>
+    </div>
+  } @else if (survey) {
+    <!-- Progress bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="getProgress()"></div>
+    </div>
+    <p class="progress-text">{{ currentPage * pageSize + 1 }} - {{ progressEnd() }} از {{ questions.length }} سوال</p>
+
+    <form [formGroup]="answerForm" (ngSubmit)="onSubmit()">
+      @for (question of pagedQuestions; track question.id) {
+        <div class="question-card">
+          <h3 class="question-text">{{ question.questionText }}</h3>
+          @if (question.category) {
+            <span class="question-category">{{ question.category }}</span>
+          }
+
+          <div class="scale-options">
+            @for (label of scoreLabels; track $index) {
+              <label class="scale-option">
+                <input
+                  type="radio"
+                  [formControlName]="'q_' + question.id"
+                  [name]="'q_' + question.id"
+                  [value]="label"
+                />
+                <span class="scale-label">{{ scoreLabel(label) }}</span>
+                <span class="scale-number">{{ label }}</span>
+              </label>
+            }
+          </div>
+
+          @if (answerForm.get('q_' + question.id)?.touched && answerForm.get('q_' + question.id)?.invalid) {
+            <p class="field-error">لطفاً امتیاز را انتخاب کنید</p>
+          }
+        </div>
+      }
+
+      <div class="form-actions">
+        @if (currentPage > 0) {
+          <button type="button" class="btn btn-secondary" (click)="prevPage()">صفحه قبل</button>
+        }
+
+        @if (!isLastPage()) {
+          <button type="button" class="btn btn-primary" (click)="nextPage()">صفحه بعد</button>
+        }
+
+        @if (isLastPage()) {
+          <button type="submit" class="btn btn-success" [disabled]="submitting">
+            <span *ngIf="!submitting">ثبت نظرسنجی</span>
+            <span *ngIf="submitting">در حال ثبت...</span>
+          </button>
+        }
+      </div>
+    </form>
+  }
+</main>
