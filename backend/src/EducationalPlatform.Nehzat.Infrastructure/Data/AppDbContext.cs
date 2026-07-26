@@ -62,6 +62,14 @@ public class AppDbContext : DbContext
   public DbSet<AssignmentGrading> AssignmentGradings => Set<AssignmentGrading>();
 
   public DbSet<Competition> Competitions => Set<Competition>();
+
+  public DbSet<IssueSurvey> IssueSurveys => Set<IssueSurvey>();
+  public DbSet<IssueItemPool> IssueItemPools => Set<IssueItemPool>();
+  public DbSet<IssueSurveyQuestion> IssueSurveyQuestions => Set<IssueSurveyQuestion>();
+  public DbSet<IssueSurveyResponse> IssueSurveyResponses => Set<IssueSurveyResponse>();
+  public DbSet<IssueSurveyComment> IssueSurveyComments => Set<IssueSurveyComment>();
+  public DbSet<IssueAction> IssueActions => Set<IssueAction>();
+  public DbSet<IssueActionUpdate> IssueActionUpdates => Set<IssueActionUpdate>();
   public DbSet<CompetitionParticipant> CompetitionParticipants => Set<CompetitionParticipant>();
   public DbSet<League> Leagues => Set<League>();
   public DbSet<LeagueRanking> LeagueRankings => Set<LeagueRanking>();
@@ -592,6 +600,119 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => new { e.LeagueId, e.StudentId }).IsUnique();
+        });
+
+        modelBuilder.Entity<IssueSurvey>(entity =>
+        {
+            entity.HasOne(e => e.CreatedBy)
+                  .WithMany()
+                  .HasForeignKey(e => e.CreatedById)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.StartDate);
+            entity.HasIndex(e => e.EndDate);
+        });
+
+        modelBuilder.Entity<IssueSurveyQuestion>(entity =>
+        {
+            entity.HasOne(e => e.Survey)
+                  .WithMany(s => s.Questions)
+                  .HasForeignKey(e => e.SurveyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ItemPool)
+                  .WithMany(p => p.SurveyQuestions)
+                  .HasForeignKey(e => e.ItemPoolId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.SurveyId);
+            entity.HasIndex(e => e.Category);
+        });
+
+        modelBuilder.Entity<IssueSurveyResponse>(entity =>
+        {
+            entity.HasOne(e => e.Survey)
+                  .WithMany(s => s.Responses)
+                  .HasForeignKey(e => e.SurveyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Question)
+                  .WithMany(q => q.Responses)
+                  .HasForeignKey(e => e.QuestionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Respondent)
+                  .WithMany()
+                  .HasForeignKey(e => e.RespondentId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.RespondentBranch)
+                  .WithMany()
+                  .HasForeignKey(e => e.RespondentBranchId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => new { e.SurveyId, e.QuestionId, e.RespondentId }).IsUnique();
+            entity.HasIndex(e => e.AnsweredAt);
+        });
+
+        modelBuilder.Entity<IssueSurveyComment>(entity =>
+        {
+            entity.HasOne(e => e.Survey)
+                  .WithMany(s => s.Comments)
+                  .HasForeignKey(e => e.SurveyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Respondent)
+                  .WithMany()
+                  .HasForeignKey(e => e.RespondentId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IssueItemPool>(entity =>
+        {
+            entity.HasIndex(e => e.Category);
+            entity.HasIndex(e => e.IsActive);
+        });
+
+        modelBuilder.Entity<IssueAction>(entity =>
+        {
+            entity.HasOne(e => e.Survey)
+                  .WithMany(s => s.Actions)
+                  .HasForeignKey(e => e.SurveyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Question)
+                  .WithMany(q => q.Actions)
+                  .HasForeignKey(e => e.QuestionId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.AssignedTo)
+                  .WithMany()
+                  .HasForeignKey(e => e.AssignedToId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.Priority);
+        });
+
+        modelBuilder.Entity<IssueActionUpdate>(entity =>
+        {
+            entity.HasOne(e => e.Action)
+                  .WithMany(a => a.Updates)
+                  .HasForeignKey(e => e.ActionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.UpdatedBy)
+                  .WithMany()
+                  .HasForeignKey(e => e.UpdatedById)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
