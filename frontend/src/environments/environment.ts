@@ -4,7 +4,7 @@ export const environment = {
   apiPublicUrl: 'http://localhost:3000',
   otuh2Url: 'http://localhost:5000',
   useMockApi: false,
-  useMockAuth: true,
+  useMockAuth: false,
   mockUser: {
     id: 'usr_dev_mock_01H7X8Z5M3P',
     name: 'Developer Sandbox Account',
