@@ -1,0 +1,56 @@
+.student-card {
+  background: var(--lp-surface, #fff);
+  border: 1px solid var(--lp-border, #e5e7eb);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.student-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+.student-info h3 { margin: 0; font-size: 1.1rem; }
+.course-name { font-size: 0.85rem; color: var(--lp-primary, #2563eb); }
+.grade-badge {
+  background: var(--lp-primary, #2563eb);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.progress-summary { margin-top: 1rem; }
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--lp-border, #e5e7eb);
+}
+.summary-row:last-child { border-bottom: none; }
+.subject-areas { margin-top: 0.75rem; }
+.subject-area {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+}
+.skills-section { margin-top: 1rem; }
+.skills-section h4 { margin: 0 0 0.5rem 0; font-size: 0.9rem; }
+.skill-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.85rem;
+}
+.skill-level {
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.skill-level.not_started { background: #f3f4f6; color: #6b7280; }
+.skill-level.in_progress { background: #dbeafe; color: #2563eb; }
+.skill-level.achieved { background: #dcfce7; color: #16a34a; }
+.skill-level.mastered { background: #a78bfa; color: #fff; }

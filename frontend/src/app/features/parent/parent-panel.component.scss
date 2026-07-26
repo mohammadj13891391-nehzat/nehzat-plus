@@ -1,0 +1,9 @@
+.role-page { direction: rtl; min-height: 100vh; background: var(--lp-bg, #f8f9fa); }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--lp-surface, #fff); border-bottom: 1px solid var(--lp-border, #e5e7eb); }
+.brand-wrap { display: flex; align-items: center; gap: 1rem; }
+.site-logo { width: 48px; height: 48px; object-fit: contain; }
+h1 { margin: 0; font-size: 1.25rem; }
+.muted { color: var(--lp-muted, #6b7280); margin: 0; }
+.menu-trigger { background: var(--lp-primary, #2563eb); color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
+.main-content { padding: 2rem; }
+.students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }

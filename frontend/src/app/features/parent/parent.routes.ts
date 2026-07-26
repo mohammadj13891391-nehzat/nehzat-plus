@@ -4,6 +4,7 @@ import { roleGuard } from '../../core/guards/role.guard';
 import { SpiritualShellComponent } from '../shared/spiritual-shell/spiritual-shell.component';
 import { ParentPanelComponent } from './parent-panel.component';
 import { MonthlyBookletComponent } from './monthly-booklet.component';
+import { ParentStudentDetailComponent } from './parent-student-detail.component';
 
 @Component({
   standalone: true,
@@ -34,5 +35,10 @@ export const PARENT_ROUTES: Routes = [
     path: 'monthly-booklets',
     canActivate: [roleGuard('parent')],
     component: ParentMonthlyBookletPageComponent
+  },
+  {
+    path: 'student/:id',
+    canActivate: [roleGuard('parent')],
+    component: ParentStudentDetailComponent
   }
 ];
