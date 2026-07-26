@@ -92,6 +92,7 @@ builder.Services.AddScoped<ITeacherService, TeacherService>();
     builder.Services.AddScoped<IProgressionService, ProgressionService>();
     builder.Services.AddScoped<SampleDataSeeder>();
     builder.Services.AddScoped<ILogService, LogService>();
+    builder.Services.AddScoped<IIssueSurveyService, IssueSurveyService>();
 
 builder.Services.AddCors(options =>
 {
