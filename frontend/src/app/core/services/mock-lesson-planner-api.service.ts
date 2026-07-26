@@ -138,7 +138,25 @@ import {
   CreateLeaguePayload,
   UpdateLeaguePayload,
   UpdateLeagueRankingPayload,
-  RankingTrend
+  RankingTrend,
+  IssueSurvey,
+  CreateIssueSurveyPayload,
+  UpdateIssueSurveyPayload,
+  IssueSurveyQuestion,
+  CreateIssueQuestionPayload,
+  IssueSurveyResponse,
+  SubmitSurveyResponsePayload,
+  IssueSurveyComment,
+  IssueAction,
+  CreateIssueActionPayload,
+  IssueItemPool,
+  CreateIssueItemPoolPayload,
+  IssueDashboardSummary,
+  SurveyAnalytics,
+  CategoryAnalytics,
+  QuestionAnalytics,
+  IssueActionUpdate,
+  ActionStatus
 } from '../models/lesson-planner.models';
 
 function base64UrlEncode(value: string): string {
@@ -2610,6 +2628,27 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     { id: 3, studentId: 3, studentName: 'محمد رضایی', score: 210, rank: 3, trend: 'stable', lastUpdated: '2026-07-23' }
   ];
 
+  private issueSurveys: IssueSurvey[] = [
+    { id: 1, title: 'نظرسنجی کیفیت آموزش تابستان ۱۴۰۵', description: 'ارزیابی کیفیت آموزش در ترم تابستان', surveyType: 'general', targetRole: 'all', status: 'active', startDate: '2026-07-01', endDate: '2026-07-31', isAnonymous: true, scoreScaleMin: 1, scoreScaleMax: 5, createdById: 1, createdByName: 'مدیر سیستم', createdAt: '2026-07-01', updatedAt: '2026-07-01', questionCount: 3, responseCount: 15 },
+    { id: 2, title: 'پیگیری مسائل انضباطی', description: 'بررسی مشکلات انضباطی دانش‌آموزان', surveyType: 'follow_up', targetRole: 'coach', status: 'draft', startDate: '2026-08-01', endDate: '2026-08-31', isAnonymous: false, scoreScaleMin: 1, scoreScaleMax: 5, createdById: 1, createdByName: 'مدیر سیستم', createdAt: '2026-07-20', updatedAt: '2026-07-20', questionCount: 2, responseCount: 0 }
+  ];
+  private issueQuestions: IssueSurveyQuestion[] = [
+    { id: 1, surveyId: 1, questionText: 'كيفیت تدریس معلمان را چگونه ارزیابی می‌کنید؟', category: 'آموزشی', subCategory: 'تدریس', targetAudience: 'دانش‌آموز', sortOrder: 0, isActive: true, createdAt: '2026-07-01' },
+    { id: 2, surveyId: 1, questionText: 'محیط کلاس مناسب یادگیری است؟', category: 'زیرساخت', subCategory: 'محیط کلاس', targetAudience: 'دانش‌آموز', sortOrder: 1, isActive: true, createdAt: '2026-07-01' },
+    { id: 3, surveyId: 1, questionText: 'از تکالیف روزانه راضی هستید؟', category: 'آموزشی', subCategory: 'تکالیف', targetAudience: 'دانش‌آموز', sortOrder: 2, isActive: true, createdAt: '2026-07-01' },
+    { id: 4, surveyId: 2, questionText: 'آیا تکالیف سنگینی دریافت می‌کنید؟', category: 'آموزشی', subCategory: 'تکالیف', sortOrder: 0, isActive: true, createdAt: '2026-07-20' }
+  ];
+  private issuePoolItems: IssueItemPool[] = [
+    { id: 1, questionText: 'كيفیت تدریس معلمان را چگونه ارزیابی می‌کنید؟', category: 'آموزشی', subCategory: 'تدریس', targetAudience: 'دانش‌آموز', suggestedActions: 'برگزاری دوره‌های آموزشی برای معلمان', source: 'survey_auto', usageCount: 3, isActive: true, trend: 'stable', createdAt: '2026-07-01' },
+    { id: 2, questionText: 'محیط کلاس مناسب یادگیری است؟', category: 'زیرساخت', subCategory: 'محیط کلاس', targetAudience: 'دانش‌آموز', source: 'survey_auto', usageCount: 2, isActive: true, trend: 'improving', createdAt: '2026-07-01' }
+  ];
+  private issueResponses: IssueSurveyResponse[] = [];
+  private issueComments: IssueSurveyComment[] = [
+    { id: 1, surveyId: 1, respondentId: 1, respondentName: 'علی احمدی', comment: 'نظرسنجی خوبی بود', isPublic: true, createdAt: '2026-07-10' }
+  ];
+  private issueActions: IssueAction[] = [];
+  private issueActionUpdates: IssueActionUpdate[] = [];
+
   getCompetitions(): Observable<Competition[]> {
     return this.delayed(this.competitions);
   }
@@ -2712,6 +2751,378 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     }
     this.leagueRankings[idx] = { ...this.leagueRankings[idx], score: payload.score, previousRank: payload.previousRank, trend: payload.trend ?? this.leagueRankings[idx].trend, lastUpdated: this.now() };
     return this.delayed(this.leagueRankings[idx]);
+  }
+
+  // ── Issue / Survey Mock Methods ──────────────────────────────────────
+
+  getIssueSurveys(): Observable<IssueSurvey[]> {
+    return this.delayed(this.issueSurveys);
+  }
+
+  getIssueSurveyById(id: number): Observable<IssueSurvey> {
+    const survey = this.issueSurveys.find(s => s.id === id);
+    if (!survey) throw new Error('نظرسنجی یافت نشد');
+    const full: IssueSurvey = {
+      ...survey,
+      questions: this.issueQuestions.filter(q => q.surveyId === id),
+      responses: this.issueResponses.filter(r => r.surveyId === id),
+      comments: this.issueComments.filter(c => c.surveyId === id),
+      actions: this.issueActions.filter(a => a.surveyId === id)
+    };
+    return this.delayed(full);
+  }
+
+  createIssueSurvey(payload: CreateIssueSurveyPayload): Observable<IssueSurvey> {
+    const survey: IssueSurvey = {
+      id: this.nextId(this.issueSurveys),
+      ...payload,
+      status: 'draft',
+      createdById: 1,
+      createdByName: 'مدیر سیستم',
+      createdAt: this.now(),
+      updatedAt: this.now(),
+      questionCount: 0,
+      responseCount: 0
+    };
+    this.issueSurveys.push(survey);
+    return this.delayed(survey);
+  }
+
+  updateIssueSurvey(id: number, payload: UpdateIssueSurveyPayload): Observable<IssueSurvey> {
+    const idx = this.issueSurveys.findIndex(s => s.id === id);
+    if (idx < 0) throw new Error('نظرسنجی یافت نشد');
+    this.issueSurveys[idx] = { ...this.issueSurveys[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.issueSurveys[idx]);
+  }
+
+  deleteIssueSurvey(id: number): Observable<ApiMessageResponse> {
+    this.issueSurveys = this.issueSurveys.filter(s => s.id !== id);
+    this.issueQuestions = this.issueQuestions.filter(q => q.surveyId !== id);
+    this.issueResponses = this.issueResponses.filter(r => r.surveyId !== id);
+    this.issueComments = this.issueComments.filter(c => c.surveyId !== id);
+    return this.delayed({ message: 'نظرسنجی حذف شد' });
+  }
+
+  publishIssueSurvey(id: number): Observable<IssueSurvey> {
+    const idx = this.issueSurveys.findIndex(s => s.id === id);
+    if (idx < 0) throw new Error('نظرسنجی یافت نشد');
+    this.issueSurveys[idx] = { ...this.issueSurveys[idx], status: 'active', updatedAt: this.now() };
+    return this.delayed(this.issueSurveys[idx]);
+  }
+
+  closeIssueSurvey(id: number): Observable<IssueSurvey> {
+    const idx = this.issueSurveys.findIndex(s => s.id === id);
+    if (idx < 0) throw new Error('نظرسنجی یافت نشد');
+    this.issueSurveys[idx] = { ...this.issueSurveys[idx], status: 'closed', updatedAt: this.now() };
+    return this.delayed(this.issueSurveys[idx]);
+  }
+
+  duplicateIssueSurvey(id: number): Observable<IssueSurvey> {
+    const source = this.issueSurveys.find(s => s.id === id);
+    if (!source) throw new Error('نظرسنجی یافت نشد');
+    const newId = this.nextId(this.issueSurveys);
+    const clone: IssueSurvey = {
+      ...source,
+      id: newId,
+      title: source.title + ' (کپی)',
+      status: 'draft',
+      responseCount: 0,
+      createdAt: this.now(),
+      updatedAt: this.now()
+    };
+    this.issueSurveys.push(clone);
+    const sourceQuestions = this.issueQuestions.filter(q => q.surveyId === id);
+    sourceQuestions.forEach(q => {
+      this.issueQuestions.push({ ...q, id: this.nextId(this.issueQuestions), surveyId: newId, createdAt: this.now() });
+    });
+    clone.questionCount = sourceQuestions.length;
+    return this.delayed(clone);
+  }
+
+  getIssueSurveyQuestions(surveyId: number): Observable<IssueSurveyQuestion[]> {
+    return this.delayed(this.issueQuestions.filter(q => q.surveyId === surveyId).sort((a, b) => a.sortOrder - b.sortOrder));
+  }
+
+  createIssueSurveyQuestion(surveyId: number, payload: CreateIssueQuestionPayload): Observable<IssueSurveyQuestion> {
+    const { surveyId: _payloadSurveyId, ...rest } = payload;
+    const question: IssueSurveyQuestion = {
+      id: this.nextId(this.issueQuestions),
+      surveyId,
+      ...rest,
+      isActive: true,
+      createdAt: this.now()
+    };
+    this.issueQuestions.push(question);
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    if (survey) survey.questionCount = this.issueQuestions.filter(q => q.surveyId === surveyId).length;
+    return this.delayed(question);
+  }
+
+  updateIssueSurveyQuestion(surveyId: number, questionId: number, payload: Partial<CreateIssueQuestionPayload>): Observable<IssueSurveyQuestion> {
+    const idx = this.issueQuestions.findIndex(q => q.id === questionId && q.surveyId === surveyId);
+    if (idx < 0) throw new Error('سوال یافت نشد');
+    this.issueQuestions[idx] = { ...this.issueQuestions[idx], ...payload };
+    return this.delayed(this.issueQuestions[idx]);
+  }
+
+  deleteIssueSurveyQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse> {
+    this.issueQuestions = this.issueQuestions.filter(q => !(q.id === questionId && q.surveyId === surveyId));
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    if (survey) survey.questionCount = this.issueQuestions.filter(q => q.surveyId === surveyId).length;
+    return this.delayed({ message: 'سوال حذف شد' });
+  }
+
+  reorderIssueQuestions(surveyId: number, questionIds: number[]): Observable<void> {
+    questionIds.forEach((qId, index) => {
+      const idx = this.issueQuestions.findIndex(q => q.id === qId && q.surveyId === surveyId);
+      if (idx >= 0) this.issueQuestions[idx] = { ...this.issueQuestions[idx], sortOrder: index };
+    });
+    return this.delayed(undefined as unknown as void);
+  }
+
+  getIssueSurveysForRespond(surveyId: number): Observable<IssueSurvey> {
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    if (!survey) throw new Error('نظرسنجی یافت نشد');
+    const full: IssueSurvey = {
+      ...survey,
+      questions: this.issueQuestions.filter(q => q.surveyId === surveyId && q.isActive)
+    };
+    return this.delayed(full);
+  }
+
+  submitSurveyResponses(surveyId: number, payload: SubmitSurveyResponsePayload): Observable<IssueSurveyResponse[]> {
+    const newResponses: IssueSurveyResponse[] = payload.answers.map(a => {
+      const question = this.issueQuestions.find(q => q.id === a.questionId);
+      return {
+        id: this.nextId(this.issueResponses),
+        surveyId,
+        questionId: a.questionId,
+        questionText: question?.questionText,
+        respondentId: 1,
+        respondentRole: 'student',
+        score: a.score,
+        answeredAt: this.now()
+      };
+    });
+    this.issueResponses.push(...newResponses);
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    if (survey) survey.responseCount = this.issueResponses.filter(r => r.surveyId === surveyId).length;
+    return this.delayed(newResponses);
+  }
+
+  getSurveyAnalytics(surveyId: number): Observable<SurveyAnalytics> {
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    const responses = this.issueResponses.filter(r => r.surveyId === surveyId);
+    const questions = this.issueQuestions.filter(q => q.surveyId === surveyId);
+    const overallAverage = responses.length > 0 ? responses.reduce((sum, r) => sum + r.score, 0) / responses.length : 0;
+
+    const categoryMap = new Map<string, { scores: number[]; count: number }>();
+    questions.forEach(q => {
+      const qResponses = responses.filter(r => r.questionId === q.id);
+      const existing = categoryMap.get(q.category) ?? { scores: [], count: 0 };
+      qResponses.forEach(r => existing.scores.push(r.score));
+      existing.count++;
+      categoryMap.set(q.category, existing);
+    });
+
+    const categoryBreakdown: CategoryAnalytics[] = Array.from(categoryMap.entries()).map(([category, data]) => ({
+      category,
+      averageScore: data.scores.length > 0 ? data.scores.reduce((a, b) => a + b, 0) / data.scores.length : 0,
+      questionCount: data.count,
+      severity: (data.scores.length > 0 && data.scores.reduce((a, b) => a + b, 0) / data.scores.length < 2.5 ? 'critical' : 'solvable') as 'critical' | 'problem' | 'solvable'
+    }));
+
+    const questionAnalytics: QuestionAnalytics[] = questions.map(q => {
+      const qResponses = responses.filter(r => r.questionId === q.id);
+      const avg = qResponses.length > 0 ? qResponses.reduce((s, r) => s + r.score, 0) / qResponses.length : 0;
+      const variance = qResponses.length > 0 ? qResponses.reduce((s, r) => s + Math.pow(r.score - avg, 2), 0) / qResponses.length : 0;
+      return {
+        questionId: q.id,
+        questionText: q.questionText,
+        category: q.category,
+        averageScore: avg,
+        standardDeviation: Math.sqrt(variance),
+        responseCount: qResponses.length,
+        severity: (avg < 2.5 ? 'critical' : 'solvable') as 'critical' | 'problem' | 'solvable'
+      };
+    });
+
+    const sorted = [...questionAnalytics].sort((a, b) => a.averageScore - b.averageScore);
+
+    const analytics: SurveyAnalytics = {
+      surveyId,
+      title: survey?.title ?? '',
+      totalRespondents: responses.length > 0 ? new Set(responses.map(r => r.respondentId)).size : 0,
+      totalQuestions: questions.length,
+      overallAverage,
+      categoryBreakdown,
+      topCriticalIssues: sorted.slice(0, 3),
+      topStrengths: sorted.slice(-3).reverse()
+    };
+    return this.delayed(analytics);
+  }
+
+  getSurveyCategoryBreakdown(surveyId: number): Observable<CategoryAnalytics[]> {
+    const questions = this.issueQuestions.filter(q => q.surveyId === surveyId);
+    const responses = this.issueResponses.filter(r => r.surveyId === surveyId);
+    const categoryMap = new Map<string, number[]>();
+    questions.forEach(q => {
+      if (!categoryMap.has(q.category)) categoryMap.set(q.category, []);
+      responses.filter(r => r.questionId === q.id).forEach(r => categoryMap.get(q.category)!.push(r.score));
+    });
+    const breakdown: CategoryAnalytics[] = Array.from(categoryMap.entries()).map(([category, scores]) => ({
+      category,
+      averageScore: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,
+      questionCount: questions.filter(q => q.category === category).length,
+      severity: (scores.length > 0 && scores.reduce((a, b) => a + b, 0) / scores.length < 2.5 ? 'critical' : 'solvable') as 'critical' | 'problem' | 'solvable'
+    }));
+    return this.delayed(breakdown);
+  }
+
+  getSurveyTrends(): Observable<any[]> {
+    return this.delayed([]);
+  }
+
+  exportSurveyJson(surveyId: number): Observable<any[]> {
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    const questions = this.issueQuestions.filter(q => q.surveyId === surveyId);
+    const responses = this.issueResponses.filter(r => r.surveyId === surveyId);
+    const exportData = responses.map(r => ({
+      surveyId,
+      surveyTitle: survey?.title ?? '',
+      questionId: r.questionId,
+      questionText: questions.find(q => q.id === r.questionId)?.questionText ?? '',
+      score: r.score,
+      respondentId: r.respondentId,
+      answeredAt: r.answeredAt
+    }));
+    return this.delayed(exportData);
+  }
+
+  getSurveyComments(surveyId: number): Observable<IssueSurveyComment[]> {
+    return this.delayed(this.issueComments.filter(c => c.surveyId === surveyId));
+  }
+
+  addSurveyComment(surveyId: number, payload: { comment: string }): Observable<IssueSurveyComment> {
+    const comment: IssueSurveyComment = {
+      id: this.nextId(this.issueComments),
+      surveyId,
+      respondentId: 1,
+      respondentName: 'مدیر سیستم',
+      comment: payload.comment,
+      isPublic: true,
+      createdAt: this.now()
+    };
+    this.issueComments.push(comment);
+    return this.delayed(comment);
+  }
+
+  getSurveyActions(surveyId: number): Observable<IssueAction[]> {
+    return this.delayed(this.issueActions.filter(a => a.surveyId === surveyId));
+  }
+
+  createSurveyAction(surveyId: number, payload: CreateIssueActionPayload): Observable<IssueAction> {
+    const action: IssueAction = {
+      id: this.nextId(this.issueActions),
+      ...payload,
+      surveyId,
+      status: 'proposed',
+      createdAt: this.now(),
+      updatedAt: this.now(),
+      updateCount: 0
+    };
+    this.issueActions.push(action);
+    return this.delayed(action);
+  }
+
+  updateIssueAction(id: number, payload: Partial<IssueAction>): Observable<IssueAction> {
+    const idx = this.issueActions.findIndex(a => a.id === id);
+    if (idx < 0) throw new Error('اقدام یافت نشد');
+    this.issueActions[idx] = { ...this.issueActions[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.issueActions[idx]);
+  }
+
+  updateIssueActionStatus(id: number, status: string, updatedById: number, note?: string, progressPercent?: number): Observable<IssueAction> {
+    const idx = this.issueActions.findIndex(a => a.id === id);
+    if (idx < 0) throw new Error('اقدام یافت نشد');
+    const previousStatus = this.issueActions[idx].status;
+    const newStatus = status as ActionStatus;
+    this.issueActions[idx] = {
+      ...this.issueActions[idx],
+      status: newStatus,
+      updatedAt: this.now(),
+      updateCount: this.issueActions[idx].updateCount + 1,
+      completedAt: newStatus === 'completed' ? this.now() : this.issueActions[idx].completedAt
+    };
+    const update: IssueActionUpdate = {
+      id: this.nextId(this.issueActionUpdates),
+      actionId: id,
+      updatedById,
+      previousStatus,
+      newStatus,
+      note: note ?? '',
+      progressPercent,
+      createdAt: this.now()
+    };
+    this.issueActionUpdates.push(update);
+    return this.delayed(this.issueActions[idx]);
+  }
+
+  getIssueItemPool(category?: string): Observable<IssueItemPool[]> {
+    if (category) return this.delayed(this.issuePoolItems.filter(p => p.category === category && p.isActive));
+    return this.delayed(this.issuePoolItems.filter(p => p.isActive));
+  }
+
+  createIssueItemPool(payload: CreateIssueItemPoolPayload): Observable<IssueItemPool> {
+    const item: IssueItemPool = {
+      id: this.nextId(this.issuePoolItems),
+      ...payload,
+      usageCount: 0,
+      isActive: true,
+      trend: 'stable',
+      createdAt: this.now()
+    };
+    this.issuePoolItems.push(item);
+    return this.delayed(item);
+  }
+
+  addPoolItemToSurvey(poolItemId: number, surveyId: number, sortOrder?: number): Observable<IssueItemPool> {
+    const poolItem = this.issuePoolItems.find(p => p.id === poolItemId);
+    if (!poolItem) throw new Error('آیتم استخر یافت نشد');
+    const question: IssueSurveyQuestion = {
+      id: this.nextId(this.issueQuestions),
+      surveyId,
+      itemPoolId: poolItemId,
+      questionText: poolItem.questionText,
+      category: poolItem.category,
+      subCategory: poolItem.subCategory,
+      targetAudience: poolItem.targetAudience,
+      sortOrder: sortOrder ?? this.issueQuestions.filter(q => q.surveyId === surveyId).length,
+      isActive: true,
+      createdAt: this.now()
+    };
+    this.issueQuestions.push(question);
+    poolItem.usageCount++;
+    const survey = this.issueSurveys.find(s => s.id === surveyId);
+    if (survey) survey.questionCount = this.issueQuestions.filter(q => q.surveyId === surveyId).length;
+    return this.delayed(poolItem);
+  }
+
+  getIssueDashboardSummary(): Observable<IssueDashboardSummary> {
+    const activeSurveys = this.issueSurveys.filter(s => s.status === 'active').length;
+    const openActions = this.issueActions.filter(a => a.status !== 'completed' && a.status !== 'cancelled').length;
+    const completedActions = this.issueActions.filter(a => a.status === 'completed').length;
+    const totalActions = this.issueActions.length;
+    const criticalIssues = this.issuePoolItems.filter(p => p.trend === 'declining').length;
+    const improvingItems = this.issuePoolItems.filter(p => p.trend === 'improving').length;
+    const summary: IssueDashboardSummary = {
+      activeSurveys,
+      openActions,
+      completedActions,
+      criticalIssuePercentage: totalActions > 0 ? Math.round((criticalIssues / totalActions) * 100) : 0,
+      improvingTrendPercentage: this.issuePoolItems.length > 0 ? Math.round((improvingItems / this.issuePoolItems.length) * 100) : 0
+    };
+    return this.delayed(summary);
   }
 
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {

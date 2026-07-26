@@ -121,7 +121,22 @@ Ring,
   LeagueRanking,
   CreateLeaguePayload,
   UpdateLeaguePayload,
-  UpdateLeagueRankingPayload
+  UpdateLeagueRankingPayload,
+  IssueSurvey,
+  CreateIssueSurveyPayload,
+  UpdateIssueSurveyPayload,
+  IssueSurveyQuestion,
+  CreateIssueQuestionPayload,
+  IssueSurveyResponse,
+  SubmitSurveyResponsePayload,
+  IssueSurveyComment,
+  IssueAction,
+  CreateIssueActionPayload,
+  IssueItemPool,
+  CreateIssueItemPoolPayload,
+  IssueDashboardSummary,
+  SurveyAnalytics,
+  CategoryAnalytics
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -962,6 +977,129 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   updateLeagueRanking(leagueId: number, payload: UpdateLeagueRankingPayload): Observable<LeagueRanking> {
     return this.http.put<LeagueRanking>(this.url(`/leagues/${leagueId}/rankings`), payload);
+  }
+
+  getIssueSurveys(): Observable<IssueSurvey[]> {
+    return this.http.get<IssueSurvey[]>(this.url('/issue-surveys'));
+  }
+
+  getIssueSurveyById(id: number): Observable<IssueSurvey> {
+    return this.http.get<IssueSurvey>(this.url(`/issue-surveys/${id}`));
+  }
+
+  createIssueSurvey(payload: CreateIssueSurveyPayload): Observable<IssueSurvey> {
+    return this.http.post<IssueSurvey>(this.url('/issue-surveys'), payload);
+  }
+
+  updateIssueSurvey(id: number, payload: UpdateIssueSurveyPayload): Observable<IssueSurvey> {
+    return this.http.put<IssueSurvey>(this.url(`/issue-surveys/${id}`), payload);
+  }
+
+  deleteIssueSurvey(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/issue-surveys/${id}`));
+  }
+
+  publishIssueSurvey(id: number): Observable<IssueSurvey> {
+    return this.http.post<IssueSurvey>(this.url(`/issue-surveys/${id}/publish`), {});
+  }
+
+  closeIssueSurvey(id: number): Observable<IssueSurvey> {
+    return this.http.post<IssueSurvey>(this.url(`/issue-surveys/${id}/close`), {});
+  }
+
+  duplicateIssueSurvey(id: number): Observable<IssueSurvey> {
+    return this.http.post<IssueSurvey>(this.url(`/issue-surveys/${id}/duplicate`), {});
+  }
+
+  getIssueSurveyQuestions(surveyId: number): Observable<IssueSurveyQuestion[]> {
+    return this.http.get<IssueSurveyQuestion[]>(this.url(`/issue-surveys/${surveyId}/questions`));
+  }
+
+  createIssueSurveyQuestion(surveyId: number, payload: CreateIssueQuestionPayload): Observable<IssueSurveyQuestion> {
+    return this.http.post<IssueSurveyQuestion>(this.url(`/issue-surveys/${surveyId}/questions`), payload);
+  }
+
+  updateIssueSurveyQuestion(surveyId: number, questionId: number, payload: Partial<CreateIssueQuestionPayload>): Observable<IssueSurveyQuestion> {
+    return this.http.put<IssueSurveyQuestion>(this.url(`/issue-surveys/${surveyId}/questions/${questionId}`), payload);
+  }
+
+  deleteIssueSurveyQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/issue-surveys/${surveyId}/questions/${questionId}`));
+  }
+
+  reorderIssueQuestions(surveyId: number, questionIds: number[]): Observable<void> {
+    return this.http.post<void>(this.url(`/issue-surveys/${surveyId}/questions/reorder`), questionIds);
+  }
+
+  getIssueSurveysForRespond(surveyId: number): Observable<IssueSurvey> {
+    return this.http.get<IssueSurvey>(this.url(`/issue-surveys/${surveyId}/respond`));
+  }
+
+  submitSurveyResponses(surveyId: number, payload: SubmitSurveyResponsePayload): Observable<IssueSurveyResponse[]> {
+    return this.http.post<IssueSurveyResponse[]>(this.url(`/issue-surveys/${surveyId}/respond`), payload);
+  }
+
+  getSurveyAnalytics(surveyId: number): Observable<SurveyAnalytics> {
+    return this.http.get<SurveyAnalytics>(this.url(`/issue-surveys/${surveyId}/analytics`));
+  }
+
+  getSurveyCategoryBreakdown(surveyId: number): Observable<CategoryAnalytics[]> {
+    return this.http.get<CategoryAnalytics[]>(this.url(`/issue-surveys/${surveyId}/analytics/categories`));
+  }
+
+  getSurveyTrends(): Observable<any[]> {
+    return this.http.get<any[]>(this.url('/issue-surveys/analytics/trends'));
+  }
+
+  exportSurveyJson(surveyId: number): Observable<any[]> {
+    return this.http.get<any[]>(this.url(`/issue-surveys/${surveyId}/export/json`));
+  }
+
+  getSurveyComments(surveyId: number): Observable<IssueSurveyComment[]> {
+    return this.http.get<IssueSurveyComment[]>(this.url(`/issue-surveys/${surveyId}/comments`));
+  }
+
+  addSurveyComment(surveyId: number, payload: { comment: string }): Observable<IssueSurveyComment> {
+    return this.http.post<IssueSurveyComment>(this.url(`/issue-surveys/${surveyId}/comments`), payload);
+  }
+
+  getSurveyActions(surveyId: number): Observable<IssueAction[]> {
+    return this.http.get<IssueAction[]>(this.url(`/issue-surveys/${surveyId}/actions`));
+  }
+
+  createSurveyAction(surveyId: number, payload: CreateIssueActionPayload): Observable<IssueAction> {
+    return this.http.post<IssueAction>(this.url(`/issue-surveys/${surveyId}/actions`), payload);
+  }
+
+  updateIssueAction(id: number, payload: Partial<IssueAction>): Observable<IssueAction> {
+    return this.http.put<IssueAction>(this.url(`/issue-actions/${id}`), payload);
+  }
+
+  updateIssueActionStatus(id: number, status: string, updatedById: number, note?: string, progressPercent?: number): Observable<IssueAction> {
+    let params = new HttpParams().set('status', status).set('updatedById', updatedById);
+    if (note) params = params.set('note', note);
+    if (progressPercent != null) params = params.set('progressPercent', progressPercent);
+    return this.http.patch<IssueAction>(this.url(`/issue-actions/${id}/status`), null, { params });
+  }
+
+  getIssueItemPool(category?: string): Observable<IssueItemPool[]> {
+    let params = new HttpParams();
+    if (category) params = params.set('category', category);
+    return this.http.get<IssueItemPool[]>(this.url('/issue-item-pool'), { params });
+  }
+
+  createIssueItemPool(payload: CreateIssueItemPoolPayload): Observable<IssueItemPool> {
+    return this.http.post<IssueItemPool>(this.url('/issue-item-pool'), payload);
+  }
+
+  addPoolItemToSurvey(poolItemId: number, surveyId: number, sortOrder?: number): Observable<IssueItemPool> {
+    let params = new HttpParams().set('surveyId', surveyId);
+    if (sortOrder != null) params = params.set('sortOrder', sortOrder);
+    return this.http.post<IssueItemPool>(this.url(`/issue-item-pool/${poolItemId}/use-in-survey`), null, { params });
+  }
+
+  getIssueDashboardSummary(): Observable<IssueDashboardSummary> {
+    return this.http.get<IssueDashboardSummary>(this.url('/issue-dashboard/summary'));
   }
 
   private url(path: string): string {
