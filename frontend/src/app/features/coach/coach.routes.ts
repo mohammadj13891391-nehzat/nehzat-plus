@@ -4,6 +4,7 @@ import { roleGuard } from '../../core/guards/role.guard';
 import { SpiritualShellComponent } from '../shared/spiritual-shell/spiritual-shell.component';
 import { CoachComponent } from './coach.component';
 import { CoachDashboardComponent } from './coach-dashboard.component';
+import { CoachStudentDetailComponent } from './coach-student-detail.component';
 
 @Component({
   standalone: true,
@@ -17,6 +18,11 @@ export const COACH_ROUTES: Routes = [
     path: '',
     canActivate: [roleGuard('coach')],
     component: CoachComponent
+  },
+  {
+    path: 'student/:id',
+    canActivate: [roleGuard('coach')],
+    component: CoachStudentDetailComponent
   },
   {
     path: 'rings',

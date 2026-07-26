@@ -1,0 +1,205 @@
+    <main class="role-page">
+      <header class="site-header">
+        <div class="brand-wrap">
+          <img
+            src="assets/nehzat.png"
+            alt="لوگو سایت"
+            class="site-logo"
+            [hidden]="logoHidden"
+            (error)="logoHidden = true"
+          />
+          <div>
+            <h1>پنل مربی</h1>
+            <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
+          </div>
+        </div>
+        <nav class="header-nav">
+          <a class="nav-link" routerLink="/coach/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
+          <a class="nav-link" routerLink="/coach/rings" routerLinkActive="nav-link-active">حلقه‌ها</a>
+        </nav>
+        <div class="user-menu">
+          <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
+        </div>
+      </header>
+
+      <section class="main-content">
+        <div class="page-title">
+          <h2>داشبورد مربی</h2>
+          <p class="muted">فهرست دانش‌آموزان و پیشرفت تحصیلی آن‌ها</p>
+        </div>
+
+        @if (loading()) {
+          <div class="state-box">
+            <p class="muted">در حال بارگذاری دانش‌آموزان...</p>
+          </div>
+        } @else if (error()) {
+          <div class="state-box state-error">
+            <p>{{ error() }}</p>
+            <button type="button" class="retry-btn" (click)="loadStudents()">تلاش مجدد</button>
+          </div>
+        } @else if (rows().length === 0) {
+          <div class="state-box">
+            <p class="muted">هیچ دانش‌آموزی یافت نشد.</p>
+          </div>
+        } @else {
+          <div class="summary-strip">
+            <div class="summary-pill">
+              <span class="pill-value">{{ rows().length }}</span>
+              <span class="pill-label">دانش‌آموز</span>
+            </div>
+            <div class="summary-pill">
+              <span class="pill-value">{{ totalAssignments() }}</span>
+              <span class="pill-label">تکلیف</span>
+            </div>
+            <div class="summary-pill">
+              <span class="pill-value">{{ totalSubmissions() }}</span>
+              <span class="pill-label">ارسال</span>
+            </div>
+            <div class="summary-pill">
+              <span class="pill-value">{{ averageProgress() | number: '1.0-0' }}٪</span>
+              <span class="pill-label">میانگین پیشرفت</span>
+            </div>
+          </div>
+
+          <ul class="student-list">
+            @for (row of rows(); track row.student.id) {
+              <li class="student-card" [class.expanded]="expandedId() === row.student.id">
+                <button
+                  type="button"
+                  class="student-row"
+                  (click)="toggleStudent(row.student.id)"
+                  [attr.aria-expanded]="expandedId() === row.student.id"
+                >
+                  <div class="student-id">
+                    <span class="avatar">{{ initials(row.student) }}</span>
+                    <div class="student-name">
+                      <span class="name">{{ fullName(row.student) }}</span>
+                      <span class="sid">{{ row.student.studentId }}</span>
+                    </div>
+                  </div>
+
+                  <div class="progress-wrap">
+                    @if (row.loading) {
+                      <span class="muted small">در حال محاسبه پیشرفت...</span>
+                    } @else if (row.error) {
+                      <span class="muted small">—</span>
+                    } @else if (row.progress; as p) {
+                      <div class="progress-bar">
+                        <div
+                          class="progress-fill"
+                          [style.width.%]="progressPercent(p)"
+                          [class.low]="progressPercent(p) < 33"
+                          [class.mid]="progressPercent(p) >= 33 && progressPercent(p) < 66"
+                          [class.high]="progressPercent(p) >= 66"
+                        ></div>
+                      </div>
+                      <span class="progress-text">{{ progressPercent(p) | number: '1.0-0' }}٪</span>
+                    } @else {
+                      <span class="muted small">بدون داده</span>
+                    }
+                  </div>
+
+                  <div class="quick-stats">
+                    @if (row.progress; as p) {
+                      <span class="stat-chip">{{ courseCount(p) }} درس</span>
+                      <span class="stat-chip">{{ submissionCount(p) }} ارسال</span>
+                    }
+                  </div>
+
+                  <span class="chevron" [class.open]="expandedId() === row.student.id">›</span>
+                </button>
+
+                @if (expandedId() === row.student.id) {
+                  <div class="student-detail">
+                    @if (row.loading) {
+                      <p class="muted">در حال بارگذاری جزئیات...</p>
+                    } @else if (row.error) {
+                      <p class="error-text">{{ row.error }}</p>
+                    } @else if (row.progress; as p) {
+                      @if (p.courses.length === 0) {
+                        <p class="muted">دانش‌آموز در هیچ دوره‌ای ثبت‌نام نکرده است.</p>
+                      } @else {
+                        @for (courseBlock of p.courses; track courseBlock.course.id) {
+                          <div class="course-block">
+                            <h4 class="course-title">{{ courseBlock.course.title }}</h4>
+                            @if (courseBlock.assignments.length === 0) {
+                              <p class="muted small">تکلیفی برای این درس ثبت نشده است.</p>
+                            } @else {
+                              <div class="table-container">
+                                <table class="data-table">
+                                  <thead>
+                                    <tr>
+                                      <th>عنوان تکلیف</th>
+                                      <th>تاریخ</th>
+                                      <th>وضعیت ارسال</th>
+                                      <th>نمره</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    @for (assignment of courseBlock.assignments; track assignment.id) {
+                                      <tr>
+                                        <td>{{ assignment.title }}</td>
+                                        <td>{{ assignment.assignmentDate | date: 'shortDate' }}</td>
+                                        <td>
+                                          @if (findSubmission(p.submissions, assignment.id); as sub) {
+                                            <span class="status-badge" [class]="sub.status">
+                                              {{ submissionLabel(sub.status) }}
+                                            </span>
+                                          } @else {
+                                            <span class="muted">ارسال نشده</span>
+                                          }
+                                        </td>
+                                        <td>
+                                          @if (findSubmission(p.submissions, assignment.id); as sub) {
+                                            {{ sub.dailyScore ?? '—' }}
+                                          } @else {
+                                            —
+                                          }
+                                        </td>
+                                      </tr>
+                                    }
+                                  </tbody>
+                                </table>
+                              </div>
+                            }
+                          </div>
+                        }
+                      }
+
+                      @if (p.submissions.length > 0) {
+                        <div class="submissions-section">
+                          <h4>آخرین ارسال‌ها</h4>
+                          <ul class="submission-list">
+                            @for (sub of p.submissions; track sub.id) {
+                              <li class="submission-item">
+                                <span class="sub-date">{{ sub.submissionDate | date: 'short' }}</span>
+                                <span class="status-badge" [class]="sub.status">
+                                  {{ submissionLabel(sub.status) }}
+                                </span>
+                                @if (sub.dailyScore !== null && sub.dailyScore !== undefined) {
+                                  <span class="sub-score">نمره: {{ sub.dailyScore }}</span>
+                                }
+                                @if (sub.feedback) {
+                                  <span class="sub-feedback" title="بازخورد">{{ sub.feedback }}</span>
+                                }
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                    } @else {
+                      <p class="muted">داده‌ای موجود نیست.</p>
+                    }
+
+                    <a class="view-assignments-btn"
+                       [routerLink]="['/coach/student', row.student.id]">
+                      مشاهده تکالیف
+                    </a>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </main>

@@ -1,0 +1,117 @@
+<main class="role-page">
+  <header class="site-header">
+    <div class="brand-wrap">
+      <img
+        src="assets/nehzat.png"
+        alt="لوگو سایت"
+        class="site-logo"
+        (error)="$any($event).target.style.display = 'none'"
+      />
+      <div>
+        <h1>پنل مربی</h1>
+        <p class="muted">جزئیات ارسال‌های دانش‌آموز</p>
+      </div>
+    </div>
+    <div class="user-menu">
+      <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
+    </div>
+  </header>
+
+  <section class="main-content">
+    <div class="page-header">
+      <button type="button" class="back-btn" (click)="goBack()">بازگشت</button>
+      <h2>
+        @if (studentName()) {
+          ارسال‌های {{ studentName() }}
+        } @else {
+          ارسال‌های دانش‌آموز
+        }
+      </h2>
+    </div>
+
+    @if (loading()) {
+      <div class="state-box">
+        <div class="spinner"></div>
+        <p class="muted">در حال بارگذاری ارسال‌ها...</p>
+      </div>
+    } @else if (error()) {
+      <div class="state-box state-error">
+        <p>{{ error() }}</p>
+        <button type="button" class="retry-btn" (click)="loadSubmissions(studentId()!)">تلاش مجدد</button>
+      </div>
+    } @else if (submissions().length === 0) {
+      <div class="state-box">
+        <p class="muted">هیچ ارسالی برای این دانش‌آموز ثبت نشده است.</p>
+      </div>
+    } @else {
+      <div class="date-filter">
+        <div class="date-filter-row">
+          <label class="date-filter-label">
+            از تاریخ
+            <app-persian-date-input
+              [ngModel]="_dateFrom()"
+              (ngModelChange)="onDateFromChange($event)"
+              placeholder="از تاریخ"
+            ></app-persian-date-input>
+          </label>
+          <label class="date-filter-label">
+            تا تاریخ
+            <app-persian-date-input
+              [ngModel]="_dateTo()"
+              (ngModelChange)="onDateToChange($event)"
+              placeholder="تا تاریخ"
+            ></app-persian-date-input>
+          </label>
+          @if (hasActiveFilter()) {
+            <button type="button" class="clear-filter-btn" (click)="clearFilter()">پاک کردن فیلتر</button>
+          }
+        </div>
+      </div>
+
+      @if (filteredSubmissions().length === 0) {
+        <div class="state-box">
+          <p class="muted">نتیجه‌ای در بازه تاریخ یافت نشد.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>تاریخ ارسال</th>
+                <th>وضعیت</th>
+                <th>نمره</th>
+                <th>بازخورد</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (sub of filteredSubmissions(); track sub.id) {
+                <tr>
+                  <td>{{ formatDate(sub.submissionDate) }}</td>
+                  <td>
+                    <span class="status-badge" [class]="sub.status">
+                      {{ submissionLabel(sub.status) }}
+                    </span>
+                  </td>
+                  <td>
+                    @if (sub.dailyScore !== null && sub.dailyScore !== undefined) {
+                      <span class="score-value">{{ sub.dailyScore }}</span>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
+                  <td>
+                    @if (sub.feedback) {
+                      <span class="feedback-text" title="{{ sub.feedback }}">{{ sub.feedback }}</span>
+                    } @else {
+                      <span class="muted">بدون بازخورد</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </section>
+</main>
