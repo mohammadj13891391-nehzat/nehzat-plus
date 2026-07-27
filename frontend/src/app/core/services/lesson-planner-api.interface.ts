@@ -29,6 +29,8 @@ import {
   CreateAssignmentPayload,
   CreateBookPayload,
   CreateBranchManagerPayload,
+  CreateBranchPayload,
+  UpdateBranchPayload,
   CreateCoachPayload,
   CreateCoursePayload,
   CreateDailySeriesPayload,
@@ -232,6 +234,9 @@ export abstract class LessonPlannerApi {
   abstract deleteBranchManager(id: number): Observable<ApiMessageResponse>;
 
   abstract getBranches(): Observable<Branch[]>;
+  abstract createBranch(payload: CreateBranchPayload): Observable<Branch>;
+  abstract updateBranch(id: number, payload: UpdateBranchPayload): Observable<Branch>;
+  abstract deleteBranch(id: number): Observable<ApiMessageResponse>;
 
   abstract getSystemStatistics(): Observable<AdminSystemStatistics>;
   abstract getCourseStatistics(courseId: number): Observable<unknown>;

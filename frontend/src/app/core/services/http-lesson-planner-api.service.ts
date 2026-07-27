@@ -33,6 +33,8 @@ import {
   CreateAssignmentPayload,
   CreateBookPayload,
   CreateBranchManagerPayload,
+  CreateBranchPayload,
+  UpdateBranchPayload,
   CreateCoachPayload,
   CreateCoursePayload,
   CreateCurriculumVersionPayload,
@@ -364,6 +366,18 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   getBranches(): Observable<Branch[]> {
     return this.http.get<Branch[]>(this.url('/admin/branches'));
+  }
+
+  createBranch(payload: CreateBranchPayload): Observable<Branch> {
+    return this.http.post<Branch>(this.url('/admin/branches'), payload);
+  }
+
+  updateBranch(id: number, payload: UpdateBranchPayload): Observable<Branch> {
+    return this.http.put<Branch>(this.url(`/admin/branches/${id}`), payload);
+  }
+
+  deleteBranch(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/admin/branches/${id}`));
   }
 
   deleteCoach(id: number): Observable<ApiMessageResponse> {

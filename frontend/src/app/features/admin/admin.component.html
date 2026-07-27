@@ -158,6 +158,10 @@
         <app-admin-branch-managers />
       }
 
+      @if (activeMenu === 'branches') {
+        <app-admin-branches />
+      }
+
       @if (activeMenu === 'makatib' || activeMenu === 'makatib-new' || allMakatib.some(m => m.key === activeMenu)) {
         <app-admin-makatib />
       }

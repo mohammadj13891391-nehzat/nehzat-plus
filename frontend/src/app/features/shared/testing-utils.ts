@@ -55,12 +55,7 @@ export function createMockActivatedRoute(): ActivatedRoute {
 }
 
 export function createMockNotificationService(): NotificationService {
-  return {
-    showSuccess: vi.fn(),
-    showError: vi.fn(),
-    showInfo: vi.fn(),
-    showWarning: vi.fn(),
-  } as unknown as NotificationService;
+  return { show: vi.fn(), dismiss: vi.fn() } as unknown as NotificationService;
 }
 
 export const DEFAULT_MOCK_PROVIDERS: Provider[] = [

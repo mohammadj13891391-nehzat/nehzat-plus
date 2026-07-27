@@ -103,9 +103,9 @@ public class SurveyDataSeeder
                 {
                     SurveyId = survey.Id,
                     QuestionId = qId,
-                    RespondentId = respondentId,
+                    RespondentId = null,
                     RespondentRole = "student",
-                    RespondentBranchId = respondentId,
+                    RespondentBranchId = null,
                     Score = rng.Next(1, 6),
                     AnsweredAt = DateTime.UtcNow,
                 });
@@ -124,7 +124,7 @@ public class SurveyDataSeeder
                 comments.Add(new IssueSurveyComment
                 {
                     SurveyId = survey.Id,
-                    RespondentId = respondentId,
+                    RespondentId = null,
                     Comment = commentTexts[r % commentTexts.Length],
                     IsPublic = true,
                     CreatedAt = DateTime.UtcNow,

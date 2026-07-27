@@ -45,6 +45,10 @@ export const mockStudents: Student[] = [
 
 export const mockBranches: Branch[] = [
   { id: 1, name: 'شعبه مرکزی', province: 'تهران', description: 'شعبه اصلی و مرکزی', createdAt: '2026-01-01T00:00:00.000Z' },
+  { id: 2, name: 'شعبه شرق تهران', province: 'تهران', description: 'شعبه منطقه شرق تهران', createdAt: '2026-01-15T00:00:00.000Z' },
+  { id: 3, name: 'شعبه غرب تهران', province: 'تهران', description: 'شعبه منطقه غرب تهران', createdAt: '2026-02-01T00:00:00.000Z' },
+  { id: 4, name: 'شعبه اصفهان', province: 'اصفهان', description: 'شعبه استان اصفهان', createdAt: '2026-03-01T00:00:00.000Z' },
+  { id: 5, name: 'شعبه مشهد', province: 'خراسان رضوی', description: 'شعبه استان خراسان رضوی', createdAt: '2026-03-15T00:00:00.000Z' },
 ];
 
 export const mockCourses: Course[] = [

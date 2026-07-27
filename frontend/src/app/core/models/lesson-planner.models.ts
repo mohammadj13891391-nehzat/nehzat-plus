@@ -636,6 +636,18 @@ export interface BranchManager {
   createdAt?: string;
 }
 
+export interface CreateBranchPayload {
+  name: string;
+  province: string;
+  description?: string;
+}
+
+export interface UpdateBranchPayload {
+  name?: string;
+  province?: string;
+  description?: string;
+}
+
 export interface CreateBranchManagerPayload {
   nationalCode?: string;
   username: string;

@@ -31,6 +31,7 @@ import { AdminMakatibComponent } from './admin-makatib/admin-makatib.component';
 import { AdminCurriculumComponent } from './admin-curriculum/admin-curriculum.component';
 import { AdminRingsComponent } from './admin-rings/admin-rings.component';
 import { AdminSurveysComponent } from './admin-surveys/admin-surveys.component';
+import { AdminBranchesComponent } from './admin-branches/admin-branches.component';
 
 @Component({
   selector: 'app-admin',
@@ -48,6 +49,7 @@ import { AdminSurveysComponent } from './admin-surveys/admin-surveys.component';
     AdminCurriculumComponent,
     AdminRingsComponent,
     AdminSurveysComponent,
+    AdminBranchesComponent,
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
@@ -71,6 +73,7 @@ export class AdminComponent implements OnInit {
     { key: 'teachers', label: 'مربیان', roles: ['manager', 'headquarters'] },
     { key: 'courses', label: 'دوره‌ها', roles: ['manager', 'headquarters'] },
     { key: 'branch-managers', label: 'مسئولین شعب', roles: ['manager', 'headquarters'] },
+    { key: 'branches', label: 'شعب', roles: ['manager', 'headquarters'] },
     { key: 'makatib', label: 'مکاتب تربیتی، آموزشی، مهارتی', roles: ['manager', 'headquarters'] },
     { key: 'curriculum', label: 'برنامه درسی', roles: ['manager', 'headquarters'] },
     { key: 'rings', label: 'حلقه‌ها', roles: ['manager', 'headquarters'] },
