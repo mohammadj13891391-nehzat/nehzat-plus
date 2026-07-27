@@ -1,0 +1,63 @@
+<section class="survey-financial" aria-labelledby="survey-financial-title">
+  <header class="survey-header">
+    <h1 id="survey-financial-title">گزارش‌های مالی سرویس‌یاب</h1>
+    <p>خلاصه مالی و صرفه‌جویی هزینه‌های نظرسنجی خدمات</p>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+
+  <!-- Dashboard Summary -->
+  @if (dashboard) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">نظرسنجی‌های فعال</span>
+        <strong class="stat-value">{{ dashboard.activeSurveys }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">کل پاسخ‌ها</span>
+        <strong class="stat-value">{{ dashboard.totalResponses }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">میانگین نمره</span>
+        <strong class="stat-value">{{ dashboard.averageScore }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">تخمین هزینه کل</span>
+        <strong class="stat-value">تومان {{ getTotalCostEstimate().toLocaleString() }}</strong>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <p class="muted">در حال دریافت اطلاعات...</p>
+  }
+
+  <!-- Survey Financial List -->
+  @if (!loading && surveys.length > 0) {
+    <h2>نظارت مالی نظرسنجی‌ها</h2>
+    <div class="financial-table">
+      <div class="financial-header">
+        <span>نظرسنجی</span>
+        <span>پاسخ‌ها</span>
+        <span>سوالات</span>
+        <span>تخمین هزینه</span>
+        <span>وضعیت</span>
+      </div>
+      @for (survey of surveys; track survey.id) {
+        <div class="financial-row">
+          <span class="financial-name">{{ survey.title }}</span>
+          <span>{{ survey.responseCount }}</span>
+          <span>{{ survey.questionCount }}</span>
+          <span>تومان {{ (survey.responseCount * 5000)?.toLocaleString() }}</span>
+          <span class="status-chip" [ngClass]="statusClass(survey.status)">{{ statusLabel(survey.status) }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading && surveys.length === 0 && dashboard) {
+    <p class="muted">نظرسنجی فعالی برای نمایش موجود نیست.</p>
+  }
+</section>

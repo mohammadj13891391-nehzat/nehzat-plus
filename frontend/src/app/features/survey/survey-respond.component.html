@@ -1,0 +1,211 @@
+<section class="survey-respond" aria-labelledby="survey-respond-title">
+  <header class="survey-header">
+    <h1 id="survey-respond-title">سرویس‌یاب</h1>
+    <p>لطفاً نظرسنجی مورد نظر را انتخاب کنید و پاسخ‌های خود را ارسال کنید</p>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+  @if (successMessage) {
+    <p class="lp-success" role="status">{{ successMessage }}</p>
+  }
+
+  <!-- Step 1: Role Selection -->
+  @if (currentStep === 1) {
+    <div class="step-section">
+      <h2>مرحله ۱: انتخاب نقش</h2>
+      <div class="role-grid">
+        @for (role of roleOptions; track role.value) {
+          <button
+            type="button"
+            class="role-card"
+            [class.active]="selectedRole === role.value"
+            (click)="selectRole(role.value)"
+          >
+            <span class="role-icon">{{ role.icon }}</span>
+            <strong>{{ role.label }}</strong>
+            <small>{{ role.description }}</small>
+          </button>
+        }
+      </div>
+      @if (selectedRole) {
+        <button type="button" class="btn btn-primary" (click)="currentStep = 2">
+          ادامه به نظرسنجی‌ها
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Step 2: Survey Selection -->
+  @if (currentStep === 2 && selectedRole) {
+    <div class="step-section">
+      <h2>مرحله ۲: انتخاب نظرسنجی</h2>
+      @if (loading) {
+        <p class="muted">در حال دریافت نظرسنجی‌ها...</p>
+      } @else if (surveys.length === 0) {
+        <p class="muted">نظرسنجی فعالی برای نقش شما موجود نیست.</p>
+      } @else {
+        <div class="survey-list">
+          @for (survey of surveys; track survey.id) {
+            <button
+              type="button"
+              class="list-item"
+              (click)="selectSurvey(survey)"
+            >
+              <div class="list-item-top">
+                <strong>{{ survey.title }}</strong>
+                <span class="status-chip status-chip--active">فعال</span>
+              </div>
+              <span class="list-meta">{{ survey.description }}</span>
+              <small class="list-meta">{{ survey.questionCount }} سوال · تا {{ survey.endDate }}</small>
+            </button>
+          }
+        </div>
+      }
+      <button type="button" class="btn btn-secondary" (click)="currentStep = 1">بازگشت</button>
+    </div>
+  }
+
+  <!-- Step 3: Fill Survey -->
+  @if (currentStep === 3 && selectedSurvey) {
+    <div class="step-section">
+      <h2>مرحله ۳: پاسخ‌دهی</h2>
+      <h3>{{ selectedSurvey.title }}</h3>
+      <p class="muted">{{ selectedSurvey.description }}</p>
+
+      <form [formGroup]="respondForm" (ngSubmit)="submit()">
+        @for (q of questions; track q.id) {
+          <div class="question-block">
+            <label class="question-label">
+              {{ q.questionText }}
+              @if (q.isRequired) {
+                <span class="required">*</span>
+              }
+            </label>
+
+            @if (q.questionType === 'radio') {
+              <div class="options-group">
+                @for (opt of q.options ?? []; track opt) {
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      [name]="'q_' + q.id"
+                      [value]="opt"
+                      [checked]="answers[q.id] === opt"
+                      (change)="onAnswerChange(q.id, opt)"
+                    />
+                    {{ opt }}
+                  </label>
+                }
+              </div>
+            }
+
+            @if (q.questionType === 'rating') {
+              <div class="rating-group">
+                @for (i of [1, 2, 3, 4, 5]; track i) {
+                  <button
+                    type="button"
+                    class="rating-btn"
+                    [class.active]="answers[q.id] === i"
+                    (click)="onAnswerChange(q.id, i)"
+                  >
+                    {{ i }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (q.questionType === 'checkbox') {
+              <div class="options-group">
+                @for (opt of q.options ?? []; track opt) {
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="isOptionChecked(q.id, opt)"
+                      (change)="onCheckboxChange(q.id, opt, $any($event).target.checked)"
+                    />
+                    {{ opt }}
+                  </label>
+                }
+              </div>
+            }
+
+            @if (q.questionType === 'text') {
+              <textarea
+                [value]="answers[q.id]"
+                (input)="onAnswerChange(q.id, $any($event).target.value)"
+                rows="3"
+                class="text-input"
+              ></textarea>
+            }
+
+            @if (q.questionType === 'select') {
+              <select
+                [value]="answers[q.id]"
+                (change)="onAnswerChange(q.id, $any($event).target.value)"
+                class="select-input"
+              >
+                <option value="">-- انتخاب کنید --</option>
+                @for (opt of q.options ?? []; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
+                }
+              </select>
+            }
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="respondentName">نام و نام خانوادگی <span class="required">*</span></label>
+          <input id="respondentName" type="text" formControlName="respondentName" class="text-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="respondentPhone">شماره تماس <span class="required">*</span></label>
+          <input id="respondentPhone" type="tel" formControlName="respondentPhone" class="text-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="studentName">نام فرزند</label>
+            <input id="studentName" type="text" formControlName="studentName" class="text-input" />
+          </div>
+          <div class="form-group">
+            <label for="studentClass">کلاس</label>
+            <input id="studentClass" type="text" formControlName="studentClass" class="text-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="branchName">نام شعبه</label>
+          <input id="branchName" type="text" formControlName="branchName" class="text-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="comment">توضیحات اضافی</label>
+          <textarea id="comment" formControlName="comment" rows="3" class="text-input"></textarea>
+        </div>
+
+        <div class="row-actions">
+          <button type="button" class="btn btn-secondary" (click)="currentStep = 2">بازگشت</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ saving ? 'در حال ارسال...' : 'ارسال پاسخ‌ها' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Step 4: Success -->
+  @if (currentStep === 4) {
+    <div class="step-section success-section">
+      <div class="success-icon">✅</div>
+      <h2>نظرسنجی شما ثبت شد</h2>
+      <p>از شرکت شما سپاسگزاریم. نظر شما برای بهبود خدمات ارزشمند است.</p>
+      <div class="row-actions">
+        <button type="button" class="btn btn-primary" (click)="reset()">نظرسنجی جدید</button>
+        <button type="button" class="btn btn-secondary" (click)="router.navigate(['/survey'])">بازگشت به لیست</button>
+      </div>
+    </div>
+  }
+</section>

@@ -156,7 +156,16 @@ import {
   CategoryAnalytics,
   QuestionAnalytics,
   IssueActionUpdate,
-  ActionStatus
+  ActionStatus,
+  ServiceSurvey,
+  CreateServiceSurveyPayload,
+  UpdateServiceSurveyPayload,
+  ServiceSurveyQuestion,
+  CreateServiceQuestionPayload,
+  ServiceSurveyResponse,
+  SubmitServiceSurveyPayload,
+  ServiceSurveyAnalytics,
+  ServiceDashboardSummary
 } from '../models/lesson-planner.models';
 
 function base64UrlEncode(value: string): string {
@@ -3433,7 +3442,245 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
       criticalIssuePercentage: totalActions > 0 ? Math.round((criticalIssues / totalActions) * 100) : 0,
       improvingTrendPercentage: this.issuePoolItems.length > 0 ? Math.round((improvingItems / this.issuePoolItems.length) * 100) : 0
     };
-    return this.delayed(summary);
+return this.delayed(summary);
+  }
+
+  private serviceSurveys: ServiceSurvey[] = [
+    {
+      id: 1,
+      title: 'نظرسنجی رضایت والدین از خدمات حمل‌ونقل',
+      description: 'لطفاً نظر خود را درباره کیفیت خدمات حمل‌ونقل فرزندان‌تان بیان کنید',
+      targetRole: 'parent',
+      status: 'active',
+      startDate: '2026-01-01',
+      endDate: '2026-12-31',
+      scoreScaleMin: 1,
+      scoreScaleMax: 5,
+      isAnonymous: true,
+      createdById: 1,
+      createdByName: 'Admin',
+      createdAt: '2026-01-01T00:00:00Z',
+      updatedAt: '2026-01-01T00:00:00Z',
+      questionCount: 5,
+      responseCount: 42,
+    },
+    {
+      id: 2,
+      title: 'نظرسنجی هماهنگی شعبه',
+      description: 'ارزیابی هماهنگی و کیفیت خدمات شعبه‌ها',
+      targetRole: 'branch_manager',
+      status: 'active',
+      startDate: '2026-01-15',
+      endDate: '2026-06-30',
+      scoreScaleMin: 1,
+      scoreScaleMax: 5,
+      isAnonymous: false,
+      createdById: 2,
+      createdByName: 'Admin',
+      createdAt: '2026-01-15T00:00:00Z',
+      updatedAt: '2026-01-15T00:00:00Z',
+      questionCount: 8,
+      responseCount: 15,
+    },
+    {
+      id: 3,
+      title: 'نظرسنجی سیاست‌گذاری مرکزی',
+      description: 'نظرسنجی جهت بهبود سیاست‌های سرویس مرکزی',
+      targetRole: 'headquarters',
+      status: 'active',
+      startDate: '2026-02-01',
+      endDate: '2026-08-31',
+      scoreScaleMin: 1,
+      scoreScaleMax: 5,
+      isAnonymous: true,
+      createdById: 1,
+      createdByName: 'Admin',
+      createdAt: '2026-02-01T00:00:00Z',
+      updatedAt: '2026-02-01T00:00:00Z',
+      questionCount: 10,
+      responseCount: 8,
+    },
+    {
+      id: 4,
+      title: 'نظرسنجی هزینه‌ها و بودجه خدمات',
+      description: 'ارزیابی مالی و صرفه‌جویی هزینه‌های سرویس‌یاب',
+      targetRole: 'manager',
+      status: 'draft',
+      startDate: '2026-03-01',
+      endDate: '2026-09-30',
+      scoreScaleMin: 1,
+      scoreScaleMax: 5,
+      isAnonymous: false,
+      createdById: 3,
+      createdByName: 'Admin',
+      createdAt: '2026-03-01T00:00:00Z',
+      updatedAt: '2026-03-01T00:00:00Z',
+      questionCount: 6,
+      responseCount: 0,
+    },
+  ];
+
+  private serviceQuestions: ServiceSurveyQuestion[] = [
+    { id: 1, surveyId: 1, questionText: 'کیفیت تعامل خلبان با شما چقدر رضایت‌بخش است؟', questionType: 'rating', category: 'حمل‌ونقل', options: undefined, scaleMin: 1, scaleMax: 5, sortOrder: 1, isRequired: true, isActive: true, createdAt: '2026-01-01T00:00:00Z' },
+    { id: 2, surveyId: 1, questionText: 'نقطه قصد رانندگان مناسب و دقیق بود؟', questionType: 'radio', category: 'حمل‌ونقل', options: ['خیلی خوب', 'خوب', 'متوسط', 'ضعیف'], scaleMin: undefined, scaleMax: undefined, sortOrder: 2, isRequired: true, isActive: true, createdAt: '2026-01-01T00:00:00Z' },
+    { id: 3, surveyId: 1, questionText: 'آیا خدمات حمل‌ونقل پیشنهاد داده می‌شود؟', questionType: 'checkbox', category: 'جمع‌آوری', options: ['بله، قطعاً', 'بله، تا حدی', 'خیر'], scaleMin: undefined, scaleMax: undefined, sortOrder: 3, isRequired: false, isActive: true, createdAt: '2026-01-01T00:00:00Z' },
+    { id: 4, surveyId: 1, questionText: 'پیشنهاد ویژه یا توجه', questionType: 'text', category: 'جمع‌آوری', options: undefined, scaleMin: undefined, scaleMax: undefined, sortOrder: 4, isRequired: false, isActive: true, createdAt: '2026-01-01T00:00:00Z' },
+    { id: 5, surveyId: 1, questionText: 'درصد رضایت کلی', questionType: 'rating', category: 'حمل‌ونقل', options: undefined, scaleMin: 1, scaleMax: 5, sortOrder: 5, isRequired: true, isActive: true, createdAt: '2026-01-01T00:00:00Z' },
+  ];
+
+  private serviceResponses: ServiceSurveyResponse[] = [
+    { id: 1, surveyId: 1, questionId: 1, respondentRole: 'parent', respondentBranchId: 1, answerScore: 4, answerText: 'خوب', respondedAt: '2026-03-15T10:00:00Z' },
+    { id: 2, surveyId: 1, questionId: 2, respondentRole: 'parent', respondentBranchId: 1, answerScore: 3, answerText: 'متوسط', respondedAt: '2026-03-15T10:05:00Z' },
+    { id: 3, surveyId: 1, questionId: 3, respondentRole: 'parent', respondentBranchId: 1, answerOptions: ['بله، تا حدی'], respondedAt: '2026-03-15T10:10:00Z' },
+    { id: 4, surveyId: 1, questionId: 5, respondentRole: 'parent', respondentBranchId: 1, answerScore: 4, answerText: 'خوب', respondedAt: '2026-03-15T10:15:00Z' },
+  ];
+
+  getServiceSurveys(targetRole?: string): Observable<ServiceSurvey[]> {
+    let surveys = [...this.serviceSurveys];
+    if (targetRole) {
+      surveys = surveys.filter((s) => s.targetRole === targetRole);
+    }
+    return this.delayed(surveys);
+  }
+
+  getServiceSurveyById(id: number): Observable<ServiceSurvey> {
+    const survey = this.serviceSurveys.find((s) => s.id === id);
+    if (!survey) throw new Error('نظرسنجی یافت نشد');
+    return this.delayed(survey);
+  }
+
+  createServiceSurvey(payload: CreateServiceSurveyPayload): Observable<ServiceSurvey> {
+    const newSurvey: ServiceSurvey = {
+      id: this.nextId(this.serviceSurveys),
+      ...payload,
+      status: 'draft',
+      createdById: 1,
+      questionCount: 0,
+      responseCount: 0,
+      createdAt: this.now(),
+      updatedAt: this.now(),
+    };
+    this.serviceSurveys.push(newSurvey);
+    return this.delayed(newSurvey);
+  }
+
+  updateServiceSurvey(id: number, payload: UpdateServiceSurveyPayload): Observable<ServiceSurvey> {
+    const idx = this.serviceSurveys.findIndex((s) => s.id === id);
+    if (idx === -1) throw new Error('نظرسنجی یافت نشد');
+    this.serviceSurveys[idx] = { ...this.serviceSurveys[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.serviceSurveys[idx]);
+  }
+
+  deleteServiceSurvey(id: number): Observable<ApiMessageResponse> {
+    this.serviceSurveys = this.serviceSurveys.filter((s) => s.id !== id);
+    return this.delayed({ message: 'نظرسنجی حذف شد' });
+  }
+
+  publishServiceSurvey(id: number): Observable<ServiceSurvey> {
+    const survey = this.serviceSurveys.find((s) => s.id === id);
+    if (survey) {
+      survey.status = 'active';
+      survey.updatedAt = this.now();
+    }
+    return this.delayed(survey!);
+  }
+
+  closeServiceSurvey(id: number): Observable<ServiceSurvey> {
+    const survey = this.serviceSurveys.find((s) => s.id === id);
+    if (survey) {
+      survey.status = 'closed';
+      survey.updatedAt = this.now();
+    }
+    return this.delayed(survey!);
+  }
+
+  getServiceSurveyQuestions(surveyId: number): Observable<ServiceSurveyQuestion[]> {
+    return this.delayed(this.serviceQuestions.filter((q) => q.surveyId === surveyId));
+  }
+
+  createServiceQuestion(surveyId: number, payload: CreateServiceQuestionPayload): Observable<ServiceSurveyQuestion> {
+    const question: ServiceSurveyQuestion = {
+      id: this.nextId(this.serviceQuestions),
+      ...payload,
+      sortOrder: payload.sortOrder ?? this.serviceQuestions.filter((q) => q.surveyId === surveyId).length,
+      isRequired: payload.isRequired ?? true,
+      isActive: true,
+      createdAt: this.now(),
+    };
+    this.serviceQuestions.push(question);
+    return this.delayed(question);
+  }
+
+  deleteServiceQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse> {
+    this.serviceQuestions = this.serviceQuestions.filter(
+      (q) => !(q.surveyId === surveyId && q.id === questionId)
+    );
+    return this.delayed({ message: 'سوال حذف شد' });
+  }
+
+  getServiceSurveyResponses(surveyId: number): Observable<ServiceSurveyResponse[]> {
+    return this.delayed(this.serviceResponses.filter((r) => r.surveyId === surveyId));
+  }
+
+  submitServiceSurveyResponse(payload: SubmitServiceSurveyPayload): Observable<ServiceSurveyResponse> {
+    const response: ServiceSurveyResponse = {
+      id: this.nextId(this.serviceResponses),
+      surveyId: payload.surveyId,
+      questionId: payload.answers[0]?.questionId ?? 0,
+      respondentRole: 'parent',
+      answerText: payload.answers[0]?.answerText ?? '',
+      answerScore: payload.answers[0]?.answerScore,
+      answerOptions: payload.answers[0]?.answerOptions,
+      respondedAt: this.now(),
+    };
+    this.serviceResponses.push(response);
+    return this.delayed(response);
+  }
+
+  getServiceSurveyAnalytics(surveyId: number): Observable<ServiceSurveyAnalytics> {
+    const survey = this.serviceSurveys.find((s) => s.id === surveyId);
+    const responses = this.serviceResponses.filter((r) => r.surveyId === surveyId);
+    const questions = this.serviceQuestions.filter((q) => q.surveyId === surveyId);
+    const avgScore = responses.length > 0
+      ? responses.reduce((sum, r) => sum + (r.answerScore ?? 0), 0) / responses.length
+      : 0;
+
+    return this.delayed({
+      surveyId,
+      title: survey?.title ?? '',
+      totalRespondents: responses.length,
+      totalQuestions: questions.length,
+      overallAverage: Math.round(avgScore * 10) / 10,
+      responseCount: responses.length,
+      categoryBreakdown: [
+        { category: 'حمل‌ونقل', averageScore: Math.round(avgScore * 10) / 10, questionCount: questions.length, responseCount: responses.length },
+      ],
+      topQuestions: questions.slice(0, 3).map((q) => ({
+        questionId: q.id,
+        questionText: q.questionText,
+        category: q.category,
+        averageScore: Math.round(avgScore * 10) / 10,
+        responseCount: responses.length,
+        responseRate: responses.length > 0 ? Math.round((responses.length / (survey?.responseCount ?? 1)) * 100) : 0,
+      })),
+    });
+  }
+
+  getServiceDashboardSummary(): Observable<ServiceDashboardSummary> {
+    const activeSurveys = this.serviceSurveys.filter((s) => s.status === 'active').length;
+    const totalResponses = this.serviceResponses.length;
+    const avgScore = totalResponses > 0
+      ? Math.round(
+          (this.serviceResponses.reduce((sum, r) => sum + (r.answerScore ?? 0), 0) / totalResponses) * 10
+        ) / 10
+      : 0;
+    return this.delayed({
+      activeSurveys,
+      totalResponses,
+      averageScore: avgScore,
+      completionRate: totalResponses > 0 ? Math.round((totalResponses / 100) * 100) : 0,
+      lastUpdated: this.now(),
+    });
   }
 
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {
