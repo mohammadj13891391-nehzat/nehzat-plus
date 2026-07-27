@@ -98,10 +98,21 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+        if (allowedOrigins is not { Length: > 0 })
+        {
+            allowedOrigins = builder.Environment.IsDevelopment()
+                ? new[] { "http://localhost:4200" }
+                : Array.Empty<string>();
+        }
+
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        }
     });
 });
 
@@ -124,11 +135,21 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
 
     if (args.Contains("--seed"))
     {
         db.Database.EnsureDeleted();
+    }
+
+    // Auto-apply schema changes on startup:
+    // - If migrations exist → Migrate() applies pending migrations
+    // - If no migrations (fresh DB) → EnsureCreated() creates the schema
+    if (db.Database.GetPendingMigrations().Any())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
         db.Database.EnsureCreated();
     }
 

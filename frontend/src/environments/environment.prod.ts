@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: '',
-  apiPublicUrl: '',
+  apiUrl: 'https://api.nehzat128.ir',
+  apiPublicUrl: 'https://api.nehzat128.ir',
   otuh2Url: 'https://api.nehzat128.ir/oauth',
   useMockApi: false,
   useMockAuth: false,
