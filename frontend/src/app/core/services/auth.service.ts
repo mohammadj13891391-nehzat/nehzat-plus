@@ -1,11 +1,12 @@
 import { Injectable, inject, InjectionToken } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, switchMap, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { OTUH2_API } from './otuh2-api.token';
 import { AuthTokenResponse, RegisterPayload, ApiMessageResponse } from '../models/otuh2.models';
 import { CurrentUser } from '../models/lesson-planner.models';
+import { resolveOtuh2BaseUrl } from './api-url.util';
 
 const ACCESS_TOKEN_KEY = 'otuh2_access_token';
 const ID_TOKEN_KEY = 'otuh2_id_token';
@@ -85,10 +86,38 @@ export class AuthService {
   }
 
   logout(): void {
+    const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(ID_TOKEN_KEY);
     this.storage.removeItem(REFRESH_TOKEN_KEY);
-    void this.router.navigateByUrl('/auth/login');
+
+    // End OTUH2 session server-side, then redirect back to login
+    const otuh2LogoutUrl = `${resolveOtuh2BaseUrl()}/connect/logout`;
+    const postLogoutUri = encodeURIComponent(`${window.location.origin}/auth/login`);
+    const logoutRedirect = idToken
+      ? `${otuh2LogoutUrl}?id_token_hint=${encodeURIComponent(idToken)}&post_logout_redirect_uri=${postLogoutUri}`
+      : `${otuh2LogoutUrl}?post_logout_redirect_uri=${postLogoutUri}`;
+    window.location.href = logoutRedirect;
+  }
+
+  /** Try to refresh the access token using the stored refresh token. */
+  refreshToken(): Observable<boolean> {
+    const stored = this.storage.getItem(REFRESH_TOKEN_KEY);
+    if (!stored) {
+      return of(false);
+    }
+    return this.api.refreshToken(stored).pipe(
+      tap(response => {
+        sessionStorage.setItem(ACCESS_TOKEN_KEY, response.access_token);
+        if (response.id_token) {
+          sessionStorage.setItem(ID_TOKEN_KEY, response.id_token);
+        }
+        if (response.refresh_token) {
+          this.storage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+        }
+      }),
+      switchMap(() => of(true)),
+    );
   }
 
   isAuthenticated(): boolean {
