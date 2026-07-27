@@ -11,7 +11,8 @@ import type {
   BiweeklyProgressResponse,
   Course,
   CurrentUser,
-  StudentAssignmentGateState
+  StudentAssignmentGateState,
+  StudentAssessmentHistory
 } from '../../core/models/lesson-planner.models';
 import { resolveMediaUrl } from '../../core/services/api-url.util';
 import { AuthService } from '../../core/services/auth.service';
@@ -47,6 +48,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   assignmentProgress: StudentAssignmentGateState | null = null;
   primaryInstructionAudioUrl: string | null = null;
   biweeklyProgress: BiweeklyProgressData | null = null;
+  assessmentHistory: StudentAssessmentHistory | null = null;
+  loadingHistory = false;
 
   loadingCourses = false;
   loadingAssignments = false;
@@ -193,6 +196,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadAssignments(course.id);
     this.loadSubmissions();
     this.loadBiweeklyProgress();
+    this.loadAssessmentHistory();
   }
 
   private loadBiweeklyProgress(): void {
@@ -208,6 +212,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Failed to load biweekly progress:', error);
+        }
+      });
+  }
+
+  private loadAssessmentHistory(): void {
+    const studentId = this.getStudentId();
+    if (studentId === null || !this.selectedCourse) return;
+    this.loadingHistory = true;
+    this.api
+      .getStudentAssessmentHistory(studentId, this.selectedCourse.id)
+      .pipe(finalize(() => (this.loadingHistory = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (history) => {
+          this.assessmentHistory = history;
+        },
+        error: () => {
+          this.assessmentHistory = null;
         }
       });
   }

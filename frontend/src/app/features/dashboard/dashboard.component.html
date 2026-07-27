@@ -203,8 +203,46 @@
         </div>
         @if (!selectedCourse) {
           <p class="muted">برای شرکت در امتحان، ابتدا یک درس انتخاب کنید.</p>
+        } @else if (loadingHistory) {
+          <p class="muted">در حال دریافت تاریخچه امتحانات...</p>
+        } @else if (assessmentHistory && assessmentHistory.history.length > 0) {
+          <div class="history-stats">
+            <div class="stat-card">
+              <span class="stat-label">کل امتحانات</span>
+              <strong>{{ assessmentHistory.statistics.totalAssessments }}</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">تکمیل شده</span>
+              <strong>{{ assessmentHistory.statistics.completedAssessments }}</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">میانگین نمره</span>
+              <strong>{{ assessmentHistory.statistics.averageScore | number:'1.0-1' }}%</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">بهترین نمره</span>
+              <strong>{{ assessmentHistory.statistics.bestScore }}%</strong>
+            </div>
+          </div>
+          <div class="history-list">
+            @for (item of assessmentHistory.history; track item.assessment.id) {
+              <article class="history-item">
+                <div class="history-item-info">
+                  <strong>{{ item.assessment.title }}</strong>
+                  <span class="muted">{{ item.assessment.assessmentDate }} — {{ item.assessment.type }}</span>
+                </div>
+                @if (item.result) {
+                  <span class="status-chip" [class.status-chip--active]="item.result.percentage >= 50" [class.status-chip--inactive]="item.result.percentage < 50">
+                    {{ item.result.score }}/{{ item.assessment.maxScore }} ({{ item.result.percentage | number:'1.0-1' }}%)
+                  </span>
+                } @else {
+                  <span class="status-chip status-chip--draft">شرکت نکرده</span>
+                }
+              </article>
+            }
+          </div>
         } @else {
-          <p class="muted">با کلیک روی دکمه بالا می‌توانید در امتحانات درس جاری شرکت کنید.</p>
+          <p class="muted">برای این درس هنوز امتحانی ثبت نشده است.</p>
         }
       </div>
     </section>
