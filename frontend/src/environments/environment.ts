@@ -1,14 +1,9 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:3000',
-  apiPublicUrl: 'http://localhost:3000',
-  otuh2Url: 'http://localhost:5000',
+  production: true,
+  apiUrl: 'https://api.nehzat128.ir',
+  apiPublicUrl: 'https://api.nehzat128.ir',
+  otuh2Url: 'https://api.nehzat128.ir/oauth',
   useMockApi: false,
   useMockAuth: false,
-  mockUser: {
-    id: 'usr_dev_mock_01H7X8Z5M3P',
-    name: 'Developer Sandbox Account',
-    email: 'sandbox-dev@nehzat128.ir',
-    role: 'Administrator'
-  }
+  mockUser: null as { id: string; name: string; email: string; role: string } | null
 };

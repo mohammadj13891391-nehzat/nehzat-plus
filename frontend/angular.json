@@ -57,6 +57,18 @@
               ],
               "outputHashing": "all"
             },
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputHashing": "all"
+            },
             "capacitor": {
               "baseHref": "./",
               "outputHashing": "all"
@@ -79,11 +91,14 @@
             "production": {
               "buildTarget": "frontend:build:production"
             },
+            "local": {
+              "buildTarget": "frontend:build:local"
+            },
             "development": {
               "buildTarget": "frontend:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "local"
         },
         "test": {
           "builder": "@angular/build:unit-test"
