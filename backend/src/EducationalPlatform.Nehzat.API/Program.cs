@@ -126,16 +126,9 @@ using (var scope = app.Services.CreateScope())
     if (args.Contains("--seed"))
     {
         db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
     }
-    else if (db.Database.GetPendingMigrations().Any())
-    {
-        db.Database.Migrate();
-    }
-    else
-    {
-        db.Database.EnsureCreated();
-    }
+
+    db.Database.Migrate();
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     // Users are synced from OTUH2 via OidcSyncMiddleware on first request

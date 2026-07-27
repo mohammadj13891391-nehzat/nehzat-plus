@@ -25,7 +25,8 @@ public class SampleDataSeeder
         }
 
         var students = await CreateStudentsAsync();
-        await CreateUsersForStudentsAsync(students);
+        // Users are created through OTUH2 — sample user seeding is disabled for centralized auth.
+        // await CreateUsersForStudentsAsync(students);
         var courses = await CreateCoursesAsync();
         var assignments = await CreateDailyAssignmentsForCoursesAsync(courses, 36);
         await EnrollStudentsAsync(students, courses);

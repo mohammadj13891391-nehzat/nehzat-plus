@@ -46,37 +46,11 @@ public class UserManagementController : ControllerBase
         return Ok(await _courseService.RejectUserAsync(userId));
     }
 
+    // User creation is handled by OTUH2 — this endpoint is disabled in favor of centralized auth.
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public IActionResult CreateUser()
     {
-        var existing = await _userService.FindUserAsync(request.Username);
-        if (existing != null)
-        {
-            return BadRequest(new { message = "نام کاربری قبلاً ثبت شده است" });
-        }
-
-        await _userService.CreateUserAsync(
-            request.Username,
-            request.Password,
-            null,
-            null,
-            request.UserType,
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.PhoneNumber
-        );
-
-        var user = await _userService.FindUserAsync(request.Username);
-        return Ok(new
-        {
-            user!.Id,
-            user.Username,
-            user.UserType,
-            user.FirstName,
-            user.LastName,
-            user.Email,
-            user.PhoneNumber
-        });
+        return BadRequest(new { message = "ایجاد کاربر از طریق سامانه احراز هویت مرکزی (OTUH2) انجام می‌شود" });
     }
 }
