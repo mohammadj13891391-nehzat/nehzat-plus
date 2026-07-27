@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,41 +22,28 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var useMockAuth = builder.Configuration.GetValue<bool>("UseMockAuth");
 var oidcConfig = builder.Configuration.GetSection("Oidc");
 
-if (useMockAuth)
+builder.Services.AddAuthentication(options =>
 {
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = "MockScheme";
-        options.DefaultChallengeScheme = "MockScheme";
-    })
-    .AddScheme<AuthenticationSchemeOptions, MockAuthHandler>("MockScheme", null);
-}
-else
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
 {
-    builder.Services.AddAuthentication(options =>
+    // Keep JWT claim names as-is (sub, role) instead of remapping to WIF URIs,
+    // so NameClaimType="sub" and RoleClaimType="role" match the OTUH2 token.
+    options.MapInboundClaims = false;
+    options.Authority = oidcConfig["Authority"];
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        // Keep JWT claim names as-is (sub, role) instead of remapping to WIF URIs,
-        // so NameClaimType="sub" and RoleClaimType="role" match the OTUH2 token.
-        options.MapInboundClaims = false;
-        options.Authority = oidcConfig["Authority"];
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidTypes = new[] { "at+jwt" },
-            NameClaimType = "sub",
-            RoleClaimType = "role"
-        };
-        options.RequireHttpsMetadata = oidcConfig.GetValue<bool>("RequireHttpsMetadata");
-    });
-}
+        ValidateAudience = false,
+        ValidTypes = new[] { "at+jwt" },
+        NameClaimType = "sub",
+        RoleClaimType = "role"
+    };
+    options.RequireHttpsMetadata = oidcConfig.GetValue<bool>("RequireHttpsMetadata");
+});
 
 builder.Services.AddAuthorization();
 
@@ -142,9 +128,6 @@ using (var scope = app.Services.CreateScope())
         db.Database.EnsureDeleted();
     }
 
-    // Auto-apply schema changes on startup:
-    // - If migrations exist → Migrate() applies pending migrations
-    // - If no migrations (fresh DB) → EnsureCreated() creates the schema
     if (db.Database.GetPendingMigrations().Any())
     {
         db.Database.Migrate();

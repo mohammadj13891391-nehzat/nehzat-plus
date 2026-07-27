@@ -9,34 +9,47 @@ public class QuranDataSeeder
 {
     private readonly AppDbContext _db;
     private readonly string _quranDataPath;
+    private const int BATCH_SIZE = 500;
 
     public QuranDataSeeder(AppDbContext db)
     {
         _db = db;
-        // The quran_text.json is located in the Quran project folder
-        var basePath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "Quran"));
-        _quranDataPath = Path.Combine(basePath, "quran_text.json");
+        // The quran_text.json is located in the Quran project folder relative to the repo root
+        var solutionDir = AppContext.BaseDirectory;
+        // Walk up until we find the Quran folder or reach a reasonable limit
+        var candidate = solutionDir;
+        for (int i = 0; i < 10; i++)
+        {
+            var testPath = Path.Combine(candidate, "Quran", "quran_text.json");
+            if (File.Exists(testPath))
+            {
+                _quranDataPath = testPath;
+                return;
+            }
+            candidate = Path.GetDirectoryName(candidate)!;
+        }
+        // Fallback: try well-known paths
+        _quranDataPath = Path.Combine("D:", "nehzat-plus", "Quran", "quran_text.json");
     }
 
     public async Task SeedAsync()
     {
-        // Skip if already seeded
         if (await _db.Surahs.AnyAsync())
             return;
 
-        // Seed Recitation Levels
         await SeedRecitationLevelsAsync();
-
-        // Seed Tajweed Rules
-        await SeedTajweedRulesAsync();
-
-        // Seed Quran Curricula
-        await SeedCurriculaAsync();
-
-        // Seed Surahs and Ayahs from JSON
-        await SeedSurahsAndAyahsAsync();
-
         await _db.SaveChangesAsync();
+        _db.ChangeTracker.Clear();
+
+        await SeedTajweedRulesAsync();
+        await _db.SaveChangesAsync();
+        _db.ChangeTracker.Clear();
+
+        await SeedCurriculaAsync();
+        await _db.SaveChangesAsync();
+        _db.ChangeTracker.Clear();
+
+        await SeedSurahsAndAyahsAsync();
     }
 
     private async Task SeedRecitationLevelsAsync()
@@ -328,22 +341,22 @@ public class QuranDataSeeder
                 UpdatedAt = DateTime.UtcNow
             };
 
-            await _db.Surahs.AddAsync(surah);
-            await _db.SaveChangesAsync(); // Save to get the generated Id
+            _db.Surahs.Add(surah);
+            await _db.SaveChangesAsync();
 
-            // Seed Ayahs
             var verses = chapter.GetProperty("verses").EnumerateArray().ToList();
+            var ayahBatch = new List<Ayah>(verses.Count);
+
             foreach (var verse in verses)
             {
                 var verseKey = verse.GetProperty("verse_key").GetString() ?? "";
                 var textUthmani = verse.GetProperty("text_uthmani").GetString() ?? "";
                 var verseId = verse.GetProperty("id").GetInt32();
 
-                // Parse verse number from verse_key (e.g., "1:1" -> 1)
                 var verseParts = verseKey.Split(':');
                 var verseNumber = int.TryParse(verseParts.LastOrDefault(), out var vn) ? vn : verseId;
 
-                var ayah = new Ayah
+                ayahBatch.Add(new Ayah
                 {
                     SurahId = surah.Id,
                     VerseNumber = verseNumber,
@@ -358,10 +371,19 @@ public class QuranDataSeeder
                     HizbQuarter = "",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
-                };
-
-                await _db.Ayahs.AddAsync(ayah);
+                });
             }
+
+            for (int i = 0; i < ayahBatch.Count; i += BATCH_SIZE)
+            {
+                var batch = ayahBatch.Skip(i).Take(BATCH_SIZE).ToList();
+                await _db.Ayahs.AddRangeAsync(batch);
+                await _db.SaveChangesAsync();
+                _db.ChangeTracker.Clear();
+            }
+
+            if (chapterNumber % 10 == 0)
+                Console.WriteLine($"✅ Seeded {chapterNumber}/114 surahs");
         }
     }
 

@@ -83,8 +83,9 @@ public class AppDbContext : DbContext
   public DbSet<QuranCurriculum> QuranCurricula => Set<QuranCurriculum>();
   public DbSet<QuranStudentProgress> QuranStudentProgresses => Set<QuranStudentProgress>();
 
-  protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("nehzat");
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<User>(entity =>
