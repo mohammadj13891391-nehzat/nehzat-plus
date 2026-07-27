@@ -190,13 +190,15 @@ export class AuthService {
         return '/evaluator';
       case 'headquarters':
         return '/headquarters';
+      case 'teacher':
+        return '/teacher';
       default:
         return '/dashboard';
     }
   }
 
   private resolvePrimaryRole(roles: string[]): string {
-    const priority = ['admin', 'manager', 'headquarters', 'branch_manager', 'coach', 'parent', 'evaluator', 'trainee'];
+    const priority = ['admin', 'manager', 'headquarters', 'branch_manager', 'coach', 'parent', 'evaluator', 'teacher', 'trainee'];
     const lowerRoles = roles.map(r => r.toLowerCase());
     for (const role of priority) {
       if (lowerRoles.includes(role)) {

@@ -87,14 +87,15 @@ builder.Services.AddScoped<ITeacherService, TeacherService>();
     builder.Services.AddScoped<ISpiritualPathService, SpiritualPathService>();
     builder.Services.AddScoped<ICurriculumVersionService, CurriculumVersionService>();
     builder.Services.AddScoped<IMonthlyBookletService, MonthlyBookletService>();
-    builder.Services.AddScoped<ICompetitionService, CompetitionService>();
+builder.Services.AddScoped<ICompetitionService, CompetitionService>();
     builder.Services.AddScoped<ILeagueService, LeagueService>();
     builder.Services.AddScoped<IProgressionService, ProgressionService>();
     builder.Services.AddScoped<SampleDataSeeder>();
     builder.Services.AddScoped<ILogService, LogService>();
     builder.Services.AddScoped<IIssueSurveyService, IssueSurveyService>();
+    builder.Services.AddScoped<IQuranService, QuranService>();
 
-builder.Services.AddCors(options =>
+    builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {

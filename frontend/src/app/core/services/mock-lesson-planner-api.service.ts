@@ -3,6 +3,8 @@ import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 import { LessonPlannerApi } from './lesson-planner-api.interface';
+import { base64UrlEncode, createDummyToken, nextId } from './mock-lesson-planner-helpers';
+import { mockUsers, mockStudents, mockBranches, mockCourses, mockCourseEnrollments, mockInviteCodes } from './mock-lesson-planner-data';
 import {
   AdminCourseStatistics,
   AdminSystemStatistics,
@@ -168,170 +170,15 @@ import {
   ServiceDashboardSummary
 } from '../models/lesson-planner.models';
 
-function base64UrlEncode(value: string): string {
-  return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function createDummyToken(
-  username: string,
-  userType: UserType,
-  studentId?: number,
-  branchId?: number
-): string {
-  const header = JSON.stringify({ alg: 'none', typ: 'JWT' });
-  const payload = JSON.stringify({
-    sub: username,
-    userType,
-    studentId,
-    branchId,
-    exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
-    iat: Math.floor(Date.now() / 1000)
-  });
-  const signature = '';
-  return `${base64UrlEncode(header)}.${base64UrlEncode(payload)}.${signature}`;
-}
-
 @Injectable()
 export class MockLessonPlannerApi extends LessonPlannerApi {
   private readonly delayMs = 300;
 
-  private users: Array<{
-    id: number;
-    username: string;
-    password: string;
-    userType: UserType;
-    approvalStatus: 'pending' | 'approved' | 'rejected';
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phoneNumber?: string;
-    imageUrl?: string;
-    studentId?: number;
-    branchId?: number;
-  }> = [
-    {
-      id: 1,
-      username: 'test',
-      password: 'password',
-      userType: 'manager',
-      approvalStatus: 'approved',
-      firstName: 'مدیر',
-      lastName: 'سیستم',
-      email: 'admin@example.com',
-      phoneNumber: '09120000000'
-    },
-    {
-      id: 2,
-      username: 'ali.ahmadi',
-      password: 'password123',
-      userType: 'trainee',
-      approvalStatus: 'approved',
-      firstName: 'علی',
-      lastName: 'احمدی',
-      email: 'ali@example.com',
-      phoneNumber: '09121111111',
-      studentId: 1
-    },
-    {
-      id: 3,
-      username: 'fateme.mohammadi',
-      password: 'password123',
-      userType: 'trainee',
-      approvalStatus: 'approved',
-      firstName: 'فاطمه',
-      lastName: 'محمدی',
-      email: 'fateme@example.com',
-      phoneNumber: '09122222222',
-      studentId: 2
-    },
-    {
-      id: 4,
-      username: 'mohammad.rezaei',
-      password: 'password123',
-      userType: 'trainee',
-      approvalStatus: 'approved',
-      firstName: 'محمد',
-      lastName: 'رضایی',
-      email: 'mohammad@example.com',
-      phoneNumber: '09123333333',
-      studentId: 3
-    }
-  ];
+  private users = [...mockUsers];
 
-  private students: Student[] = [
-    {
-      id: 1,
-      username: 'ali.ahmadi',
-      studentId: 'STD-001',
-      firstName: 'علی',
-      lastName: 'احمدی',
-      email: 'ali@example.com',
-      phoneNumber: '09121111111',
-      status: 'active',
-      createdAt: '2026-01-01T00:00:00.000Z'
-    },
-    {
-      id: 2,
-      username: 'fateme.mohammadi',
-      studentId: 'STD-002',
-      firstName: 'فاطمه',
-      lastName: 'محمدی',
-      email: 'fateme@example.com',
-      phoneNumber: '09122222222',
-      status: 'active',
-      createdAt: '2026-01-01T00:00:00.000Z'
-    },
-    {
-      id: 3,
-      username: 'mohammad.rezaei',
-      studentId: 'STD-003',
-      firstName: 'محمد',
-      lastName: 'رضایی',
-      email: 'mohammad@example.com',
-      phoneNumber: '09123333333',
-      status: 'active',
-      createdAt: '2026-01-01T00:00:00.000Z'
-    }
-  ];
-
-  private branches: Branch[] = [
-    {
-      id: 1,
-      name: 'شعبه مرکزی',
-      province: 'تهران',
-      description: 'شعبه اصلی و مرکزی',
-      createdAt: '2026-01-01T00:00:00.000Z'
-    }
-  ];
-
-  private courses: Course[] = [
-    {
-      id: 1,
-      title: 'قرآن و معارف اسلامی',
-      description: 'دوره آموزش قرآن کریم و معارف اسلامی',
-      courseCode: 'QUR-101',
-      credits: 3,
-      instructor: 'استاد محمدی',
-      status: 'active',
-      startDate: '2026-01-01',
-      endDate: '2026-06-01',
-      maxStudents: 30,
-      createdAt: '2026-01-01T00:00:00.000Z'
-    },
-    {
-      id: 2,
-      title: 'آموزش تجوید',
-      description: 'دوره تخصصی تجوید قرآن کریم',
-      courseCode: 'TJT-201',
-      credits: 2,
-      instructor: 'استاد رضایی',
-      status: 'active',
-      startDate: '2026-01-01',
-      endDate: '2026-06-01',
-      maxStudents: 20,
-      createdAt: '2026-01-01T00:00:00.000Z'
-    }
-  ];
+  private students = [...mockStudents];
+  private branches = [...mockBranches];
+  private courses = [...mockCourses];
 
   private assignments: Assignment[] = [];
   private attachments: AssignmentAttachment[] = [];
@@ -352,8 +199,8 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
   private ringTeachingMethods: RingTeachingMethod[] = [];
   private evaluations: EvaluationRecord[] = [];
   private assessments: Assessment[] = [];
-  private courseEnrollments: Map<number, number[]> = new Map([[1, [1, 2, 3]], [2, [1, 2]]]);
-  private inviteCodes: Map<number, CourseInviteCode> = new Map();
+  private courseEnrollments = new Map(mockCourseEnrollments);
+  private inviteCodes = new Map(mockInviteCodes);
 
   private spiritualPracticeItems: SpiritualPracticeItem[] = [];
   private spiritualOccasions: SpiritualOccasion[] = [];

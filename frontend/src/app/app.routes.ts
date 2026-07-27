@@ -65,6 +65,12 @@ export const routes: Routes = [
       import('./features/surveys/surveys.routes').then((m) => m.SURVEYS_ROUTES),
   },
   {
+    path: 'quran',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/quran/quran.routes').then((m) => m.QURAN_ROUTES),
+  },
+  {
     path: '**',
     redirectTo: '/auth/login'
   }

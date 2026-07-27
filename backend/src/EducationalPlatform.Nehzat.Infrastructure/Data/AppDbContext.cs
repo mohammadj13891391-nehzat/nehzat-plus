@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using EducationalPlatform.Nehzat.Domain.Entities;
+using EducationalPlatform.Nehzat.Domain.Entities.Quran;
 
 namespace EducationalPlatform.Nehzat.Infrastructure.Data;
 
@@ -73,6 +74,14 @@ public class AppDbContext : DbContext
   public DbSet<CompetitionParticipant> CompetitionParticipants => Set<CompetitionParticipant>();
   public DbSet<League> Leagues => Set<League>();
   public DbSet<LeagueRanking> LeagueRankings => Set<LeagueRanking>();
+
+  public DbSet<Surah> Surahs => Set<Surah>();
+  public DbSet<Ayah> Ayahs => Set<Ayah>();
+  public DbSet<TajweedRule> TajweedRules => Set<TajweedRule>();
+  public DbSet<QuranStudentCourse> QuranStudentCourses => Set<QuranStudentCourse>();
+  public DbSet<RecitationLevel> RecitationLevels => Set<RecitationLevel>();
+  public DbSet<QuranCurriculum> QuranCurricula => Set<QuranCurriculum>();
+  public DbSet<QuranStudentProgress> QuranStudentProgresses => Set<QuranStudentProgress>();
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -712,6 +721,75 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.UpdatedBy)
                   .WithMany()
                   .HasForeignKey(e => e.UpdatedById)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Surah>(entity =>
+        {
+            entity.HasIndex(e => e.Number).IsUnique();
+            entity.HasMany(e => e.Ayahs)
+                  .WithOne(a => a.Surah)
+                  .HasForeignKey(a => a.SurahId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Ayah>(entity =>
+        {
+            entity.HasIndex(e => new { e.SurahId, e.VerseNumber }).IsUnique();
+            entity.HasOne(e => e.Surah)
+                  .WithMany(s => s.Ayahs)
+                  .HasForeignKey(e => e.SurahId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<TajweedRule>(entity =>
+        {
+            entity.HasIndex(e => e.RuleCode).IsUnique();
+            entity.HasOne(e => e.Surah)
+                  .WithMany()
+                  .HasForeignKey(e => e.SurahId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<QuranStudentCourse>(entity =>
+        {
+            entity.HasOne(e => e.Student)
+                  .WithMany()
+                  .HasForeignKey(e => e.StudentId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Course)
+                  .WithMany()
+                  .HasForeignKey(e => e.CourseId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Surah)
+                  .WithMany()
+                  .HasForeignKey(e => e.SurahId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RecitationLevel>(entity =>
+        {
+            entity.HasIndex(e => e.LevelNumber).IsUnique();
+        });
+
+        modelBuilder.Entity<QuranCurriculum>(entity =>
+        {
+            entity.HasOne(e => e.Teacher)
+                  .WithMany()
+                  .HasForeignKey(e => e.TeacherId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<QuranStudentProgress>(entity =>
+        {
+            entity.HasIndex(e => new { e.StudentId, e.SurahId }).IsUnique();
+            entity.HasOne(e => e.Student)
+                  .WithMany()
+                  .HasForeignKey(e => e.StudentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Surah)
+                  .WithMany()
+                  .HasForeignKey(e => e.SurahId)
                   .OnDelete(DeleteBehavior.Restrict);
         });
     }

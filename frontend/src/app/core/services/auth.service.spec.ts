@@ -269,6 +269,7 @@ describe('AuthService', () => {
       expect(service.getDashboardPathForRole('branch_manager')).toBe('/branch-manager');
       expect(service.getDashboardPathForRole('evaluator')).toBe('/evaluator');
       expect(service.getDashboardPathForRole('headquarters')).toBe('/headquarters');
+      expect(service.getDashboardPathForRole('teacher')).toBe('/teacher');
       expect(service.getDashboardPathForRole('unknown')).toBe('/dashboard');
     });
   });
