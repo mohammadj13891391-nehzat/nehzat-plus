@@ -1,8 +1,14 @@
+import { mountStandalone } from '../shared/testing-utils';
+
 import { EvaluatorComponent } from './evaluator.component';
-import { describe, it, expect } from 'vitest';
 
 describe('EvaluatorComponent', () => {
   it('should be defined', () => {
     expect(EvaluatorComponent).toBeDefined();
+  });
+
+  it('should create with mocked dependencies', () => {
+    const instance = mountStandalone(EvaluatorComponent);
+    expect(instance).toBeTruthy();
   });
 });
