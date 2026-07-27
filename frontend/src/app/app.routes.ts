@@ -48,6 +48,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/headquarters/headquarters.routes').then((m) => m.HEADQUARTERS_ROUTES)
   },
   {
+    path: 'survey',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/survey/survey.routes').then((m) => m.SURVEY_ROUTES),
+  },
+  {
     path: 'surveys',
     canActivate: [authGuard],
     loadChildren: () =>

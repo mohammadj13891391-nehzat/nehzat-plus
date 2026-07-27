@@ -1,0 +1,146 @@
+.survey-analytics {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.survey-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    color: var(--lp-text);
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    color: var(--lp-text-secondary);
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+
+  .stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--lp-text-secondary);
+  }
+
+  .stat-value {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--lp-text);
+  }
+}
+
+.survey-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  background: var(--lp-background);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--lp-primary);
+  }
+
+  .list-item-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+
+  .list-meta {
+    font-size: 0.8rem;
+    color: var(--lp-text-secondary);
+  }
+}
+
+.analytics-detail {
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+}
+
+.analytics-table {
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.analytics-header {
+  font-weight: 600;
+  background: var(--lp-surface);
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.question-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.question-text {
+  flex: 1;
+}
+
+.question-meta {
+  font-size: 0.75rem;
+  color: var(--lp-text-secondary);
+  min-width: 12rem;
+  text-align: left;
+}
+
+.muted {
+  color: var(--lp-text-secondary);
+}

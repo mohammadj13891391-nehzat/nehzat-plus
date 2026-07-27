@@ -136,7 +136,19 @@ Ring,
   CreateIssueItemPoolPayload,
   IssueDashboardSummary,
   SurveyAnalytics,
-  CategoryAnalytics
+  CategoryAnalytics,
+  ServiceSurvey,
+  CreateServiceSurveyPayload,
+  UpdateServiceSurveyPayload,
+  ServiceSurveyQuestion,
+  CreateServiceQuestionPayload,
+  ServiceSurveyResponse,
+  SubmitServiceSurveyPayload,
+  SubmitServiceAnswerItem,
+  ServiceSurveyAnalytics,
+  ServiceCategoryAnalytics,
+  ServiceQuestionAnalytics,
+  ServiceDashboardSummary
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -1100,6 +1112,64 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   getIssueDashboardSummary(): Observable<IssueDashboardSummary> {
     return this.http.get<IssueDashboardSummary>(this.url('/issue-dashboard/summary'));
+  }
+
+  getServiceSurveys(targetRole?: string): Observable<ServiceSurvey[]> {
+    let params = new HttpParams();
+    if (targetRole) params = params.set('targetRole', targetRole);
+    return this.http.get<ServiceSurvey[]>(this.url('/service-surveys'), { params });
+  }
+
+  getServiceSurveyById(id: number): Observable<ServiceSurvey> {
+    return this.http.get<ServiceSurvey>(this.url(`/service-surveys/${id}`));
+  }
+
+  createServiceSurvey(payload: CreateServiceSurveyPayload): Observable<ServiceSurvey> {
+    return this.http.post<ServiceSurvey>(this.url('/service-surveys'), payload);
+  }
+
+  updateServiceSurvey(id: number, payload: UpdateServiceSurveyPayload): Observable<ServiceSurvey> {
+    return this.http.patch<ServiceSurvey>(this.url(`/service-surveys/${id}`), payload);
+  }
+
+  deleteServiceSurvey(id: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/service-surveys/${id}`));
+  }
+
+  publishServiceSurvey(id: number): Observable<ServiceSurvey> {
+    return this.http.post<ServiceSurvey>(this.url(`/service-surveys/${id}/publish`), null);
+  }
+
+  closeServiceSurvey(id: number): Observable<ServiceSurvey> {
+    return this.http.post<ServiceSurvey>(this.url(`/service-surveys/${id}/close`), null);
+  }
+
+  getServiceSurveyQuestions(surveyId: number): Observable<ServiceSurveyQuestion[]> {
+    return this.http.get<ServiceSurveyQuestion[]>(this.url(`/service-surveys/${surveyId}/questions`));
+  }
+
+  createServiceQuestion(surveyId: number, payload: CreateServiceQuestionPayload): Observable<ServiceSurveyQuestion> {
+    return this.http.post<ServiceSurveyQuestion>(this.url(`/service-surveys/${surveyId}/questions`), payload);
+  }
+
+  deleteServiceQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse> {
+    return this.http.delete<ApiMessageResponse>(this.url(`/service-surveys/${surveyId}/questions/${questionId}`));
+  }
+
+  getServiceSurveyResponses(surveyId: number): Observable<ServiceSurveyResponse[]> {
+    return this.http.get<ServiceSurveyResponse[]>(this.url(`/service-surveys/${surveyId}/responses`));
+  }
+
+  submitServiceSurveyResponse(payload: SubmitServiceSurveyPayload): Observable<ServiceSurveyResponse> {
+    return this.http.post<ServiceSurveyResponse>(this.url('/service-survey-responses'), payload);
+  }
+
+  getServiceSurveyAnalytics(surveyId: number): Observable<ServiceSurveyAnalytics> {
+    return this.http.get<ServiceSurveyAnalytics>(this.url(`/service-surveys/${surveyId}/analytics`));
+  }
+
+  getServiceDashboardSummary(): Observable<ServiceDashboardSummary> {
+    return this.http.get<ServiceDashboardSummary>(this.url('/service-surveys/dashboard/summary'));
   }
 
   private url(path: string): string {

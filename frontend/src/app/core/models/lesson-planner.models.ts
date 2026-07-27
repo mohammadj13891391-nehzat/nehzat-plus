@@ -1624,3 +1624,143 @@ export interface IssueDashboardSummary {
   criticalIssuePercentage: number;
   improvingTrendPercentage: number;
 }
+
+// ── Service Survey (سرویس‌یاب) ──
+
+export type ServiceSurveyStatus = 'draft' | 'active' | 'closed' | 'archived';
+export type ServiceSurveyTargetRole = 'parent' | 'branch_manager' | 'headquarters' | 'manager';
+export type ServiceQuestionType = 'radio' | 'checkbox' | 'rating' | 'text' | 'select';
+export type ServiceQuestionScale = 1 | 2 | 3 | 4 | 5;
+export type ServiceResponseStatus = 'draft' | 'submitted' | 'reviewed' | 'archived';
+
+export interface ServiceSurvey {
+  id: number;
+  title: string;
+  description: string;
+  targetRole: ServiceSurveyTargetRole;
+  status: ServiceSurveyStatus;
+  startDate: string;
+  endDate: string;
+  scoreScaleMin: number;
+  scoreScaleMax: number;
+  isAnonymous: boolean;
+  createdById: number;
+  createdByName?: string;
+  createdAt: string;
+  updatedAt: string;
+  questionCount: number;
+  responseCount: number;
+  questions?: ServiceSurveyQuestion[];
+  responses?: ServiceSurveyResponse[];
+}
+
+export interface CreateServiceSurveyPayload {
+  title: string;
+  description: string;
+  targetRole: ServiceSurveyTargetRole;
+  startDate: string;
+  endDate: string;
+  isAnonymous: boolean;
+  scoreScaleMin: number;
+  scoreScaleMax: number;
+}
+
+export interface UpdateServiceSurveyPayload {
+  title?: string;
+  description?: string;
+  targetRole?: ServiceSurveyTargetRole;
+  startDate?: string;
+  endDate?: string;
+  isAnonymous?: boolean;
+  status?: ServiceSurveyStatus;
+  scoreScaleMin?: number;
+  scoreScaleMax?: number;
+}
+
+export interface ServiceSurveyQuestion {
+  id: number;
+  surveyId: number;
+  questionText: string;
+  questionType: ServiceQuestionType;
+  category: string;
+  options?: string[];
+  scaleMin?: number;
+  scaleMax?: number;
+  sortOrder: number;
+  isRequired: boolean;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateServiceQuestionPayload {
+  surveyId: number;
+  questionText: string;
+  questionType: ServiceQuestionType;
+  category: string;
+  options?: string[];
+  scaleMin?: number;
+  scaleMax?: number;
+  sortOrder?: number;
+  isRequired?: boolean;
+}
+
+export interface ServiceSurveyResponse {
+  id: number;
+  surveyId: number;
+  questionId: number;
+  respondentId?: number;
+  respondentRole?: string;
+  respondentBranchId?: number;
+  answerText?: string;
+  answerScore?: number;
+  answerOptions?: string[];
+  respondedAt: string;
+}
+
+export interface SubmitServiceAnswerItem {
+  questionId: number;
+  answerText?: string;
+  answerScore?: number;
+  answerOptions?: string[];
+}
+
+export interface SubmitServiceSurveyPayload {
+  surveyId: number;
+  answers: SubmitServiceAnswerItem[];
+  comment?: string;
+}
+
+export interface ServiceSurveyAnalytics {
+  surveyId: number;
+  title: string;
+  totalRespondents: number;
+  totalQuestions: number;
+  overallAverage: number;
+  responseCount: number;
+  categoryBreakdown: ServiceCategoryAnalytics[];
+  topQuestions: ServiceQuestionAnalytics[];
+}
+
+export interface ServiceCategoryAnalytics {
+  category: string;
+  averageScore: number;
+  questionCount: number;
+  responseCount: number;
+}
+
+export interface ServiceQuestionAnalytics {
+  questionId: number;
+  questionText: string;
+  category: string;
+  averageScore: number;
+  responseCount: number;
+  responseRate: number;
+}
+
+export interface ServiceDashboardSummary {
+  activeSurveys: number;
+  totalResponses: number;
+  averageScore: number;
+  completionRate: number;
+  lastUpdated: string;
+}

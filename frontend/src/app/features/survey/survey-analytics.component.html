@@ -1,0 +1,113 @@
+<section class="survey-analytics" aria-labelledby="survey-analytics-title">
+  <header class="survey-header">
+    <h1 id="survey-analytics-title">تحلیل نظرسنجی سرویس</h1>
+    <p>داشبورد تحلیلی برای ستاد مرکزی</p>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+
+  <!-- Dashboard Summary -->
+  @if (dashboard) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">نظرسنجی‌های فعال</span>
+        <strong class="stat-value">{{ dashboard.activeSurveys }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">کل پاسخ‌ها</span>
+        <strong class="stat-value">{{ dashboard.totalResponses }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">میانگین نمره</span>
+        <strong class="stat-value">{{ dashboard.averageScore }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">نرخ تکمیل</span>
+        <strong class="stat-value">{{ dashboard.completionRate }}%</strong>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <p class="muted">در حال دریافت داده‌ها...</p>
+  }
+
+  <!-- Survey List -->
+  @if (!selectedSurvey && surveys.length > 0) {
+    <h2>نظرسنجی‌های فعال</h2>
+    <div class="survey-list">
+      @for (survey of surveys; track survey.id) {
+        <button type="button" class="list-item" (click)="selectSurvey(survey)">
+          <div class="list-item-top">
+            <strong>{{ survey.title }}</strong>
+            <span class="status-chip status-chip--active">فعال</span>
+          </div>
+          <span class="list-meta">{{ survey.targetRole }} · {{ survey.questionCount }} سوال · {{ survey.responseCount }} پاسخ</span>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Analytics Detail -->
+  @if (selectedSurvey && analytics) {
+    <div class="analytics-detail">
+      <div class="detail-header">
+        <h3>{{ selectedSurvey.title }}</h3>
+        <button type="button" class="btn btn-secondary" (click)="selectedSurvey = null; analytics = null;">بازگشت</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">تعداد پاسخ‌دهندگان</span>
+          <strong class="stat-value">{{ analytics.totalRespondents }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">میانگین نمره کل</span>
+          <strong class="stat-value">{{ analytics.overallAverage }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">تعداد سوالات</span>
+          <strong class="stat-value">{{ analytics.totalQuestions }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">تعداد پاسخ‌ها</span>
+          <strong class="stat-value">{{ analytics.responseCount }}</strong>
+        </div>
+      </div>
+
+      @if (analytics.categoryBreakdown.length > 0) {
+        <h4>تحلیل دسته‌بندی</h4>
+        <div class="analytics-table">
+          <div class="analytics-row analytics-header">
+            <span>دسته‌بندی</span>
+            <span>میانگین نمره</span>
+            <span>تعداد سوال</span>
+            <span>تعداد پاسخ</span>
+          </div>
+          @for (cat of analytics.categoryBreakdown; track cat.category) {
+            <div class="analytics-row">
+              <span>{{ cat.category }}</span>
+              <span>{{ cat.averageScore }}</span>
+              <span>{{ cat.questionCount }}</span>
+              <span>{{ cat.responseCount }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      @if (analytics.topQuestions.length > 0) {
+        <h4>سوالات پرپاسخ‌داده شده</h4>
+        <div class="question-list">
+          @for (q of analytics.topQuestions; track q.questionId) {
+            <div class="question-item">
+              <span class="question-text">{{ q.questionText }}</span>
+              <span class="question-meta">میانگین: {{ q.averageScore }} · پاسخ: {{ q.responseCount }} · نرخ: {{ q.responseRate }}%</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>

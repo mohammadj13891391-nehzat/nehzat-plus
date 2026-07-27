@@ -1,0 +1,178 @@
+<section class="survey-manage" aria-labelledby="survey-manage-title">
+  <header class="survey-header">
+    <h1 id="survey-manage-title">مدیریت نظرسنجی سرویس</h1>
+    <p>مدیریت نظرسنجی‌ها، پاسخ‌ها و تحلیل‌ها</p>
+  </header>
+
+  @if (errorMessage) {
+    <p class="lp-error" role="alert">{{ errorMessage }}</p>
+  }
+  @if (successMessage) {
+    <p class="lp-success" role="status">{{ successMessage }}</p>
+  }
+
+  <!-- Dashboard Summary -->
+  @if (dashboard) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">نظرسنجی‌های فعال</span>
+        <strong class="stat-value">{{ dashboard.activeSurveys }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">کل پاسخ‌ها</span>
+        <strong class="stat-value">{{ dashboard.totalResponses }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">میانگین نمره</span>
+        <strong class="stat-value">{{ dashboard.averageScore }}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">نرخ تکمیل</span>
+        <strong class="stat-value">{{ dashboard.completionRate }}%</strong>
+      </div>
+    </div>
+  }
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'surveys'" (click)="activeTab = 'surveys'">نظرسنجی‌ها</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'questions'" (click)="activeTab = 'questions'" [disabled]="!selectedSurvey">سوالات</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'responses'" (click)="activeTab = 'responses'" [disabled]="!selectedSurvey">پاسخ‌ها</button>
+    <button type="button" class="tab-btn" [class.active]="activeTab === 'analytics'" (click)="activeTab = 'analytics'" [disabled]="!selectedSurvey">تحلیل</button>
+  </div>
+
+  <!-- Surveys List -->
+  @if (activeTab === 'surveys') {
+    <div class="survey-list">
+      @if (loading) {
+        <p class="muted">در حال دریافت...</p>
+      } @else if (surveys.length === 0) {
+        <p class="muted">نظرسنجی‌ای برای نمایش موجود نیست.</p>
+      } @else {
+        @for (survey of surveys; track survey.id) {
+          <div class="survey-card">
+            <div class="survey-card-header">
+              <strong>{{ survey.title }}</strong>
+              <span class="status-chip" [ngClass]="statusClass(survey.status)">{{ statusLabel(survey.status) }}</span>
+            </div>
+            <p class="survey-desc">{{ survey.description }}</p>
+            <div class="survey-meta">
+              <span>سوالات: {{ survey.questionCount }}</span>
+              <span>پاسخ‌ها: {{ survey.responseCount }}</span>
+              <span>از: {{ survey.startDate }}</span>
+              <span>تا: {{ survey.endDate }}</span>
+            </div>
+            <div class="row-actions">
+              <button type="button" class="btn btn-secondary" (click)="selectSurvey(survey)"> مشاهده سوالات</button>
+              <button type="button" class="btn btn-secondary" (click)="loadResponses(survey.id)"> پاسخ‌ها</button>
+              <button type="button" class="btn btn-secondary" (click)="loadAnalytics(survey.id)"> تحلیل</button>
+              @if (survey.status === 'draft') {
+                <button type="button" class="btn btn-success" (click)="publishSurvey(survey)">انتشار</button>
+              }
+              @if (survey.status === 'active') {
+                <button type="button" class="btn btn-secondary" (click)="closeSurvey(survey)">بستن</button>
+              }
+              <button type="button" class="btn btn-danger" (click)="deleteSurvey(survey)">حذف</button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Questions Tab -->
+  @if (activeTab === 'questions' && selectedSurvey) {
+    <div class="questions-section">
+      <h3>سوالات نظرسنجی: {{ selectedSurvey.title }}</h3>
+      @if (loadingQuestions) {
+        <p class="muted">در حال دریافت سوالات...</p>
+      } @else if (questions.length === 0) {
+        <p class="muted">سوالی ثبت نشده است.</p>
+      } @else {
+        @for (q of questions; track q.id) {
+          <div class="question-item">
+            <div class="question-header">
+              <span class="question-order">#{{ q.sortOrder }}</span>
+              <span class="question-text">{{ q.questionText }}</span>
+            </div>
+            <div class="question-meta">
+              <span class="tag">{{ q.category }}</span>
+              <span class="tag">{{ q.questionType }}</span>
+              @if (q.isRequired) {
+                <span class="tag tag-required">الزامی</span>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Responses Tab -->
+  @if (activeTab === 'responses' && selectedSurvey) {
+    <div class="responses-section">
+      <h3>پاسخ‌های نظرسنجی: {{ selectedSurvey.title }}</h3>
+      @if (loadingResponses) {
+        <p class="muted">در حال دریافت پاسخ‌ها...</p>
+      } @else if (responses.length === 0) {
+        <p class="muted">پاسخی ثبت نشده است.</p>
+      } @else {
+        <div class="responses-table">
+          @for (r of responses; track r.id) {
+            <div class="response-row">
+              <span class="response-id">#{{ r.id }}</span>
+              <span class="response-role">{{ r.respondentRole }}</span>
+              <span class="response-date">{{ r.respondedAt }}</span>
+              <span class="response-answer">{{ r.answerText }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Analytics Tab -->
+  @if (activeTab === 'analytics' && selectedSurvey && analytics) {
+    <div class="analytics-section">
+      <h3>تحلیل نظرسنجی: {{ selectedSurvey.title }}</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">تعداد پاسخ‌دهندگان</span>
+          <strong class="stat-value">{{ analytics.totalRespondents }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">میانگین نمره کل</span>
+          <strong class="stat-value">{{ analytics.overallAverage }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">تعداد سوالات</span>
+          <strong class="stat-value">{{ analytics.totalQuestions }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">تعداد پاسخ‌ها</span>
+          <strong class="stat-value">{{ analytics.responseCount }}</strong>
+        </div>
+      </div>
+
+      @if (analytics.categoryBreakdown.length > 0) {
+        <h4>تحلیل بر اساس دسته‌بندی</h4>
+        <div class="analytics-table">
+          <div class="analytics-row analytics-header">
+            <span>دسته‌بندی</span>
+            <span>میانگین نمره</span>
+            <span>تعداد سوال</span>
+            <span>تعداد پاسخ</span>
+          </div>
+          @for (cat of analytics.categoryBreakdown; track cat.category) {
+            <div class="analytics-row">
+              <span>{{ cat.category }}</span>
+              <span>{{ cat.averageScore }}</span>
+              <span>{{ cat.questionCount }}</span>
+              <span>{{ cat.responseCount }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>
