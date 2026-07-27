@@ -133,8 +133,20 @@ import {
   IssueItemPool,
   CreateIssueItemPoolPayload,
   IssueDashboardSummary,
-  SurveyAnalytics,
-  CategoryAnalytics
+  CategoryAnalytics,
+  ServiceSurvey,
+  CreateServiceSurveyPayload,
+  UpdateServiceSurveyPayload,
+  ServiceSurveyQuestion,
+  CreateServiceQuestionPayload,
+  ServiceSurveyResponse,
+  SubmitServiceSurveyPayload,
+  SubmitServiceAnswerItem,
+  ServiceSurveyAnalytics,
+  ServiceCategoryAnalytics,
+  ServiceQuestionAnalytics,
+  ServiceDashboardSummary,
+  SurveyAnalytics
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -439,4 +451,22 @@ export abstract class LessonPlannerApi {
   abstract addPoolItemToSurvey(poolItemId: number, surveyId: number, sortOrder?: number): Observable<IssueItemPool>;
 
   abstract getIssueDashboardSummary(): Observable<IssueDashboardSummary>;
+
+  abstract getServiceSurveys(targetRole?: string): Observable<ServiceSurvey[]>;
+  abstract getServiceSurveyById(id: number): Observable<ServiceSurvey>;
+  abstract createServiceSurvey(payload: CreateServiceSurveyPayload): Observable<ServiceSurvey>;
+  abstract updateServiceSurvey(id: number, payload: UpdateServiceSurveyPayload): Observable<ServiceSurvey>;
+  abstract deleteServiceSurvey(id: number): Observable<ApiMessageResponse>;
+  abstract publishServiceSurvey(id: number): Observable<ServiceSurvey>;
+  abstract closeServiceSurvey(id: number): Observable<ServiceSurvey>;
+
+  abstract getServiceSurveyQuestions(surveyId: number): Observable<ServiceSurveyQuestion[]>;
+  abstract createServiceQuestion(surveyId: number, payload: CreateServiceQuestionPayload): Observable<ServiceSurveyQuestion>;
+  abstract deleteServiceQuestion(surveyId: number, questionId: number): Observable<ApiMessageResponse>;
+
+  abstract getServiceSurveyResponses(surveyId: number): Observable<ServiceSurveyResponse[]>;
+  abstract submitServiceSurveyResponse(payload: SubmitServiceSurveyPayload): Observable<ServiceSurveyResponse>;
+
+  abstract getServiceSurveyAnalytics(surveyId: number): Observable<ServiceSurveyAnalytics>;
+  abstract getServiceDashboardSummary(): Observable<ServiceDashboardSummary>;
 }
