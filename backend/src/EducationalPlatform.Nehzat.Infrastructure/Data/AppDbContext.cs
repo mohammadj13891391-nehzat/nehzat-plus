@@ -694,7 +694,7 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Survey)
                   .WithMany(s => s.Actions)
                   .HasForeignKey(e => e.SurveyId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasOne(e => e.Question)
                   .WithMany(q => q.Actions)

@@ -126,9 +126,9 @@ using (var scope = app.Services.CreateScope())
     if (args.Contains("--seed"))
     {
         db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
     }
-
-    if (db.Database.GetPendingMigrations().Any())
+    else if (db.Database.GetPendingMigrations().Any())
     {
         db.Database.Migrate();
     }

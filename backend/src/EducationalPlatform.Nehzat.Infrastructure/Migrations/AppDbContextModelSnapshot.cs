@@ -3309,7 +3309,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.IssueSurvey", "Survey")
                         .WithMany("Actions")
                         .HasForeignKey("SurveyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AssignedTo");
