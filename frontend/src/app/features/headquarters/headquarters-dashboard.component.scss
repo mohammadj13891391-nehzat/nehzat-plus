@@ -1,0 +1,65 @@
+.role-page { direction: rtl; min-height: 100vh; background: var(--lp-bg, #f8f9fa); }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: var(--lp-surface, #fff); border-bottom: 1px solid var(--lp-border, #e5e7eb); }
+.brand-wrap { display: flex; align-items: center; gap: 1rem; }
+.site-logo { width: 48px; height: 48px; object-fit: contain; }
+h1 { margin: 0; font-size: 1.25rem; }
+h2 { margin-top: 0; color: var(--lp-text, #1f2937); }
+.muted { color: var(--lp-muted, #6b7280); margin: 0; }
+.menu-trigger { background: var(--lp-primary, #2563eb); color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
+.main-content { padding: 2rem; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--lp-surface, #fff);
+  border: 1px solid var(--lp-border, #e5e7eb);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+.stat-icon { font-size: 2rem; }
+.stat-info { display: flex; flex-direction: column; }
+.stat-value { font-size: 1.5rem; font-weight: 700; color: var(--lp-primary, #2563eb); }
+.stat-label { font-size: 0.85rem; color: var(--lp-muted, #6b7280); }
+
+.card-section { margin-top: 2rem; }
+.table-container { overflow-x: auto; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--lp-surface, #fff);
+  border: 1px solid var(--lp-border, #e5e7eb);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+.data-table th, .data-table td {
+  padding: 0.75rem 1rem;
+  text-align: right;
+  border-bottom: 1px solid var(--lp-border, #e5e7eb);
+}
+.data-table th {
+  background: var(--lp-bg, #f8f9fa);
+  font-weight: 600;
+  color: var(--lp-text, #1f2937);
+  white-space: nowrap;
+}
+.data-table tbody tr:hover { background: var(--lp-bg, #f8f9fa); }
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.status-badge.active { background: #dcfce7; color: #166534; }
+.status-badge:not(.active) { background: #fef2f2; color: #991b1b; }
+.header-nav { display: flex; align-items: center; gap: 0.5rem; }
+.nav-link { color: var(--lp-primary, #2563eb); text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-weight: 500; }
+.nav-link:hover { background: rgba(37, 99, 235, 0.08); }
+.nav-link-active { background: rgba(37, 99, 235, 0.12); font-weight: 700; }

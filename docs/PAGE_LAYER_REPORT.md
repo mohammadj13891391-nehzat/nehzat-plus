@@ -13,8 +13,8 @@
 | **coach** | ۲ | ۵ | ~۱۲۰۰ | **کامل** |
 | **parent** | ۳ | ۴ | ~۸۰۰ | **کامل** — ۳ کامپوننت استخراج‌شده + زیرصفحه جزئیات دانش‌آموز + HTML/SCSS جداگانه |
 | **branch-manager** | ۳ | ۳ | ~۱۳۰۰ | **کامل** — ۳ کامپوننت (main, competition, league) با HTML/SCSS جداگانه + routes کامل |
-| **evaluator** | ۰ | ۲ | ۶۰۵ | **نیمه‌کاره** — ارجاع به assessment-panel |
-| **headquarters** | ۰ | ۴ | ۱۲۷۹ | **پیشرفته‌ترین استاب** — ۴ فایل TS (داشبورد، نمودار، مدیریت) |
+| **evaluator** | ۱ | ۳ | ~۱۳۰۰ | **کامل** — evaluator + HTML/SCSS جداگانه، سوابق ارزیابی + ثبت ارزیابی + تحلیل‌ها |
+| **headquarters** | ۳ | ۴ | ~۲۲۰۰ | **کامل** — headquarters-dashboard + headquarters + monthly-booklet، HTML/SCSS جداگانه، routes کامل |
 | **dashboard** | ۱ | ۳ | ۵۶۹ | **کامل** — shell + assessment-taker + training-steps + HTML/SCSS جداگانه |
 | **admin** | ۱ | ۳ | ۹۲۴ | **بزرگ** — HTML/SCSS جداگانه، هنوز غول‌آسا |
 
@@ -29,7 +29,7 @@
 | `persian-date-input` | ۱۳۴ | ورودی تاریخ شمسی |
 | `role-stub` | ۱۰۵ | نمایش عدم دسترسی |
 
-**نکته مهم:** تمام صفحات **هنوز HTML ندارند** (به جز dashboard/admin) — یعنی templateها درون‌خطی (inline) هستند یا در حال توسعه.
+**نکته مهم:** صفحات **coach, parent, branch-manager, evaluator, headquarters, dashboard** اکنون HTML/SCSS جداگانه دارند. تنها admin همچنان استخراج کامل نمی‌کند.
 
 ---
 
@@ -93,19 +93,27 @@ features/parent/
 - Component اصلی + routes
 - نیاز به: داشبورد عملکرد شعبه، مدیریت مربیان/دانش‌آموزان
 
-### Evaluator (۶۰۵ خط / ۲ فایل)
-- مسیر به `AssessmentPanelComponent` متصل
-- **مشترک:** assessment-panel (۵۳۱ خط) — ابزار تولید/نمایش ارزیابی
+### Evaluator (۶۳۹ خط / ۳ فایل + ۱ HTML + ۱ SCSS)
+```
+features/evaluator/
+├── evaluator.component.ts/html/scss  # اصلی — سوابق، ثبت ارزیابی، تحلیل‌ها
+├── evaluator.routes.ts               # مسیریابی + spiritual shell
+```
+- **کامل** — جداسازی HTML/SCSS، OnPush، signals، فرم Reactive، تحلیل ارزیابی‌ها
+- **لایه‌ها:** Component → AuthService (hasRole) → LessonPlannerApi (getEvaluationRecords, createEvaluation, deleteEvaluation, getAssessmentAnalytics, getEvaluators, getAssessments)
+- **مشترک:** assessment-panel (۵۳۱ خط) — ابزار تولید/نمایش ارزیابی (فقط مصرف read-only)
 
-### Headquarters (۱۲۷۹ خط / ۴ فایل)
+### Headquarters (~۱۳۰۰ خط / ۴ فایل TS + ۳ HTML + ۳ SCSS)
 ```
 features/headquarters/
-├── headquarters.component.ts
-├── headquarters.routes.ts
-├── headquarters-dashboard/     # خلاصه سیستم + نمودارها
-└── headquarters-management/    # مدیریت مراکز
+├── headquarters.component.ts/html/scss      # اصلی — ۴ تب: خلاصه، شعب، مربیان، مدارس
+├── headquarters-dashboard.component.ts/html/scss  # داشبورد خلاصه + جداول عملکرد
+├── monthly-booklet.component.ts/html/scss   # مدیریت دفترچه‌های ماهانه (CRUD)
+└── headquarters.routes.ts                   # مسیریابی + spiritual + monthly-booklets
 ```
-- **پیشرفته‌ترین استاب** — ۴ فایل جداگانه
+- **کامل** — تمام ۳ کامپوننت اصلی جداسازی HTML/SCSS، OnPush، signals، Observable-based data flow
+- **لایه‌ها:** Component → AuthService (hasRole) → LessonPlannerApi (getHeadquartersSummary, getBranchPerformance, getCoachPerformance, getMadrasahs, getMaktabBranches, getMonthlyBooklets, create/update/deleteMonthlyBooklet)
+- **Routes:** `/headquarters` (dashboard)، `/headquarters/spiritual`، `/headquarters/monthly-booklets`
 
 ### Dashboard (۵۶۹ خط / ۳ فایل + ۱ HTML + ۱ SCSS)
 ```
@@ -175,4 +183,13 @@ features/admin/
 
 ---
 
-**نتیجه:** پروژه در حالت **"نصفه‌کاره پیشرفته"** است — بک‌اند کامل و تمیز، فرانت‌اند بک‌اندها را دارد اما UI لایه‌های ۵ صفحه اصلی همچنان inline template است و نیاز به تکمیل دارد. Admin و Dashboard تنها صفحات با HTML/SCSS جداگانه هستند.
+**نتیجه:** پروژه در حالت **"نصفه‌کاره پیشرفته"** است — بک‌اند کامل و تمیز، فرانت‌اند بک‌اندها را دارد اما UI لایه‌های ۵ صفحه اصلی همچنان inline template است و نیاز به تکمیل دارد. **Admin و Dashboard تنها صفحات با HTML/SCSS جداگانه هستند.**
+
+**به‌روزرسانی ۲۰۲۶-۰۷-۲۷:** ۳ صفحه کامل‌شده:
+- ✅ Coach — استخراج HTML/SCSS، زیرصفحه دانش‌آموز
+- ✅ Parent — ۳ کامپوننت استخراج‌شده + زیرصفحه جزئیات
+- ✅ Branch-Manager — ۳ کامپوننت (main, competition, league) با HTML/SCSS جداگانه
+- ✅ Evaluator — جداسازی HTML/SCSS، فرم Reactive، تحلیل‌ها
+- ✅ Headquarters — ۳ کامپوننت (main, dashboard, monthly-booklet) با HTML/SCSS جداگانه
+- ⏳ Dashboard — نیاز به تکمیل assessment-taker
+- ⏳ Admin — نیاز به استخراج زیرکامپوننت‌ها
