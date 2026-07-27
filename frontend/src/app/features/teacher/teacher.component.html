@@ -1,0 +1,291 @@
+<main class="role-page">
+  <header class="site-header">
+    <div class="brand-wrap">
+      <img
+        src="assets/nehzat.png"
+        alt="لوگو سایت"
+        class="site-logo"
+        [class.hidden]="logoHidden"
+        (error)="logoHidden = true"
+      />
+      <div>
+        <h1>پنل استاد</h1>
+        <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <a class="nav-link" routerLink="/teacher/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
+    </nav>
+    <div class="user-menu">
+      <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'dashboard'"
+      (click)="switchTab('dashboard')"
+    >داشبورد</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'courses'"
+      (click)="switchTab('courses')"
+    >دوره‌های من</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'gradings'"
+      (click)="switchTab('gradings')"
+    >نمره‌دهی‌ها</button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'pending'"
+      (click)="switchTab('pending')"
+    >منتظر نمره‌دهی</button>
+  </nav>
+
+  <section class="main-content">
+    @if (activeTab() === 'dashboard') {
+      <div class="card-section">
+        <h2>خلاصه داشبورد</h2>
+        @if (dashboardSummary$ | async; as summary) {
+          <div class="summary-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📚</div>
+              <div class="stat-info">
+                <span class="stat-value">{{ summary.totalCourses }}</span>
+                <span class="stat-label">دوره‌های فعال</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-info">
+                <span class="stat-value">{{ summary.totalStudents }}</span>
+                <span class="stat-label">دانش‌آموزان</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-info">
+                <span class="stat-value">{{ summary.pendingGradings }}</span>
+                <span class="stat-label">منتظر نمره‌دهی</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-info">
+                <span class="stat-value">{{ summary.completedGradings }}</span>
+                <span class="stat-label">نمره‌دهی شده</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📊</div>
+              <div class="stat-info">
+                <span class="stat-value">{{ summary.averageScore | number:'1.1-1' }}</span>
+                <span class="stat-label">میانگین نمره</span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <p class="muted">در حال بارگذاری...</p>
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'courses') {
+      <div class="card-section">
+        <h2>دوره‌های من</h2>
+        @if (courses$ | async; as courses) {
+          @if (courses.length === 0) {
+            <p class="muted">دوره‌ای به شما تخصیص داده نشده است.</p>
+          } @else {
+            <div class="courses-grid">
+              @for (course of courses; track course.id) {
+                <div class="course-card">
+                  <h4>{{ course.title }}</h4>
+                  <p class="muted">کد: {{ course.courseCode }}</p>
+                  <p class="muted">{{ course.description }}</p>
+                  <div class="course-meta">
+                    <span>شروع: {{ course.startDate | date:'yyyy/MM/dd' }}</span>
+                    <span>پایان: {{ course.endDate | date:'yyyy/MM/dd' }}</span>
+                  </div>
+                  <span class="status-badge" [class.active]="course.status === 'active'">
+                    {{ course.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <p class="muted">در حال بارگذاری...</p>
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'gradings') {
+      <div class="card-section">
+        <h2>نمره‌دهی‌های انجام شده</h2>
+        @if (gradings$ | async; as gradings) {
+          @if (gradings.length === 0) {
+            <p class="muted">هنوز نمره‌دهی‌ای انجام نشده است.</p>
+          } @else {
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>دانش‌آموز</th>
+                    <th>تکلیف</th>
+                    <th>نمره روزانه</th>
+                    <th>نمره تجمعی</th>
+                    <th>وضعیت</th>
+                    <th>بازخورد</th>
+                    <th>تاریخ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (g of gradings; track g.id) {
+                    <tr>
+                      <td data-label="دانش‌آموز">#{{ g.submissionId }}</td>
+                      <td data-label="تکلیف">#{{ g.submission?.assignmentId ?? '-' }}</td>
+                      <td data-label="نمره روزانه">{{ g.dailyScore ?? '-' }}</td>
+                      <td data-label="نمره تجمعی">{{ g.cumulativeScore ?? '-' }}</td>
+                      <td data-label="وضعیت">
+                        <span class="status-badge" [class]="getStatusClass(g.status)">
+                          {{ getStatusLabel(g.status) }}
+                        </span>
+                      </td>
+                      <td data-label="بازخورد">{{ g.feedback ?? '-' }}</td>
+                      <td data-label="تاریخ">{{ g.gradedAt | date:'yyyy/MM/dd HH:mm' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        } @else {
+          <p class="muted">در حال بارگذاری...</p>
+        }
+      </div>
+    }
+
+    @if (activeTab() === 'pending') {
+      <div class="card-section">
+        <h2>ارسال‌های در انتظار نمره‌دهی</h2>
+        @if (pendingGradings$ | async; as gradings) {
+          @if (gradings.length === 0) {
+            <p class="muted">هیچ ارسالی در انتظار نمره‌دهی نیست.</p>
+          } @else {
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>شناسه ارسال</th>
+                    <th>تکلیف</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (g of gradings; track g.id) {
+                    <tr>
+                      <td data-label="شناسه ارسال">#{{ g.submissionId }}</td>
+                      <td data-label="تکلیف">#{{ g.submission?.assignmentId ?? '-' }}</td>
+                      <td data-label="وضعیت">
+                        <span class="status-badge pending">در انتظار</span>
+                      </td>
+                      <td data-label="عملیات">
+                        <button
+                          type="button"
+                          class="action-btn grade"
+                          (click)="openGradeModal(g)"
+                        >نمره‌دهی</button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        } @else {
+          <p class="muted">در حال بارگذاری...</p>
+        }
+      </div>
+    }
+  </section>
+
+  @if (showGradeModal() && selectedGrading()) {
+    <div class="modal-backdrop" (click)="closeGradeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h5>نمره‌دهی به ارسال</h5>
+          <button type="button" class="btn-secondary" (click)="closeGradeModal()">بستن</button>
+        </header>
+        <div class="modal-body">
+          <div class="submission-info">
+            <p><strong>شناسه ارسال:</strong> #{{ selectedGrading()!.submissionId }}</p>
+            <p><strong>تکلیف:</strong> #{{ selectedGrading()!.submission?.assignmentId ?? '-' }}</p>
+            @if (selectedGrading()!.submission?.submissionDate) {
+              <p><strong>تاریخ ارسال:</strong> {{ selectedGrading()!.submission!.submissionDate | date:'yyyy/MM/dd' }}</p>
+            }
+          </div>
+          <form (ngSubmit)="submitGrade()" class="grade-form">
+            <div class="form-group">
+              <label for="dailyScore">نمره روزانه (۰-۱۰۰)</label>
+              <input
+                type="number"
+                id="dailyScore"
+                [(ngModel)]="gradeForm.dailyScore"
+                name="dailyScore"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div class="form-group">
+              <label for="cumulativeScore">نمره تجمعی (۰-۱۰۰)</label>
+              <input
+                type="number"
+                id="cumulativeScore"
+                [(ngModel)]="gradeForm.cumulativeScore"
+                name="cumulativeScore"
+                min="0"
+                max="100"
+              />
+            </div>
+            <div class="form-group">
+              <label for="status">وضعیت</label>
+              <select id="status" [(ngModel)]="gradeForm.status" name="status">
+                <option value="graded">نمره‌دهی شده</option>
+                <option value="pending">در انتظار</option>
+                <option value="late">دیرکرد</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="feedback">بازخورد</label>
+              <textarea
+                id="feedback"
+                [(ngModel)]="gradeForm.feedback"
+                name="feedback"
+                rows="4"
+                placeholder="بازخورد استاد..."
+              ></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" [disabled]="savingGrade()">
+                {{ savingGrade() ? 'در حال ثبت...' : 'ثبت نمره' }}
+              </button>
+              <button type="button" class="btn-secondary" (click)="closeGradeModal()">انصراف</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</main>

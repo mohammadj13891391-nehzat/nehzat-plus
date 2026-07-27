@@ -1,13 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  template: `
-    <main style="padding: 1.5rem; direction: rtl;">
-      <h1>پنل مدیریت</h1>
-      <p>ماژول مدیریت در مرحله بعدی تکمیل می‌شود.</p>
-    </main>
-  `
+  imports: [RouterModule],
+  templateUrl: './admin-shell.component.html',
+  styleUrls: ['./admin-shell.component.scss']
 })
-export class AdminShellComponent {}
+export class AdminShellComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  username: string;
+  logoHidden = false;
+
+  constructor() {
+    this.username = this.authService.getCurrentUser()?.username ?? 'مدیر';
+  }
+
+  logout(): void {
+    this.authService.logout();
+    void this.router.navigateByUrl('/auth/login');
+  }
+}

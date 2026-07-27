@@ -1,0 +1,29 @@
+<main class="admin-shell" dir="rtl">
+  <header class="shell-header">
+    <div class="shell-brand">
+      <img
+        src="assets/nehzat.png"
+        alt="لوگو"
+        class="shell-logo"
+        (error)="logoHidden = true"
+        [class.hidden]="logoHidden"
+      />
+      <div>
+        <h1>پنل مدیریت</h1>
+        <p class="muted">{{ username }}</p>
+      </div>
+    </div>
+    <nav class="shell-nav">
+      <a class="nav-link" routerLink="/admin" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{exact:true}">داشبورد</a>
+      <a class="nav-link" routerLink="/admin/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
+      <a class="nav-link" routerLink="/admin/surveys" routerLinkActive="nav-link-active">نظرسنجی‌ها</a>
+    </nav>
+    <div class="shell-actions">
+      <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
+    </div>
+  </header>
+
+  <section class="shell-content">
+    <router-outlet />
+  </section>
+</main>
