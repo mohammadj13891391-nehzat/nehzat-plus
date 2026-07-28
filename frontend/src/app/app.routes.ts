@@ -71,6 +71,12 @@ export const routes: Routes = [
       import('./features/quran/quran.routes').then((m) => m.QURAN_ROUTES),
   },
   {
+    path: 'persian-literature',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/persian-literature/persian-literature.routes').then((m) => m.PERSIAN_LITERATURE_ROUTES),
+  },
+  {
     path: '**',
     redirectTo: '/auth/login'
   }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Domain.Entities.Quran;
+using EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature;
 
 namespace EducationalPlatform.Nehzat.Infrastructure.Data;
 
@@ -82,6 +83,10 @@ public class AppDbContext : DbContext
   public DbSet<RecitationLevel> RecitationLevels => Set<RecitationLevel>();
   public DbSet<QuranCurriculum> QuranCurricula => Set<QuranCurriculum>();
   public DbSet<QuranStudentProgress> QuranStudentProgresses => Set<QuranStudentProgress>();
+
+  public DbSet<Poet> PersianLiteraturePoets => Set<Poet>();
+  public DbSet<Poem> PersianLiteraturePoems => Set<Poem>();
+  public DbSet<PoemAnalysis> PersianLiteratureAnalyses => Set<PoemAnalysis>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -792,6 +797,33 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.SurahId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Poet>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.HasIndex(e => e.Era);
+            entity.HasIndex(e => e.DifficultyLevel);
+        });
+
+        modelBuilder.Entity<Poem>(entity =>
+        {
+            entity.HasOne(e => e.Poet)
+                  .WithMany(p => p.Poems)
+                  .HasForeignKey(e => e.PoetId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.Genre);
+            entity.HasIndex(e => e.DifficultyLevel);
+            entity.HasIndex(e => e.Theme);
+        });
+
+        modelBuilder.Entity<PoemAnalysis>(entity =>
+        {
+            entity.HasOne(e => e.Poem)
+                  .WithMany(p => p.Analyses)
+                  .HasForeignKey(e => e.PoemId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.AnalysisType);
         });
     }
 }

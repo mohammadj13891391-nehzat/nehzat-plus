@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 import { LessonPlannerApi } from './lesson-planner-api.interface';
@@ -170,7 +170,19 @@ import {
   ServiceSurveyResponse,
   SubmitServiceSurveyPayload,
   ServiceSurveyAnalytics,
-  ServiceDashboardSummary
+  ServiceDashboardSummary,
+  Surah,
+  Ayah,
+  TajweedRule,
+  RecitationLevel,
+  QuranCurriculum,
+  QuranStudentProgress,
+  PersianLiteraturePoet,
+  PersianLiteraturePoem,
+  PersianLiteratureAnalysis,
+  CreatePersianLiteraturePoetPayload,
+  CreatePersianLiteraturePoemPayload,
+  CreatePersianLiteratureAnalysisPayload,
 } from '../models/lesson-planner.models';
 
 @Injectable()
@@ -3250,6 +3262,302 @@ return this.delayed(summary);
       completionRate: totalResponses > 0 ? Math.round((totalResponses / 100) * 100) : 0,
       lastUpdated: this.now(),
     });
+  }
+
+  getSurahs(): Observable<Surah[]> {
+    return this.delayed([
+      { id: 1, name: 'الفاتحه', nameEnglish: 'Al-Fatiha', versesCount: 7, revelationType: 'meccan', order: 1 },
+      { id: 2, name: 'البقره', nameEnglish: 'Al-Baqarah', versesCount: 286, revelationType: 'medinan', order: 2 },
+      { id: 3, name: 'آل عمران', nameEnglish: 'Aal-E-Imran', versesCount: 200, revelationType: 'medinan', order: 3 },
+      { id: 4, name: 'النساء', nameEnglish: 'An-Nisa', versesCount: 176, revelationType: 'medinan', order: 4 },
+      { id: 5, name: 'المائده', nameEnglish: 'Al-Ma\'idah', versesCount: 120, revelationType: 'medinan', order: 5 },
+    ] as unknown as Surah[]);
+  }
+
+  getSurahById(id: number): Observable<Surah> {
+    return this.delayed({ id, name: 'الفاتحه', nameEnglish: 'Al-Fatiha', versesCount: 7, revelationType: 'meccan', order: 1 } as unknown as Surah);
+  }
+
+  getAyahs(surahId: number): Observable<Ayah[]> {
+    return this.delayed([
+      { id: 1, surahId, number: 1, text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', translation: 'به نام خداوند بخشنده مهربان', juz: 1, page: 1 },
+      { id: 2, surahId, number: 2, text: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ', translation: 'ستایش مخصوص خداوند است، پروردگار جهانیان', juz: 1, page: 1 },
+      { id: 3, surahId, number: 3, text: 'الرَّحْمَٰنِ الرَّحِيمِ', translation: 'بخشنده مهربان', juz: 1, page: 1 },
+    ] as unknown as Ayah[]);
+  }
+
+  getAyahById(id: number): Observable<Ayah> {
+    return this.delayed({ id, surahId: 1, number: 1, text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', translation: 'به نام خداوند بخشنده مهربان', juz: 1, page: 1 } as unknown as Ayah);
+  }
+
+  searchAyahs(query: string): Observable<Ayah[]> {
+    return this.delayed([
+      { id: 1, surahId: 1, number: 1, text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', translation: 'به نام خداوند بخشنده مهربان', juz: 1, page: 1 },
+    ] as unknown as Ayah[]);
+  }
+
+  getTajweedRules(): Observable<TajweedRule[]> {
+    return this.delayed([
+      { id: 1, name: 'اخفاء', description: 'پنهان کردن حرف نون ساکن', example: 'مِنْ قَبْلِ', order: 1 },
+      { id: 2, name: 'ادغام', description: 'ادغام حرف نون ساکن در حرف بعد', example: 'مِنْ وَالٍ', order: 2 },
+      { id: 3, name: 'اظهار', description: 'واضح خواندن حرف نون ساکن', example: 'مِنْ شَرِّ', order: 3 },
+    ] as unknown as TajweedRule[]);
+  }
+
+  getRecitationLevels(): Observable<RecitationLevel[]> {
+    return this.delayed([
+      { id: 1, name: 'مبتدی', description: 'سطح اول قرائت قرآن', order: 1 },
+      { id: 2, name: 'متوسط', description: 'سطح دوم قرائت قرآن', order: 2 },
+      { id: 3, name: 'پیشرفته', description: 'سطح سوم قرائت قرآن', order: 3 },
+    ] as unknown as RecitationLevel[]);
+  }
+
+  createSurah(surah: Partial<Surah>): Observable<Surah> {
+    return this.delayed({ id: 6, ...surah } as unknown as Surah);
+  }
+
+  updateSurah(id: number, surah: Partial<Surah>): Observable<Surah> {
+    return this.delayed({ id, ...surah } as unknown as Surah);
+  }
+
+  deleteSurah(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getAyahsBySurah(surahId: number): Observable<Ayah[]> {
+    return this.getAyahs(surahId);
+  }
+
+  createAyah(ayah: Partial<Ayah>): Observable<Ayah> {
+    return this.delayed({ id: 10, ...ayah } as unknown as Ayah);
+  }
+
+  updateAyah(id: number, ayah: Partial<Ayah>): Observable<Ayah> {
+    return this.delayed({ id, ...ayah } as unknown as Ayah);
+  }
+
+  deleteAyah(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getTajweedRule(id: number): Observable<TajweedRule> {
+    return this.delayed({ id, name: 'اخفاء', description: 'پنهان کردن حرف نون ساکن', example: 'مِنْ قَبْلِ', order: 1 } as unknown as TajweedRule);
+  }
+
+  createTajweedRule(rule: Partial<TajweedRule>): Observable<TajweedRule> {
+    return this.delayed({ id: 10, ...rule } as unknown as TajweedRule);
+  }
+
+  updateTajweedRule(id: number, rule: Partial<TajweedRule>): Observable<TajweedRule> {
+    return this.delayed({ id, ...rule } as unknown as TajweedRule);
+  }
+
+  deleteTajweedRule(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getRecitationLevel(id: number): Observable<RecitationLevel> {
+    return this.delayed({ id, name: 'مبتدی', description: 'سطح اول قرائت قرآن', order: 1 } as unknown as RecitationLevel);
+  }
+
+  createRecitationLevel(level: Partial<RecitationLevel>): Observable<RecitationLevel> {
+    return this.delayed({ id: 10, ...level } as unknown as RecitationLevel);
+  }
+
+  updateRecitationLevel(id: number, level: Partial<RecitationLevel>): Observable<RecitationLevel> {
+    return this.delayed({ id, ...level } as unknown as RecitationLevel);
+  }
+
+  deleteRecitationLevel(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getQuranCurricula(): Observable<QuranCurriculum[]> {
+    return this.delayed([
+      { id: 1, title: 'جزء 30', description: 'آموزش جزء سی‌ام قرآن', levelId: 1, order: 1, createdAt: this.now(), updatedAt: this.now() },
+      { id: 2, title: 'جزء 29', description: 'آموزش جزء بیست و نهم قرآن', levelId: 2, order: 2, createdAt: this.now(), updatedAt: this.now() },
+    ] as unknown as QuranCurriculum[]);
+  }
+
+  getQuranCurriculumById(id: number): Observable<QuranCurriculum> {
+    return this.delayed({ id, title: 'جزء 30', description: 'آموزش جزء سی‌ام قرآن', levelId: 1, order: 1, createdAt: this.now(), updatedAt: this.now() } as unknown as QuranCurriculum);
+  }
+
+  createQuranCurriculum(payload: Partial<QuranCurriculum>): Observable<QuranCurriculum> {
+    return this.delayed({ id: 3, ...payload, createdAt: this.now(), updatedAt: this.now() } as unknown as QuranCurriculum);
+  }
+
+  updateQuranCurriculum(id: number, payload: Partial<QuranCurriculum>): Observable<QuranCurriculum> {
+    return this.delayed({ id, ...payload, createdAt: this.now(), updatedAt: this.now() } as unknown as QuranCurriculum);
+  }
+
+  deleteQuranCurriculum(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getQuranStudentProgress(studentId: number): Observable<QuranStudentProgress> {
+    return this.delayed({
+      studentId,
+      totalLessons: 30,
+      completedLessons: 15,
+      currentLevel: 'متوسط',
+      averageScore: 85,
+      lastActivity: this.now(),
+    } as unknown as QuranStudentProgress);
+  }
+
+  getQuranProgress(id: number): Observable<QuranStudentProgress> {
+    return this.delayed({
+      studentId: id,
+      totalLessons: 30,
+      completedLessons: 15,
+      currentLevel: 'متوسط',
+      averageScore: 85,
+      lastActivity: this.now(),
+    } as unknown as QuranStudentProgress);
+  }
+
+  createQuranProgress(progress: Partial<QuranStudentProgress>): Observable<QuranStudentProgress> {
+    return this.delayed({ studentId: 1, ...progress } as unknown as QuranStudentProgress);
+  }
+
+  getQuranLessonPlans(): Observable<any[]> {
+    return this.delayed([
+      { id: 1, title: 'برنامه درس 1', description: 'آموزش سوره الفاتحه', levelId: 1, objectives: 'آشنایی با سوره الفاتحه', createdAt: this.now(), updatedAt: this.now() },
+      { id: 2, title: 'برنامه درس 2', description: 'آموزش سوره البقره', levelId: 1, objectives: 'آشنایی با سوره البقره', createdAt: this.now(), updatedAt: this.now() },
+    ]);
+  }
+
+  getQuranLessonPlanById(id: number): Observable<any> {
+    return this.delayed({ id, title: 'برنامه درس 1', description: 'آموزش سوره الفاتحه', levelId: 1, objectives: 'آشنایی با سوره الفاتحه', createdAt: this.now(), updatedAt: this.now() });
+  }
+
+  createQuranLessonPlan(payload: any): Observable<any> {
+    return this.delayed({ id: 3, ...payload, createdAt: this.now(), updatedAt: this.now() });
+  }
+
+  updateQuranLessonPlan(id: number, payload: any): Observable<any> {
+    return this.delayed({ id, ...payload, createdAt: this.now(), updatedAt: this.now() });
+  }
+
+  deleteQuranLessonPlan(id: number): Observable<void> {
+    return this.delayed(undefined);
+  }
+
+  getQuranDashboardStats(): Observable<any> {
+    return this.delayed({
+      totalStudents: 150,
+      totalLessons: 30,
+      averageProgress: 75,
+      activeCurricula: 5,
+    });
+  }
+
+  // Persian Literature
+  private mockPoets: PersianLiteraturePoet[] = [
+    { id: 1, name: 'سعدی شیرازی', penName: 'سعدی', birthDate: '1210-01-01', deathDate: '1292-01-01', birthPlace: 'شیراز', deathPlace: 'شیراز', era: 'classical', century: 7, biography: 'سعدی شیرازی از بزرگترین شاعران ادبیات فارسی', difficultyLevel: 'beginner', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, name: 'حافظ شیرازی', penName: 'حافظ', birthDate: '1315-01-01', deathDate: '1390-01-01', birthPlace: 'شیراز', deathPlace: 'شیراز', era: 'classical', century: 8, biography: 'حافظ شیرازی غزلسرای بزرگ ایران', difficultyLevel: 'intermediate', sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, name: 'مولانا جلال‌الدین بلخی', penName: 'مولانا', birthDate: '1207-01-01', deathDate: '1273-01-01', birthPlace: 'بلخ', deathPlace: 'قونیه', era: 'classical', century: 7, biography: 'مولانا شاعر و عارف بزرگ ایرانی', difficultyLevel: 'advanced', sortOrder: 3, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockPoems: PersianLiteraturePoem[] = [
+    { id: 1, poetId: 1, title: 'گلستان', genre: 'prose', content: 'بنای آدمی بر دو پای خرد و دانش است...', difficultyLevel: 'beginner', verseCount: 0, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, poetId: 2, title: 'غزل ۱', genre: 'ghazal', content: 'اگر آن ترک شیرازی به دست آرد دل ما را...', difficultyLevel: 'intermediate', verseCount: 8, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, poetId: 3, title: 'مثنوی معنوی', genre: 'masnavi', content: 'بشنو از نی چون حکایت می‌کند...', difficultyLevel: 'advanced', verseCount: 25000, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockAnalyses: PersianLiteratureAnalysis[] = [];
+
+  private nextLiteratureId = 100;
+
+  getPoets(difficulty?: string): Observable<PersianLiteraturePoet[]> {
+    let result = [...this.mockPoets];
+    if (difficulty) result = result.filter(p => p.difficultyLevel === difficulty);
+    return of(result).pipe(delay(300));
+  }
+  getPoetById(id: number): Observable<PersianLiteraturePoet> {
+    const poet = this.mockPoets.find(p => p.id === id);
+    if (!poet) return throwError(() => new Error('یافت نشد'));
+    return of({ ...poet, poems: this.mockPoems.filter(p => p.poetId === id) }).pipe(delay(300));
+  }
+  createPoet(payload: CreatePersianLiteraturePoetPayload): Observable<PersianLiteraturePoet> {
+    const newPoet: PersianLiteraturePoet = { id: this.nextLiteratureId++, ...payload, century: payload.century ?? 0, sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.mockPoets.push(newPoet);
+    return of(newPoet).pipe(delay(300));
+  }
+  updatePoet(id: number, payload: Partial<CreatePersianLiteraturePoetPayload>): Observable<PersianLiteraturePoet> {
+    const idx = this.mockPoets.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockPoets[idx] = { ...this.mockPoets[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockPoets[idx]).pipe(delay(300));
+  }
+  deletePoet(id: number): Observable<void> {
+    this.mockPoets = this.mockPoets.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+  searchPoets(query: string): Observable<PersianLiteraturePoet[]> {
+    const result = this.mockPoets.filter(p => p.name.includes(query) || p.penName?.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getPoems(poetId?: number, genre?: string, difficulty?: string): Observable<PersianLiteraturePoem[]> {
+    let result = [...this.mockPoems];
+    if (poetId) result = result.filter(p => p.poetId === poetId);
+    if (genre) result = result.filter(p => p.genre === genre);
+    if (difficulty) result = result.filter(p => p.difficultyLevel === difficulty);
+    return of(result).pipe(delay(300));
+  }
+  getPoemById(id: number): Observable<PersianLiteraturePoem> {
+    const poem = this.mockPoems.find(p => p.id === id);
+    if (!poem) return throwError(() => new Error('یافت نشد'));
+    return of({ ...poem, analyses: this.mockAnalyses.filter(a => a.poemId === id) }).pipe(delay(300));
+  }
+  createPoem(payload: CreatePersianLiteraturePoemPayload): Observable<PersianLiteraturePoem> {
+    const newPoem: PersianLiteraturePoem = { id: this.nextLiteratureId++, ...payload, verseCount: payload.verseCount ?? 0, sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.mockPoems.push(newPoem);
+    return of(newPoem).pipe(delay(300));
+  }
+  updatePoem(id: number, payload: Partial<CreatePersianLiteraturePoemPayload>): Observable<PersianLiteraturePoem> {
+    const idx = this.mockPoems.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockPoems[idx] = { ...this.mockPoems[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockPoems[idx]).pipe(delay(300));
+  }
+  deletePoem(id: number): Observable<void> {
+    this.mockPoems = this.mockPoems.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+  searchPoems(query: string): Observable<PersianLiteraturePoem[]> {
+    const result = this.mockPoems.filter(p => p.title.includes(query) || p.content.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getAnalysesByPoem(poemId: number): Observable<PersianLiteratureAnalysis[]> {
+    return of(this.mockAnalyses.filter(a => a.poemId === poemId)).pipe(delay(300));
+  }
+  getAnalysisById(id: number): Observable<PersianLiteratureAnalysis> {
+    const analysis = this.mockAnalyses.find(a => a.id === id);
+    if (!analysis) return throwError(() => new Error('یافت نشد'));
+    return of(analysis).pipe(delay(300));
+  }
+  createAnalysis(payload: CreatePersianLiteratureAnalysisPayload): Observable<PersianLiteratureAnalysis> {
+    const newAnalysis: PersianLiteratureAnalysis = { id: this.nextLiteratureId++, ...payload, analysisType: payload.analysisType ?? 'general', sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString() };
+    this.mockAnalyses.push(newAnalysis);
+    return of(newAnalysis).pipe(delay(300));
+  }
+  updateAnalysis(id: number, payload: Partial<CreatePersianLiteratureAnalysisPayload>): Observable<PersianLiteratureAnalysis> {
+    const idx = this.mockAnalyses.findIndex(a => a.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockAnalyses[idx] = { ...this.mockAnalyses[idx], ...payload };
+    return of(this.mockAnalyses[idx]).pipe(delay(300));
+  }
+  deleteAnalysis(id: number): Observable<void> {
+    this.mockAnalyses = this.mockAnalyses.filter(a => a.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getLiteratureDashboardStats(): Observable<any> {
+    return of({ totalPoets: this.mockPoets.length, totalPoems: this.mockPoems.length, totalAnalyses: this.mockAnalyses.length }).pipe(delay(300));
   }
 
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {

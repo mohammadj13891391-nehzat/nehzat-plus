@@ -148,7 +148,19 @@ import {
   ServiceCategoryAnalytics,
   ServiceQuestionAnalytics,
   ServiceDashboardSummary,
-  SurveyAnalytics
+  SurveyAnalytics,
+  Surah,
+  Ayah,
+  TajweedRule,
+  RecitationLevel,
+  QuranCurriculum,
+  QuranStudentProgress,
+  PersianLiteraturePoet,
+  PersianLiteraturePoem,
+  PersianLiteratureAnalysis,
+  CreatePersianLiteraturePoetPayload,
+  CreatePersianLiteraturePoemPayload,
+  CreatePersianLiteratureAnalysisPayload,
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -474,4 +486,71 @@ export abstract class LessonPlannerApi {
 
   abstract getServiceSurveyAnalytics(surveyId: number): Observable<ServiceSurveyAnalytics>;
   abstract getServiceDashboardSummary(): Observable<ServiceDashboardSummary>;
+
+  abstract getSurahs(): Observable<Surah[]>;
+  abstract getSurahById(id: number): Observable<Surah>;
+  abstract createSurah(surah: Partial<Surah>): Observable<Surah>;
+  abstract updateSurah(id: number, surah: Partial<Surah>): Observable<Surah>;
+  abstract deleteSurah(id: number): Observable<void>;
+
+  abstract getAyahs(surahId: number): Observable<Ayah[]>;
+  abstract getAyahsBySurah(surahId: number): Observable<Ayah[]>;
+  abstract getAyahById(id: number): Observable<Ayah>;
+  abstract createAyah(ayah: Partial<Ayah>): Observable<Ayah>;
+  abstract updateAyah(id: number, ayah: Partial<Ayah>): Observable<Ayah>;
+  abstract deleteAyah(id: number): Observable<void>;
+
+  abstract getTajweedRules(): Observable<TajweedRule[]>;
+  abstract getTajweedRule(id: number): Observable<TajweedRule>;
+  abstract createTajweedRule(rule: Partial<TajweedRule>): Observable<TajweedRule>;
+  abstract updateTajweedRule(id: number, rule: Partial<TajweedRule>): Observable<TajweedRule>;
+  abstract deleteTajweedRule(id: number): Observable<void>;
+
+  abstract getRecitationLevels(): Observable<RecitationLevel[]>;
+  abstract getRecitationLevel(id: number): Observable<RecitationLevel>;
+  abstract createRecitationLevel(level: Partial<RecitationLevel>): Observable<RecitationLevel>;
+  abstract updateRecitationLevel(id: number, level: Partial<RecitationLevel>): Observable<RecitationLevel>;
+  abstract deleteRecitationLevel(id: number): Observable<void>;
+
+  abstract getQuranCurricula(): Observable<QuranCurriculum[]>;
+  abstract getQuranCurriculumById(id: number): Observable<QuranCurriculum>;
+  abstract createQuranCurriculum(curriculum: Partial<QuranCurriculum>): Observable<QuranCurriculum>;
+  abstract updateQuranCurriculum(id: number, curriculum: Partial<QuranCurriculum>): Observable<QuranCurriculum>;
+  abstract deleteQuranCurriculum(id: number): Observable<void>;
+
+  abstract getQuranStudentProgress(studentId: number): Observable<QuranStudentProgress>;
+  abstract getQuranProgress(id: number): Observable<QuranStudentProgress>;
+  abstract createQuranProgress(progress: Partial<QuranStudentProgress>): Observable<QuranStudentProgress>;
+
+  abstract getQuranLessonPlans(): Observable<any[]>;
+  abstract getQuranLessonPlanById(id: number): Observable<any>;
+  abstract createQuranLessonPlan(payload: any): Observable<any>;
+  abstract updateQuranLessonPlan(id: number, payload: any): Observable<any>;
+  abstract deleteQuranLessonPlan(id: number): Observable<void>;
+
+  abstract getQuranDashboardStats(): Observable<any>;
+  abstract searchAyahs(query: string, max?: number): Observable<Ayah[]>;
+
+  // Persian Literature
+  abstract getPoets(difficulty?: string): Observable<PersianLiteraturePoet[]>;
+  abstract getPoetById(id: number): Observable<PersianLiteraturePoet>;
+  abstract createPoet(payload: CreatePersianLiteraturePoetPayload): Observable<PersianLiteraturePoet>;
+  abstract updatePoet(id: number, payload: Partial<CreatePersianLiteraturePoetPayload>): Observable<PersianLiteraturePoet>;
+  abstract deletePoet(id: number): Observable<void>;
+  abstract searchPoets(query: string): Observable<PersianLiteraturePoet[]>;
+
+  abstract getPoems(poetId?: number, genre?: string, difficulty?: string): Observable<PersianLiteraturePoem[]>;
+  abstract getPoemById(id: number): Observable<PersianLiteraturePoem>;
+  abstract createPoem(payload: CreatePersianLiteraturePoemPayload): Observable<PersianLiteraturePoem>;
+  abstract updatePoem(id: number, payload: Partial<CreatePersianLiteraturePoemPayload>): Observable<PersianLiteraturePoem>;
+  abstract deletePoem(id: number): Observable<void>;
+  abstract searchPoems(query: string): Observable<PersianLiteraturePoem[]>;
+
+  abstract getAnalysesByPoem(poemId: number): Observable<PersianLiteratureAnalysis[]>;
+  abstract getAnalysisById(id: number): Observable<PersianLiteratureAnalysis>;
+  abstract createAnalysis(payload: CreatePersianLiteratureAnalysisPayload): Observable<PersianLiteratureAnalysis>;
+  abstract updateAnalysis(id: number, payload: Partial<CreatePersianLiteratureAnalysisPayload>): Observable<PersianLiteratureAnalysis>;
+  abstract deleteAnalysis(id: number): Observable<void>;
+
+  abstract getLiteratureDashboardStats(): Observable<any>;
 }

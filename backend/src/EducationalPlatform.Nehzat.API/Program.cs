@@ -81,6 +81,7 @@ builder.Services.AddScoped<ICompetitionService, CompetitionService>();
     builder.Services.AddScoped<ILogService, LogService>();
     builder.Services.AddScoped<IIssueSurveyService, IssueSurveyService>();
     builder.Services.AddScoped<IQuranService, QuranService>();
+    builder.Services.AddScoped<IPersianLiteratureService, PersianLiteratureService>();
 
     builder.Services.AddCors(options =>
 {
@@ -129,7 +130,7 @@ using (var scope = app.Services.CreateScope())
         db.Database.EnsureDeleted();
     }
 
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     // Users are synced from OTUH2 via OidcSyncMiddleware on first request
