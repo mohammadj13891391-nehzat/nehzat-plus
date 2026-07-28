@@ -77,6 +77,7 @@ builder.Services.AddScoped<ICompetitionService, CompetitionService>();
     builder.Services.AddScoped<ILeagueService, LeagueService>();
     builder.Services.AddScoped<IProgressionService, ProgressionService>();
     builder.Services.AddScoped<SampleDataSeeder>();
+    builder.Services.AddScoped<QuranDataSeeder>();
     builder.Services.AddScoped<ILogService, LogService>();
     builder.Services.AddScoped<IIssueSurveyService, IssueSurveyService>();
     builder.Services.AddScoped<IQuranService, QuranService>();
@@ -150,6 +151,9 @@ using (var scope = app.Services.CreateScope())
 
     var seeder = scope.ServiceProvider.GetRequiredService<SampleDataSeeder>();
     await seeder.SeedAsync();
+
+    var quranSeeder = scope.ServiceProvider.GetRequiredService<QuranDataSeeder>();
+    await quranSeeder.SeedAsync();
 
     var logService = scope.ServiceProvider.GetRequiredService<ILogService>();
 
