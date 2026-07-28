@@ -1,0 +1,32 @@
+.surah-detail {
+  padding: 20px;
+}
+
+.ayahs {
+  margin-top: 20px;
+}
+
+.ayah {
+  border-bottom: 1px solid var(--lp-border);
+  padding: 10px 0;
+}
+
+.verse-number {
+  color: var(--lp-muted);
+  font-size: 0.8em;
+}
+
+.verse-text {
+  font-size: 1.1em;
+  direction: rtl;
+  text-align: right;
+}
+
+.error-banner {
+  padding: 16px;
+  margin: 20px;
+  border: 1px solid var(--lp-danger);
+  border-radius: 12px;
+  background: rgba(185, 28, 28, 0.06);
+  color: var(--lp-danger);
+}

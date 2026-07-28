@@ -1,0 +1,20 @@
+<mat-progress-spinner *ngIf="loading" mode="indeterminate"></mat-progress-spinner>
+
+<div class="error-banner" *ngIf="errorMessage()">
+  <p>{{ errorMessage() }}</p>
+</div>
+
+<div class="surah-detail" *ngIf="surah && !loading">
+  <h2>{{ surah.number }}. {{ surah.name }}</h2>
+  <p><strong>نام فارسی:</strong> {{ surah.translatedName }}</p>
+  <p><strong>مکان نزول:</strong> {{ surah.revelationPlace }}</p>
+  <p><strong>نوع:</strong> {{ surah.type }}</p>
+  <p><strong>تعداد آیات:</strong> {{ surah.totalAyahs }}</p>
+  <div class="ayahs">
+    <h3>آیات</h3>
+    <div *ngFor="let ayah of surah.ayahs" class="ayah">
+      <p class="verse-number">آیه {{ ayah.verseNumber }}</p>
+      <p class="verse-text">{{ ayah.text }}</p>
+    </div>
+  </div>
+</div>

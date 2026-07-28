@@ -1,0 +1,111 @@
+.quran-widget {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.widget-icon {
+  font-size: 32px;
+}
+
+.widget-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--lp-text);
+}
+
+.widget-subtitle {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--lp-text-secondary);
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--lp-text-secondary);
+}
+
+.error-message {
+  color: var(--lp-danger);
+  font-weight: 500;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-around;
+  margin: 12px 0;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--lp-accent);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--lp-text-secondary);
+}
+
+.progress-section {
+  margin-top: 12px;
+}
+
+.progress-label {
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: var(--lp-text);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--lp-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--lp-accent);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.widget-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 4px;
+  gap: 8px;
+}
+
+.btn-link {
+  color: var(--lp-accent);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}

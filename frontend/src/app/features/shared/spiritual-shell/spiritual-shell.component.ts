@@ -16,7 +16,7 @@ import { SpiritualOccasionPanelComponent } from './spiritual-occasion-panel.comp
 import { SpiritualPathPanelComponent } from './spiritual-path-panel.component';
 import { SpiritualHistoryPanelComponent } from './spiritual-history-panel.component';
 
-type TabId = 'practice' | 'occasions' | 'path' | 'history';
+type TabId = 'practice' | 'occasions' | 'path' | 'history' | 'quran' | 'math';
 
 interface Toast {
   message: string;
@@ -68,6 +68,12 @@ interface Toast {
         </button>
         <button class="tab-btn" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'">
           &#x1F4CB; تاریخچه
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'quran'" (click)="goToQuran()">
+          &#x1F4DC; قرآن
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'math'" (click)="goToMath()">
+          &#x1F4D0; ریاضیات
         </button>
       </nav>
 
@@ -339,6 +345,13 @@ export class SpiritualShellComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
-    void this.router.navigateByUrl('/auth/login');
+  }
+
+  goToQuran(): void {
+    this.router.navigate(['/quran']);
+  }
+
+  goToMath(): void {
+    this.router.navigate(['/math']);
   }
 }

@@ -1,66 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Surah } from '../../services/quran.service';
 import { QuranService } from '../../services/quran.service';
 
 @Component({
   selector: 'app-quran-list',
-  template: `
-    <div class="quran-container">
-      <h2>قرآن کریم - سوره‌ها</h2>
-      <div class="search-bar">
-        <mat-form-field appearance="outline">
-          <mat-label>جستجوی سوره</mat-label>
-          <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="نام سوره..." />
-        </mat-form-field>
-      </div>
-      <mat-progress-spinner *ngIf="loading" mode="indeterminate"></mat-progress-spinner>
-      <table mat-table [dataSource]="filteredSurahs" class="mat-elevation-z8" *ngIf="!loading">
-        <ng-container matColumnDef="number">
-          <th mat-header-cell *matHeaderCellDef>شماره</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.number }}</td>
-        </ng-container>
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>نام سوره</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.name }}</td>
-        </ng-container>
-        <ng-container matColumnDef="translatedName">
-          <th mat-header-cell *matHeaderCellDef>نام فارسی</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.translatedName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef>نوع</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.type }}</td>
-        </ng-container>
-        <ng-container matColumnDef="totalAyahs">
-          <th mat-header-cell *matHeaderCellDef>تعداد آیات</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.totalAyahs }}</td>
-        </ng-container>
-        <ng-container matColumnDef="revelationPlace">
-          <th mat-header-cell *matHeaderCellDef>مکان نزول</th>
-          <td mat-cell *matCellDef="let surah">{{ surah.revelationPlace }}</td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>عملیات</th>
-          <td mat-cell *matCellDef="let surah">
-            <button mat-button [routerLink]="['/quran/surah', surah.id]">نمایش</button>
-          </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-    </div>
-  `,
-  styles: [`
-    .quran-container { padding: 20px; max-width: 1200px; margin: 0 auto; }
-    .search-bar { margin-bottom: 20px; }
-    table { width: 100%; }
-  `]
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, MatCardModule, MatTableModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatProgressSpinnerModule],
+  templateUrl: './surah-list.component.html',
+  styleUrls: ['./surah-list.component.scss']
 })
 export class QuranListComponent implements OnInit {
   surahs: Surah[] = [];
   filteredSurahs: Surah[] = [];
   searchTerm = '';
-  loading = true;
+  _loading = signal(true);
+  _error = signal<string | null>(null);
   displayedColumns = ['number', 'name', 'translatedName', 'type', 'totalAyahs', 'revelationPlace', 'actions'];
 
   constructor(private quranService: QuranService) {}
@@ -70,16 +33,18 @@ export class QuranListComponent implements OnInit {
   }
 
   loadSurahs(): void {
-    this.loading = true;
+    this._loading.set(true);
+    this._error.set(null);
     this.quranService.getSurahs().subscribe({
       next: (data) => {
         this.surahs = data;
         this.filteredSurahs = data;
-        this.loading = false;
+        this._loading.set(false);
       },
       error: (err) => {
         console.error('Error loading surahs:', err);
-        this.loading = false;
+        this._error.set('خطا در بارگذاری سوره‌ها');
+        this._loading.set(false);
       }
     });
   }

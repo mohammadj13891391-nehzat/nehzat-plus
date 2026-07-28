@@ -1,38 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Surah, Ayah } from '../../services/quran.service';
 import { QuranService } from '../../services/quran.service';
 
 @Component({
   selector: 'app-surah-detail',
-  template: `
-    <div class="surah-detail" *ngIf="surah; else loading">
-      <h2>{{ surah.number }}. {{ surah.name }}</h2>
-      <p><strong>نام فارسی:</strong> {{ surah.translatedName }}</p>
-      <p><strong>مکان نزول:</strong> {{ surah.revelationPlace }}</p>
-      <p><strong>نوع:</strong> {{ surah.type }}</p>
-      <p><strong>تعداد آیات:</strong> {{ surah.totalAyahs }}</p>
-      <div class="ayahs">
-        <h3>آیات</h3>
-        <div *ngFor="let ayah of surah.ayahs" class="ayah">
-          <p class="verse-number">آیه {{ ayah.verseNumber }}</p>
-          <p class="verse-text">{{ ayah.text }}</p>
-        </div>
-      </div>
-    </div>
-    <mat-progress-spinner *ngIf="loading" mode="indeterminate"></mat-progress-spinner>
-  `,
-  styles: [`
-    .surah-detail { padding: 20px; }
-    .ayahs { margin-top: 20px; }
-    .ayah { border-bottom: 1px solid #eee; padding: 10px 0; }
-    .verse-number { color: #888; font-size: 0.8em; }
-    .verse-text { font-size: 1.1em; direction: rtl; text-align: right; }
-  `]
+  standalone: true,
+  imports: [CommonModule, MatProgressSpinnerModule],
+  templateUrl: './surah-detail.component.html',
+  styleUrls: ['./surah-detail.component.scss']
 })
 export class SurahDetailComponent implements OnInit {
   surah: Surah | null = null;
   loading = true;
+  errorMessage = signal<string | null>(null);
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +26,7 @@ export class SurahDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.quranService.getSurah(id).subscribe({
       next: (data) => { this.surah = data; this.loading = false; },
-      error: (err) => { console.error(err); this.loading = false; }
+      error: (err) => { console.error(err); this.errorMessage.set('خطا در بارگیری اطلاعات سوره'); this.loading = false; }
     });
   }
 }

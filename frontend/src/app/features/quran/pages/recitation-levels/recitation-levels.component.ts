@@ -1,35 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RecitationLevel } from '../../services/quran.service';
 import { QuranService } from '../../services/quran.service';
 
 @Component({
   selector: 'app-recitation-levels',
-  template: `
-    <div class="levels-container">
-      <h2>سطوح تجوید</h2>
-      <mat-card *ngFor="let level of levels" class="level-card">
-        <mat-card-header>
-          <mat-card-title>سطح {{ level.levelNumber }}: {{ level.name }}</mat-card-title>
-          <mat-card-subtitle>{{ level.estimatedWeeks }} هفته - {{ level.pointsRequired }} نقطه</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ level.description }}</p>
-          <p><strong>معیارها:</strong> {{ level.criteria }}</p>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
-  styles: [`
-    .levels-container { padding: 20px; }
-    .level-card { margin-bottom: 16px; }
-  `]
+  standalone: true,
+  imports: [CommonModule, MatCardModule, MatProgressSpinnerModule],
+  templateUrl: './recitation-levels.component.html',
+  styleUrls: ['./recitation-levels.component.scss']
 })
 export class RecitationLevelsComponent implements OnInit {
   levels: RecitationLevel[] = [];
+  loading = signal(true);
+  errorMessage = signal<string | null>(null);
 
   constructor(private quranService: QuranService) {}
 
   ngOnInit(): void {
-    this.quranService.getRecitationLevels().subscribe(data => this.levels = data);
+    this.quranService.getRecitationLevels().subscribe({
+      next: (data) => { this.levels = data; this.loading.set(false); },
+      error: (err) => { console.error(err); this.errorMessage.set('خطا در بارگیری سطوح تجوید'); this.loading.set(false); }
+    });
   }
 }

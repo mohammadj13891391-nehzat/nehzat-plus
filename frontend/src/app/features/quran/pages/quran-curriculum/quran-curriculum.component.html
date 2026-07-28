@@ -1,0 +1,32 @@
+<div class="curriculum-container">
+  <h2>برنامه‌های درسی قرآن</h2>
+
+  <div class="loading-text" *ngIf="_loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="_error()">
+    <p class="error-message">{{ _error() }}</p>
+  </div>
+
+  @if (!_loading() && !_error()) {
+    @for (curriculum of curricula; track curriculum.id) {
+      <div class="curriculum-card">
+        <div class="curriculum-header">
+          <h3>{{ curriculum.title }}</h3>
+          <span class="curriculum-level">سطح: {{ curriculum.difficultyLevel }}</span>
+        </div>
+        <div class="curriculum-content">
+          <p>{{ curriculum.description }}</p>
+          <p><strong>سوره:</strong> {{ curriculum.startSurah }} تا {{ curriculum.endSurah }}</p>
+          <p><strong>آیات:</strong> {{ curriculum.totalAyahs }}</p>
+          <p><strong>زمان تخمینی:</strong> {{ curriculum.estimatedDays }} روز</p>
+        </div>
+      </div>
+    }
+  }
+
+  <div *ngIf="!_loading() && !_error() && curricula.length === 0" class="empty-state">
+    <p>برنامه درسی‌ای یافت نشد.</p>
+  </div>
+</div>

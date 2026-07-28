@@ -1,0 +1,42 @@
+<div class="quran-container" dir="rtl">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title><h1>قرآن کریم</h1></mat-card-title>
+      <mat-card-subtitle>فهرست سوره‌های قرآن</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-card class="search-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>جستجوی سوره</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="نام سوره، نام فارسی یا شماره..." />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-progress-spinner *ngIf="_loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="loading-text" *ngIf="_loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="_error()">
+    <p class="error-message">{{ _error() }}</p>
+  </div>
+
+  <div class="surah-grid" *ngIf="!_loading() && !_error()">
+    <mat-card *ngFor="let surah of filteredSurahs" class="surah-card" [routerLink]="['/quran/surahs', surah.id]">
+      <mat-card-header>
+        <div mat-card-avatar class="surah-number">{{ surah.number }}</div>
+        <mat-card-title>{{ surah.translatedName }}</mat-card-title>
+        <mat-card-subtitle>{{ surah.name }} • {{ surah.totalAyahs }} آیه • {{ surah.revelationPlace }}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!_loading() && !_error() && filteredSurahs.length === 0" class="empty-state">
+    <p>سوره‌ای با این نام یافت نشد.</p>
+  </div>
+</div>

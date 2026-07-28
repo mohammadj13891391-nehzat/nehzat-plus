@@ -1,0 +1,140 @@
+.plans-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header-card {
+  padding: 24px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--lp-accent), var(--lp-accent-secondary, #37474f));
+  border-radius: 12px;
+  color: white;
+}
+
+.header-card h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.header-subtitle {
+  margin: 6px 0 0;
+  opacity: 0.85;
+  font-size: 14px;
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--lp-text-secondary);
+}
+
+.error-message {
+  color: var(--lp-danger);
+  font-weight: 500;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.plan-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.plan-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.plan-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lp-accent-bg, rgba(26,35,126,0.08));
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.plan-icon {
+  font-size: 24px;
+}
+
+.plan-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--lp-text);
+}
+
+.plan-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--lp-text-secondary);
+  line-height: 1.4;
+}
+
+.plan-detail {
+  margin-top: 20px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--lp-text);
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: var(--lp-surface-hover, rgba(0,0,0,0.03));
+}
+
+.plan-detail-card {
+  padding: 24px;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 10px;
+}
+
+.markdown-content {
+  white-space: pre-wrap;
+  font-family: 'Vazir', sans-serif;
+  line-height: 1.8;
+  font-size: 14px;
+  direction: rtl;
+  text-align: right;
+  color: var(--lp-text);
+}
+
+@media (max-width: 600px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+}

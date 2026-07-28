@@ -1,42 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { QuranStudentProgress } from '../../services/quran.service';
+import { QuranStudentProgress } from '../../../../core/models/lesson-planner.models';
 import { QuranService } from '../../services/quran.service';
 
 @Component({
   selector: 'app-student-progress',
-  template: `
-    <div class="progress-container">
-      <h2>پیشرفت دانشجو</h2>
-      <mat-progress-bar mode="determinate" [value]="overallProgress"></mat-progress-bar>
-      <p>پیشرفت کلی: {{ overallProgress }}%</p>
-      <mat-table [dataSource]="progresses" class="mat-elevation-z8">
-        <ng-container matColumnDef="surah">
-          <th mat-header-cell *matHeaderCellDef>سوره</th>
-          <td mat-cell *matCellDef="let p">{{ p.surah?.name }}</td>
-        </ng-container>
-        <ng-container matColumnDef="percentage">
-          <th mat-header-cell *matHeaderCellDef>درصد</th>
-          <td mat-cell *matCellDef="let p">{{ p.percentage }}%</td>
-        </ng-container>
-        <ng-container matColumnDef="notes">
-          <th mat-header-cell *matHeaderCellDef>توضیحات</th>
-          <td mat-cell *matCellDef="let p">{{ p.notes }}</td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </mat-table>
-    </div>
-  `,
-  styles: [`
-    .progress-container { padding: 20px; }
-    mat-table { width: 100%; margin-top: 20px; }
-  `]
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './student-progress.component.html',
+  styleUrls: ['./student-progress.component.scss']
 })
 export class StudentProgressComponent implements OnInit {
   progresses: QuranStudentProgress[] = [];
   overallProgress = 0;
-  displayedColumns = ['surah', 'percentage', 'notes'];
+  _loading = signal(true);
+  _error = signal<string | null>(null);
 
   constructor(
     private route: ActivatedRoute,
@@ -45,10 +24,21 @@ export class StudentProgressComponent implements OnInit {
 
   ngOnInit(): void {
     const studentId = Number(this.route.snapshot.paramMap.get('studentId'));
-    this.quranService.getStudentProgress(studentId).subscribe(data => {
-      this.progresses = data;
-      if (data.length > 0) {
-        this.overallProgress = Math.round(data.reduce((sum, p) => sum + p.percentage, 0) / data.length);
+    if (!studentId) {
+      this._error.set('شناسه دانشجو نامعتبر است');
+      this._loading.set(false);
+      return;
+    }
+    this._loading.set(true);
+    this.quranService.getQuranStudentProgress(studentId).subscribe({
+      next: (data) => {
+        this.progresses = [data];
+        this.overallProgress = data.percentage;
+        this._loading.set(false);
+      },
+      error: () => {
+        this._error.set('خطا در بارگذاری پیشرفت');
+        this._loading.set(false);
       }
     });
   }

@@ -1,0 +1,37 @@
+<div class="plans-container" dir="rtl">
+  <div class="header-card">
+    <div>
+      <h1>برنامه‌های درسی قرآن</h1>
+      <p class="header-subtitle">دوره جامع آموزش علوم قرآنی از سن ۵ تا ۲۱ سال</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="_loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="_error()">
+    <p class="error-message">{{ _error() }}</p>
+  </div>
+
+  <div class="plans-grid" *ngIf="!_loading() && !_error()">
+    <div class="plan-card" *ngFor="let plan of plans" (click)="selectPlan(plan)">
+      <div class="plan-icon-wrapper">
+        <span class="plan-icon">{{ getPlanEmoji(plan) }}</span>
+      </div>
+      <div class="plan-info">
+        <h3 class="plan-title">{{ getPlanTitle(plan) }}</h3>
+        <p class="plan-subtitle">{{ getPlanSubtitle(plan) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedPlan && !_loading()" class="plan-detail">
+    <button class="back-btn" (click)="selectedPlan = null; planContent = ''">
+      ← بازگشت به لیست
+    </button>
+    <div class="plan-detail-card">
+      <div class="plan-content markdown-content">{{ planContent }}</div>
+    </div>
+  </div>
+</div>

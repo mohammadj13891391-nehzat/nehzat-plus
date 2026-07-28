@@ -1,0 +1,43 @@
+<div class="progress-container">
+  <h2>پیشرفت دانشجو</h2>
+
+  <div class="loading-state" *ngIf="_loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="_error()">
+    <p class="error-message">{{ _error() }}</p>
+  </div>
+
+  <div *ngIf="!_loading() && !_error()">
+    <div class="overall-progress">
+      <p class="progress-label">پیشرفت کلی: {{ overallProgress }}%</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="overallProgress"></div>
+      </div>
+    </div>
+
+    <div class="table-container" *ngIf="progresses.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>سوره</th>
+            <th>درصد</th>
+            <th>توضیحات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of progresses">
+            <td>{{ p.surah?.name }}</td>
+            <td>{{ p.percentage }}%</td>
+            <td>{{ p.notes }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="progresses.length === 0" class="empty-state">
+      <p>پیشرفتی ثبت نشده است.</p>
+    </div>
+  </div>
+</div>

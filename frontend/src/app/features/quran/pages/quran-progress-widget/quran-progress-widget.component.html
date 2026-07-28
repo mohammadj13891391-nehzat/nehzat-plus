@@ -1,0 +1,48 @@
+<div class="quran-widget" dir="rtl">
+  <div class="widget-header">
+    <span class="widget-icon">📖</span>
+    <div>
+      <h3 class="widget-title">قرآن کریم</h3>
+      <p class="widget-subtitle">پیشرفت کلی</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="_loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="_error()">
+    <p class="error-message">{{ _error() }}</p>
+  </div>
+
+  <div class="stat-row" *ngIf="stats && !_loading() && !_error()">
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalSurahs }}</span>
+      <span class="stat-label">سوره</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalAyahs }}</span>
+      <span class="stat-label">آیه</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalTajweedRules }}</span>
+      <span class="stat-label">قانون تجوید</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ stats.totalRecitationLevels }}</span>
+      <span class="stat-label">سطح</span>
+    </div>
+  </div>
+
+  <div *ngIf="studentProgress !== null" class="progress-section">
+    <p class="progress-label">پیشرفت: {{ studentProgress }}%</p>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="studentProgress"></div>
+    </div>
+  </div>
+
+  <div class="widget-actions">
+    <a class="btn-link" [routerLink]="['/quran']">مشاهده قرآن</a>
+    <a class="btn-link" [routerLink]="['/quran/lesson-plans']">برنامه‌های درسی</a>
+  </div>
+</div>
