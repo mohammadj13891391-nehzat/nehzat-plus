@@ -4,10 +4,12 @@
   "skills": {
     "paths": [".opencode/skills"]
   },
+  "small_model": "zen/big-pickle",
   "plugin": [
+    "@tarquinen/opencode-dcp",
     "opencode-gemini-auth",
-    "@nick-vi/opencode-type-inject",
-    "@tarquinen/opencode-dcp"
+    "opencode-models-discovery",
+    "@nick-vi/opencode-type-inject"
   ],
   "compaction": {
     "auto": true,
