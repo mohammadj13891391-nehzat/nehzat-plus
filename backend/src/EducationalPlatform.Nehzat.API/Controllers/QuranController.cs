@@ -7,7 +7,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("api/quran")]
-[Authorize(Roles = "admin,manager,headquarters")]
+[Authorize]
 public class QuranController : ControllerBase
 {
     private readonly IQuranService _service;
@@ -19,12 +19,14 @@ public class QuranController : ControllerBase
 
     // Surah endpoints
     [HttpGet("surahs")]
+    
     public async Task<IActionResult> GetAllSurahs()
     {
         return Ok(await _service.GetAllSurahsAsync());
     }
 
     [HttpGet("surahs/{id}")]
+    
     public async Task<IActionResult> GetSurahById(int id)
     {
         var result = await _service.FindSurahByIdAsync(id);
@@ -76,18 +78,21 @@ public class QuranController : ControllerBase
 
     // Ayah endpoints
     [HttpGet("ayahs")]
+    
     public async Task<IActionResult> GetAllAyahs()
     {
         return Ok(await _service.GetAllAyahsAsync());
     }
 
     [HttpGet("ayahs/surah/{surahId}")]
+    
     public async Task<IActionResult> GetAyahsBySurah(int surahId)
     {
         return Ok(await _service.GetAyahsBySurahAsync(surahId));
     }
 
     [HttpGet("ayahs/{id}")]
+    
     public async Task<IActionResult> GetAyahById(int id)
     {
         var result = await _service.FindAyahByIdAsync(id);
@@ -132,12 +137,14 @@ public class QuranController : ControllerBase
 
     // TajweedRule endpoints
     [HttpGet("tajweed-rules")]
+    
     public async Task<IActionResult> GetAllTajweedRules()
     {
         return Ok(await _service.GetAllTajweedRulesAsync());
     }
 
     [HttpGet("tajweed-rules/{id}")]
+    
     public async Task<IActionResult> GetTajweedRuleById(int id)
     {
         var result = await _service.FindTajweedRuleByIdAsync(id);
@@ -189,12 +196,14 @@ public class QuranController : ControllerBase
 
     // QuranStudentCourse endpoints
     [HttpGet("student-courses")]
+    
     public async Task<IActionResult> GetAllQuranStudentCourses()
     {
         return Ok(await _service.GetAllQuranStudentCoursesAsync());
     }
 
     [HttpGet("student-courses/{id}")]
+    
     public async Task<IActionResult> GetQuranStudentCourseById(int id)
     {
         var result = await _service.FindQuranStudentCourseByIdAsync(id);
@@ -246,12 +255,14 @@ public class QuranController : ControllerBase
 
     // RecitationLevel endpoints
     [HttpGet("recitation-levels")]
+    
     public async Task<IActionResult> GetAllRecitationLevels()
     {
         return Ok(await _service.GetAllRecitationLevelsAsync());
     }
 
     [HttpGet("recitation-levels/{id}")]
+    
     public async Task<IActionResult> GetRecitationLevelById(int id)
     {
         var result = await _service.FindRecitationLevelByIdAsync(id);
@@ -303,12 +314,14 @@ public class QuranController : ControllerBase
 
     // QuranCurriculum endpoints
     [HttpGet("curricula")]
+    
     public async Task<IActionResult> GetAllQuranCurricula()
     {
         return Ok(await _service.GetAllQuranCurriculaAsync());
     }
 
     [HttpGet("curricula/{id}")]
+    
     public async Task<IActionResult> GetQuranCurriculumById(int id)
     {
         var result = await _service.FindQuranCurriculumByIdAsync(id);
@@ -353,12 +366,14 @@ public class QuranController : ControllerBase
 
     // QuranStudentProgress endpoints
     [HttpGet("progress/student/{studentId}")]
+    
     public async Task<IActionResult> GetStudentProgress(int studentId)
     {
         return Ok(await _service.GetStudentProgressAsync(studentId));
     }
 
     [HttpGet("progress/{id}")]
+    
     public async Task<IActionResult> GetProgressById(int id)
     {
         var result = await _service.FindProgressByIdAsync(id);
@@ -371,6 +386,48 @@ public class QuranController : ControllerBase
     {
         var result = await _service.CreateProgressAsync(request.StudentId, request.SurahId, request.AyahNumber, request.Percentage, request.Notes);
         return Ok(result);
+    }
+
+    // Lesson Plan endpoints
+    [HttpGet("lesson-plans")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetLessonPlans()
+    {
+        var plans = await _service.GetLessonPlanFilesAsync();
+        return Ok(plans);
+    }
+
+    [HttpGet("lesson-plans/{fileName}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetLessonPlan(string fileName)
+    {
+        try
+        {
+            var content = await _service.GetLessonPlanContentAsync(fileName);
+            return Content(content, "text/markdown; charset=utf-8");
+        }
+        catch (FileNotFoundException ex)
+        {
+            return NotFound(new { message = $"پلن «{ex.FileName}» یافت نشد." });
+        }
+    }
+
+    // Search endpoint
+    [HttpGet("ayahs/search")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SearchAyahs([FromQuery] string q, [FromQuery] int max = 50)
+    {
+        var results = await _service.SearchAyahsAsync(q, max);
+        return Ok(results);
+    }
+
+    // Dashboard stats
+    [HttpGet("dashboard-stats")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetDashboardStats()
+    {
+        var stats = await _service.GetDashboardStatsAsync();
+        return Ok(stats);
     }
 }
 

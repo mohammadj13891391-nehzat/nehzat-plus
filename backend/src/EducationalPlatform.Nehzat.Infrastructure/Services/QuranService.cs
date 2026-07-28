@@ -19,10 +19,8 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services
         // Surah operations
         public async Task<List<Surah>> GetAllSurahsAsync()
         {
-            return await _db.Surahs
-                .Include(s => s.Ayahs)
-                .OrderBy(s => int.Parse(s.Number))
-                .ToListAsync();
+            var surahs = await _db.Surahs.ToListAsync();
+            return surahs.OrderBy(s => int.Parse(s.Number)).ToList();
         }
 
         public async Task<Surah?> FindSurahByIdAsync(int id)
@@ -470,6 +468,61 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services
             _db.QuranStudentProgresses.Add(entity);
             await _db.SaveChangesAsync();
             return entity;
+        }
+
+        public async Task<List<string>> GetLessonPlanFilesAsync()
+        {
+            var plansDir = Path.Combine("D:", "nehzat-plus", "Quran", ".omo", "plans");
+            if (!Directory.Exists(plansDir))
+                return new List<string>();
+
+            return Directory.GetFiles(plansDir, "*.md")
+                .Select(Path.GetFileNameWithoutExtension)
+                .OrderBy(f => f)
+                .ToList()!;
+        }
+
+        public async Task<string> GetLessonPlanContentAsync(string fileName)
+        {
+            var plansDir = Path.Combine("D:", "nehzat-plus", "Quran", ".omo", "plans");
+            var filePath = Path.Combine(plansDir, fileName + ".md");
+
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("Plan file not found", fileName);
+
+            return await File.ReadAllTextAsync(filePath);
+        }
+
+        public async Task<List<Ayah>> SearchAyahsAsync(string query, int maxResults = 50)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return new List<Ayah>();
+
+            return await _db.Ayahs
+                .Include(a => a.Surah)
+                .Where(a => a.Text.Contains(query) || a.Translation.Contains(query))
+                .Take(maxResults)
+                .OrderBy(a => a.SurahId)
+                .ThenBy(a => a.VerseNumber)
+                .ToListAsync();
+        }
+
+        public async Task<object> GetDashboardStatsAsync()
+        {
+            var surahCount = await _db.Surahs.CountAsync();
+            var ayahCount = await _db.Ayahs.CountAsync();
+            var tajweedCount = await _db.TajweedRules.CountAsync();
+            var levelCount = await _db.RecitationLevels.CountAsync();
+            var curriculumCount = await _db.QuranCurricula.CountAsync();
+
+            return new
+            {
+                totalSurahs = surahCount,
+                totalAyahs = ayahCount,
+                totalTajweedRules = tajweedCount,
+                totalRecitationLevels = levelCount,
+                totalCurricula = curriculumCount
+            };
         }
     }
 }

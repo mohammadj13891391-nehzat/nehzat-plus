@@ -16,16 +16,16 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.Quran
         [Column(TypeName = "int")]
         public int VerseNumber { get; set; }
 
-        [Column(TypeName = "nvarchar(500)")]
+        [Column(TypeName = "text")]
         public string Text { get; set; } = string.Empty;
 
-        [Column(TypeName = "nvarchar(500)")]
+        [Column(TypeName = "text")]
         public string Translation { get; set; } = string.Empty;
 
-        [Column(TypeName = "nvarchar(1000)")]
+        [Column(TypeName = "text")]
         public string Transliteration { get; set; } = string.Empty;
 
-        [Column(TypeName = "nvarchar(500)")]
+        [Column(TypeName = "text")]
         public string Footnote { get; set; } = string.Empty;
 
         [Column(TypeName = "nvarchar(50)")]

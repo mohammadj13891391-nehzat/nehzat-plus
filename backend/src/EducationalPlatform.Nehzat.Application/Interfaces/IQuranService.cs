@@ -53,5 +53,13 @@ namespace EducationalPlatform.Nehzat.Application.Interfaces
         Task<List<QuranStudentProgress>> GetStudentProgressAsync(int studentId);
         Task<QuranStudentProgress?> FindProgressByIdAsync(int id);
         Task<QuranStudentProgress> CreateProgressAsync(int studentId, int surahId, int ayahNumber, int percentage, string notes = "");
+
+        // Lesson plans
+        Task<List<string>> GetLessonPlanFilesAsync();
+        Task<string> GetLessonPlanContentAsync(string fileName);
+
+        // Advanced features
+        Task<List<Ayah>> SearchAyahsAsync(string query, int maxResults = 50);
+        Task<object> GetDashboardStatsAsync();
     }
 }

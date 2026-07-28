@@ -18,6 +18,25 @@ public class SurveyDataSeeder
         if (await _db.IssueSurveys.AnyAsync<IssueSurvey>())
             return;
 
+        // Ensure a default admin user exists for the foreign key
+        var adminUser = await _db.Users.FirstOrDefaultAsync(u => u.Username == "admin");
+        if (adminUser == null)
+        {
+            adminUser = new User
+            {
+                Username = "admin",
+                FirstName = "مدیر",
+                LastName = "سیستم",
+                Email = "admin@nehzat128.ir",
+                ApprovalStatus = "approved",
+                UserType = "admin",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+            _db.Users.Add(adminUser);
+            await _db.SaveChangesAsync();
+        }
+
         var categories = new[]
         {
             ("والدین و خانواده", ParentFamilyQuestions()),
@@ -44,7 +63,7 @@ public class SurveyDataSeeder
             IsAnonymous = true,
             ScoreScaleMin = 1,
             ScoreScaleMax = 5,
-            CreatedById = 1,
+            CreatedById = adminUser.Id,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };

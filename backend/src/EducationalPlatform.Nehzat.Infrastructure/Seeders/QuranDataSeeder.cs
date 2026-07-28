@@ -41,7 +41,7 @@ public class QuranDataSeeder
         await _db.SaveChangesAsync();
         _db.ChangeTracker.Clear();
 
-        await SeedTajweedRulesAsync();
+        await SeedTeachersAsync();
         await _db.SaveChangesAsync();
         _db.ChangeTracker.Clear();
 
@@ -50,6 +50,10 @@ public class QuranDataSeeder
         _db.ChangeTracker.Clear();
 
         await SeedSurahsAndAyahsAsync();
+
+        await SeedTajweedRulesAsync();
+        await _db.SaveChangesAsync();
+        _db.ChangeTracker.Clear();
     }
 
     private async Task SeedRecitationLevelsAsync()
@@ -107,6 +111,24 @@ public class QuranDataSeeder
         };
 
         await _db.RecitationLevels.AddRangeAsync(levels);
+    }
+
+    private async Task SeedTeachersAsync()
+    {
+        if (!await _db.Teachers.AnyAsync())
+        {
+            _db.Teachers.Add(new EducationalPlatform.Nehzat.Domain.Entities.Teacher
+            {
+                Username = "quran-teacher",
+                FirstName = "استاد",
+                LastName = "قرآن",
+                Email = "quran@nehzat128.ir",
+                Specialization = "قرآن و تجوید",
+                Status = "active",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
     }
 
     private async Task SeedTajweedRulesAsync()

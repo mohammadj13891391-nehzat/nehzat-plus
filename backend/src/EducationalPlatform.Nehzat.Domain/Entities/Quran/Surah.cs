@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EducationalPlatform.Nehzat.Domain.Entities.Quran
 {
@@ -56,6 +57,7 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.Quran
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Relationships
+        [JsonIgnore]
         public ICollection<Ayah> Ayahs { get; set; } = new List<Ayah>();
     }
 }

@@ -2,6 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Domain.Entities.Quran;
 using EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature;
+using EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature;
+using EducationalPlatform.Nehzat.Domain.Entities.Math;
+using EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences;
+using LearningQuiz = EducationalPlatform.Nehzat.LearningQuiz;
+using LearningQuizQuestion = EducationalPlatform.Nehzat.LearningQuizQuestion;
 
 namespace EducationalPlatform.Nehzat.Infrastructure.Data;
 
@@ -87,6 +92,40 @@ public class AppDbContext : DbContext
   public DbSet<Poet> PersianLiteraturePoets => Set<Poet>();
   public DbSet<Poem> PersianLiteraturePoems => Set<Poem>();
   public DbSet<PoemAnalysis> PersianLiteratureAnalyses => Set<PoemAnalysis>();
+
+  public DbSet<ArabicPoet> ArabicLiteraturePoets => Set<ArabicPoet>();
+  public DbSet<ArabicPoem> ArabicLiteraturePoems => Set<ArabicPoem>();
+  public DbSet<ArabicPoemAnalysis> ArabicLiteratureAnalyses => Set<ArabicPoemAnalysis>();
+  public DbSet<ArabicCourse> ArabicCourses => Set<ArabicCourse>();
+  public DbSet<ArabicLesson> ArabicLessons => Set<ArabicLesson>();
+  public DbSet<ArabicUserProgress> ArabicUserProgresses => Set<ArabicUserProgress>();
+
+  public DbSet<MathTopic> MathTopics => Set<MathTopic>();
+  public DbSet<MathLesson> MathLessons => Set<MathLesson>();
+  public DbSet<MathQuestion> MathQuestions => Set<MathQuestion>();
+  public DbSet<MathProgress> MathProgresses => Set<MathProgress>();
+  public DbSet<MathScholar> MathScholars => Set<MathScholar>();
+  public DbSet<MathContribution> MathContributions => Set<MathContribution>();
+
+  public DbSet<LearningPath> LearningPaths => Set<LearningPath>();
+  public DbSet<LearningLevel> LearningLevels => Set<LearningLevel>();
+  public DbSet<StudyModule> StudyModules => Set<StudyModule>();
+  public DbSet<StudyLesson> StudyLessons => Set<StudyLesson>();
+  public DbSet<LessonContentBlock> LessonContentBlocks => Set<LessonContentBlock>();
+  public DbSet<LearningQuiz> Quizzes => Set<LearningQuiz>();
+  public DbSet<LearningQuizQuestion> QuizQuestions => Set<LearningQuizQuestion>();
+  public DbSet<QuizOption> QuizOptions => Set<QuizOption>();
+  public DbSet<UserEnrollment> UserEnrollments => Set<UserEnrollment>();
+  public DbSet<UserLessonProgress> UserLessonProgresses => Set<UserLessonProgress>();
+  public DbSet<UserQuizAttempt> UserQuizAttempts => Set<UserQuizAttempt>();
+
+  public DbSet<Phase> ExperimentalSciencesPhases => Set<Phase>();
+  public DbSet<Topic> ExperimentalSciencesTopics => Set<Topic>();
+  public DbSet<Lesson> ExperimentalSciencesLessons => Set<Lesson>();
+  public DbSet<Experiment> ExperimentalSciencesExperiments => Set<Experiment>();
+  public DbSet<Domain.Entities.ExperimentalSciences.Quiz> ExperimentalSciencesQuizzes => Set<Domain.Entities.ExperimentalSciences.Quiz>();
+  public DbSet<Domain.Entities.ExperimentalSciences.QuizQuestion> ExperimentalSciencesQuizQuestions => Set<Domain.Entities.ExperimentalSciences.QuizQuestion>();
+  public DbSet<StudentProgress> ExperimentalSciencesStudentProgresses => Set<StudentProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -824,6 +863,202 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.PoemId)
                   .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(e => e.AnalysisType);
+        });
+
+        modelBuilder.Entity<ArabicPoet>(entity =>
+        {
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.HasIndex(e => e.Era);
+            entity.HasIndex(e => e.DifficultyLevel);
+        });
+
+        modelBuilder.Entity<ArabicPoem>(entity =>
+        {
+            entity.HasOne(e => e.Poet)
+                  .WithMany(p => p.Poems)
+                  .HasForeignKey(e => e.PoetId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.Genre);
+            entity.HasIndex(e => e.DifficultyLevel);
+            entity.HasIndex(e => e.Theme);
+        });
+
+        modelBuilder.Entity<ArabicPoemAnalysis>(entity =>
+        {
+            entity.HasOne(e => e.Poem)
+                  .WithMany(p => p.Analyses)
+                  .HasForeignKey(e => e.PoemId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.AnalysisType);
+        });
+
+        modelBuilder.Entity<MathTopic>(entity =>
+        {
+            entity.HasIndex(e => e.Title);
+            entity.HasIndex(e => e.DifficultyLevel);
+        });
+
+        modelBuilder.Entity<MathLesson>(entity =>
+        {
+            entity.HasOne(e => e.Topic)
+                  .WithMany(t => t.Lessons)
+                  .HasForeignKey(e => e.MathTopicId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.MathTopicId);
+        });
+
+        modelBuilder.Entity<MathQuestion>(entity =>
+        {
+            entity.HasOne(e => e.Lesson)
+                  .WithMany(l => l.Questions)
+                  .HasForeignKey(e => e.MathLessonId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.MathLessonId);
+        });
+
+        modelBuilder.Entity<MathProgress>(entity =>
+        {
+            entity.HasOne(e => e.Student)
+                  .WithMany()
+                  .HasForeignKey(e => e.StudentId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Lesson)
+                  .WithMany(l => l.ProgressRecords)
+                  .HasForeignKey(e => e.MathLessonId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Question)
+                  .WithMany()
+                  .HasForeignKey(e => e.MathQuestionId)
+                  .IsRequired(false)
+                  .OnDelete(DeleteBehavior.SetNull);
+            entity.HasIndex(e => new { e.StudentId, e.MathLessonId });
+        });
+
+        modelBuilder.Entity<MathScholar>(entity =>
+        {
+            entity.HasIndex(e => e.Name);
+        });
+
+        modelBuilder.Entity<MathContribution>(entity =>
+        {
+            entity.HasOne(e => e.Scholar)
+                  .WithMany(s => s.Contributions)
+                  .HasForeignKey(e => e.MathScholarId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Topic)
+                  .WithMany()
+                  .HasForeignKey(e => e.MathTopicId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => e.MathScholarId);
+            entity.HasIndex(e => e.MathTopicId);
+        });
+
+        modelBuilder.Entity<LearningPath>(entity =>
+        {
+            entity.HasIndex(e => e.Slug).IsUnique();
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<LearningLevel>(entity =>
+        {
+            entity.HasOne(e => e.LearningPath)
+                  .WithMany(p => p.Levels)
+                  .HasForeignKey(e => e.LearningPathId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.LevelNumber);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<StudyModule>(entity =>
+        {
+            entity.HasOne(e => e.LearningLevel)
+                  .WithMany(l => l.Modules)
+                  .HasForeignKey(e => e.LearningLevelId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<StudyLesson>(entity =>
+        {
+            entity.HasOne(e => e.StudyModule)
+                  .WithMany(m => m.Lessons)
+                  .HasForeignKey(e => e.StudyModuleId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<LessonContentBlock>(entity =>
+        {
+            entity.HasOne(e => e.StudyLesson)
+                  .WithMany(ls => ls.ContentBlocks)
+                  .HasForeignKey(e => e.StudyLessonId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.StudyLessonId, e.SortOrder });
+        });
+
+        modelBuilder.Entity<LearningQuiz>(entity =>
+        {
+            entity.HasOne(e => e.StudyLesson)
+                  .WithMany(ls => ls.Quizzes)
+                  .HasForeignKey(e => e.StudyLessonId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<LearningQuizQuestion>(entity =>
+        {
+            entity.HasOne(e => e.Quiz)
+                  .WithMany(q => q.Questions)
+                  .HasForeignKey(e => e.QuizId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<QuizOption>(entity =>
+        {
+            entity.HasOne(e => e.QuizQuestion)
+                  .WithMany(q => q.Options)
+                  .HasForeignKey(e => e.QuizQuestionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        modelBuilder.Entity<UserEnrollment>(entity =>
+        {
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.LearningPath)
+                  .WithMany()
+                  .HasForeignKey(e => e.LearningPathId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => new { e.UserId, e.LearningPathId }).IsUnique();
+        });
+
+        modelBuilder.Entity<UserLessonProgress>(entity =>
+        {
+            entity.HasOne(e => e.UserEnrollment)
+                  .WithMany(e => e.LessonProgress)
+                  .HasForeignKey(e => e.UserEnrollmentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.StudyLesson)
+                  .WithMany()
+                  .HasForeignKey(e => e.StudyLessonId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => new { e.UserEnrollmentId, e.StudyLessonId }).IsUnique();
+        });
+
+        modelBuilder.Entity<UserQuizAttempt>(entity =>
+        {
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Quiz)
+                  .WithMany()
+                  .HasForeignKey(e => e.QuizId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
