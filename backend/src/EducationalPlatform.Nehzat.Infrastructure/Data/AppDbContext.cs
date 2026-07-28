@@ -5,8 +5,8 @@ using EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature;
 using EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature;
 using EducationalPlatform.Nehzat.Domain.Entities.Math;
 using EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences;
-using LearningQuiz = EducationalPlatform.Nehzat.LearningQuiz;
-using LearningQuizQuestion = EducationalPlatform.Nehzat.LearningQuizQuestion;
+using PersLitQuiz = EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature.Quiz;
+using PersLitQuizQuestion = EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature.QuizQuestion;
 
 namespace EducationalPlatform.Nehzat.Infrastructure.Data;
 
@@ -112,8 +112,8 @@ public class AppDbContext : DbContext
   public DbSet<StudyModule> StudyModules => Set<StudyModule>();
   public DbSet<StudyLesson> StudyLessons => Set<StudyLesson>();
   public DbSet<LessonContentBlock> LessonContentBlocks => Set<LessonContentBlock>();
-  public DbSet<LearningQuiz> Quizzes => Set<LearningQuiz>();
-  public DbSet<LearningQuizQuestion> QuizQuestions => Set<LearningQuizQuestion>();
+  public DbSet<PersLitQuiz> Quizzes => Set<PersLitQuiz>();
+  public DbSet<PersLitQuizQuestion> QuizQuestions => Set<PersLitQuizQuestion>();
   public DbSet<QuizOption> QuizOptions => Set<QuizOption>();
   public DbSet<UserEnrollment> UserEnrollments => Set<UserEnrollment>();
   public DbSet<UserLessonProgress> UserLessonProgresses => Set<UserLessonProgress>();
@@ -996,7 +996,7 @@ public class AppDbContext : DbContext
             entity.HasIndex(e => new { e.StudyLessonId, e.SortOrder });
         });
 
-        modelBuilder.Entity<LearningQuiz>(entity =>
+        modelBuilder.Entity<PersLitQuiz>(entity =>
         {
             entity.HasOne(e => e.StudyLesson)
                   .WithMany(ls => ls.Quizzes)
@@ -1005,7 +1005,7 @@ public class AppDbContext : DbContext
             entity.HasIndex(e => e.SortOrder);
         });
 
-        modelBuilder.Entity<LearningQuizQuestion>(entity =>
+        modelBuilder.Entity<PersLitQuizQuestion>(entity =>
         {
             entity.HasOne(e => e.Quiz)
                   .WithMany(q => q.Questions)

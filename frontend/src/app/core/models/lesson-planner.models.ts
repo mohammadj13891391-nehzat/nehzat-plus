@@ -2055,6 +2055,108 @@ export interface CreateArabicLiteratureAnalysisPayload {
   sortOrder?: number;
 }
 
+// ===== Arabic Literature Curriculum =====
+
+export interface ArabicCourse {
+  id: number;
+  title: string;
+  description?: string;
+  level: string;
+  ageRange?: string;
+  sortOrder: number;
+  icon?: string;
+  color?: string;
+  prerequisiteCourseIds?: string;
+  createdAt: string;
+  updatedAt: string;
+  lessons?: ArabicLesson[];
+}
+
+export interface ArabicLesson {
+  id: number;
+  courseId: number;
+  course?: ArabicCourse;
+  title: string;
+  description?: string;
+  objectives?: string;
+  poemId?: number;
+  poem?: ArabicLiteraturePoem;
+  content?: string;
+  exerciseData?: string;
+  quizData?: string;
+  durationMinutes: number;
+  sortOrder: number;
+  prerequisiteLessonIds?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ArabicUserProgress {
+  id: number;
+  userId: number;
+  lessonId: number;
+  lesson?: ArabicLesson;
+  status: string;
+  score: number;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+export interface CreateArabicCoursePayload {
+  title: string;
+  description?: string;
+  level?: string;
+  ageRange?: string;
+  sortOrder?: number;
+  icon?: string;
+  color?: string;
+  prerequisiteCourseIds?: string;
+}
+
+export interface UpdateArabicCoursePayload {
+  title?: string;
+  description?: string;
+  level?: string;
+  ageRange?: string;
+  sortOrder?: number;
+  icon?: string;
+  color?: string;
+  prerequisiteCourseIds?: string;
+}
+
+export interface CreateArabicLessonPayload {
+  courseId: number;
+  title: string;
+  description?: string;
+  objectives?: string;
+  poemId?: number;
+  content?: string;
+  exerciseData?: string;
+  quizData?: string;
+  durationMinutes?: number;
+  sortOrder?: number;
+  prerequisiteLessonIds?: string;
+}
+
+export interface UpdateArabicLessonPayload {
+  title?: string;
+  description?: string;
+  objectives?: string;
+  poemId?: number;
+  content?: string;
+  exerciseData?: string;
+  quizData?: string;
+  durationMinutes?: number;
+  sortOrder?: number;
+  prerequisiteLessonIds?: string;
+}
+
+export interface RecordArabicProgressPayload {
+  lessonId: number;
+  status?: string;
+  score?: number;
+}
+
 // ===== Math Module =====
 
 export interface MathTopic {
@@ -2259,4 +2361,201 @@ export interface UpdateMathContributionPayload {
   title?: string;
   description?: string;
   yearRange?: string;
+}
+
+// ==================== Experimental Sciences (علوم تجربی) ====================
+
+export interface PhaseDto {
+  id: number;
+  title: string;
+  description?: string;
+  order: number;
+  icon?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreatePhaseRequest {
+  title: string;
+  description?: string;
+  order: number;
+  icon?: string;
+}
+
+export interface UpdatePhaseRequest {
+  title?: string;
+  description?: string;
+  order?: number;
+  icon?: string;
+}
+
+export interface TopicDto {
+  id: number;
+  phaseId: number;
+  title: string;
+  description?: string;
+  order: number;
+  difficultyLevel: 'Child' | 'Teen' | 'YoungAdult' | 'Adult' | 'Senior';
+  icon?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateTopicRequest {
+  phaseId: number;
+  title: string;
+  description?: string;
+  order: number;
+  difficultyLevel: 'Child' | 'Teen' | 'YoungAdult' | 'Adult' | 'Senior';
+  icon?: string;
+}
+
+export interface UpdateTopicRequest {
+  phaseId?: number;
+  title?: string;
+  description?: string;
+  order?: number;
+  difficultyLevel?: 'Child' | 'Teen' | 'YoungAdult' | 'Adult' | 'Senior';
+  icon?: string;
+}
+
+export interface LessonDto {
+  id: number;
+  topicId: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  order: number;
+  estimatedMinutes: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateLessonRequest {
+  topicId: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  order: number;
+  estimatedMinutes: number;
+}
+
+export interface UpdateLessonRequest {
+  topicId?: number;
+  title?: string;
+  content?: string;
+  videoUrl?: string;
+  order?: number;
+  estimatedMinutes?: number;
+}
+
+export interface ExperimentDto {
+  id: number;
+  lessonId: number;
+  title: string;
+  materials: string;
+  steps: string;
+  expectedResult: string;
+  safetyNotes?: string;
+  order: number;
+  estimatedMinutes: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateExperimentRequest {
+  lessonId: number;
+  title: string;
+  materials: string;
+  steps: string;
+  expectedResult: string;
+  safetyNotes?: string;
+  order: number;
+  estimatedMinutes: number;
+}
+
+export interface UpdateExperimentRequest {
+  lessonId?: number;
+  title?: string;
+  materials?: string;
+  steps?: string;
+  expectedResult?: string;
+  safetyNotes?: string;
+  order?: number;
+  estimatedMinutes?: number;
+}
+
+export interface ExpSciQuizDto {
+  id: number;
+  lessonId: number;
+  title: string;
+  passingScore: number;
+  timeLimitMinutes: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateExpSciQuizRequest {
+  lessonId: number;
+  title: string;
+  passingScore: number;
+  timeLimitMinutes: number;
+}
+
+export interface UpdateExpSciQuizRequest {
+  lessonId?: number;
+  title?: string;
+  passingScore?: number;
+  timeLimitMinutes?: number;
+}
+
+export interface ExpSciQuizQuestionDto {
+  id: number;
+  quizId: number;
+  questionText: string;
+  options: string;
+  correctAnswer: string;
+  explanation?: string;
+  order: number;
+  points: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateExpSciQuizQuestionRequest {
+  quizId: number;
+  questionText: string;
+  options: string;
+  correctAnswer: string;
+  explanation?: string;
+  order: number;
+  points: number;
+}
+
+export interface UpdateExpSciQuizQuestionRequest {
+  quizId?: number;
+  questionText?: string;
+  options?: string;
+  correctAnswer?: string;
+  explanation?: string;
+  order?: number;
+  points?: number;
+}
+
+export interface StudentProgressDto {
+  id: number;
+  studentId: number;
+  topicId: number;
+  status: 'NotStarted' | 'InProgress' | 'Completed';
+  score: number;
+  completedLessons: number;
+  totalLessons: number;
+  completedAt?: string;
+}
+
+export interface UpdateStudentProgressRequest {
+  status?: 'NotStarted' | 'InProgress' | 'Completed';
+  score?: number;
+  completedLessons?: number;
+  totalLessons?: number;
 }

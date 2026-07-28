@@ -89,6 +89,12 @@ export const routes: Routes = [
       import('./features/math/math.routes').then((m) => m.MATH_ROUTES),
   },
   {
+    path: 'experimental-sciences',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/experimental-sciences/experimental-sciences.routes').then((m) => m.EXPERIMENTAL_SCIENCES_ROUTES),
+  },
+  {
     path: '**',
     redirectTo: '/auth/login'
   }

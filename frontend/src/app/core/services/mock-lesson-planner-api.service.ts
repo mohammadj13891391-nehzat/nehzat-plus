@@ -189,6 +189,14 @@ import {
   CreateArabicLiteraturePoetPayload,
   CreateArabicLiteraturePoemPayload,
   CreateArabicLiteratureAnalysisPayload,
+  ArabicCourse,
+  ArabicLesson,
+  ArabicUserProgress,
+  CreateArabicCoursePayload,
+  UpdateArabicCoursePayload,
+  CreateArabicLessonPayload,
+  UpdateArabicLessonPayload,
+  RecordArabicProgressPayload,
   MathTopic,
   MathLesson,
   MathQuestion,
@@ -207,6 +215,26 @@ import {
   UpdateMathScholarPayload,
   CreateMathContributionPayload,
   UpdateMathContributionPayload,
+  PhaseDto,
+  CreatePhaseRequest,
+  UpdatePhaseRequest,
+  TopicDto,
+  CreateTopicRequest,
+  UpdateTopicRequest,
+  LessonDto,
+  CreateLessonRequest,
+  UpdateLessonRequest,
+  ExperimentDto,
+  CreateExperimentRequest,
+  UpdateExperimentRequest,
+  ExpSciQuizDto,
+  CreateExpSciQuizRequest,
+  UpdateExpSciQuizRequest,
+  ExpSciQuizQuestionDto,
+  CreateExpSciQuizQuestionRequest,
+  UpdateExpSciQuizQuestionRequest,
+  StudentProgressDto,
+  UpdateStudentProgressRequest,
 } from '../models/lesson-planner.models';
 
 @Injectable()
@@ -3600,6 +3628,23 @@ return this.delayed(summary);
 
   private mockArabicAnalyses: ArabicLiteratureAnalysis[] = [];
 
+  private mockArabicCourses: ArabicCourse[] = [
+    { id: 1, title: 'الأدب العربي المبتدی', description: 'دوره مقدماتی ادبیات عرب برای آشنایی با شعرای مشهور', level: 'beginner', ageRange: '12-15', sortOrder: 1, icon: 'book', color: '#4caf50', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, title: 'الأدب العربي المتوسط', description: 'دوره متوسط ادبیات عرب شامل تحلیل اشعار کلاسیک', level: 'intermediate', ageRange: '14-17', sortOrder: 2, icon: 'library', color: '#ff9800', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, title: 'الأدب العربي المتقدم', description: 'دوره پیشرفته ادبیات عرب با تمرکز بر نقد ادبی و سبک‌شناسی', level: 'advanced', ageRange: '16-18', sortOrder: 3, icon: 'star', color: '#f44336', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockArabicLessons: ArabicLesson[] = [
+    { id: 1, courseId: 1, title: 'مقدمه‌ای بر ادبیات عرب', description: 'آشنایی با دوره‌های مختلف ادبیات عرب', objectives: '["آشنایی با دوره‌های ادبیات عرب", "شناخت مهمترین شاعران"]', content: 'ادبیات عرب به دوره‌های جاهلی، اسلامی، اموی، عباسی و اندلسی تقسیم می‌شود...', durationMinutes: 30, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, courseId: 1, title: 'شعر جاهلی', description: 'بررسی ویژگی‌های شعر جاهلی و مهمترین شاعران آن', objectives: '["شناخت ویژگی‌های شعر جاهلی", "معرفی معلقات سبع"]', poemId: 3, durationMinutes: 45, sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, courseId: 2, title: 'تحلیل اشعار متنبی', description: 'بررسی سبک و مضامین اشعار متنبی', objectives: '["شناخت سبک متنبی", "تحلیل ابیات منتخب"]', poemId: 1, durationMinutes: 50, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, courseId: 2, title: 'شعر عباسی', description: 'بررسی تحول شعر در دوره عباسی', objectives: '["شناخت شاعران دوره عباسی", "مقایسه سبک‌های شعری"]', durationMinutes: 40, sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 5, courseId: 3, title: 'نقد ادبی در ادبیات عرب', description: 'آشنایی با مبانی نقد ادبی و سبک‌شناسی', objectives: '["آشنایی با مکاتب نقد ادبی", "تحلیل سبک‌شناختی اشعار"]', durationMinutes: 60, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 6, courseId: 3, title: 'ادبیات اندلس', description: 'بررسی ادبیات دوره اندلس و ویژگی‌های آن', objectives: '["شناخت ادبیات اندلس", "بررسی موشحات"]', durationMinutes: 45, sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockArabicProgress: ArabicUserProgress[] = [];
+
   private nextArabicLitId = 100;
 
   getArabicPoets(difficulty?: string): Observable<ArabicLiteraturePoet[]> {
@@ -3686,6 +3731,123 @@ return this.delayed(summary);
   deleteArabicAnalysis(id: number): Observable<void> {
     this.mockArabicAnalyses = this.mockArabicAnalyses.filter(a => a.id !== id);
     return of(void 0).pipe(delay(300));
+  }
+
+  // ===== Arabic Literature Curriculum =====
+
+  getArabicCourses(): Observable<ArabicCourse[]> {
+    return of([...this.mockArabicCourses]).pipe(delay(300));
+  }
+  getArabicCourseById(id: number): Observable<ArabicCourse> {
+    const course = this.mockArabicCourses.find(c => c.id === id);
+    if (!course) return throwError(() => new Error('دوره یافت نشد'));
+    return of({ ...course, lessons: this.mockArabicLessons.filter(l => l.courseId === id) }).pipe(delay(300));
+  }
+  createArabicCourse(payload: CreateArabicCoursePayload): Observable<ArabicCourse> {
+    const course: ArabicCourse = {
+      id: this.nextArabicLitId++,
+      title: payload.title,
+      description: payload.description,
+      level: payload.level ?? 'beginner',
+      ageRange: payload.ageRange,
+      sortOrder: payload.sortOrder ?? 0,
+      icon: payload.icon,
+      color: payload.color,
+      prerequisiteCourseIds: payload.prerequisiteCourseIds,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mockArabicCourses.push(course);
+    return of(course).pipe(delay(300));
+  }
+  updateArabicCourse(id: number, payload: UpdateArabicCoursePayload): Observable<ArabicCourse> {
+    const idx = this.mockArabicCourses.findIndex(c => c.id === id);
+    if (idx === -1) return throwError(() => new Error('دوره یافت نشد'));
+    this.mockArabicCourses[idx] = { ...this.mockArabicCourses[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockArabicCourses[idx]).pipe(delay(300));
+  }
+  deleteArabicCourse(id: number): Observable<void> {
+    this.mockArabicCourses = this.mockArabicCourses.filter(c => c.id !== id);
+    this.mockArabicLessons = this.mockArabicLessons.filter(l => l.courseId !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getArabicLessons(courseId: number): Observable<ArabicLesson[]> {
+    return of(this.mockArabicLessons.filter(l => l.courseId === courseId)).pipe(delay(300));
+  }
+  getArabicLessonById(id: number): Observable<ArabicLesson> {
+    const lesson = this.mockArabicLessons.find(l => l.id === id);
+    if (!lesson) return throwError(() => new Error('درس یافت نشد'));
+    const poem = this.mockArabicPoems.find(p => p.id === lesson.poemId);
+    return of({ ...lesson, poem }).pipe(delay(300));
+  }
+  createArabicLesson(payload: CreateArabicLessonPayload): Observable<ArabicLesson> {
+    const lesson: ArabicLesson = {
+      id: this.nextArabicLitId++,
+      courseId: payload.courseId,
+      title: payload.title,
+      description: payload.description,
+      objectives: payload.objectives,
+      poemId: payload.poemId,
+      content: payload.content,
+      exerciseData: payload.exerciseData,
+      quizData: payload.quizData,
+      durationMinutes: payload.durationMinutes ?? 30,
+      sortOrder: payload.sortOrder ?? 0,
+      prerequisiteLessonIds: payload.prerequisiteLessonIds,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mockArabicLessons.push(lesson);
+    return of(lesson).pipe(delay(300));
+  }
+  updateArabicLesson(id: number, payload: UpdateArabicLessonPayload): Observable<ArabicLesson> {
+    const idx = this.mockArabicLessons.findIndex(l => l.id === id);
+    if (idx === -1) return throwError(() => new Error('درس یافت نشد'));
+    this.mockArabicLessons[idx] = { ...this.mockArabicLessons[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockArabicLessons[idx]).pipe(delay(300));
+  }
+  deleteArabicLesson(id: number): Observable<void> {
+    this.mockArabicLessons = this.mockArabicLessons.filter(l => l.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getArabicUserProgress(): Observable<ArabicUserProgress[]> {
+    return of([...this.mockArabicProgress]).pipe(delay(300));
+  }
+  getArabicCourseProgress(courseId: number): Observable<ArabicUserProgress[]> {
+    const lessonIds = this.mockArabicLessons.filter(l => l.courseId === courseId).map(l => l.id);
+    return of(this.mockArabicProgress.filter(p => lessonIds.includes(p.lessonId))).pipe(delay(300));
+  }
+  recordArabicProgress(payload: RecordArabicProgressPayload): Observable<ArabicUserProgress> {
+    const existing = this.mockArabicProgress.find(p => p.lessonId === payload.lessonId && p.userId === 1);
+    if (existing) {
+      existing.status = payload.status ?? existing.status;
+      existing.score = payload.score ?? existing.score;
+      if (existing.status === 'completed' && !existing.completedAt) existing.completedAt = new Date().toISOString();
+      return of(existing).pipe(delay(300));
+    }
+    const progress: ArabicUserProgress = {
+      id: this.nextArabicLitId++,
+      userId: 1,
+      lessonId: payload.lessonId,
+      status: payload.status ?? 'in_progress',
+      score: payload.score ?? 0,
+      startedAt: new Date().toISOString(),
+      completedAt: payload.status === 'completed' ? new Date().toISOString() : undefined
+    };
+    this.mockArabicProgress.push(progress);
+    return of(progress).pipe(delay(300));
+  }
+
+  getArabicDashboardStats(): Observable<Record<string, unknown>> {
+    return of({
+      totalCourses: this.mockArabicCourses.length,
+      totalLessons: this.mockArabicLessons.length,
+      totalPoets: this.mockArabicPoets.length,
+      totalPoems: this.mockArabicPoems.length,
+      totalStudents: new Set(this.mockArabicProgress.map(p => p.userId)).size
+    }).pipe(delay(300));
   }
 
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {
@@ -4015,5 +4177,269 @@ return this.delayed(summary);
   deleteMathContribution(id: number): Observable<void> {
     this.mathContributions = this.mathContributions.filter(c => c.id !== id);
     return of(void 0).pipe(delay(300));
+  }
+
+  private expSciPhases: PhaseDto[] = [
+    { id: 1, title: 'روش علمی', description: 'آشنایی با پایه‌های علم و روش تحقیق', order: 1, icon: 'biotech', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, title: 'فیزیک', description: 'مطالعه حرکت، نیرو و انرژی', order: 2, icon: 'speed', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, title: 'شیمی', description: 'مطالعه مواد و تغییرات آن‌ها', order: 3, icon: 'science', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciTopics: TopicDto[] = [
+    { id: 1, phaseId: 1, title: 'مشاهده و آزمایش', description: 'یادگیری نحوه مشاهده علمی', order: 1, difficultyLevel: 'Child', icon: 'visibility', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, phaseId: 2, title: 'حرکت و سرعت', description: 'مفاهیم پایه حرکت', order: 1, difficultyLevel: 'Teen', icon: 'directions_run', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, phaseId: 3, title: 'عناصر و ترکیبات', description: 'آشنایی با جدول تناوبی', order: 1, difficultyLevel: 'Teen', icon: 'table_chart', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciLessons: LessonDto[] = [
+    { id: 1, topicId: 1, title: 'چگونه علمی فکر کنیم؟', content: 'در این درس با مراحل روش علمی آشنا می‌شوید...', videoUrl: '', order: 1, estimatedMinutes: 15, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, topicId: 2, title: 'فاصله و جابجایی', content: 'تفاوت فاصله و جابجایی را یاد می‌گیرید...', videoUrl: '', order: 1, estimatedMinutes: 20, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, topicId: 3, title: 'اتم چیست؟', content: 'ساختار اتم و ذرات زیراتمی...', videoUrl: '', order: 1, estimatedMinutes: 25, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciExperiments: ExperimentDto[] = [
+    { id: 1, lessonId: 1, title: 'آزمایش مشاهده', materials: 'ذره‌بین، برگ، سنگ', steps: '["اجسام را با ذره‌بین نگاه کنید","ویژگی‌ها را یادداشت کنید","نتیجه‌گیری کنید"]', expectedResult: 'شناسایی ویژگی‌های ظاهری اجسام', safetyNotes: 'مراقب باشید ذره‌بین نشکند', order: 1, estimatedMinutes: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciQuizzes: ExpSciQuizDto[] = [
+    { id: 1, lessonId: 1, title: 'آزمون روش علمی', passingScore: 60, timeLimitMinutes: 5, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciQuestions: ExpSciQuizQuestionDto[] = [
+    { id: 1, quizId: 1, questionText: 'اولین مرحله روش علمی چیست؟', options: '["فرضیه‌سازی","مشاهده","آزمایش","نتیجه‌گیری"]', correctAnswer: '1', explanation: 'مشاهده اولین قدم در روش علمی است', order: 1, points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, quizId: 1, questionText: 'فرضیه چیست؟', options: '["یک حقیقت ثابت شده","یک حدس علمی قابل آزمایش","نتیجه نهایی","یک نظر شخصی"]', correctAnswer: '1', explanation: 'فرضیه یک حدس علمی است که قابل آزمایش باشد', order: 2, points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private expSciProgress: StudentProgressDto[] = [];
+
+  getExperimentalSciencesPhases(): Observable<PhaseDto[]> {
+    return of([...this.expSciPhases]).pipe(delay(300));
+  }
+
+  getExperimentalSciencesPhase(id: number): Observable<PhaseDto> {
+    const phase = this.expSciPhases.find(p => p.id === id);
+    if (!phase) return throwError(() => new Error('فاز یافت نشد'));
+    return of({ ...phase }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesPhase(request: CreatePhaseRequest): Observable<PhaseDto> {
+    const phase: PhaseDto = {
+      id: this.nextId(this.expSciPhases),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciPhases.push(phase);
+    return of(phase).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesPhase(id: number, request: UpdatePhaseRequest): Observable<void> {
+    const idx = this.expSciPhases.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('فاز یافت نشد'));
+    this.expSciPhases[idx] = { ...this.expSciPhases[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesPhase(id: number): Observable<void> {
+    this.expSciPhases = this.expSciPhases.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesTopics(): Observable<TopicDto[]> {
+    return of([...this.expSciTopics]).pipe(delay(300));
+  }
+
+  getExperimentalSciencesTopicsByPhase(phaseId: number): Observable<TopicDto[]> {
+    return of(this.expSciTopics.filter(t => t.phaseId === phaseId)).pipe(delay(300));
+  }
+
+  getExperimentalSciencesTopic(id: number): Observable<TopicDto> {
+    const topic = this.expSciTopics.find(t => t.id === id);
+    if (!topic) return throwError(() => new Error('موضوع یافت نشد'));
+    return of({ ...topic }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesTopic(request: CreateTopicRequest): Observable<TopicDto> {
+    const topic: TopicDto = {
+      id: this.nextId(this.expSciTopics),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciTopics.push(topic);
+    return of(topic).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesTopic(id: number, request: UpdateTopicRequest): Observable<void> {
+    const idx = this.expSciTopics.findIndex(t => t.id === id);
+    if (idx === -1) return throwError(() => new Error('موضوع یافت نشد'));
+    this.expSciTopics[idx] = { ...this.expSciTopics[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesTopic(id: number): Observable<void> {
+    this.expSciTopics = this.expSciTopics.filter(t => t.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesLessonsByTopic(topicId: number): Observable<LessonDto[]> {
+    return of(this.expSciLessons.filter(l => l.topicId === topicId)).pipe(delay(300));
+  }
+
+  getExperimentalSciencesLesson(id: number): Observable<LessonDto> {
+    const lesson = this.expSciLessons.find(l => l.id === id);
+    if (!lesson) return throwError(() => new Error('درس یافت نشد'));
+    return of({ ...lesson }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesLesson(request: CreateLessonRequest): Observable<LessonDto> {
+    const lesson: LessonDto = {
+      id: this.nextId(this.expSciLessons),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciLessons.push(lesson);
+    return of(lesson).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesLesson(id: number, request: UpdateLessonRequest): Observable<void> {
+    const idx = this.expSciLessons.findIndex(l => l.id === id);
+    if (idx === -1) return throwError(() => new Error('درس یافت نشد'));
+    this.expSciLessons[idx] = { ...this.expSciLessons[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesLesson(id: number): Observable<void> {
+    this.expSciLessons = this.expSciLessons.filter(l => l.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesExperimentsByLesson(lessonId: number): Observable<ExperimentDto[]> {
+    return of(this.expSciExperiments.filter(e => e.lessonId === lessonId)).pipe(delay(300));
+  }
+
+  getExperimentalSciencesExperiment(id: number): Observable<ExperimentDto> {
+    const experiment = this.expSciExperiments.find(e => e.id === id);
+    if (!experiment) return throwError(() => new Error('آزمایش یافت نشد'));
+    return of({ ...experiment }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesExperiment(request: CreateExperimentRequest): Observable<ExperimentDto> {
+    const experiment: ExperimentDto = {
+      id: this.nextId(this.expSciExperiments),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciExperiments.push(experiment);
+    return of(experiment).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesExperiment(id: number, request: UpdateExperimentRequest): Observable<void> {
+    const idx = this.expSciExperiments.findIndex(e => e.id === id);
+    if (idx === -1) return throwError(() => new Error('آزمایش یافت نشد'));
+    this.expSciExperiments[idx] = { ...this.expSciExperiments[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesExperiment(id: number): Observable<void> {
+    this.expSciExperiments = this.expSciExperiments.filter(e => e.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesQuizByLesson(lessonId: number): Observable<ExpSciQuizDto> {
+    const quiz = this.expSciQuizzes.find(q => q.lessonId === lessonId);
+    if (!quiz) return throwError(() => new Error('آزمون یافت نشد'));
+    return of({ ...quiz }).pipe(delay(300));
+  }
+
+  getExperimentalSciencesQuiz(id: number): Observable<ExpSciQuizDto> {
+    const quiz = this.expSciQuizzes.find(q => q.id === id);
+    if (!quiz) return throwError(() => new Error('آزمون یافت نشد'));
+    return of({ ...quiz }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesQuiz(request: CreateExpSciQuizRequest): Observable<ExpSciQuizDto> {
+    const quiz: ExpSciQuizDto = {
+      id: this.nextId(this.expSciQuizzes),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciQuizzes.push(quiz);
+    return of(quiz).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesQuiz(id: number, request: UpdateExpSciQuizRequest): Observable<void> {
+    const idx = this.expSciQuizzes.findIndex(q => q.id === id);
+    if (idx === -1) return throwError(() => new Error('آزمون یافت نشد'));
+    this.expSciQuizzes[idx] = { ...this.expSciQuizzes[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesQuiz(id: number): Observable<void> {
+    this.expSciQuizzes = this.expSciQuizzes.filter(q => q.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesQuizQuestions(quizId: number): Observable<ExpSciQuizQuestionDto[]> {
+    return of(this.expSciQuestions.filter(q => q.quizId === quizId)).pipe(delay(300));
+  }
+
+  getExperimentalSciencesQuizQuestion(id: number): Observable<ExpSciQuizQuestionDto> {
+    const question = this.expSciQuestions.find(q => q.id === id);
+    if (!question) return throwError(() => new Error('سوال یافت نشد'));
+    return of({ ...question }).pipe(delay(300));
+  }
+
+  createExperimentalSciencesQuizQuestion(request: CreateExpSciQuizQuestionRequest): Observable<ExpSciQuizQuestionDto> {
+    const question: ExpSciQuizQuestionDto = {
+      id: this.nextId(this.expSciQuestions),
+      ...request,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.expSciQuestions.push(question);
+    return of(question).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesQuizQuestion(id: number, request: UpdateExpSciQuizQuestionRequest): Observable<void> {
+    const idx = this.expSciQuestions.findIndex(q => q.id === id);
+    if (idx === -1) return throwError(() => new Error('سوال یافت نشد'));
+    this.expSciQuestions[idx] = { ...this.expSciQuestions[idx], ...request, updatedAt: new Date().toISOString() };
+    return of(void 0).pipe(delay(300));
+  }
+
+  deleteExperimentalSciencesQuizQuestion(id: number): Observable<void> {
+    this.expSciQuestions = this.expSciQuestions.filter(q => q.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesStudentProgress(studentId: number): Observable<StudentProgressDto[]> {
+    return of(this.expSciProgress.filter(p => p.studentId === studentId)).pipe(delay(300));
+  }
+
+  getExperimentalSciencesStudentProgressByTopic(studentId: number, topicId: number): Observable<StudentProgressDto> {
+    const progress = this.expSciProgress.find(p => p.studentId === studentId && p.topicId === topicId);
+    if (!progress) return throwError(() => new Error('پیشرفت یافت نشد'));
+    return of({ ...progress }).pipe(delay(300));
+  }
+
+  updateExperimentalSciencesStudentProgress(studentId: number, topicId: number, request: UpdateStudentProgressRequest): Observable<void> {
+    const idx = this.expSciProgress.findIndex(p => p.studentId === studentId && p.topicId === topicId);
+    if (idx === -1) return throwError(() => new Error('پیشرفت یافت نشد'));
+    this.expSciProgress[idx] = { ...this.expSciProgress[idx], ...request };
+    return of(void 0).pipe(delay(300));
+  }
+
+  getExperimentalSciencesDashboardStats(): Observable<any> {
+    return of({
+      totalPhases: this.expSciPhases.length,
+      totalTopics: this.expSciTopics.length,
+      totalLessons: this.expSciLessons.length,
+      totalExperiments: this.expSciExperiments.length,
+      totalQuizzes: this.expSciQuizzes.length,
+    }).pipe(delay(300));
   }
 }

@@ -169,6 +169,14 @@ Ring,
   CreateArabicLiteraturePoetPayload,
   CreateArabicLiteraturePoemPayload,
   CreateArabicLiteratureAnalysisPayload,
+  ArabicCourse,
+  ArabicLesson,
+  ArabicUserProgress,
+  CreateArabicCoursePayload,
+  UpdateArabicCoursePayload,
+  CreateArabicLessonPayload,
+  UpdateArabicLessonPayload,
+  RecordArabicProgressPayload,
   MathTopic,
   MathLesson,
   MathQuestion,
@@ -187,6 +195,26 @@ Ring,
   UpdateMathScholarPayload,
   CreateMathContributionPayload,
   UpdateMathContributionPayload,
+  PhaseDto,
+  CreatePhaseRequest,
+  UpdatePhaseRequest,
+  TopicDto,
+  CreateTopicRequest,
+  UpdateTopicRequest,
+  LessonDto,
+  CreateLessonRequest,
+  UpdateLessonRequest,
+  ExperimentDto,
+  CreateExperimentRequest,
+  UpdateExperimentRequest,
+  ExpSciQuizDto,
+  CreateExpSciQuizRequest,
+  UpdateExpSciQuizRequest,
+  ExpSciQuizQuestionDto,
+  CreateExpSciQuizQuestionRequest,
+  UpdateExpSciQuizQuestionRequest,
+  StudentProgressDto,
+  UpdateStudentProgressRequest,
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -1490,6 +1518,52 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
     return this.http.delete<void>(this.url(`/arabic-literature/analyses/${id}`));
   }
 
+  getArabicCourses(): Observable<ArabicCourse[]> {
+    return this.http.get<ArabicCourse[]>(this.url('/arabic-literature/courses'));
+  }
+  getArabicCourseById(id: number): Observable<ArabicCourse> {
+    return this.http.get<ArabicCourse>(this.url(`/arabic-literature/courses/${id}`));
+  }
+  createArabicCourse(payload: CreateArabicCoursePayload): Observable<ArabicCourse> {
+    return this.http.post<ArabicCourse>(this.url('/arabic-literature/courses'), payload);
+  }
+  updateArabicCourse(id: number, payload: UpdateArabicCoursePayload): Observable<ArabicCourse> {
+    return this.http.put<ArabicCourse>(this.url(`/arabic-literature/courses/${id}`), payload);
+  }
+  deleteArabicCourse(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/arabic-literature/courses/${id}`));
+  }
+
+  getArabicLessons(courseId: number): Observable<ArabicLesson[]> {
+    return this.http.get<ArabicLesson[]>(this.url(`/arabic-literature/courses/${courseId}/lessons`));
+  }
+  getArabicLessonById(id: number): Observable<ArabicLesson> {
+    return this.http.get<ArabicLesson>(this.url(`/arabic-literature/lessons/${id}`));
+  }
+  createArabicLesson(payload: CreateArabicLessonPayload): Observable<ArabicLesson> {
+    return this.http.post<ArabicLesson>(this.url('/arabic-literature/lessons'), payload);
+  }
+  updateArabicLesson(id: number, payload: UpdateArabicLessonPayload): Observable<ArabicLesson> {
+    return this.http.put<ArabicLesson>(this.url(`/arabic-literature/lessons/${id}`), payload);
+  }
+  deleteArabicLesson(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/arabic-literature/lessons/${id}`));
+  }
+
+  getArabicUserProgress(): Observable<ArabicUserProgress[]> {
+    return this.http.get<ArabicUserProgress[]>(this.url('/arabic-literature/progress'));
+  }
+  getArabicCourseProgress(courseId: number): Observable<ArabicUserProgress[]> {
+    return this.http.get<ArabicUserProgress[]>(this.url(`/arabic-literature/courses/${courseId}/progress`));
+  }
+  recordArabicProgress(payload: RecordArabicProgressPayload): Observable<ArabicUserProgress> {
+    return this.http.post<ArabicUserProgress>(this.url('/arabic-literature/progress'), payload);
+  }
+
+  getArabicDashboardStats(): Observable<Record<string, unknown>> {
+    return this.http.get<Record<string, unknown>>(this.url('/arabic-literature/dashboard-stats'));
+  }
+
   getLiteratureDashboardStats(): Observable<any> {
     return this.http.get<any>(this.url('/persian-literature/dashboard'));
   }
@@ -1611,6 +1685,119 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
   }
   deleteMathContribution(id: number): Observable<void> {
     return this.http.delete<void>(this.url(`/math/contributions/${id}`));
+  }
+
+  getExperimentalSciencesPhases(): Observable<PhaseDto[]> {
+    return this.http.get<PhaseDto[]>(this.url('/experimental-sciences/phases'));
+  }
+  getExperimentalSciencesPhase(id: number): Observable<PhaseDto> {
+    return this.http.get<PhaseDto>(this.url(`/experimental-sciences/phases/${id}`));
+  }
+  createExperimentalSciencesPhase(request: CreatePhaseRequest): Observable<PhaseDto> {
+    return this.http.post<PhaseDto>(this.url('/experimental-sciences/phases'), request);
+  }
+  updateExperimentalSciencesPhase(id: number, request: UpdatePhaseRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/phases/${id}`), request);
+  }
+  deleteExperimentalSciencesPhase(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/phases/${id}`));
+  }
+
+  getExperimentalSciencesTopics(): Observable<TopicDto[]> {
+    return this.http.get<TopicDto[]>(this.url('/experimental-sciences/topics'));
+  }
+  getExperimentalSciencesTopicsByPhase(phaseId: number): Observable<TopicDto[]> {
+    return this.http.get<TopicDto[]>(this.url(`/experimental-sciences/phases/${phaseId}/topics`));
+  }
+  getExperimentalSciencesTopic(id: number): Observable<TopicDto> {
+    return this.http.get<TopicDto>(this.url(`/experimental-sciences/topics/${id}`));
+  }
+  createExperimentalSciencesTopic(request: CreateTopicRequest): Observable<TopicDto> {
+    return this.http.post<TopicDto>(this.url('/experimental-sciences/topics'), request);
+  }
+  updateExperimentalSciencesTopic(id: number, request: UpdateTopicRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/topics/${id}`), request);
+  }
+  deleteExperimentalSciencesTopic(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/topics/${id}`));
+  }
+
+  getExperimentalSciencesLessonsByTopic(topicId: number): Observable<LessonDto[]> {
+    return this.http.get<LessonDto[]>(this.url(`/experimental-sciences/topics/${topicId}/lessons`));
+  }
+  getExperimentalSciencesLesson(id: number): Observable<LessonDto> {
+    return this.http.get<LessonDto>(this.url(`/experimental-sciences/lessons/${id}`));
+  }
+  createExperimentalSciencesLesson(request: CreateLessonRequest): Observable<LessonDto> {
+    return this.http.post<LessonDto>(this.url('/experimental-sciences/lessons'), request);
+  }
+  updateExperimentalSciencesLesson(id: number, request: UpdateLessonRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/lessons/${id}`), request);
+  }
+  deleteExperimentalSciencesLesson(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/lessons/${id}`));
+  }
+
+  getExperimentalSciencesExperimentsByLesson(lessonId: number): Observable<ExperimentDto[]> {
+    return this.http.get<ExperimentDto[]>(this.url(`/experimental-sciences/lessons/${lessonId}/experiments`));
+  }
+  getExperimentalSciencesExperiment(id: number): Observable<ExperimentDto> {
+    return this.http.get<ExperimentDto>(this.url(`/experimental-sciences/experiments/${id}`));
+  }
+  createExperimentalSciencesExperiment(request: CreateExperimentRequest): Observable<ExperimentDto> {
+    return this.http.post<ExperimentDto>(this.url('/experimental-sciences/experiments'), request);
+  }
+  updateExperimentalSciencesExperiment(id: number, request: UpdateExperimentRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/experiments/${id}`), request);
+  }
+  deleteExperimentalSciencesExperiment(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/experiments/${id}`));
+  }
+
+  getExperimentalSciencesQuizByLesson(lessonId: number): Observable<ExpSciQuizDto> {
+    return this.http.get<ExpSciQuizDto>(this.url(`/experimental-sciences/lessons/${lessonId}/quiz`));
+  }
+  getExperimentalSciencesQuiz(id: number): Observable<ExpSciQuizDto> {
+    return this.http.get<ExpSciQuizDto>(this.url(`/experimental-sciences/quizzes/${id}`));
+  }
+  createExperimentalSciencesQuiz(request: CreateExpSciQuizRequest): Observable<ExpSciQuizDto> {
+    return this.http.post<ExpSciQuizDto>(this.url('/experimental-sciences/quizzes'), request);
+  }
+  updateExperimentalSciencesQuiz(id: number, request: UpdateExpSciQuizRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/quizzes/${id}`), request);
+  }
+  deleteExperimentalSciencesQuiz(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/quizzes/${id}`));
+  }
+
+  getExperimentalSciencesQuizQuestions(quizId: number): Observable<ExpSciQuizQuestionDto[]> {
+    return this.http.get<ExpSciQuizQuestionDto[]>(this.url(`/experimental-sciences/quizzes/${quizId}/questions`));
+  }
+  getExperimentalSciencesQuizQuestion(id: number): Observable<ExpSciQuizQuestionDto> {
+    return this.http.get<ExpSciQuizQuestionDto>(this.url(`/experimental-sciences/quiz-questions/${id}`));
+  }
+  createExperimentalSciencesQuizQuestion(request: CreateExpSciQuizQuestionRequest): Observable<ExpSciQuizQuestionDto> {
+    return this.http.post<ExpSciQuizQuestionDto>(this.url('/experimental-sciences/quiz-questions'), request);
+  }
+  updateExperimentalSciencesQuizQuestion(id: number, request: UpdateExpSciQuizQuestionRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/quiz-questions/${id}`), request);
+  }
+  deleteExperimentalSciencesQuizQuestion(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/experimental-sciences/quiz-questions/${id}`));
+  }
+
+  getExperimentalSciencesStudentProgress(studentId: number): Observable<StudentProgressDto[]> {
+    return this.http.get<StudentProgressDto[]>(this.url(`/experimental-sciences/progress/${studentId}`));
+  }
+  getExperimentalSciencesStudentProgressByTopic(studentId: number, topicId: number): Observable<StudentProgressDto> {
+    return this.http.get<StudentProgressDto>(this.url(`/experimental-sciences/progress/${studentId}/topic/${topicId}`));
+  }
+  updateExperimentalSciencesStudentProgress(studentId: number, topicId: number, request: UpdateStudentProgressRequest): Observable<void> {
+    return this.http.put<void>(this.url(`/experimental-sciences/progress/${studentId}/topic/${topicId}`), request);
+  }
+
+  getExperimentalSciencesDashboardStats(): Observable<any> {
+    return this.http.get<any>(this.url('/experimental-sciences/dashboard-stats'));
   }
 
   private url(path: string): string {

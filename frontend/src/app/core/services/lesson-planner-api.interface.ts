@@ -167,6 +167,14 @@ import {
   CreateArabicLiteraturePoetPayload,
   CreateArabicLiteraturePoemPayload,
   CreateArabicLiteratureAnalysisPayload,
+  ArabicCourse,
+  ArabicLesson,
+  ArabicUserProgress,
+  CreateArabicCoursePayload,
+  UpdateArabicCoursePayload,
+  CreateArabicLessonPayload,
+  UpdateArabicLessonPayload,
+  RecordArabicProgressPayload,
   MathTopic,
   MathLesson,
   MathQuestion,
@@ -599,6 +607,25 @@ export abstract class LessonPlannerApi {
   abstract updateArabicAnalysis(id: number, payload: Partial<CreateArabicLiteratureAnalysisPayload>): Observable<ArabicLiteratureAnalysis>;
   abstract deleteArabicAnalysis(id: number): Observable<void>;
 
+  // Arabic Literature Curriculum
+  abstract getArabicCourses(): Observable<ArabicCourse[]>;
+  abstract getArabicCourseById(id: number): Observable<ArabicCourse>;
+  abstract createArabicCourse(payload: CreateArabicCoursePayload): Observable<ArabicCourse>;
+  abstract updateArabicCourse(id: number, payload: UpdateArabicCoursePayload): Observable<ArabicCourse>;
+  abstract deleteArabicCourse(id: number): Observable<void>;
+
+  abstract getArabicLessons(courseId: number): Observable<ArabicLesson[]>;
+  abstract getArabicLessonById(id: number): Observable<ArabicLesson>;
+  abstract createArabicLesson(payload: CreateArabicLessonPayload): Observable<ArabicLesson>;
+  abstract updateArabicLesson(id: number, payload: UpdateArabicLessonPayload): Observable<ArabicLesson>;
+  abstract deleteArabicLesson(id: number): Observable<void>;
+
+  abstract getArabicUserProgress(): Observable<ArabicUserProgress[]>;
+  abstract getArabicCourseProgress(courseId: number): Observable<ArabicUserProgress[]>;
+  abstract recordArabicProgress(payload: RecordArabicProgressPayload): Observable<ArabicUserProgress>;
+
+  abstract getArabicDashboardStats(): Observable<Record<string, unknown>>;
+
   // Math Module
   abstract getMathTopics(): Observable<MathTopic[]>;
   abstract getMathTopicById(id: number): Observable<MathTopic>;
@@ -639,4 +666,48 @@ export abstract class LessonPlannerApi {
   abstract createMathContribution(payload: CreateMathContributionPayload): Observable<MathContribution>;
   abstract updateMathContribution(id: number, payload: UpdateMathContributionPayload): Observable<MathContribution>;
   abstract deleteMathContribution(id: number): Observable<void>;
+
+  // Experimental Sciences (علوم تجربی)
+  abstract getExperimentalSciencesPhases(): Observable<PhaseDto[]>;
+  abstract getExperimentalSciencesPhase(id: number): Observable<PhaseDto>;
+  abstract createExperimentalSciencesPhase(request: CreatePhaseRequest): Observable<PhaseDto>;
+  abstract updateExperimentalSciencesPhase(id: number, request: UpdatePhaseRequest): Observable<void>;
+  abstract deleteExperimentalSciencesPhase(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesTopics(): Observable<TopicDto[]>;
+  abstract getExperimentalSciencesTopicsByPhase(phaseId: number): Observable<TopicDto[]>;
+  abstract getExperimentalSciencesTopic(id: number): Observable<TopicDto>;
+  abstract createExperimentalSciencesTopic(request: CreateTopicRequest): Observable<TopicDto>;
+  abstract updateExperimentalSciencesTopic(id: number, request: UpdateTopicRequest): Observable<void>;
+  abstract deleteExperimentalSciencesTopic(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesLessonsByTopic(topicId: number): Observable<LessonDto[]>;
+  abstract getExperimentalSciencesLesson(id: number): Observable<LessonDto>;
+  abstract createExperimentalSciencesLesson(request: CreateLessonRequest): Observable<LessonDto>;
+  abstract updateExperimentalSciencesLesson(id: number, request: UpdateLessonRequest): Observable<void>;
+  abstract deleteExperimentalSciencesLesson(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesExperimentsByLesson(lessonId: number): Observable<ExperimentDto[]>;
+  abstract getExperimentalSciencesExperiment(id: number): Observable<ExperimentDto>;
+  abstract createExperimentalSciencesExperiment(request: CreateExperimentRequest): Observable<ExperimentDto>;
+  abstract updateExperimentalSciencesExperiment(id: number, request: UpdateExperimentRequest): Observable<void>;
+  abstract deleteExperimentalSciencesExperiment(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesQuizByLesson(lessonId: number): Observable<ExpSciQuizDto>;
+  abstract getExperimentalSciencesQuiz(id: number): Observable<ExpSciQuizDto>;
+  abstract createExperimentalSciencesQuiz(request: CreateExpSciQuizRequest): Observable<ExpSciQuizDto>;
+  abstract updateExperimentalSciencesQuiz(id: number, request: UpdateExpSciQuizRequest): Observable<void>;
+  abstract deleteExperimentalSciencesQuiz(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesQuizQuestions(quizId: number): Observable<ExpSciQuizQuestionDto[]>;
+  abstract getExperimentalSciencesQuizQuestion(id: number): Observable<ExpSciQuizQuestionDto>;
+  abstract createExperimentalSciencesQuizQuestion(request: CreateExpSciQuizQuestionRequest): Observable<ExpSciQuizQuestionDto>;
+  abstract updateExperimentalSciencesQuizQuestion(id: number, request: UpdateExpSciQuizQuestionRequest): Observable<void>;
+  abstract deleteExperimentalSciencesQuizQuestion(id: number): Observable<void>;
+
+  abstract getExperimentalSciencesStudentProgress(studentId: number): Observable<StudentProgressDto[]>;
+  abstract getExperimentalSciencesStudentProgressByTopic(studentId: number, topicId: number): Observable<StudentProgressDto>;
+  abstract updateExperimentalSciencesStudentProgress(studentId: number, topicId: number, request: UpdateStudentProgressRequest): Observable<void>;
+
+  abstract getExperimentalSciencesDashboardStats(): Observable<any>;
 }
