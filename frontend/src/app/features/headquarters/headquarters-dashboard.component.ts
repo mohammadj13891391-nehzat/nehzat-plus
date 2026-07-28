@@ -42,7 +42,7 @@ export class HeadquartersDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    if (this.currentUser?.userType !== 'headquarters') {
+    if (!this.authService.hasRole('headquarters')) {
       // The route guard should handle this, but just in case
       console.warn('User is not headquarters type');
     }

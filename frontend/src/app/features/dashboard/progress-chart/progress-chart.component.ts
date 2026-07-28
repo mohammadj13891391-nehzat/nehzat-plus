@@ -35,51 +35,8 @@ export interface BiweeklyProgressData {
   standalone: true,
   imports: [CommonModule, BaseChartDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (chartData) {
-      <div class="progress-chart-container">
-        <canvas
-          baseChart
-          [data]="chartData"
-          [options]="chartOptions"
-          [type]="chartType"
-          class="progress-chart-canvas"
-        ></canvas>
-      </div>
-    } @else {
-      <div class="chart-empty">
-        <p class="muted">داده‌ای برای نمایش نمودار وجود ندارد.</p>
-      </div>
-    }
-  `,
-  styles: [`
-    .progress-chart-container {
-      width: 100%;
-      height: 300px;
-      position: relative;
-      background: var(--lp-surface, #fff);
-      border: 1px solid var(--lp-border, #e5e7eb);
-      border-radius: 0.75rem;
-      padding: 1rem;
-    }
-    .progress-chart-canvas {
-      max-height: 100%;
-    }
-    .chart-empty {
-      width: 100%;
-      height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--lp-bg, #f8f9fa);
-      border: 1px solid var(--lp-border, #e5e7eb);
-      border-radius: 0.75rem;
-    }
-    .muted {
-      color: var(--lp-muted, #6b7280);
-      margin: 0;
-    }
-  `]
+  templateUrl: './progress-chart.component.html',
+  styleUrls: ['./progress-chart.component.scss']
 })
 export class ProgressChartComponent implements OnChanges {
   @Input() progressData: BiweeklyProgressData | null = null;

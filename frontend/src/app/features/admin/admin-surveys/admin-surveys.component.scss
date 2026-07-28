@@ -1,0 +1,124 @@
+.survey-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.stat-card {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  text-align: center;
+}
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--lp-text-secondary);
+}
+.stat-value {
+  display: block;
+  font-size: 1.25rem;
+  color: var(--lp-text);
+}
+.status-actions {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--lp-border);
+}
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.form-row label {
+  flex: 1;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.question-list,
+.action-list,
+.issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.question-item,
+.action-item,
+.issue-item {
+  padding: 0.5rem;
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+}
+.question-header,
+.action-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.question-order,
+.action-title {
+  font-weight: 600;
+  min-width: 2rem;
+}
+.question-text,
+.action-desc {
+  flex: 1;
+  font-size: 0.875rem;
+}
+.question-meta,
+.action-meta {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: 4px;
+  color: var(--lp-text-secondary);
+}
+.analytics-section {
+  margin-bottom: 1rem;
+}
+.analytics-table {
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.analytics-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  align-items: center;
+}
+.analytics-header {
+  font-weight: 600;
+  background: var(--lp-surface);
+  border-bottom: 1px solid var(--lp-border);
+}
+.issue-critical {
+  border-left: 3px solid var(--lp-danger);
+}
+.issue-strength {
+  border-left: 3px solid var(--lp-success);
+}
+.issue-text {
+  flex: 1;
+  font-size: 0.875rem;
+}
+.issue-score {
+  font-size: 0.75rem;
+  color: var(--lp-text-secondary);
+}
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}

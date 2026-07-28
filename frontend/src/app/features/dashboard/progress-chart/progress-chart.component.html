@@ -1,0 +1,15 @@
+@if (chartData) {
+  <div class="progress-chart-container">
+    <canvas
+      baseChart
+      [data]="chartData"
+      [options]="chartOptions"
+      [type]="chartType"
+      class="progress-chart-canvas"
+    ></canvas>
+  </div>
+} @else {
+  <div class="chart-empty">
+    <p class="muted">داده‌ای برای نمایش نمودار وجود ندارد.</p>
+  </div>
+}

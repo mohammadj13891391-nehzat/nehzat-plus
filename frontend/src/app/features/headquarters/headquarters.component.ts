@@ -55,7 +55,7 @@ export class HeadquartersComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    if (this.currentUser?.userType !== 'headquarters') {
+    if (!this.authService.hasRole('headquarters')) {
       void this.router.navigateByUrl(
         this.authService.getDashboardPathForRole(this.currentUser?.userType ?? 'trainee')
       );

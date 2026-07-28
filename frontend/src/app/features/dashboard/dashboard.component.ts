@@ -21,13 +21,15 @@ import { NotificationService } from '../../core/services/notification.service';
 import { DashboardTrainingStepsComponent } from './dashboard-training-steps/dashboard-training-steps.component';
 import { AssessmentTakerComponent } from './assessment-taker/assessment-taker.component';
 import { ProgressChartComponent, BiweeklyProgressData } from './progress-chart/progress-chart.component';
+import { QuranProgressWidgetComponent } from '../quran/pages/quran-progress-widget/quran-progress-widget.component';
+import { MathProgressWidgetComponent } from '../math/pages/math-progress-widget/math-progress-widget.component';
 
 type TimelineStatus = 'future' | 'today' | 'past';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DashboardTrainingStepsComponent, AssessmentTakerComponent],
+  imports: [CommonModule, DashboardTrainingStepsComponent, AssessmentTakerComponent, QuranProgressWidgetComponent, MathProgressWidgetComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

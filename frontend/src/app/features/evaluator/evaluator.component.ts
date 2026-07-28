@@ -66,7 +66,7 @@ export class EvaluatorComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    if (this.currentUser?.userType !== 'evaluator') {
+    if (!this.authService.hasRole('evaluator')) {
       void this.router.navigateByUrl(
         this.authService.getDashboardPathForRole(this.currentUser?.userType ?? 'trainee')
       );

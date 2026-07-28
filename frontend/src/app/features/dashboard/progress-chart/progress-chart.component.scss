@@ -1,0 +1,26 @@
+.progress-chart-container {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  background: var(--lp-surface, #fff);
+  border: 1px solid var(--lp-border, #e5e7eb);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+.progress-chart-canvas {
+  max-height: 100%;
+}
+.chart-empty {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--lp-bg, #f8f9fa);
+  border: 1px solid var(--lp-border, #e5e7eb);
+  border-radius: 0.75rem;
+}
+.muted {
+  color: var(--lp-muted, #6b7280);
+  margin: 0;
+}
