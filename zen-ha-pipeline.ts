@@ -307,7 +307,7 @@ async function runModel(model: HAModelConfig, task: string, context: string): Pr
       console.log(`  ▶ Attempt ${attempt}/${model.maxRetries}...`);
 
       const result = await Promise.race([
-        $`opencode task --category ${model.category} --model ${model.model} --prompt ${prompt} --print-logs`.text(),
+        $`opencode run "${prompt}" --model ${model.model} --print-logs`.text(),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error("TIMEOUT")), model.timeoutMs)
         )
