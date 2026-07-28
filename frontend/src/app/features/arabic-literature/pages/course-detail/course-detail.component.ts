@@ -19,8 +19,8 @@ import { ArabicCourse, ArabicLesson, ArabicUserProgress } from '../../../../core
       </div>
 
       <div *ngIf="!loading && course">
-        <div class="course-header" [style.background]="'linear-gradient(135deg, ' + (course.color ?? '#4a148c') + ', ' + (course.color ?? '#6a1b9a') + '80')">
-          <div class="course-icon-large" [style.background-color]="(course.color ?? '#4a148c') + '30'">
+        <div class="course-header" [style.background]="getCourseGradient()">
+          <div class="course-icon-large" [style.background-color]="getCourseIconBg()">
             {{ course.title.charAt(0) }}
           </div>
           <h1>{{ course.title }}</h1>
@@ -175,5 +175,15 @@ export class CourseDetailComponent implements OnInit {
       const parsed = JSON.parse(objectives);
       return Array.isArray(parsed) ? parsed.length : 0;
     } catch { return 0; }
+  }
+
+  getCourseGradient(): string {
+    const color = this.course?.color || '#4a148c';
+    return `linear-gradient(135deg, ${color}, ${color}80)`;
+  }
+
+  getCourseIconBg(): string {
+    const color = this.course?.color || '#4a148c';
+    return `${color}30`;
   }
 }
