@@ -2,6 +2,7 @@ import { Provider, Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 
 import { AuthService } from '../../core/services/auth.service';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
