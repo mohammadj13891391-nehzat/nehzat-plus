@@ -3,5 +3,14 @@
   "instructions": ["docs/AGENTS.md"],
   "skills": {
     "paths": [".opencode/skills"]
+  },
+  "plugin": [
+    "opencode-gemini-auth",
+    "@nick-vi/opencode-type-inject",
+    "@tarquinen/opencode-dcp"
+  ],
+  "compaction": {
+    "auto": true,
+    "tail_turns": 12
   }
 }

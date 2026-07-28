@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@nick-vi/opencode-type-inject": "^1.5.2",
+    "@tarquinen/opencode-dcp": "^3.1.14",
+    "opencode-gemini-auth": "^1.4.15"
+  }
+}
