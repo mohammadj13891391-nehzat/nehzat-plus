@@ -161,6 +161,30 @@ import {
   CreatePersianLiteraturePoetPayload,
   CreatePersianLiteraturePoemPayload,
   CreatePersianLiteratureAnalysisPayload,
+  ArabicLiteraturePoet,
+  ArabicLiteraturePoem,
+  ArabicLiteratureAnalysis,
+  CreateArabicLiteraturePoetPayload,
+  CreateArabicLiteraturePoemPayload,
+  CreateArabicLiteratureAnalysisPayload,
+  MathTopic,
+  MathLesson,
+  MathQuestion,
+  MathProgress,
+  MathScholar,
+  MathContribution,
+  CreateMathTopicPayload,
+  UpdateMathTopicPayload,
+  CreateMathLessonPayload,
+  UpdateMathLessonPayload,
+  CreateMathQuestionPayload,
+  UpdateMathQuestionPayload,
+  RecordMathProgressPayload,
+  UpdateMathProgressPayload,
+  CreateMathScholarPayload,
+  UpdateMathScholarPayload,
+  CreateMathContributionPayload,
+  UpdateMathContributionPayload,
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -553,4 +577,66 @@ export abstract class LessonPlannerApi {
   abstract deleteAnalysis(id: number): Observable<void>;
 
   abstract getLiteratureDashboardStats(): Observable<any>;
+
+  // Arabic Literature
+  abstract getArabicPoets(difficulty?: string): Observable<ArabicLiteraturePoet[]>;
+  abstract getArabicPoetById(id: number): Observable<ArabicLiteraturePoet>;
+  abstract createArabicPoet(payload: CreateArabicLiteraturePoetPayload): Observable<ArabicLiteraturePoet>;
+  abstract updateArabicPoet(id: number, payload: Partial<CreateArabicLiteraturePoetPayload>): Observable<ArabicLiteraturePoet>;
+  abstract deleteArabicPoet(id: number): Observable<void>;
+  abstract searchArabicPoets(query: string): Observable<ArabicLiteraturePoet[]>;
+
+  abstract getArabicPoems(poetId?: number, genre?: string, difficulty?: string): Observable<ArabicLiteraturePoem[]>;
+  abstract getArabicPoemById(id: number): Observable<ArabicLiteraturePoem>;
+  abstract createArabicPoem(payload: CreateArabicLiteraturePoemPayload): Observable<ArabicLiteraturePoem>;
+  abstract updateArabicPoem(id: number, payload: Partial<CreateArabicLiteraturePoemPayload>): Observable<ArabicLiteraturePoem>;
+  abstract deleteArabicPoem(id: number): Observable<void>;
+  abstract searchArabicPoems(query: string): Observable<ArabicLiteraturePoem[]>;
+
+  abstract getArabicAnalysesByPoem(poemId: number): Observable<ArabicLiteratureAnalysis[]>;
+  abstract getArabicAnalysisById(id: number): Observable<ArabicLiteratureAnalysis>;
+  abstract createArabicAnalysis(payload: CreateArabicLiteratureAnalysisPayload): Observable<ArabicLiteratureAnalysis>;
+  abstract updateArabicAnalysis(id: number, payload: Partial<CreateArabicLiteratureAnalysisPayload>): Observable<ArabicLiteratureAnalysis>;
+  abstract deleteArabicAnalysis(id: number): Observable<void>;
+
+  // Math Module
+  abstract getMathTopics(): Observable<MathTopic[]>;
+  abstract getMathTopicById(id: number): Observable<MathTopic>;
+  abstract createMathTopic(payload: CreateMathTopicPayload): Observable<MathTopic>;
+  abstract updateMathTopic(id: number, payload: UpdateMathTopicPayload): Observable<MathTopic>;
+  abstract deleteMathTopic(id: number): Observable<void>;
+  abstract searchMathTopics(query: string, maxResults?: number): Observable<MathTopic[]>;
+
+  abstract getMathLessons(topicId?: number): Observable<MathLesson[]>;
+  abstract getMathLessonById(id: number): Observable<MathLesson>;
+  abstract createMathLesson(payload: CreateMathLessonPayload): Observable<MathLesson>;
+  abstract updateMathLesson(id: number, payload: UpdateMathLessonPayload): Observable<MathLesson>;
+  abstract deleteMathLesson(id: number): Observable<void>;
+  abstract searchMathLessons(query: string, maxResults?: number): Observable<MathLesson[]>;
+
+  abstract getMathQuestions(lessonId?: number): Observable<MathQuestion[]>;
+  abstract getMathQuestionById(id: number): Observable<MathQuestion>;
+  abstract createMathQuestion(payload: CreateMathQuestionPayload): Observable<MathQuestion>;
+  abstract updateMathQuestion(id: number, payload: UpdateMathQuestionPayload): Observable<MathQuestion>;
+  abstract deleteMathQuestion(id: number): Observable<void>;
+
+  abstract getMathStudentProgress(studentId: number): Observable<MathProgress[]>;
+  abstract getMathStudentLessonProgress(studentId: number, lessonId: number): Observable<MathProgress>;
+  abstract recordMathProgress(payload: RecordMathProgressPayload): Observable<MathProgress>;
+  abstract updateMathProgress(id: number, payload: UpdateMathProgressPayload): Observable<MathProgress>;
+
+  abstract getMathDashboardStats(): Observable<Record<string, unknown>>;
+
+  abstract getMathScholars(): Observable<MathScholar[]>;
+  abstract getMathScholarById(id: number): Observable<MathScholar>;
+  abstract createMathScholar(payload: CreateMathScholarPayload): Observable<MathScholar>;
+  abstract updateMathScholar(id: number, payload: UpdateMathScholarPayload): Observable<MathScholar>;
+  abstract deleteMathScholar(id: number): Observable<void>;
+  abstract searchMathScholars(query: string, maxResults?: number): Observable<MathScholar[]>;
+
+  abstract getMathContributions(scholarId?: number, topicId?: number): Observable<MathContribution[]>;
+  abstract getMathContributionById(id: number): Observable<MathContribution>;
+  abstract createMathContribution(payload: CreateMathContributionPayload): Observable<MathContribution>;
+  abstract updateMathContribution(id: number, payload: UpdateMathContributionPayload): Observable<MathContribution>;
+  abstract deleteMathContribution(id: number): Observable<void>;
 }

@@ -1,232 +1,112 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, forkJoin } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 
-export interface Surah {
-  id: number;
-  number: string;
-  name: string;
-  translatedName: string;
-  revelationPlace: string;
-  revelationOrder: number;
-  totalAyahs: number;
-  type: string;
-  bismillah: string;
-  hizbBegin: number;
-  hizbEnd: number;
-  juzBegin: number;
-  juzEnd: number;
-  ruqyah: string;
-  summary: string;
-  createdAt: string;
-  updatedAt: string;
-  ayahs?: Ayah[];
-}
+import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.token';
+import {
+  Surah,
+  Ayah,
+  TajweedRule,
+  RecitationLevel,
+  QuranCurriculum,
+  QuranStudentProgress
+} from '../../../core/models/lesson-planner.models';
 
-export interface Ayah {
-  id: number;
-  surahId: number;
-  verseNumber: number;
-  text: string;
-  translation: string;
-  transliteration: string;
-  footnote: string;
-  ruku: string;
-  sajda: string;
-  ayaNumber: number;
-  juz: string;
-  hizbQuarter: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TajweedRule {
-  id: number;
-  ruleCode: string;
-  name: string;
-  description: string;
-  exampleText: string;
-  ruleLevel: number;
-  affectedRecitationType: string;
-  guidelines: string;
-  surahId: number;
-  ayahNumber: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface RecitationLevel {
-  id: number;
-  levelNumber: number;
-  name: string;
-  description: string;
-  criteria: string;
-  colorCode: string;
-  pointsRequired: number;
-  estimatedWeeks: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface QuranCurriculum {
-  id: number;
-  title: string;
-  description: string;
-  language: string;
-  startSurah: number;
-  endSurah: number;
-  totalAyahs: number;
-  estimatedDays: number;
-  difficultyLevel: string;
-  learningObjectives: string;
-  teacherId: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface QuranStudentProgress {
-  id: number;
-  studentId: number;
-  surahId: number;
-  ayahNumber: number;
-  surahProgress: number;
-  totalSurahs: number;
-  percentage: number;
-  progressDate: string;
-  notes: string;
-  createdAt: string;
-  updatedAt: string;
-  surah?: Surah;
-}
+export type {
+  Surah,
+  Ayah,
+  TajweedRule,
+  RecitationLevel,
+  QuranCurriculum,
+  QuranStudentProgress
+};
 
 @Injectable({ providedIn: 'root' })
 export class QuranService {
-  private apiUrl = `${environment.apiBaseUrl}/quran`;
+  private readonly api = inject(LESSON_PLANNER_API);
 
-  constructor(private http: HttpClient) {}
-
-  // Surah
   getSurahs(): Observable<Surah[]> {
-    return this.http.get<Surah[]>(`${this.apiUrl}/surahs`);
+    return this.api.getSurahs();
   }
 
   getSurah(id: number): Observable<Surah> {
-    return this.http.get<Surah>(`${this.apiUrl}/surahs/${id}`);
+    return this.api.getSurahById(id);
   }
 
-  createSurah(surah: Partial<Surah>): Observable<Surah> {
-    return this.http.post<Surah>(`${this.apiUrl}/surahs`, surah);
-  }
-
-  updateSurah(id: number, surah: Partial<Surah>): Observable<Surah> {
-    return this.http.put<Surah>(`${this.apiUrl}/surahs/${id}`, surah);
-  }
-
-  deleteSurah(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/surahs/${id}`);
-  }
-
-  // Ayah
-  getAyahs(params?: { surahId?: number }): Observable<Ayah[]> {
-    let httpParams = new HttpParams();
-    if (params?.surahId) httpParams = httpParams.set('surahId', params.surahId);
-    return this.http.get<Ayah[]>(`${this.apiUrl}/ayahs`, { params: httpParams });
-  }
-
-  getAyahsBySurah(surahId: number): Observable<Ayah[]> {
-    return this.http.get<Ayah[]>(`${this.apiUrl}/ayahs/surah/${surahId}`);
+  getAyahs(surahId?: number): Observable<Ayah[]> {
+    if (surahId) {
+      return this.api.getAyahs(surahId);
+    }
+    return this.api.getSurahs().pipe(
+      switchMap(surahs => {
+        if (surahs.length === 0) return of([] as Ayah[]);
+        const allAyahs = surahs.map(s => this.api.getAyahs(s.id));
+        return forkJoin(allAyahs).pipe(map(arrays => arrays.flat()));
+      })
+    );
   }
 
   getAyah(id: number): Observable<Ayah> {
-    return this.http.get<Ayah>(`${this.apiUrl}/ayahs/${id}`);
+    return this.api.getAyahById(id);
   }
 
-  createAyah(ayah: Partial<Ayah>): Observable<Ayah> {
-    return this.http.post<Ayah>(`${this.apiUrl}/ayahs`, ayah);
+  searchAyahs(query: string): Observable<Ayah[]> {
+    return this.api.searchAyahs(query);
   }
 
-  updateAyah(id: number, ayah: Partial<Ayah>): Observable<Ayah> {
-    return this.http.put<Ayah>(`${this.apiUrl}/ayahs/${id}`, ayah);
-  }
-
-  deleteAyah(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/ayahs/${id}`);
-  }
-
-  // Tajweed Rules
   getTajweedRules(): Observable<TajweedRule[]> {
-    return this.http.get<TajweedRule[]>(`${this.apiUrl}/tajweed-rules`);
+    return this.api.getTajweedRules();
   }
 
-  getTajweedRule(id: number): Observable<TajweedRule> {
-    return this.http.get<TajweedRule>(`${this.apiUrl}/tajweed-rules/${id}`);
-  }
-
-  createTajweedRule(rule: Partial<TajweedRule>): Observable<TajweedRule> {
-    return this.http.post<TajweedRule>(`${this.apiUrl}/tajweed-rules`, rule);
-  }
-
-  updateTajweedRule(id: number, rule: Partial<TajweedRule>): Observable<TajweedRule> {
-    return this.http.put<TajweedRule>(`${this.apiUrl}/tajweed-rules/${id}`, rule);
-  }
-
-  deleteTajweedRule(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/tajweed-rules/${id}`);
-  }
-
-  // Recitation Levels
   getRecitationLevels(): Observable<RecitationLevel[]> {
-    return this.http.get<RecitationLevel[]>(`${this.apiUrl}/recitation-levels`);
+    return this.api.getRecitationLevels();
   }
 
-  getRecitationLevel(id: number): Observable<RecitationLevel> {
-    return this.http.get<RecitationLevel>(`${this.apiUrl}/recitation-levels/${id}`);
-  }
-
-  createRecitationLevel(level: Partial<RecitationLevel>): Observable<RecitationLevel> {
-    return this.http.post<RecitationLevel>(`${this.apiUrl}/recitation-levels`, level);
-  }
-
-  updateRecitationLevel(id: number, level: Partial<RecitationLevel>): Observable<RecitationLevel> {
-    return this.http.put<RecitationLevel>(`${this.apiUrl}/recitation-levels/${id}`, level);
-  }
-
-  deleteRecitationLevel(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/recitation-levels/${id}`);
-  }
-
-  // Quran Curriculum
   getQuranCurricula(): Observable<QuranCurriculum[]> {
-    return this.http.get<QuranCurriculum[]>(`${this.apiUrl}/curricula`);
+    return this.api.getQuranCurricula();
   }
 
   getQuranCurriculum(id: number): Observable<QuranCurriculum> {
-    return this.http.get<QuranCurriculum>(`${this.apiUrl}/curricula/${id}`);
+    return this.api.getQuranCurriculumById(id);
   }
 
   createQuranCurriculum(curriculum: Partial<QuranCurriculum>): Observable<QuranCurriculum> {
-    return this.http.post<QuranCurriculum>(`${this.apiUrl}/curricula`, curriculum);
+    return this.api.createQuranCurriculum(curriculum);
   }
 
   updateQuranCurriculum(id: number, curriculum: Partial<QuranCurriculum>): Observable<QuranCurriculum> {
-    return this.http.put<QuranCurriculum>(`${this.apiUrl}/curricula/${id}`, curriculum);
+    return this.api.updateQuranCurriculum(id, curriculum);
   }
 
   deleteQuranCurriculum(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/curricula/${id}`);
+    return this.api.deleteQuranCurriculum(id);
   }
 
-  // Student Progress
-  getStudentProgress(studentId: number): Observable<QuranStudentProgress[]> {
-    return this.http.get<QuranStudentProgress[]>(`${this.apiUrl}/progress/student/${studentId}`);
+  getQuranStudentProgress(studentId: number): Observable<QuranStudentProgress> {
+    return this.api.getQuranStudentProgress(studentId);
   }
 
-  getProgress(id: number): Observable<QuranStudentProgress> {
-    return this.http.get<QuranStudentProgress>(`${this.apiUrl}/progress/${id}`);
+  getQuranLessonPlans(): Observable<any[]> {
+    return this.api.getQuranLessonPlans();
   }
 
-  createProgress(progress: Partial<QuranStudentProgress>): Observable<QuranStudentProgress> {
-    return this.http.post<QuranStudentProgress>(`${this.apiUrl}/progress`, progress);
+  getQuranLessonPlanById(id: number): Observable<any> {
+    return this.api.getQuranLessonPlanById(id);
+  }
+
+  createQuranLessonPlan(payload: any): Observable<any> {
+    return this.api.createQuranLessonPlan(payload);
+  }
+
+  updateQuranLessonPlan(id: number, payload: any): Observable<any> {
+    return this.api.updateQuranLessonPlan(id, payload);
+  }
+
+  deleteQuranLessonPlan(id: number): Observable<void> {
+    return this.api.deleteQuranLessonPlan(id);
+  }
+
+  getQuranDashboardStats(): Observable<any> {
+    return this.api.getQuranDashboardStats();
   }
 }

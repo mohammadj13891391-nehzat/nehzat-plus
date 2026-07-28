@@ -163,6 +163,30 @@ Ring,
   CreatePersianLiteraturePoetPayload,
   CreatePersianLiteraturePoemPayload,
   CreatePersianLiteratureAnalysisPayload,
+  ArabicLiteraturePoet,
+  ArabicLiteraturePoem,
+  ArabicLiteratureAnalysis,
+  CreateArabicLiteraturePoetPayload,
+  CreateArabicLiteraturePoemPayload,
+  CreateArabicLiteratureAnalysisPayload,
+  MathTopic,
+  MathLesson,
+  MathQuestion,
+  MathProgress,
+  MathScholar,
+  MathContribution,
+  CreateMathTopicPayload,
+  UpdateMathTopicPayload,
+  CreateMathLessonPayload,
+  UpdateMathLessonPayload,
+  CreateMathQuestionPayload,
+  UpdateMathQuestionPayload,
+  RecordMathProgressPayload,
+  UpdateMathProgressPayload,
+  CreateMathScholarPayload,
+  UpdateMathScholarPayload,
+  CreateMathContributionPayload,
+  UpdateMathContributionPayload,
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -1404,8 +1428,189 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
     return this.http.delete<void>(this.url(`/persian-literature/analyses/${id}`));
   }
 
+  // ===== Arabic Literature =====
+
+  getArabicPoets(difficulty?: string): Observable<ArabicLiteraturePoet[]> {
+    let params = new HttpParams();
+    if (difficulty) params = params.set('difficulty', difficulty);
+    return this.http.get<ArabicLiteraturePoet[]>(this.url('/arabic-literature/poets'), { params });
+  }
+  getArabicPoetById(id: number): Observable<ArabicLiteraturePoet> {
+    return this.http.get<ArabicLiteraturePoet>(this.url(`/arabic-literature/poets/${id}`));
+  }
+  createArabicPoet(payload: CreateArabicLiteraturePoetPayload): Observable<ArabicLiteraturePoet> {
+    return this.http.post<ArabicLiteraturePoet>(this.url('/arabic-literature/poets'), payload);
+  }
+  updateArabicPoet(id: number, payload: Partial<CreateArabicLiteraturePoetPayload>): Observable<ArabicLiteraturePoet> {
+    return this.http.put<ArabicLiteraturePoet>(this.url(`/arabic-literature/poets/${id}`), payload);
+  }
+  deleteArabicPoet(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/arabic-literature/poets/${id}`));
+  }
+  searchArabicPoets(query: string): Observable<ArabicLiteraturePoet[]> {
+    return this.http.get<ArabicLiteraturePoet[]>(this.url('/arabic-literature/poets/search'), { params: { q: query } });
+  }
+
+  getArabicPoems(poetId?: number, genre?: string, difficulty?: string): Observable<ArabicLiteraturePoem[]> {
+    let params = new HttpParams();
+    if (poetId) params = params.set('poetId', poetId.toString());
+    if (genre) params = params.set('genre', genre);
+    if (difficulty) params = params.set('difficulty', difficulty);
+    return this.http.get<ArabicLiteraturePoem[]>(this.url('/arabic-literature/poems'), { params });
+  }
+  getArabicPoemById(id: number): Observable<ArabicLiteraturePoem> {
+    return this.http.get<ArabicLiteraturePoem>(this.url(`/arabic-literature/poems/${id}`));
+  }
+  createArabicPoem(payload: CreateArabicLiteraturePoemPayload): Observable<ArabicLiteraturePoem> {
+    return this.http.post<ArabicLiteraturePoem>(this.url('/arabic-literature/poems'), payload);
+  }
+  updateArabicPoem(id: number, payload: Partial<CreateArabicLiteraturePoemPayload>): Observable<ArabicLiteraturePoem> {
+    return this.http.put<ArabicLiteraturePoem>(this.url(`/arabic-literature/poems/${id}`), payload);
+  }
+  deleteArabicPoem(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/arabic-literature/poems/${id}`));
+  }
+  searchArabicPoems(query: string): Observable<ArabicLiteraturePoem[]> {
+    return this.http.get<ArabicLiteraturePoem[]>(this.url('/arabic-literature/poems/search'), { params: { q: query } });
+  }
+
+  getArabicAnalysesByPoem(poemId: number): Observable<ArabicLiteratureAnalysis[]> {
+    return this.http.get<ArabicLiteratureAnalysis[]>(this.url(`/arabic-literature/poems/${poemId}/analyses`));
+  }
+  getArabicAnalysisById(id: number): Observable<ArabicLiteratureAnalysis> {
+    return this.http.get<ArabicLiteratureAnalysis>(this.url(`/arabic-literature/analyses/${id}`));
+  }
+  createArabicAnalysis(payload: CreateArabicLiteratureAnalysisPayload): Observable<ArabicLiteratureAnalysis> {
+    return this.http.post<ArabicLiteratureAnalysis>(this.url('/arabic-literature/analyses'), payload);
+  }
+  updateArabicAnalysis(id: number, payload: Partial<CreateArabicLiteratureAnalysisPayload>): Observable<ArabicLiteratureAnalysis> {
+    return this.http.put<ArabicLiteratureAnalysis>(this.url(`/arabic-literature/analyses/${id}`), payload);
+  }
+  deleteArabicAnalysis(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/arabic-literature/analyses/${id}`));
+  }
+
   getLiteratureDashboardStats(): Observable<any> {
     return this.http.get<any>(this.url('/persian-literature/dashboard'));
+  }
+
+  getMathTopics(): Observable<MathTopic[]> {
+    return this.http.get<MathTopic[]>(this.url('/math/topics'));
+  }
+  getMathTopicById(id: number): Observable<MathTopic> {
+    return this.http.get<MathTopic>(this.url(`/math/topics/${id}`));
+  }
+  createMathTopic(payload: CreateMathTopicPayload): Observable<MathTopic> {
+    return this.http.post<MathTopic>(this.url('/math/topics'), payload);
+  }
+  updateMathTopic(id: number, payload: UpdateMathTopicPayload): Observable<MathTopic> {
+    return this.http.put<MathTopic>(this.url(`/math/topics/${id}`), payload);
+  }
+  deleteMathTopic(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/math/topics/${id}`));
+  }
+  searchMathTopics(query: string, maxResults?: number): Observable<MathTopic[]> {
+    let params = new HttpParams().set('query', query);
+    if (maxResults) params = params.set('maxResults', maxResults.toString());
+    return this.http.get<MathTopic[]>(this.url('/math/topics/search'), { params });
+  }
+
+  getMathLessons(topicId?: number): Observable<MathLesson[]> {
+    let params = new HttpParams();
+    if (topicId) params = params.set('topicId', topicId.toString());
+    return this.http.get<MathLesson[]>(this.url('/math/lessons'), { params });
+  }
+  getMathLessonById(id: number): Observable<MathLesson> {
+    return this.http.get<MathLesson>(this.url(`/math/lessons/${id}`));
+  }
+  createMathLesson(payload: CreateMathLessonPayload): Observable<MathLesson> {
+    return this.http.post<MathLesson>(this.url('/math/lessons'), payload);
+  }
+  updateMathLesson(id: number, payload: UpdateMathLessonPayload): Observable<MathLesson> {
+    return this.http.put<MathLesson>(this.url(`/math/lessons/${id}`), payload);
+  }
+  deleteMathLesson(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/math/lessons/${id}`));
+  }
+  searchMathLessons(query: string, maxResults?: number): Observable<MathLesson[]> {
+    let params = new HttpParams().set('query', query);
+    if (maxResults) params = params.set('maxResults', maxResults.toString());
+    return this.http.get<MathLesson[]>(this.url('/math/lessons/search'), { params });
+  }
+
+  getMathQuestions(lessonId?: number): Observable<MathQuestion[]> {
+    let params = new HttpParams();
+    if (lessonId) params = params.set('lessonId', lessonId.toString());
+    return this.http.get<MathQuestion[]>(this.url('/math/questions'), { params });
+  }
+  getMathQuestionById(id: number): Observable<MathQuestion> {
+    return this.http.get<MathQuestion>(this.url(`/math/questions/${id}`));
+  }
+  createMathQuestion(payload: CreateMathQuestionPayload): Observable<MathQuestion> {
+    return this.http.post<MathQuestion>(this.url('/math/questions'), payload);
+  }
+  updateMathQuestion(id: number, payload: UpdateMathQuestionPayload): Observable<MathQuestion> {
+    return this.http.put<MathQuestion>(this.url(`/math/questions/${id}`), payload);
+  }
+  deleteMathQuestion(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/math/questions/${id}`));
+  }
+
+  getMathStudentProgress(studentId: number): Observable<MathProgress[]> {
+    return this.http.get<MathProgress[]>(this.url(`/math/progress/${studentId}`));
+  }
+  getMathStudentLessonProgress(studentId: number, lessonId: number): Observable<MathProgress> {
+    return this.http.get<MathProgress>(this.url(`/math/progress/${studentId}/lesson/${lessonId}`));
+  }
+  recordMathProgress(payload: RecordMathProgressPayload): Observable<MathProgress> {
+    return this.http.post<MathProgress>(this.url('/math/progress'), payload);
+  }
+  updateMathProgress(id: number, payload: UpdateMathProgressPayload): Observable<MathProgress> {
+    return this.http.put<MathProgress>(this.url(`/math/progress/${id}`), payload);
+  }
+
+  getMathDashboardStats(): Observable<Record<string, unknown>> {
+    return this.http.get<Record<string, unknown>>(this.url('/math/stats'));
+  }
+
+  getMathScholars(): Observable<MathScholar[]> {
+    return this.http.get<MathScholar[]>(this.url('/math/scholars'));
+  }
+  getMathScholarById(id: number): Observable<MathScholar> {
+    return this.http.get<MathScholar>(this.url(`/math/scholars/${id}`));
+  }
+  createMathScholar(payload: CreateMathScholarPayload): Observable<MathScholar> {
+    return this.http.post<MathScholar>(this.url('/math/scholars'), payload);
+  }
+  updateMathScholar(id: number, payload: UpdateMathScholarPayload): Observable<MathScholar> {
+    return this.http.put<MathScholar>(this.url(`/math/scholars/${id}`), payload);
+  }
+  deleteMathScholar(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/math/scholars/${id}`));
+  }
+  searchMathScholars(query: string, maxResults?: number): Observable<MathScholar[]> {
+    let params = new HttpParams().set('query', query);
+    if (maxResults) params = params.set('maxResults', maxResults.toString());
+    return this.http.get<MathScholar[]>(this.url('/math/scholars/search'), { params });
+  }
+
+  getMathContributions(scholarId?: number, topicId?: number): Observable<MathContribution[]> {
+    let params = new HttpParams();
+    if (scholarId) params = params.set('scholarId', scholarId.toString());
+    if (topicId) params = params.set('topicId', topicId.toString());
+    return this.http.get<MathContribution[]>(this.url('/math/contributions'), { params });
+  }
+  getMathContributionById(id: number): Observable<MathContribution> {
+    return this.http.get<MathContribution>(this.url(`/math/contributions/${id}`));
+  }
+  createMathContribution(payload: CreateMathContributionPayload): Observable<MathContribution> {
+    return this.http.post<MathContribution>(this.url('/math/contributions'), payload);
+  }
+  updateMathContribution(id: number, payload: UpdateMathContributionPayload): Observable<MathContribution> {
+    return this.http.put<MathContribution>(this.url(`/math/contributions/${id}`), payload);
+  }
+  deleteMathContribution(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/math/contributions/${id}`));
   }
 
   private url(path: string): string {

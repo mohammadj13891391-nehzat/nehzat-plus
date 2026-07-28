@@ -1960,3 +1960,303 @@ export interface CreatePersianLiteratureAnalysisPayload {
   difficultyLevel?: string;
   sortOrder?: number;
 }
+
+// ===== Arabic Literature =====
+
+export interface ArabicLiteraturePoet {
+  id: number;
+  name: string;
+  nasab?: string;
+  penName?: string;
+  birthDate?: string;
+  deathDate?: string;
+  birthPlace?: string;
+  deathPlace?: string;
+  era?: string;
+  century: number;
+  biography?: string;
+  difficultyLevel?: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  poems?: ArabicLiteraturePoem[];
+}
+
+export interface ArabicLiteraturePoem {
+  id: number;
+  poetId: number;
+  poet?: ArabicLiteraturePoet;
+  title: string;
+  bahr?: string;
+  qafiya?: string;
+  genre?: string;
+  content: string;
+  translation?: string;
+  interpretation?: string;
+  sourceBook?: string;
+  verseCount: number;
+  difficultyLevel?: string;
+  theme?: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  analyses?: ArabicLiteratureAnalysis[];
+}
+
+export interface ArabicLiteratureAnalysis {
+  id: number;
+  poemId: number;
+  poem?: ArabicLiteraturePoem;
+  title: string;
+  content: string;
+  analysisType: string;
+  difficultyLevel?: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface CreateArabicLiteraturePoetPayload {
+  name: string;
+  nasab?: string;
+  penName?: string;
+  birthDate?: string;
+  deathDate?: string;
+  birthPlace?: string;
+  deathPlace?: string;
+  era?: string;
+  century?: number;
+  biography?: string;
+  difficultyLevel?: string;
+  sortOrder?: number;
+}
+
+export interface CreateArabicLiteraturePoemPayload {
+  poetId: number;
+  title: string;
+  bahr?: string;
+  qafiya?: string;
+  genre?: string;
+  content: string;
+  translation?: string;
+  interpretation?: string;
+  sourceBook?: string;
+  verseCount?: number;
+  difficultyLevel?: string;
+  theme?: string;
+  sortOrder?: number;
+}
+
+export interface CreateArabicLiteratureAnalysisPayload {
+  poemId: number;
+  title: string;
+  content: string;
+  analysisType?: string;
+  difficultyLevel?: string;
+  sortOrder?: number;
+}
+
+// ===== Math Module =====
+
+export interface MathTopic {
+  id: number;
+  title: string;
+  description?: string;
+  difficultyLevel: string;
+  iconUrl?: string;
+  displayOrder: number;
+  isActive: boolean;
+  lessons?: MathLesson[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MathLesson {
+  id: number;
+  title: string;
+  content: string;
+  summary?: string;
+  videoUrl?: string;
+  mathTopicId: number;
+  topic?: MathTopic;
+  durationMinutes: number;
+  displayOrder: number;
+  isPublished: boolean;
+  questions?: MathQuestion[];
+  progressRecords?: MathProgress[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MathQuestion {
+  id: number;
+  questionText: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  correctOption: string;
+  explanation?: string;
+  mathLessonId: number;
+  lesson?: MathLesson;
+  difficultyLevel: string;
+  points: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MathProgress {
+  id: number;
+  studentId: number;
+  student?: { id: number; username: string; firstName?: string; lastName?: string };
+  mathLessonId: number;
+  lesson?: MathLesson;
+  mathQuestionId?: number;
+  question?: MathQuestion;
+  isCompleted: boolean;
+  score?: number;
+  attemptCount: number;
+  completedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MathScholar {
+  id: number;
+  name: string;
+  nameArabic?: string;
+  birthYear?: number;
+  deathYear?: number;
+  birthPlace?: string;
+  biography?: string;
+  imageUrl?: string;
+  knownFor?: string;
+  contributions?: MathContribution[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MathContribution {
+  id: number;
+  mathScholarId: number;
+  scholar?: MathScholar;
+  mathTopicId?: number;
+  topic?: MathTopic;
+  title: string;
+  description?: string;
+  yearRange?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateMathTopicPayload {
+  title: string;
+  description?: string;
+  difficultyLevel: string;
+  iconUrl?: string;
+  displayOrder: number;
+}
+
+export interface UpdateMathTopicPayload {
+  title?: string;
+  description?: string;
+  difficultyLevel?: string;
+  iconUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CreateMathLessonPayload {
+  title: string;
+  content: string;
+  summary?: string;
+  videoUrl?: string;
+  mathTopicId: number;
+  durationMinutes: number;
+  displayOrder: number;
+}
+
+export interface UpdateMathLessonPayload {
+  title?: string;
+  content?: string;
+  summary?: string;
+  videoUrl?: string;
+  durationMinutes?: number;
+  displayOrder?: number;
+  isPublished?: boolean;
+}
+
+export interface CreateMathQuestionPayload {
+  questionText: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  correctOption: string;
+  explanation?: string;
+  mathLessonId: number;
+  difficultyLevel: string;
+  points: number;
+}
+
+export interface UpdateMathQuestionPayload {
+  questionText?: string;
+  optionA?: string;
+  optionB?: string;
+  optionC?: string;
+  optionD?: string;
+  correctOption?: string;
+  explanation?: string;
+  difficultyLevel?: string;
+  points?: number;
+}
+
+export interface RecordMathProgressPayload {
+  studentId: number;
+  mathLessonId: number;
+  mathQuestionId?: number;
+  isCompleted: boolean;
+  score?: number;
+}
+
+export interface UpdateMathProgressPayload {
+  isCompleted?: boolean;
+  score?: number;
+}
+
+export interface CreateMathScholarPayload {
+  name: string;
+  nameArabic?: string;
+  birthYear?: number;
+  deathYear?: number;
+  birthPlace?: string;
+  biography?: string;
+  imageUrl?: string;
+  knownFor?: string;
+}
+
+export interface UpdateMathScholarPayload {
+  name?: string;
+  nameArabic?: string;
+  birthYear?: number;
+  deathYear?: number;
+  birthPlace?: string;
+  biography?: string;
+  imageUrl?: string;
+  knownFor?: string;
+}
+
+export interface CreateMathContributionPayload {
+  mathScholarId: number;
+  mathTopicId?: number;
+  title: string;
+  description?: string;
+  yearRange?: string;
+}
+
+export interface UpdateMathContributionPayload {
+  mathScholarId?: number;
+  mathTopicId?: number;
+  title?: string;
+  description?: string;
+  yearRange?: string;
+}

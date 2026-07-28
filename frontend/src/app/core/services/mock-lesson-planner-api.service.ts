@@ -183,6 +183,30 @@ import {
   CreatePersianLiteraturePoetPayload,
   CreatePersianLiteraturePoemPayload,
   CreatePersianLiteratureAnalysisPayload,
+  ArabicLiteraturePoet,
+  ArabicLiteraturePoem,
+  ArabicLiteratureAnalysis,
+  CreateArabicLiteraturePoetPayload,
+  CreateArabicLiteraturePoemPayload,
+  CreateArabicLiteratureAnalysisPayload,
+  MathTopic,
+  MathLesson,
+  MathQuestion,
+  MathProgress,
+  MathScholar,
+  MathContribution,
+  CreateMathTopicPayload,
+  UpdateMathTopicPayload,
+  CreateMathLessonPayload,
+  UpdateMathLessonPayload,
+  CreateMathQuestionPayload,
+  UpdateMathQuestionPayload,
+  RecordMathProgressPayload,
+  UpdateMathProgressPayload,
+  CreateMathScholarPayload,
+  UpdateMathScholarPayload,
+  CreateMathContributionPayload,
+  UpdateMathContributionPayload,
 } from '../models/lesson-planner.models';
 
 @Injectable()
@@ -3560,6 +3584,110 @@ return this.delayed(summary);
     return of({ totalPoets: this.mockPoets.length, totalPoems: this.mockPoems.length, totalAnalyses: this.mockAnalyses.length }).pipe(delay(300));
   }
 
+  // ===== Arabic Literature =====
+
+  private mockArabicPoets: ArabicLiteraturePoet[] = [
+    { id: 1, name: 'المتنبي', nasab: 'أبو الطيب أحمد بن الحسين المتنبي', penName: 'المتنبي', birthDate: '915-01-01', deathDate: '965-01-01', birthPlace: 'الكوفة', deathPlace: 'النعمانية', era: 'classical', century: 4, biography: 'أبو الطيب المتنبي، شاعر العرب الأكثر شهرة', difficultyLevel: 'advanced', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, name: 'أبو نواس', nasab: 'أبو نواس الحسن بن هانئ الحكمي', penName: 'أبو نواس', birthDate: '756-01-01', deathDate: '814-01-01', birthPlace: 'الأهواز', deathPlace: 'بغداد', era: 'classical', century: 2, biography: 'أبو نواس، شاعر الخمرة واللهو', difficultyLevel: 'intermediate', sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, name: 'امرؤ القيس', nasab: 'امرؤ القيس بن حجر بن الحارث الكندي', penName: 'امرؤ القيس', birthDate: '501-01-01', deathDate: '544-01-01', birthPlace: 'نجد', deathPlace: 'أنقرة', era: 'classical', century: 6, biography: 'امرؤ القيس، أشهر شعراء الجاهلية', difficultyLevel: 'beginner', sortOrder: 3, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockArabicPoems: ArabicLiteraturePoem[] = [
+    { id: 1, poetId: 1, title: 'إذا غامرت في شرف مروم', bahr: 'البحر الكامل', qafiya: 'الميم', genre: 'قصيدة', content: 'إذا غامَرْتَ في شَرَفٍ مَرُومِ\nفلا تَقنَعْ بما دونَ النُّجومِ', translation: 'When you venture for a noble goal, do not settle for less than the stars.', interpretation: 'يشجع على السعي نحو المعالي', sourceBook: 'ديوان المتنبي', verseCount: 4, difficultyLevel: 'advanced', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, poetId: 2, title: 'ألا فاسقني خمراً', bahr: 'البحر الرمل', qafiya: 'النون', genre: 'خمرية', content: 'ألا فاسْقِنِي خَمْراً وَقُلْ لي هيَ الخَمْرُ', translation: 'Pour me wine and say it is wine', sourceBook: 'ديوان أبي نواس', verseCount: 2, difficultyLevel: 'intermediate', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, poetId: 3, title: 'قفا نبك من ذكرى حبيب ومنزل', bahr: 'البحر الطويل', qafiya: 'اللام', genre: 'معلقة', content: 'قِفَا نَبْكِ مِنْ ذِكْرَى حَبِيبٍ وَمَنْزِلِ', translation: 'Stop and let us weep at the memory of a beloved', sourceBook: 'المعلقات السبع', verseCount: 2, difficultyLevel: 'beginner', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+  ];
+
+  private mockArabicAnalyses: ArabicLiteratureAnalysis[] = [];
+
+  private nextArabicLitId = 100;
+
+  getArabicPoets(difficulty?: string): Observable<ArabicLiteraturePoet[]> {
+    let result = [...this.mockArabicPoets];
+    if (difficulty) result = result.filter(p => p.difficultyLevel === difficulty);
+    return of(result).pipe(delay(300));
+  }
+  getArabicPoetById(id: number): Observable<ArabicLiteraturePoet> {
+    const poet = this.mockArabicPoets.find(p => p.id === id);
+    if (!poet) return throwError(() => new Error('یافت نشد'));
+    return of({ ...poet, poems: this.mockArabicPoems.filter(p => p.poetId === id) }).pipe(delay(300));
+  }
+  createArabicPoet(payload: CreateArabicLiteraturePoetPayload): Observable<ArabicLiteraturePoet> {
+    const newPoet: ArabicLiteraturePoet = { id: this.nextArabicLitId++, ...payload, century: payload.century ?? 0, sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.mockArabicPoets.push(newPoet);
+    return of(newPoet).pipe(delay(300));
+  }
+  updateArabicPoet(id: number, payload: Partial<CreateArabicLiteraturePoetPayload>): Observable<ArabicLiteraturePoet> {
+    const idx = this.mockArabicPoets.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockArabicPoets[idx] = { ...this.mockArabicPoets[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockArabicPoets[idx]).pipe(delay(300));
+  }
+  deleteArabicPoet(id: number): Observable<void> {
+    this.mockArabicPoets = this.mockArabicPoets.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+  searchArabicPoets(query: string): Observable<ArabicLiteraturePoet[]> {
+    const result = this.mockArabicPoets.filter(p => p.name.includes(query) || p.penName?.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getArabicPoems(poetId?: number, genre?: string, difficulty?: string): Observable<ArabicLiteraturePoem[]> {
+    let result = [...this.mockArabicPoems];
+    if (poetId) result = result.filter(p => p.poetId === poetId);
+    if (genre) result = result.filter(p => p.genre === genre);
+    if (difficulty) result = result.filter(p => p.difficultyLevel === difficulty);
+    return of(result).pipe(delay(300));
+  }
+  getArabicPoemById(id: number): Observable<ArabicLiteraturePoem> {
+    const poem = this.mockArabicPoems.find(p => p.id === id);
+    if (!poem) return throwError(() => new Error('یافت نشد'));
+    return of({ ...poem, analyses: this.mockArabicAnalyses.filter(a => a.poemId === id) }).pipe(delay(300));
+  }
+  createArabicPoem(payload: CreateArabicLiteraturePoemPayload): Observable<ArabicLiteraturePoem> {
+    const newPoem: ArabicLiteraturePoem = { id: this.nextArabicLitId++, ...payload, verseCount: payload.verseCount ?? 0, sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.mockArabicPoems.push(newPoem);
+    return of(newPoem).pipe(delay(300));
+  }
+  updateArabicPoem(id: number, payload: Partial<CreateArabicLiteraturePoemPayload>): Observable<ArabicLiteraturePoem> {
+    const idx = this.mockArabicPoems.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockArabicPoems[idx] = { ...this.mockArabicPoems[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mockArabicPoems[idx]).pipe(delay(300));
+  }
+  deleteArabicPoem(id: number): Observable<void> {
+    this.mockArabicPoems = this.mockArabicPoems.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+  searchArabicPoems(query: string): Observable<ArabicLiteraturePoem[]> {
+    const result = this.mockArabicPoems.filter(p => p.title.includes(query) || p.content.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getArabicAnalysesByPoem(poemId: number): Observable<ArabicLiteratureAnalysis[]> {
+    return of(this.mockArabicAnalyses.filter(a => a.poemId === poemId)).pipe(delay(300));
+  }
+  getArabicAnalysisById(id: number): Observable<ArabicLiteratureAnalysis> {
+    const analysis = this.mockArabicAnalyses.find(a => a.id === id);
+    if (!analysis) return throwError(() => new Error('یافت نشد'));
+    return of(analysis).pipe(delay(300));
+  }
+  createArabicAnalysis(payload: CreateArabicLiteratureAnalysisPayload): Observable<ArabicLiteratureAnalysis> {
+    const newAnalysis: ArabicLiteratureAnalysis = { id: this.nextArabicLitId++, ...payload, analysisType: payload.analysisType ?? 'general', sortOrder: payload.sortOrder ?? 0, createdAt: new Date().toISOString() };
+    this.mockArabicAnalyses.push(newAnalysis);
+    return of(newAnalysis).pipe(delay(300));
+  }
+  updateArabicAnalysis(id: number, payload: Partial<CreateArabicLiteratureAnalysisPayload>): Observable<ArabicLiteratureAnalysis> {
+    const idx = this.mockArabicAnalyses.findIndex(a => a.id === id);
+    if (idx === -1) return throwError(() => new Error('یافت نشد'));
+    this.mockArabicAnalyses[idx] = { ...this.mockArabicAnalyses[idx], ...payload };
+    return of(this.mockArabicAnalyses[idx]).pipe(delay(300));
+  }
+  deleteArabicAnalysis(id: number): Observable<void> {
+    this.mockArabicAnalyses = this.mockArabicAnalyses.filter(a => a.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
   private generateMockQuestions(courseId: number): AssessmentQuestion[] {
     const topics = ['مفاهیم پایه', 'حل مسئله', 'درک مطلب', 'اعمال دانش', 'تحلیل'];
     const difficulties: Array<'easy' | 'medium' | 'hard'> = ['easy', 'easy', 'easy', 'medium', 'medium', 'medium', 'medium', 'medium', 'hard', 'hard'];
@@ -3578,5 +3706,314 @@ return this.delayed(summary);
       createdAt: this.now(),
       updatedAt: this.now()
     }));
+  }
+
+  private mathTopics: MathTopic[] = [
+    { id: 1, title: 'جبر', description: 'آموزش مفاهیم پایه و پیشرفته جبر شامل معادلات، نامعادلات و توابع', difficultyLevel: 'مقدماتی', displayOrder: 1, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, title: 'هندسه', description: 'آموزش هندسه اقلیدسی، هندسه تحلیلی و هندسه دیفرانسیل', difficultyLevel: 'متوسط', displayOrder: 2, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, title: 'حسابان', description: 'آموزش حسابان و آنالیز شامل حد، پیوستگی، مشتق و انتگرال', difficultyLevel: 'پیشرفته', displayOrder: 3, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, title: 'مثلثات', description: 'آموزش توابع مثلثاتی، هویت‌ها و معادلات مثلثاتی', difficultyLevel: 'متوسط', displayOrder: 4, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 5, title: 'آمار و احتمال', description: 'آموزش مفاهیم آمار توصیفی و استنباطی و احتمال', difficultyLevel: 'متوسط', displayOrder: 5, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 6, title: 'اعداد و نظریه اعداد', description: 'آموزش خواص اعداد، اعداد اول و تقسیم پذیری', difficultyLevel: 'ابتدایی', displayOrder: 6, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private mathLessons: MathLesson[] = [
+    { id: 1, title: 'مقدمه‌ای بر جبر', content: 'جبر شاخه‌ای از ریاضیات است که با نمادها و قواعد جایگزینی اعداد با حروف سروکار دارد...', summary: 'آشنایی با مفاهیم پایه جبر', mathTopicId: 1, durationMinutes: 30, displayOrder: 1, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, title: 'معادلات خطی', content: 'معادله خطی معادله‌ای است که در آن بلندترین توان متغیر یک است...', summary: 'حل معادلات درجه اول', mathTopicId: 1, durationMinutes: 45, displayOrder: 2, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, title: 'هندسه مثلثات', content: 'مثلثات شاخه‌ای از ریاضیات است که روابط بین زوایا و اضلاع مثلثات را بررسی می‌کند...', summary: 'آشنایی با مثلثات پایه', mathTopicId: 2, durationMinutes: 40, displayOrder: 1, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, title: 'حد و پیوستگی', content: 'حد مفهومی بنیادین در حسابان است که رفتار تابع را در نزدیکی یک نقطه بررسی می‌کند...', summary: 'مفاهیم حد و پیوستگی', mathTopicId: 3, durationMinutes: 50, displayOrder: 1, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 5, title: 'مشتق', content: 'مشتق معیاری از سرعت تغییر یک تابع نسبت به متغیر مستقل است...', summary: 'آموزش مشتق‌گیری', mathTopicId: 3, durationMinutes: 55, displayOrder: 2, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 6, title: 'ترکیبات مثلثاتی', content: 'ترکیبات مثلثاتی فرمول‌هایی هستند که حاصل ضرب یا مجموع توابع مثلثاتی را نشان می‌دهند...', summary: 'فرمول‌های ترکیبی', mathTopicId: 4, durationMinutes: 35, displayOrder: 1, isPublished: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private mathQuestions: MathQuestion[] = [
+    { id: 1, questionText: 'اگر x + 5 = 12 باشد، مقدار x چقدر است؟', optionA: '5', optionB: '6', optionC: '7', optionD: '8', correctOption: 'C', explanation: 'x = 12 - 5 = 7', mathLessonId: 2, difficultyLevel: 'مقدماتی', points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, questionText: 'مشتق تابع f(x) = x² چقدر است؟', optionA: 'x', optionB: '2x', optionC: '2x²', optionD: 'x²', correctOption: 'B', explanation: 'مشتق x² برابر 2x است', mathLessonId: 5, difficultyLevel: 'متوسط', points: 15, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, questionText: 'sin(30°) چقدر است؟', optionA: '1/2', optionB: '√3/2', optionC: '1', optionD: '0', correctOption: 'A', explanation: 'sin(30°) = 1/2', mathLessonId: 6, difficultyLevel: 'مقدماتی', points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, questionText: 'اگر 2x - 3 = 7 باشد، x چقدر است؟', optionA: '2', optionB: '3', optionC: '4', optionD: '5', correctOption: 'D', explanation: '2x = 10, x = 5', mathLessonId: 2, difficultyLevel: 'مقدماتی', points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 5, questionText: 'حد تابع f(x) = (x² - 1)/(x - 1) در x = 1 چقدر است؟', optionA: '0', optionB: '1', optionC: '2', optionD: 'تعریف نشده', correctOption: 'C', explanation: 'فکتور کردن صورت: (x-1)(x+1)/(x-1) = x+1, در x=1 برابر 2 است', mathLessonId: 4, difficultyLevel: 'پیشرفته', points: 20, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 6, questionText: 'cos(60°) چقدر است؟', optionA: '1/2', optionB: '√3/2', optionC: '√2/2', optionD: '0', correctOption: 'A', explanation: 'cos(60°) = 1/2', mathLessonId: 6, difficultyLevel: 'مقدماتی', points: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private mathProgress: MathProgress[] = [];
+
+  private mathScholars: MathScholar[] = [
+    { id: 1, name: 'محمد بن موسی خوارزمی', nameArabic: 'أبو جعفر محمد بن موسى الخوارزمی', birthYear: 780, deathYear: 850, birthPlace: 'خوارزم', biography: 'ریاضیدان و ستاره‌شناس ایرانی که به پدر علم جبر معروف است', knownFor: 'جبر، الگوریتم', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, name: 'ابن هیثم', nameArabic: 'أبو علی الحسن بن الحسن بن هیثم', birthYear: 965, deathYear: 1040, birthPlace: 'バスرا', biography: 'فیزیکدان و ریاضیدان عرب که به پدر علم نورشناسی معروف است', knownFor: 'نورشناسی، هندسه', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, name: 'ابوریحان بیرونی', nameArabic: 'أبو ریحان محمد بن احمد البیرونی', birthYear: 973, deathYear: 1048, birthPlace: 'بیرون', biography: 'دانشمند ایرانی در زمینه‌های نجوم، ریاضیات و جغرافیا', knownFor: 'نجوم، آمار', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, name: 'ابن سینا', nameArabic: 'أبو علی الحسین بن عبدالله بن سینا', birthYear: 980, deathYear: 1037, birthPlace: 'بخارا', biography: 'فیلسوف و پزشک و ریاضیدان ایرانی که به شیخ الرئیس معروف است', knownFor: 'فیزیک ریاضی، منطق', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private mathContributions: MathContribution[] = [
+    { id: 1, mathScholarId: 1, mathTopicId: 1, title: 'مفهوم جبر', description: 'خوارزمی کتاب الجبر و المقابله را نوشت که پایه علم جبر مدرن است', yearRange: '820-830 میلادی', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, mathScholarId: 2, mathTopicId: 2, title: 'هندسه نوری', description: 'ابن هیثم از هندسه برای تحلیل بازتاب و شکست نور استفاده کرد', yearRange: '1011-1021 میلادی', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, mathScholarId: 3, mathTopicId: 5, title: 'روش‌های آماری', description: 'بیرونی از روش‌های آماری برای تحلیل داده‌های نجومی استفاده کرد', yearRange: '1000-1030 میلادی', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  getMathTopics(): Observable<MathTopic[]> {
+    return of([...this.mathTopics]).pipe(delay(300));
+  }
+
+  getMathTopicById(id: number): Observable<MathTopic> {
+    const topic = this.mathTopics.find(t => t.id === id);
+    if (!topic) return throwError(() => new Error('نظام‌بندی ریاضی یافت نشد'));
+    return of({ ...topic, lessons: this.mathLessons.filter(l => l.mathTopicId === id) }).pipe(delay(300));
+  }
+
+  createMathTopic(payload: CreateMathTopicPayload): Observable<MathTopic> {
+    const topic: MathTopic = {
+      id: this.nextId(this.mathTopics),
+      title: payload.title,
+      description: payload.description,
+      difficultyLevel: payload.difficultyLevel,
+      iconUrl: payload.iconUrl,
+      displayOrder: payload.displayOrder,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathTopics.push(topic);
+    return of(topic).pipe(delay(300));
+  }
+
+  updateMathTopic(id: number, payload: UpdateMathTopicPayload): Observable<MathTopic> {
+    const idx = this.mathTopics.findIndex(t => t.id === id);
+    if (idx === -1) return throwError(() => new Error('نظام‌بندی ریاضی یافت نشد'));
+    this.mathTopics[idx] = { ...this.mathTopics[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathTopics[idx]).pipe(delay(300));
+  }
+
+  deleteMathTopic(id: number): Observable<void> {
+    this.mathTopics = this.mathTopics.filter(t => t.id !== id);
+    this.mathLessons = this.mathLessons.filter(l => l.mathTopicId !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  searchMathTopics(query: string): Observable<MathTopic[]> {
+    const result = this.mathTopics.filter(t => t.title.includes(query) || t.description?.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getMathLessons(topicId?: number): Observable<MathLesson[]> {
+    let result = [...this.mathLessons];
+    if (topicId) result = result.filter(l => l.mathTopicId === topicId);
+    return of(result).pipe(delay(300));
+  }
+
+  getMathLessonById(id: number): Observable<MathLesson> {
+    const lesson = this.mathLessons.find(l => l.id === id);
+    if (!lesson) return throwError(() => new Error('درس ریاضی یافت نشد'));
+    return of({ ...lesson, questions: this.mathQuestions.filter(q => q.mathLessonId === id) }).pipe(delay(300));
+  }
+
+  createMathLesson(payload: CreateMathLessonPayload): Observable<MathLesson> {
+    const lesson: MathLesson = {
+      id: this.nextId(this.mathLessons),
+      title: payload.title,
+      content: payload.content,
+      summary: payload.summary,
+      videoUrl: payload.videoUrl,
+      mathTopicId: payload.mathTopicId,
+      durationMinutes: payload.durationMinutes,
+      displayOrder: payload.displayOrder,
+      isPublished: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathLessons.push(lesson);
+    return of(lesson).pipe(delay(300));
+  }
+
+  updateMathLesson(id: number, payload: UpdateMathLessonPayload): Observable<MathLesson> {
+    const idx = this.mathLessons.findIndex(l => l.id === id);
+    if (idx === -1) return throwError(() => new Error('درس ریاضی یافت نشد'));
+    this.mathLessons[idx] = { ...this.mathLessons[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathLessons[idx]).pipe(delay(300));
+  }
+
+  deleteMathLesson(id: number): Observable<void> {
+    this.mathLessons = this.mathLessons.filter(l => l.id !== id);
+    this.mathQuestions = this.mathQuestions.filter(q => q.mathLessonId !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  searchMathLessons(query: string): Observable<MathLesson[]> {
+    const result = this.mathLessons.filter(l => l.title.includes(query) || l.content.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getMathQuestions(lessonId?: number): Observable<MathQuestion[]> {
+    let result = [...this.mathQuestions];
+    if (lessonId) result = result.filter(q => q.mathLessonId === lessonId);
+    return of(result).pipe(delay(300));
+  }
+
+  getMathQuestionById(id: number): Observable<MathQuestion> {
+    const question = this.mathQuestions.find(q => q.id === id);
+    if (!question) return throwError(() => new Error('سؤال ریاضی یافت نشد'));
+    return of(question).pipe(delay(300));
+  }
+
+  createMathQuestion(payload: CreateMathQuestionPayload): Observable<MathQuestion> {
+    const question: MathQuestion = {
+      id: this.nextId(this.mathQuestions),
+      questionText: payload.questionText,
+      optionA: payload.optionA,
+      optionB: payload.optionB,
+      optionC: payload.optionC,
+      optionD: payload.optionD,
+      correctOption: payload.correctOption,
+      explanation: payload.explanation,
+      mathLessonId: payload.mathLessonId,
+      difficultyLevel: payload.difficultyLevel,
+      points: payload.points,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathQuestions.push(question);
+    return of(question).pipe(delay(300));
+  }
+
+  updateMathQuestion(id: number, payload: UpdateMathQuestionPayload): Observable<MathQuestion> {
+    const idx = this.mathQuestions.findIndex(q => q.id === id);
+    if (idx === -1) return throwError(() => new Error('سؤال ریاضی یافت نشد'));
+    this.mathQuestions[idx] = { ...this.mathQuestions[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathQuestions[idx]).pipe(delay(300));
+  }
+
+  deleteMathQuestion(id: number): Observable<void> {
+    this.mathQuestions = this.mathQuestions.filter(q => q.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getMathStudentProgress(studentId: number): Observable<MathProgress[]> {
+    return of(this.mathProgress.filter(p => p.studentId === studentId)).pipe(delay(300));
+  }
+
+  getMathStudentLessonProgress(studentId: number, lessonId: number): Observable<MathProgress> {
+    const progress = this.mathProgress.find(p => p.studentId === studentId && p.mathLessonId === lessonId);
+    if (!progress) return throwError(() => new Error('پیشرفت یافت نشد'));
+    return of(progress).pipe(delay(300));
+  }
+
+  recordMathProgress(payload: RecordMathProgressPayload): Observable<MathProgress> {
+    const progress: MathProgress = {
+      id: this.nextId(this.mathProgress),
+      studentId: payload.studentId,
+      mathLessonId: payload.mathLessonId,
+      mathQuestionId: payload.mathQuestionId,
+      isCompleted: payload.isCompleted,
+      score: payload.score,
+      attemptCount: 1,
+      completedAt: payload.isCompleted ? new Date().toISOString() : undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathProgress.push(progress);
+    return of(progress).pipe(delay(300));
+  }
+
+  updateMathProgress(id: number, payload: UpdateMathProgressPayload): Observable<MathProgress> {
+    const idx = this.mathProgress.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('پیشرفت یافت نشد'));
+    this.mathProgress[idx] = { ...this.mathProgress[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathProgress[idx]).pipe(delay(300));
+  }
+
+  getMathDashboardStats(): Observable<Record<string, unknown>> {
+    return of({
+      totalTopics: this.mathTopics.length,
+      totalLessons: this.mathLessons.length,
+      totalQuestions: this.mathQuestions.length,
+      totalStudents: new Set(this.mathProgress.map(p => p.studentId)).size,
+      averageScore: this.mathProgress.length > 0
+        ? this.mathProgress.reduce((sum, p) => sum + (p.score ?? 0), 0) / this.mathProgress.length
+        : 0
+    }).pipe(delay(300));
+  }
+
+  getMathScholars(): Observable<MathScholar[]> {
+    return of([...this.mathScholars]).pipe(delay(300));
+  }
+
+  getMathScholarById(id: number): Observable<MathScholar> {
+    const scholar = this.mathScholars.find(s => s.id === id);
+    if (!scholar) return throwError(() => new Error('دانشمند یافت نشد'));
+    return of({ ...scholar, contributions: this.mathContributions.filter(c => c.mathScholarId === id) }).pipe(delay(300));
+  }
+
+  createMathScholar(payload: CreateMathScholarPayload): Observable<MathScholar> {
+    const scholar: MathScholar = {
+      id: this.nextId(this.mathScholars),
+      name: payload.name,
+      nameArabic: payload.nameArabic,
+      birthYear: payload.birthYear,
+      deathYear: payload.deathYear,
+      birthPlace: payload.birthPlace,
+      biography: payload.biography,
+      imageUrl: payload.imageUrl,
+      knownFor: payload.knownFor,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathScholars.push(scholar);
+    return of(scholar).pipe(delay(300));
+  }
+
+  updateMathScholar(id: number, payload: UpdateMathScholarPayload): Observable<MathScholar> {
+    const idx = this.mathScholars.findIndex(s => s.id === id);
+    if (idx === -1) return throwError(() => new Error('دانشمند یافت نشد'));
+    this.mathScholars[idx] = { ...this.mathScholars[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathScholars[idx]).pipe(delay(300));
+  }
+
+  deleteMathScholar(id: number): Observable<void> {
+    this.mathScholars = this.mathScholars.filter(s => s.id !== id);
+    this.mathContributions = this.mathContributions.filter(c => c.mathScholarId !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  searchMathScholars(query: string): Observable<MathScholar[]> {
+    const result = this.mathScholars.filter(s => s.name.includes(query) || s.knownFor?.includes(query));
+    return of(result).pipe(delay(300));
+  }
+
+  getMathContributions(scholarId?: number): Observable<MathContribution[]> {
+    let result = [...this.mathContributions];
+    if (scholarId) result = result.filter(c => c.mathScholarId === scholarId);
+    return of(result).pipe(delay(300));
+  }
+
+  getMathContributionById(id: number): Observable<MathContribution> {
+    const contribution = this.mathContributions.find(c => c.id === id);
+    if (!contribution) return throwError(() => new Error('مشارکت یافت نشد'));
+    return of(contribution).pipe(delay(300));
+  }
+
+  createMathContribution(payload: CreateMathContributionPayload): Observable<MathContribution> {
+    const contribution: MathContribution = {
+      id: this.nextId(this.mathContributions),
+      mathScholarId: payload.mathScholarId,
+      mathTopicId: payload.mathTopicId,
+      title: payload.title,
+      description: payload.description,
+      yearRange: payload.yearRange,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.mathContributions.push(contribution);
+    return of(contribution).pipe(delay(300));
+  }
+
+  updateMathContribution(id: number, payload: UpdateMathContributionPayload): Observable<MathContribution> {
+    const idx = this.mathContributions.findIndex(c => c.id === id);
+    if (idx === -1) return throwError(() => new Error('مشارکت یافت نشد'));
+    this.mathContributions[idx] = { ...this.mathContributions[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.mathContributions[idx]).pipe(delay(300));
+  }
+
+  deleteMathContribution(id: number): Observable<void> {
+    this.mathContributions = this.mathContributions.filter(c => c.id !== id);
+    return of(void 0).pipe(delay(300));
   }
 }
