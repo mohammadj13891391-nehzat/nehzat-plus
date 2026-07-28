@@ -2559,3 +2559,317 @@ export interface UpdateStudentProgressRequest {
   completedLessons?: number;
   totalLessons?: number;
 }
+
+// ===== Persian Literature Learning System (مسیر یادگیری ادبیات فارسی) =====
+
+export interface LearningPath {
+  id: number;
+  title: string;
+  description?: string;
+  slug: string;
+  ageGroup: string;
+  icon?: string;
+  color?: string;
+  sortOrder: number;
+  isActive: boolean;
+  levels?: LearningLevel[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LearningLevel {
+  id: number;
+  learningPathId: number;
+  learningPath?: LearningPath;
+  title: string;
+  description?: string;
+  levelNumber: number;
+  requiredXp: number;
+  sortOrder: number;
+  modules?: StudyModule[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudyModule {
+  id: number;
+  learningLevelId: number;
+  learningLevel?: LearningLevel;
+  title: string;
+  description?: string;
+  icon?: string;
+  sortOrder: number;
+  estimatedDays: number;
+  lessons?: StudyLesson[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StudyLesson {
+  id: number;
+  studyModuleId: number;
+  studyModule?: StudyModule;
+  title: string;
+  description?: string;
+  objectives?: string;
+  contentBlocks?: LessonContentBlock[];
+  quizzes?: PersLitQuiz[];
+  sortOrder: number;
+  estimatedMinutes: number;
+  isPremium: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LessonContentBlock {
+  id: number;
+  studyLessonId: number;
+  studyLesson?: StudyLesson;
+  blockType: string;
+  title: string;
+  content: string;
+  data?: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PersLitQuiz {
+  id: number;
+  studyLessonId: number;
+  studyLesson?: StudyLesson;
+  title: string;
+  description?: string;
+  passingScore: number;
+  maxAttempts: number;
+  questions?: PersLitQuizQuestion[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PersLitQuizQuestion {
+  id: number;
+  quizId: number;
+  quiz?: PersLitQuiz;
+  questionText: string;
+  options: string;
+  correctAnswer: string;
+  explanation?: string;
+  order: number;
+  points: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuizOption {
+  id: number;
+  quizQuestionId: number;
+  quizQuestion?: PersLitQuizQuestion;
+  optionText: string;
+  isCorrect: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserEnrollment {
+  id: number;
+  userId: number;
+  learningPathId: number;
+  learningPath?: LearningPath;
+  currentLevelId?: number;
+  currentLevel?: LearningLevel;
+  progress: number;
+  xpEarned: number;
+  isCompleted: boolean;
+  completedAt?: string;
+  lessonProgress?: UserLessonProgress[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserLessonProgress {
+  id: number;
+  userEnrollmentId: number;
+  enrollment?: UserEnrollment;
+  studyLessonId: number;
+  studyLesson?: StudyLesson;
+  status: string;
+  score: number;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserQuizAttempt {
+  id: number;
+  userEnrollmentId: number;
+  enrollment?: UserEnrollment;
+  quizId: number;
+  quiz?: PersLitQuiz;
+  score: number;
+  totalPoints: number;
+  answers: string;
+  isPassed: boolean;
+  attemptNumber: number;
+  startedAt: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Learning System Payloads
+export interface CreateLearningPathPayload {
+  title: string;
+  description?: string;
+  slug: string;
+  ageGroup: string;
+  icon?: string;
+  color?: string;
+  sortOrder: number;
+}
+
+export interface UpdateLearningPathPayload {
+  title?: string;
+  description?: string;
+  slug?: string;
+  ageGroup?: string;
+  icon?: string;
+  color?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CreateLearningLevelPayload {
+  learningPathId: number;
+  title: string;
+  description?: string;
+  levelNumber: number;
+  requiredXp: number;
+  sortOrder: number;
+}
+
+export interface UpdateLearningLevelPayload {
+  title?: string;
+  description?: string;
+  levelNumber?: number;
+  requiredXp?: number;
+  sortOrder?: number;
+}
+
+export interface CreateStudyModulePayload {
+  learningLevelId: number;
+  title: string;
+  description?: string;
+  icon?: string;
+  sortOrder: number;
+  estimatedDays: number;
+}
+
+export interface UpdateStudyModulePayload {
+  title?: string;
+  description?: string;
+  icon?: string;
+  sortOrder?: number;
+  estimatedDays?: number;
+}
+
+export interface CreateStudyLessonPayload {
+  studyModuleId: number;
+  title: string;
+  description?: string;
+  objectives?: string;
+  sortOrder: number;
+  estimatedMinutes: number;
+  isPremium?: boolean;
+}
+
+export interface UpdateStudyLessonPayload {
+  title?: string;
+  description?: string;
+  objectives?: string;
+  sortOrder?: number;
+  estimatedMinutes?: number;
+  isPremium?: boolean;
+}
+
+export interface CreateContentBlockPayload {
+  studyLessonId: number;
+  blockType: string;
+  title: string;
+  content: string;
+  data?: string;
+  sortOrder: number;
+}
+
+export interface UpdateContentBlockPayload {
+  blockType?: string;
+  title?: string;
+  content?: string;
+  data?: string;
+  sortOrder?: number;
+}
+
+export interface CreatePersLitQuizPayload {
+  studyLessonId: number;
+  title: string;
+  description?: string;
+  passingScore: number;
+  maxAttempts: number;
+}
+
+export interface UpdatePersLitQuizPayload {
+  title?: string;
+  description?: string;
+  passingScore?: number;
+  maxAttempts?: number;
+}
+
+export interface CreatePersLitQuizQuestionPayload {
+  quizId: number;
+  questionText: string;
+  options: string;
+  correctAnswer: string;
+  explanation?: string;
+  order: number;
+  points: number;
+}
+
+export interface UpdatePersLitQuizQuestionPayload {
+  questionText?: string;
+  options?: string;
+  correctAnswer?: string;
+  explanation?: string;
+  order?: number;
+  points?: number;
+}
+
+export interface EnrollUserRequest {
+  learningPathId: number;
+}
+
+export interface SubmitQuizRequest {
+  quizId: number;
+  answers: { questionId: number; answer: string }[];
+}
+
+export interface LearningPathTreeDto {
+  path: LearningPath;
+  levels: (LearningLevel & {
+    modules: (StudyModule & {
+      lessons: (StudyLesson & {
+        quizzes: PersLitQuiz[];
+      })[];
+    })[];
+  })[];
+}
+
+export interface UserDashboardDto {
+  enrollment: UserEnrollment;
+  path: LearningPath;
+  currentLevel?: LearningLevel;
+  recentLessons: UserLessonProgress[];
+  quizAttempts: UserQuizAttempt[];
+  xpProgress: { current: number; nextLevel: number };
+}

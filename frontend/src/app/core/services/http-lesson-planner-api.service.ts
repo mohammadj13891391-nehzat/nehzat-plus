@@ -215,6 +215,35 @@ Ring,
   UpdateExpSciQuizQuestionRequest,
   StudentProgressDto,
   UpdateStudentProgressRequest,
+  LearningPath,
+  LearningLevel,
+  StudyModule,
+  StudyLesson,
+  LessonContentBlock,
+  PersLitQuiz,
+  PersLitQuizQuestion,
+  QuizOption,
+  UserEnrollment,
+  UserLessonProgress,
+  UserQuizAttempt,
+  CreateLearningPathPayload,
+  UpdateLearningPathPayload,
+  CreateLearningLevelPayload,
+  UpdateLearningLevelPayload,
+  CreateStudyModulePayload,
+  UpdateStudyModulePayload,
+  CreateStudyLessonPayload,
+  UpdateStudyLessonPayload,
+  CreateContentBlockPayload,
+  UpdateContentBlockPayload,
+  CreatePersLitQuizPayload,
+  UpdatePersLitQuizPayload,
+  CreatePersLitQuizQuestionPayload,
+  UpdatePersLitQuizQuestionPayload,
+  EnrollUserRequest,
+  SubmitQuizRequest,
+  LearningPathTreeDto,
+  UserDashboardDto,
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
 import { resolveApiBaseUrl } from './api-url.util';
@@ -1798,6 +1827,135 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
 
   getExperimentalSciencesDashboardStats(): Observable<any> {
     return this.http.get<any>(this.url('/experimental-sciences/dashboard-stats'));
+  }
+
+  // ===== Persian Literature Learning System =====
+
+  getLearningPaths(): Observable<LearningPath[]> {
+    return this.http.get<LearningPath[]>(this.url('/learning/paths'));
+  }
+  getLearningPath(id: number): Observable<LearningPathTreeDto> {
+    return this.http.get<LearningPathTreeDto>(this.url(`/learning/paths/${id}`));
+  }
+  createLearningPath(payload: CreateLearningPathPayload): Observable<LearningPath> {
+    return this.http.post<LearningPath>(this.url('/learning/paths'), payload);
+  }
+  updateLearningPath(id: number, payload: UpdateLearningPathPayload): Observable<LearningPath> {
+    return this.http.put<LearningPath>(this.url(`/learning/paths/${id}`), payload);
+  }
+  deleteLearningPath(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/paths/${id}`));
+  }
+
+  getLearningLevels(pathId: number): Observable<LearningLevel[]> {
+    return this.http.get<LearningLevel[]>(this.url(`/learning/paths/${pathId}/levels`));
+  }
+  getLearningLevel(id: number): Observable<LearningLevel> {
+    return this.http.get<LearningLevel>(this.url(`/learning/levels/${id}`));
+  }
+  createLearningLevel(payload: CreateLearningLevelPayload): Observable<LearningLevel> {
+    return this.http.post<LearningLevel>(this.url('/learning/levels'), payload);
+  }
+  updateLearningLevel(id: number, payload: UpdateLearningLevelPayload): Observable<LearningLevel> {
+    return this.http.put<LearningLevel>(this.url(`/learning/levels/${id}`), payload);
+  }
+  deleteLearningLevel(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/levels/${id}`));
+  }
+
+  getStudyModules(levelId: number): Observable<StudyModule[]> {
+    return this.http.get<StudyModule[]>(this.url(`/learning/levels/${levelId}/modules`));
+  }
+  getStudyModule(id: number): Observable<StudyModule> {
+    return this.http.get<StudyModule>(this.url(`/learning/modules/${id}`));
+  }
+  createStudyModule(payload: CreateStudyModulePayload): Observable<StudyModule> {
+    return this.http.post<StudyModule>(this.url('/learning/modules'), payload);
+  }
+  updateStudyModule(id: number, payload: UpdateStudyModulePayload): Observable<StudyModule> {
+    return this.http.put<StudyModule>(this.url(`/learning/modules/${id}`), payload);
+  }
+  deleteStudyModule(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/modules/${id}`));
+  }
+
+  getStudyLessons(moduleId: number): Observable<StudyLesson[]> {
+    return this.http.get<StudyLesson[]>(this.url(`/learning/modules/${moduleId}/lessons`));
+  }
+  getStudyLesson(id: number): Observable<StudyLesson> {
+    return this.http.get<StudyLesson>(this.url(`/learning/lessons/${id}`));
+  }
+  createStudyLesson(payload: CreateStudyLessonPayload): Observable<StudyLesson> {
+    return this.http.post<StudyLesson>(this.url('/learning/lessons'), payload);
+  }
+  updateStudyLesson(id: number, payload: UpdateStudyLessonPayload): Observable<StudyLesson> {
+    return this.http.put<StudyLesson>(this.url(`/learning/lessons/${id}`), payload);
+  }
+  deleteStudyLesson(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/lessons/${id}`));
+  }
+
+  getContentBlocks(lessonId: number): Observable<LessonContentBlock[]> {
+    return this.http.get<LessonContentBlock[]>(this.url(`/learning/lessons/${lessonId}/content-blocks`));
+  }
+  createContentBlock(payload: CreateContentBlockPayload): Observable<LessonContentBlock> {
+    return this.http.post<LessonContentBlock>(this.url('/learning/content-blocks'), payload);
+  }
+  updateContentBlock(id: number, payload: UpdateContentBlockPayload): Observable<LessonContentBlock> {
+    return this.http.put<LessonContentBlock>(this.url(`/learning/content-blocks/${id}`), payload);
+  }
+  deleteContentBlock(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/content-blocks/${id}`));
+  }
+
+  getQuizzes(lessonId: number): Observable<PersLitQuiz[]> {
+    return this.http.get<PersLitQuiz[]>(this.url(`/learning/lessons/${lessonId}/quizzes`));
+  }
+  getQuiz(id: number): Observable<PersLitQuiz> {
+    return this.http.get<PersLitQuiz>(this.url(`/learning/quizzes/${id}`));
+  }
+  createQuiz(payload: CreatePersLitQuizPayload): Observable<PersLitQuiz> {
+    return this.http.post<PersLitQuiz>(this.url('/learning/quizzes'), payload);
+  }
+  updateQuiz(id: number, payload: UpdatePersLitQuizPayload): Observable<PersLitQuiz> {
+    return this.http.put<PersLitQuiz>(this.url(`/learning/quizzes/${id}`), payload);
+  }
+  deleteQuiz(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/quizzes/${id}`));
+  }
+
+  getQuizQuestions(quizId: number): Observable<PersLitQuizQuestion[]> {
+    return this.http.get<PersLitQuizQuestion[]>(this.url(`/learning/quizzes/${quizId}/questions`));
+  }
+  createQuizQuestion(payload: CreatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion> {
+    return this.http.post<PersLitQuizQuestion>(this.url('/learning/quiz-questions'), payload);
+  }
+  updateQuizQuestion(id: number, payload: UpdatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion> {
+    return this.http.put<PersLitQuizQuestion>(this.url(`/learning/quiz-questions/${id}`), payload);
+  }
+  deleteQuizQuestion(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/learning/quiz-questions/${id}`));
+  }
+
+  enrollUser(payload: EnrollUserRequest): Observable<UserEnrollment> {
+    return this.http.post<UserEnrollment>(this.url('/learning/enroll'), payload);
+  }
+  getUserEnrollments(userId: number): Observable<UserEnrollment[]> {
+    return this.http.get<UserEnrollment[]>(this.url(`/learning/enrollments/${userId}`));
+  }
+  getUserDashboard(userId: number, pathId: number): Observable<UserDashboardDto> {
+    return this.http.get<UserDashboardDto>(this.url(`/learning/dashboard/${userId}/${pathId}`));
+  }
+
+  updateLessonProgress(progressId: number, status: string, score?: number): Observable<UserLessonProgress> {
+    return this.http.patch<UserLessonProgress>(this.url(`/learning/progress/${progressId}`), { status, score });
+  }
+
+  submitQuiz(payload: SubmitQuizRequest): Observable<any> {
+    return this.http.post<any>(this.url('/learning/quiz/submit'), payload);
+  }
+  getUserQuizAttempts(enrollmentId: number): Observable<UserQuizAttempt[]> {
+    return this.http.get<UserQuizAttempt[]>(this.url(`/learning/quiz-attempts/${enrollmentId}`));
   }
 
   private url(path: string): string {

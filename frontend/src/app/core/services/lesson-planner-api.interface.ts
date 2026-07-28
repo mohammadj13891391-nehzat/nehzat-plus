@@ -213,6 +213,35 @@ import {
   UpdateExpSciQuizQuestionRequest,
   StudentProgressDto,
   UpdateStudentProgressRequest,
+  LearningPath,
+  LearningLevel,
+  StudyModule,
+  StudyLesson,
+  LessonContentBlock,
+  PersLitQuiz,
+  PersLitQuizQuestion,
+  QuizOption,
+  UserEnrollment,
+  UserLessonProgress,
+  UserQuizAttempt,
+  CreateLearningPathPayload,
+  UpdateLearningPathPayload,
+  CreateLearningLevelPayload,
+  UpdateLearningLevelPayload,
+  CreateStudyModulePayload,
+  UpdateStudyModulePayload,
+  CreateStudyLessonPayload,
+  UpdateStudyLessonPayload,
+  CreateContentBlockPayload,
+  UpdateContentBlockPayload,
+  CreatePersLitQuizPayload,
+  UpdatePersLitQuizPayload,
+  CreatePersLitQuizQuestionPayload,
+  UpdatePersLitQuizQuestionPayload,
+  EnrollUserRequest,
+  SubmitQuizRequest,
+  LearningPathTreeDto,
+  UserDashboardDto,
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -730,4 +759,54 @@ export abstract class LessonPlannerApi {
   abstract updateExperimentalSciencesStudentProgress(studentId: number, topicId: number, request: UpdateStudentProgressRequest): Observable<void>;
 
   abstract getExperimentalSciencesDashboardStats(): Observable<any>;
+
+  // ===== Persian Literature Learning System =====
+  abstract getLearningPaths(): Observable<LearningPath[]>;
+  abstract getLearningPath(id: number): Observable<LearningPathTreeDto>;
+  abstract createLearningPath(payload: CreateLearningPathPayload): Observable<LearningPath>;
+  abstract updateLearningPath(id: number, payload: UpdateLearningPathPayload): Observable<LearningPath>;
+  abstract deleteLearningPath(id: number): Observable<void>;
+
+  abstract getLearningLevels(pathId: number): Observable<LearningLevel[]>;
+  abstract getLearningLevel(id: number): Observable<LearningLevel>;
+  abstract createLearningLevel(payload: CreateLearningLevelPayload): Observable<LearningLevel>;
+  abstract updateLearningLevel(id: number, payload: UpdateLearningLevelPayload): Observable<LearningLevel>;
+  abstract deleteLearningLevel(id: number): Observable<void>;
+
+  abstract getStudyModules(levelId: number): Observable<StudyModule[]>;
+  abstract getStudyModule(id: number): Observable<StudyModule>;
+  abstract createStudyModule(payload: CreateStudyModulePayload): Observable<StudyModule>;
+  abstract updateStudyModule(id: number, payload: UpdateStudyModulePayload): Observable<StudyModule>;
+  abstract deleteStudyModule(id: number): Observable<void>;
+
+  abstract getStudyLessons(moduleId: number): Observable<StudyLesson[]>;
+  abstract getStudyLesson(id: number): Observable<StudyLesson>;
+  abstract createStudyLesson(payload: CreateStudyLessonPayload): Observable<StudyLesson>;
+  abstract updateStudyLesson(id: number, payload: UpdateStudyLessonPayload): Observable<StudyLesson>;
+  abstract deleteStudyLesson(id: number): Observable<void>;
+
+  abstract getContentBlocks(lessonId: number): Observable<LessonContentBlock[]>;
+  abstract createContentBlock(payload: CreateContentBlockPayload): Observable<LessonContentBlock>;
+  abstract updateContentBlock(id: number, payload: UpdateContentBlockPayload): Observable<LessonContentBlock>;
+  abstract deleteContentBlock(id: number): Observable<void>;
+
+  abstract getQuizzes(lessonId: number): Observable<PersLitQuiz[]>;
+  abstract getQuiz(id: number): Observable<PersLitQuiz>;
+  abstract createQuiz(payload: CreatePersLitQuizPayload): Observable<PersLitQuiz>;
+  abstract updateQuiz(id: number, payload: UpdatePersLitQuizPayload): Observable<PersLitQuiz>;
+  abstract deleteQuiz(id: number): Observable<void>;
+
+  abstract getQuizQuestions(quizId: number): Observable<PersLitQuizQuestion[]>;
+  abstract createQuizQuestion(payload: CreatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion>;
+  abstract updateQuizQuestion(id: number, payload: UpdatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion>;
+  abstract deleteQuizQuestion(id: number): Observable<void>;
+
+  abstract enrollUser(payload: EnrollUserRequest): Observable<UserEnrollment>;
+  abstract getUserEnrollments(userId: number): Observable<UserEnrollment[]>;
+  abstract getUserDashboard(userId: number, pathId: number): Observable<UserDashboardDto>;
+
+  abstract updateLessonProgress(progressId: number, status: string, score?: number): Observable<UserLessonProgress>;
+
+  abstract submitQuiz(payload: SubmitQuizRequest): Observable<QuizResultDto>;
+  abstract getUserQuizAttempts(enrollmentId: number): Observable<UserQuizAttempt[]>;
 }
