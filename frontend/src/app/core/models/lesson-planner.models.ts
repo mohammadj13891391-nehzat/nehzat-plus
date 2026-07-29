@@ -2568,10 +2568,16 @@ export interface LearningPath {
   description?: string;
   slug: string;
   ageGroup: string;
+  ageRange?: string;
+  difficultyLevel?: string;
+  estimatedDurationDays?: number;
   icon?: string;
   color?: string;
   sortOrder: number;
   isActive: boolean;
+  moduleCount?: number;
+  lessonCount?: number;
+  levelCount?: number;
   levels?: LearningLevel[];
   createdAt: string;
   updatedAt: string;
@@ -2586,6 +2592,9 @@ export interface LearningLevel {
   levelNumber: number;
   requiredXp: number;
   sortOrder: number;
+  minAge?: number;
+  maxAge?: number;
+  estimatedDurationDays?: number;
   modules?: StudyModule[];
   createdAt: string;
   updatedAt: string;
@@ -2609,9 +2618,11 @@ export interface StudyLesson {
   id: number;
   studyModuleId: number;
   studyModule?: StudyModule;
+  module?: StudyModule;
   title: string;
   description?: string;
   objectives?: string;
+  difficultyLevel?: string;
   contentBlocks?: LessonContentBlock[];
   quizzes?: PersLitQuiz[];
   sortOrder: number;
@@ -2629,6 +2640,8 @@ export interface LessonContentBlock {
   title: string;
   content: string;
   data?: string;
+  explanation?: string;
+  mediaUrl?: string;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
@@ -2642,6 +2655,7 @@ export interface PersLitQuiz {
   description?: string;
   passingScore: number;
   maxAttempts: number;
+  timeLimitMinutes?: number;
   questions?: PersLitQuizQuestion[];
   createdAt: string;
   updatedAt: string;
@@ -2652,7 +2666,7 @@ export interface PersLitQuizQuestion {
   quizId: number;
   quiz?: PersLitQuiz;
   questionText: string;
-  options: string;
+  options: QuizOption[];
   correctAnswer: string;
   explanation?: string;
   order: number;
@@ -2666,6 +2680,8 @@ export interface QuizOption {
   quizQuestionId: number;
   quizQuestion?: PersLitQuizQuestion;
   optionText: string;
+  label: string;
+  text: string;
   isCorrect: boolean;
   order: number;
   createdAt: string;
@@ -2849,6 +2865,15 @@ export interface EnrollUserRequest {
   learningPathId: number;
 }
 
+export interface QuizResultDto {
+  attempt: UserQuizAttempt;
+  passed: boolean;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  passedThreshold: number;
+}
+
 export interface SubmitQuizRequest {
   quizId: number;
   answers: { questionId: number; answer: string }[];
@@ -2865,6 +2890,14 @@ export interface LearningPathTreeDto {
   })[];
 }
 
+export interface LearningDashboardStatsDto {
+  totalPaths: number;
+  completedLessons: number;
+  totalLessons: number;
+  averageScore: number;
+  badges: number;
+}
+
 export interface UserDashboardDto {
   enrollment: UserEnrollment;
   path: LearningPath;
@@ -2872,4 +2905,149 @@ export interface UserDashboardDto {
   recentLessons: UserLessonProgress[];
   quizAttempts: UserQuizAttempt[];
   xpProgress: { current: number; nextLevel: number };
+}
+
+// ===== Hadith Module =====
+
+export interface HadithBook {
+  id: number;
+  key: string;
+  title: string;
+  titleTranslation: string;
+  author: string;
+  description?: string;
+  hadithCount: number;
+  chapterCount: number;
+  language: string;
+  difficultyLevel?: string;
+  sortOrder: number;
+  icon?: string;
+  color?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HadithChapter {
+  id: number;
+  bookId: number;
+  book?: HadithBook;
+  title: string;
+  titleTranslation: string;
+  description?: string;
+  chapterNumber: number;
+  hadithCount: number;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HadithItem {
+  id: number;
+  chapterId: number;
+  chapter?: HadithChapter;
+  bookId: number;
+  book?: HadithBook;
+  hadithNumber: number;
+  arabicText: string;
+  persianTranslation: string;
+  isnad?: string;
+  explanation?: string;
+  fiqhTakeaway?: string;
+  grade?: string;
+  gradeColor?: string;
+  audioUrl?: string;
+  sourceReference?: string;
+  difficultyLevel?: string;
+  keywords?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HadithReview {
+  id: number;
+  studentId: number;
+  hadithId: number;
+  hadith?: HadithItem;
+  reviewCount: number;
+  correctCount: number;
+  lastReviewedAt?: string;
+  nextReviewAt?: string;
+  masteryLevel: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HadithReviewStats {
+  totalReviewed: number;
+  masteredCount: number;
+  learningCount: number;
+  newCount: number;
+  streakDays: number;
+  accuracyRate: number;
+}
+
+export interface HadithBookDetail extends HadithBook {
+  chapters?: HadithChapter[];
+  hadiths?: HadithItem[];
+}
+
+export interface HadithChapterDetail extends HadithChapter {
+  hadiths?: HadithItem[];
+}
+
+export interface HadithReviewCard {
+  id: number;
+  hadithId: number;
+  hadith?: HadithItem;
+  reviewType: string;
+  dueDate: string;
+  streak: number;
+  ease: number;
+}
+
+export interface UserHadithProgress {
+  id: number;
+  userId: number;
+  hadithId: number;
+  memorizationStatus: string;
+  reviewCount: number;
+  lastReviewedAt: string;
+  ease: number;
+  interval: number;
+  nextReviewAt: string;
+  score: number;
+  createdAt: string;
+  updatedAt: string;
+  hadith?: HadithItem;
+}
+
+export interface SubmitReviewPayload {
+  hadithId: number;
+  score: number;
+  reviewType: string;
+}
+
+export interface HadithAssessment {
+  id: number;
+  chapterId: number;
+  title: string;
+  description: string;
+  questionCount: number;
+  score: number;
+  passedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HadithDashboardStats {
+  totalBooks: number;
+  totalHadiths: number;
+  totalMemorized: number;
+  currentStreak: number;
+  totalXp: number;
+}
+
+export interface SubmitHadithReviewPayload {
+  hadithId: number;
+  isCorrect: boolean;
 }

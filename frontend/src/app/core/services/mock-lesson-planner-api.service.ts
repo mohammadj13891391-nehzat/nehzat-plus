@@ -177,6 +177,16 @@ import {
   RecitationLevel,
   QuranCurriculum,
   QuranStudentProgress,
+  HadithBook,
+  HadithBookDetail,
+  HadithChapter,
+  HadithChapterDetail,
+  HadithItem,
+  HadithReviewCard,
+  UserHadithProgress,
+  SubmitReviewPayload,
+  HadithAssessment,
+  HadithDashboardStats,
   PersianLiteraturePoet,
   PersianLiteraturePoem,
   PersianLiteratureAnalysis,
@@ -235,6 +245,37 @@ import {
   UpdateExpSciQuizQuestionRequest,
   StudentProgressDto,
   UpdateStudentProgressRequest,
+  LearningPath,
+  LearningLevel,
+  StudyModule,
+  StudyLesson,
+  LessonContentBlock,
+  PersLitQuiz,
+  PersLitQuizQuestion,
+  QuizOption,
+  UserEnrollment,
+  UserLessonProgress,
+  UserQuizAttempt,
+  CreateLearningPathPayload,
+  UpdateLearningPathPayload,
+  CreateLearningLevelPayload,
+  UpdateLearningLevelPayload,
+  CreateStudyModulePayload,
+  UpdateStudyModulePayload,
+  CreateStudyLessonPayload,
+  UpdateStudyLessonPayload,
+  CreateContentBlockPayload,
+  UpdateContentBlockPayload,
+  CreatePersLitQuizPayload,
+  UpdatePersLitQuizPayload,
+  CreatePersLitQuizQuestionPayload,
+  UpdatePersLitQuizQuestionPayload,
+  EnrollUserRequest,
+  QuizResultDto,
+  SubmitQuizRequest,
+  LearningPathTreeDto,
+  LearningDashboardStatsDto,
+  UserDashboardDto,
 } from '../models/lesson-planner.models';
 
 @Injectable()
@@ -3505,6 +3546,205 @@ return this.delayed(summary);
     });
   }
 
+  private mockHadithBooks: HadithBook[] = [
+    { id: 9000, key: 'nawawi40', title: 'چهل حدیث نووی', titleTranslation: 'الأربعون النووية', author: 'یحیی بن شرف النووی', description: 'مجموعه چهل حدیث از سخنان پیامبر اسلام (ص) گردآوری شده توسط امام نووی', hadithCount: 42, chapterCount: 1, language: 'ar', difficultyLevel: 'intermediate', sortOrder: 1, icon: 'book', color: '#2e7d32', createdAt: this.now(), updatedAt: this.now() },
+  ];
+
+  private mockHadithBooksNextId = 9001;
+
+  private mockHadithChapters: HadithChapter[] = [
+    { id: 9000, bookId: 9000, title: 'باب نیت‌ها', titleTranslation: 'باب النيات', description: 'احادیث مرتبط با نیت و اخلاص', chapterNumber: 1, hadithCount: 5, sortOrder: 1, createdAt: this.now(), updatedAt: this.now() },
+  ];
+
+  private mockHadithChaptersNextId = 9001;
+
+  private mockHadithItems: HadithItem[] = [
+    { id: 9000, chapterId: 9000, bookId: 9000, hadithNumber: 1, arabicText: 'إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى', persianTranslation: 'همانا اعمال به نیت‌ها بستگی دارد و هر کس فقط آنچه را که نیت کرده است به دست می‌آورد', explanation: 'این حدیث از مهمترین احادیث اسلامی است و یکی از اصول دین به شمار می‌رود', grade: 'متفق علیه', gradeColor: '#4caf50', sourceReference: 'صحیح بخاری و مسلم', difficultyLevel: 'beginner', keywords: 'نیت, اخلاص, عمل', createdAt: this.now(), updatedAt: this.now() },
+    { id: 9001, chapterId: 9000, bookId: 9000, hadithNumber: 2, arabicText: 'الْإِيمَانُ أَنْ تُؤْمِنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ وَالْيَوْمِ الْآخِرِ وَتُؤْمِنَ بِالْقَدَرِ خَيْرِهِ وَشَرِّهِ', persianTranslation: 'ایمان آن است که به خدا، فرشتگانش، کتاب‌هایش، پیامبرانش، روز قیامت و به تقدیر الهی چه خوب و چه بد ایمان داشته باشی', explanation: 'این حدیث به تعریف ایمان از زبان پیامبر اسلام (ص) می‌پردازد', grade: 'صحیح', gradeColor: '#4caf50', sourceReference: 'صحیح مسلم', difficultyLevel: 'beginner', keywords: 'ایمان, ارکان ایمان, قدر', createdAt: this.now(), updatedAt: this.now() },
+    { id: 9002, chapterId: 9000, bookId: 9000, hadithNumber: 3, arabicText: 'بُنِيَ الْإِسْلَامُ عَلَى خَمْسٍ شَهَادَةِ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ وَإِقَامِ الصَّلَاةِ وَإِيتَاءِ الزَّكَاةِ وَحَجِّ الْبَيْتِ وَصَوْمِ رَمَضَانَ', persianTranslation: 'اسلام بر پنج پایه استوار شده است: شهادت به یگانگی خدا و رسالت محمد، برپایی نماز، پرداخت زکات، حج خانه خدا و روزه رمضان', explanation: 'این حدیث ارکان پنج‌گانه اسلام را بیان می‌کند', grade: 'متفق علیه', gradeColor: '#4caf50', sourceReference: 'صحیح بخاری و مسلم', difficultyLevel: 'beginner', keywords: 'اسلام, ارکان, نماز, زکات, حج, روزه', createdAt: this.now(), updatedAt: this.now() },
+    { id: 9003, chapterId: 9000, bookId: 9000, hadithNumber: 4, arabicText: 'إِنَّ أَحَدَكُمْ يُجْمَعُ خَلْقُهُ فِي بَطْنِ أُمِّهِ أَرْبَعِينَ يَوْمًا نُطْفَةً ثُمَّ يَكُونُ عَلَقَةً مِثْلَ ذَلِكَ ثُمَّ يَكُونُ مُضْغَةً مِثْلَ ذَلِكَ', persianTranslation: 'همانا هر یک از شما به مدت چهل روز در شکم مادر به صورت نطفه جمع می‌شود، سپس به همان مدت به صورت علقه و سپس به همان مدت به صورت مضغه در می‌آید', explanation: 'این حدیث به مراحل خلقت انسان در رحم مادر اشاره دارد', grade: 'متفق علیه', gradeColor: '#4caf50', sourceReference: 'صحیح بخاری و مسلم', difficultyLevel: 'intermediate', keywords: 'خلقت, جنین, تقدیر', createdAt: this.now(), updatedAt: this.now() },
+    { id: 9004, chapterId: 9000, bookId: 9000, hadithNumber: 5, arabicText: 'مَنْ أَحْدَثَ فِي أَمْرِنَا هَذَا مَا لَيْسَ مِنْهُ فَهُوَ رَدٌّ', persianTranslation: 'هر کس در این کار ما (دین) چیزی را وارد کند که از آن نیست، مردود است', explanation: 'این حدیث اساس رد بدعت‌ها در دین است', grade: 'متفق علیه', gradeColor: '#4caf50', sourceReference: 'صحیح بخاری و مسلم', difficultyLevel: 'beginner', keywords: 'بدعت, رد, دین', createdAt: this.now(), updatedAt: this.now() },
+  ];
+
+  private mockHadithItemsNextId = 9005;
+
+  private mockHadithProgress: Map<number, UserHadithProgress> = new Map();
+
+  private mockHadithProgressNextId = 1;
+
+  private mockHadithAssessments: HadithAssessment[] = [];
+
+  private mockHadithAssessmentsNextId = 1;
+
+  getHadithBooks(): Observable<HadithBook[]> {
+    return this.delayed([...this.mockHadithBooks]);
+  }
+
+  getHadithBookById(id: number): Observable<HadithBookDetail> {
+    const book = this.mockHadithBooks.find(b => b.id === id);
+    const chapters = this.mockHadithChapters.filter(c => c.bookId === id);
+    const hadiths = this.mockHadithItems.filter(h => h.bookId === id);
+    return this.delayed({ ...book, chapters, hadiths } as unknown as HadithBookDetail);
+  }
+
+  createHadithBook(payload: Partial<HadithBook>): Observable<HadithBook> {
+    const book: HadithBook = { id: this.mockHadithBooksNextId++, key: '', title: '', titleTranslation: '', author: '', hadithCount: 0, chapterCount: 0, language: '', sortOrder: 0, ...payload, createdAt: this.now(), updatedAt: this.now() };
+    this.mockHadithBooks.push(book);
+    return this.delayed(book);
+  }
+
+  updateHadithBook(id: number, payload: Partial<HadithBook>): Observable<HadithBook> {
+    const idx = this.mockHadithBooks.findIndex(b => b.id === id);
+    if (idx === -1) return throwError(() => new Error('کتاب حدیث یافت نشد'));
+    this.mockHadithBooks[idx] = { ...this.mockHadithBooks[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.mockHadithBooks[idx]);
+  }
+
+  deleteHadithBook(id: number): Observable<void> {
+    this.mockHadithBooks = this.mockHadithBooks.filter(b => b.id !== id);
+    this.mockHadithChapters = this.mockHadithChapters.filter(c => c.bookId !== id);
+    this.mockHadithItems = this.mockHadithItems.filter(h => h.bookId !== id);
+    return this.delayed(undefined);
+  }
+
+  getHadithChaptersByBook(bookId: number): Observable<HadithChapter[]> {
+    return this.delayed(this.mockHadithChapters.filter(c => c.bookId === bookId));
+  }
+
+  getHadithChapterById(id: number): Observable<HadithChapterDetail> {
+    const chapter = this.mockHadithChapters.find(c => c.id === id);
+    const hadiths = this.mockHadithItems.filter(h => h.chapterId === id);
+    return this.delayed({ ...chapter, hadiths } as unknown as HadithChapterDetail);
+  }
+
+  createHadithChapter(payload: Partial<HadithChapter>): Observable<HadithChapter> {
+    const chapter: HadithChapter = { id: this.mockHadithChaptersNextId++, bookId: 0, title: '', titleTranslation: '', chapterNumber: 0, hadithCount: 0, sortOrder: 0, ...payload, createdAt: this.now(), updatedAt: this.now() };
+    this.mockHadithChapters.push(chapter);
+    return this.delayed(chapter);
+  }
+
+  updateHadithChapter(id: number, payload: Partial<HadithChapter>): Observable<HadithChapter> {
+    const idx = this.mockHadithChapters.findIndex(c => c.id === id);
+    if (idx === -1) return throwError(() => new Error('باب حدیث یافت نشد'));
+    this.mockHadithChapters[idx] = { ...this.mockHadithChapters[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.mockHadithChapters[idx]);
+  }
+
+  deleteHadithChapter(id: number): Observable<void> {
+    this.mockHadithChapters = this.mockHadithChapters.filter(c => c.id !== id);
+    this.mockHadithItems = this.mockHadithItems.filter(h => h.chapterId !== id);
+    return this.delayed(undefined);
+  }
+
+  getHadithsByChapter(chapterId: number): Observable<HadithItem[]> {
+    return this.delayed(this.mockHadithItems.filter(h => h.chapterId === chapterId));
+  }
+
+  getHadithById(id: number): Observable<HadithItem> {
+    const hadith = this.mockHadithItems.find(h => h.id === id);
+    if (!hadith) return throwError(() => new Error('حدیث یافت نشد'));
+    return this.delayed(hadith);
+  }
+
+  createHadith(payload: Partial<HadithItem>): Observable<HadithItem> {
+    const hadith: HadithItem = { id: this.mockHadithItemsNextId++, chapterId: 0, bookId: 0, hadithNumber: 0, arabicText: '', persianTranslation: '', ...payload, createdAt: this.now(), updatedAt: this.now() };
+    this.mockHadithItems.push(hadith);
+    return this.delayed(hadith);
+  }
+
+  updateHadith(id: number, payload: Partial<HadithItem>): Observable<HadithItem> {
+    const idx = this.mockHadithItems.findIndex(h => h.id === id);
+    if (idx === -1) return throwError(() => new Error('حدیث یافت نشد'));
+    this.mockHadithItems[idx] = { ...this.mockHadithItems[idx], ...payload, updatedAt: this.now() };
+    return this.delayed(this.mockHadithItems[idx]);
+  }
+
+  deleteHadith(id: number): Observable<void> {
+    this.mockHadithItems = this.mockHadithItems.filter(h => h.id !== id);
+    return this.delayed(undefined);
+  }
+
+  getDueHadithReviews(count: number): Observable<HadithReviewCard[]> {
+    const due: HadithReviewCard[] = [];
+    this.mockHadithProgress.forEach(progress => {
+      if (due.length >= count) return;
+      if (new Date(progress.nextReviewAt) <= new Date()) {
+        const hadith = this.mockHadithItems.find(h => h.id === progress.hadithId);
+        due.push({
+          id: progress.id,
+          hadithId: progress.hadithId,
+          hadith,
+          reviewType: 'memorization',
+          dueDate: progress.nextReviewAt,
+          streak: progress.reviewCount,
+          ease: progress.ease,
+        });
+      }
+    });
+    return this.delayed(due);
+  }
+
+  submitHadithReview(payload: SubmitReviewPayload): Observable<UserHadithProgress> {
+    const hadith = this.mockHadithItems.find(h => h.id === payload.hadithId);
+    if (!hadith) return throwError(() => new Error('حدیث یافت نشد'));
+    const existing = this.mockHadithProgress.get(payload.hadithId);
+    if (existing) {
+      const updated: UserHadithProgress = {
+        ...existing,
+        reviewCount: existing.reviewCount + 1,
+        score: payload.score,
+        lastReviewedAt: this.now(),
+        ease: payload.score >= 3 ? Math.min(existing.ease + 0.2, 2.5) : Math.max(existing.ease - 0.2, 0.5),
+        interval: payload.score >= 3 ? Math.round(existing.interval * 1.5) : 1,
+        nextReviewAt: new Date(Date.now() + (payload.score >= 3 ? existing.interval * 86400000 : 86400000)).toISOString(),
+        updatedAt: this.now(),
+      };
+      this.mockHadithProgress.set(payload.hadithId, updated);
+      return this.delayed(updated);
+    }
+    const progress: UserHadithProgress = {
+      id: this.mockHadithProgressNextId++,
+      userId: 1,
+      hadithId: payload.hadithId,
+      memorizationStatus: 'learning',
+      reviewCount: 1,
+      lastReviewedAt: this.now(),
+      ease: 1.3,
+      interval: 1,
+      nextReviewAt: new Date(Date.now() + 86400000).toISOString(),
+      score: payload.score,
+      createdAt: this.now(),
+      updatedAt: this.now(),
+      hadith,
+    };
+    this.mockHadithProgress.set(payload.hadithId, progress);
+    return this.delayed(progress);
+  }
+
+  getHadithProgressSummary(): Observable<Record<string, number>> {
+    return this.delayed({});
+  }
+
+  getHadithAssessmentsByChapter(chapterId: number): Observable<HadithAssessment[]> {
+    return this.delayed(this.mockHadithAssessments.filter(a => a.chapterId === chapterId));
+  }
+
+  createHadithAssessment(payload: Partial<HadithAssessment>): Observable<HadithAssessment> {
+    const assessment: HadithAssessment = { id: this.mockHadithAssessmentsNextId++, chapterId: 0, title: '', description: '', questionCount: 0, score: 0, passedAt: '', ...payload, createdAt: this.now(), updatedAt: this.now() };
+    this.mockHadithAssessments.push(assessment);
+    return this.delayed(assessment);
+  }
+
+  getHadithDashboardStats(): Observable<HadithDashboardStats> {
+    return this.delayed({
+      totalBooks: this.mockHadithBooks.length,
+      totalHadiths: this.mockHadithItems.length,
+      totalMemorized: 0,
+      currentStreak: 0,
+      totalXp: 0,
+    });
+  }
+
   // Persian Literature
   private mockPoets: PersianLiteraturePoet[] = [
     { id: 1, name: 'سعدی شیرازی', penName: 'سعدی', birthDate: '1210-01-01', deathDate: '1292-01-01', birthPlace: 'شیراز', deathPlace: 'شیراز', era: 'classical', century: 7, biography: 'سعدی شیرازی از بزرگترین شاعران ادبیات فارسی', difficultyLevel: 'beginner', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
@@ -4441,5 +4681,370 @@ return this.delayed(summary);
       totalExperiments: this.expSciExperiments.length,
       totalQuizzes: this.expSciQuizzes.length,
     }).pipe(delay(300));
+  }
+
+  // ===== Persian Literature Learning System =====
+
+  private learningPaths: LearningPath[] = [
+    { id: 1, title: 'بهار ادب', description: 'مسیر یادگیری ادبیات فارسی برای کودکان ۵ تا ۸ سال', slug: 'bahar-adab', ageGroup: '۵-۸ سال', icon: '🌸', color: '#4CAF50', sortOrder: 1, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, title: 'جوانه', description: 'مسیر یادگیری ادبیات فارسی برای نوجوانان ۹ تا ۱۳ سال', slug: 'javaneh', ageGroup: '۹-۱۳ سال', icon: '🌱', color: '#2196F3', sortOrder: 2, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, title: 'سرو', description: 'مسیر یادگیری ادبیات فارسی برای جوانان ۱۴ تا ۱۸ سال', slug: 'sarv', ageGroup: '۱۴-۱۸ سال', icon: '🌲', color: '#9C27B0', sortOrder: 3, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, title: 'چنار', description: 'مسیر یادگیری ادبیات فارسی برای بزرگسالان ۱۹ تا ۵۰ سال', slug: 'chenar', ageGroup: '۱۹-۵۰ سال', icon: '🌳', color: '#FF5722', sortOrder: 4, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private learningLevels: LearningLevel[] = [
+    { id: 1, learningPathId: 1, title: 'مقدماتی', description: 'آشنایی با شعرهای ساده', levelNumber: 1, requiredXp: 0, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, learningPathId: 1, title: 'پیشرفته', description: 'شعرهای بلندتر و قصه‌ها', levelNumber: 2, requiredXp: 100, sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, learningPathId: 2, title: 'مقدماتی', description: 'شعرهای کلاسیک ساده', levelNumber: 1, requiredXp: 0, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, learningPathId: 2, title: 'متوسط', description: 'شعرهای حماسی و عاشقانه', levelNumber: 2, requiredXp: 150, sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 5, learningPathId: 3, title: 'متوسط', description: 'غزلیات حافظ و سعدی', levelNumber: 1, requiredXp: 0, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 6, learningPathId: 4, title: 'پیشرفته', description: 'مثنوی معنوی و شاهنامه', levelNumber: 1, requiredXp: 0, sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private studyModules: StudyModule[] = [
+    { id: 1, learningLevelId: 1, title: 'شعرهای کودکانه', description: 'شعرهای ساده و تصویری', icon: '📜', sortOrder: 1, estimatedDays: 7, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, learningLevelId: 2, title: 'قصه‌های منظوم', description: 'داستان‌های شعرگونه', icon: '📖', sortOrder: 1, estimatedDays: 10, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, learningLevelId: 3, title: 'شعر کلاسیک', description: 'آشنایی با شاعران کلاسیک', icon: '🏛️', sortOrder: 1, estimatedDays: 14, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private studyLessons: StudyLesson[] = [
+    { id: 1, studyModuleId: 1, title: 'گنجشک و پروانه', description: 'شعر درباره دوستی', sortOrder: 1, estimatedMinutes: 15, isPremium: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, studyModuleId: 1, title: 'باران و شادی', description: 'شعر درباره طبیعت', sortOrder: 2, estimatedMinutes: 15, isPremium: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 3, studyModuleId: 2, title: 'حکایت موش و گربه', description: 'داستان عبرت‌آموز', sortOrder: 1, estimatedMinutes: 20, isPremium: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 4, studyModuleId: 3, title: 'مقدمه‌ای بر حافظ', description: 'آشنایی با لسان‌الغیب', sortOrder: 1, estimatedMinutes: 30, isPremium: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private contentBlocks: LessonContentBlock[] = [
+    { id: 1, studyLessonId: 1, blockType: 'poem', title: 'شعر گنجشک', content: 'گنجشک کوچک روی شاخه\nمی‌زند پَر و می‌خواند آواز\nدوستی یعنی همین سادگی\nدل به دل راهی دارد باز', sortOrder: 1, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, studyLessonId: 1, blockType: 'explanation', title: 'معنی شعر', content: 'این شعر درباره دوستی و سادگی است. گنجشک نماد شادی و آزادی است.', sortOrder: 2, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private quizzes: PersLitQuiz[] = [
+    { id: 1, studyLessonId: 1, title: 'آزمون درس اول', description: 'مفاهیم شعر گنجشک', passingScore: 60, maxAttempts: 3, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+    { id: 2, studyLessonId: 4, title: 'آزمون حافظ‌شناسی', description: 'شناخت حافظ و اشعارش', passingScore: 70, maxAttempts: 3, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  ];
+
+  private quizQuestions: PersLitQuizQuestion[] = [
+    { id: 1, quizId: 1, questionText: 'گنجشک در شعر چه کار می‌کند؟', options: [{ id: 1, quizQuestionId: 1, optionText: 'می‌خوابد', label: 'A', text: 'می‌خوابد', isCorrect: false, order: 1, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 2, quizQuestionId: 1, optionText: 'پَر می‌زند و آواز می‌خواند', label: 'B', text: 'پَر می‌زند و آواز می‌خواند', isCorrect: true, order: 2, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 3, quizQuestionId: 1, optionText: 'غذا می‌خورد', label: 'C', text: 'غذا می‌خورد', isCorrect: false, order: 3, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 4, quizQuestionId: 1, optionText: 'پرواز می‌کند', label: 'D', text: 'پرواز می‌کند', isCorrect: false, order: 4, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }], correctAnswer: '1', order: 1, points: 10, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' },
+    { id: 2, quizId: 1, questionText: 'موضوع اصلی شعر چیست؟', options: [{ id: 5, quizQuestionId: 2, optionText: 'تنهایی', label: 'A', text: 'تنهایی', isCorrect: false, order: 1, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 6, quizQuestionId: 2, optionText: 'دوستی', label: 'B', text: 'دوستی', isCorrect: true, order: 2, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 7, quizQuestionId: 2, optionText: 'غم', label: 'C', text: 'غم', isCorrect: false, order: 3, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }, { id: 8, quizQuestionId: 2, optionText: 'سفر', label: 'D', text: 'سفر', isCorrect: false, order: 4, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }], correctAnswer: '1', order: 2, points: 10, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' },
+  ];
+
+  private userEnrollments: UserEnrollment[] = [];
+
+  private lessonProgress: UserLessonProgress[] = [];
+
+  private quizAttempts: UserQuizAttempt[] = [];
+
+  private nextLearningId = 500;
+
+  getLearningPaths(): Observable<LearningPath[]> {
+    return of([...this.learningPaths]).pipe(delay(300));
+  }
+
+  getLearningPath(id: number): Observable<LearningPath> {
+    const path = this.learningPaths.find(p => p.id === id);
+    if (!path) return throwError(() => new Error('مسیر یادگیری یافت نشد'));
+    const levels = this.learningLevels
+      .filter(l => l.learningPathId === id)
+      .map(l => ({
+        ...l,
+        modules: this.studyModules
+          .filter(m => m.learningLevelId === l.id)
+          .map(m => ({
+            ...m,
+            lessons: this.studyLessons
+              .filter(ls => ls.studyModuleId === m.id)
+              .map(ls => ({
+                ...ls,
+                quizzes: this.quizzes.filter(q => q.studyLessonId === ls.id)
+              }))
+          }))
+      }));
+    return of({ ...path, levels }).pipe(delay(300));
+  }
+  getLearningPathTree(id: number): Observable<LearningPathTreeDto> {
+    const path = this.learningPaths.find(p => p.id === id);
+    if (!path) return throwError(() => new Error('مسیر یادگیری یافت نشد'));
+    const levels = this.learningLevels
+      .filter(l => l.learningPathId === id)
+      .map(l => ({
+        ...l,
+        modules: this.studyModules
+          .filter((m: StudyModule) => m.learningLevelId === l.id)
+          .map((m: StudyModule) => ({
+            ...m,
+            lessons: this.studyLessons
+              .filter((sl: StudyLesson) => sl.studyModuleId === m.id)
+              .map((sl: StudyLesson) => ({
+                ...sl,
+                quizzes: this.quizzes.filter((q: PersLitQuiz) => q.studyLessonId === sl.id)
+              }))
+          }))
+      }));
+    return of({ path, levels }).pipe(delay(300));
+  }
+
+  createLearningPath(payload: CreateLearningPathPayload): Observable<LearningPath> {
+    const path: LearningPath = { id: this.nextLearningId++, ...payload, sortOrder: payload.sortOrder ?? 0, isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.learningPaths.push(path);
+    return of(path).pipe(delay(300));
+  }
+
+  updateLearningPath(id: number, payload: UpdateLearningPathPayload): Observable<LearningPath> {
+    const idx = this.learningPaths.findIndex(p => p.id === id);
+    if (idx === -1) return throwError(() => new Error('مسیر یادگیری یافت نشد'));
+    this.learningPaths[idx] = { ...this.learningPaths[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.learningPaths[idx]).pipe(delay(300));
+  }
+
+  deleteLearningPath(id: number): Observable<void> {
+    this.learningPaths = this.learningPaths.filter(p => p.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getLearningLevels(pathId: number): Observable<LearningLevel[]> {
+    return of(this.learningLevels.filter(l => l.learningPathId === pathId)).pipe(delay(300));
+  }
+
+  getLearningLevel(id: number): Observable<LearningLevel> {
+    const level = this.learningLevels.find(l => l.id === id);
+    if (!level) return throwError(() => new Error('سطح یافت نشد'));
+    return of(level).pipe(delay(300));
+  }
+
+  createLearningLevel(payload: CreateLearningLevelPayload): Observable<LearningLevel> {
+    const level: LearningLevel = { id: this.nextLearningId++, ...payload, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.learningLevels.push(level);
+    return of(level).pipe(delay(300));
+  }
+
+  updateLearningLevel(id: number, payload: UpdateLearningLevelPayload): Observable<LearningLevel> {
+    const idx = this.learningLevels.findIndex(l => l.id === id);
+    if (idx === -1) return throwError(() => new Error('سطح یافت نشد'));
+    this.learningLevels[idx] = { ...this.learningLevels[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.learningLevels[idx]).pipe(delay(300));
+  }
+
+  deleteLearningLevel(id: number): Observable<void> {
+    this.learningLevels = this.learningLevels.filter(l => l.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getStudyModules(levelId: number): Observable<StudyModule[]> {
+    return of(this.studyModules.filter(m => m.learningLevelId === levelId)).pipe(delay(300));
+  }
+
+  getStudyModule(id: number): Observable<StudyModule> {
+    const mod = this.studyModules.find(m => m.id === id);
+    if (!mod) return throwError(() => new Error('ماژول یافت نشد'));
+    return of({ ...mod, lessons: this.studyLessons.filter(l => l.studyModuleId === id) }).pipe(delay(300));
+  }
+
+  createStudyModule(payload: CreateStudyModulePayload): Observable<StudyModule> {
+    const mod: StudyModule = { id: this.nextLearningId++, ...payload, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.studyModules.push(mod);
+    return of(mod).pipe(delay(300));
+  }
+
+  updateStudyModule(id: number, payload: UpdateStudyModulePayload): Observable<StudyModule> {
+    const idx = this.studyModules.findIndex(m => m.id === id);
+    if (idx === -1) return throwError(() => new Error('ماژول یافت نشد'));
+    this.studyModules[idx] = { ...this.studyModules[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.studyModules[idx]).pipe(delay(300));
+  }
+
+  deleteStudyModule(id: number): Observable<void> {
+    this.studyModules = this.studyModules.filter(m => m.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getStudyLessons(moduleId: number): Observable<StudyLesson[]> {
+    return of(this.studyLessons.filter(l => l.studyModuleId === moduleId)).pipe(delay(300));
+  }
+
+  getStudyLesson(id: number): Observable<StudyLesson> {
+    const lesson = this.studyLessons.find(l => l.id === id);
+    if (!lesson) return throwError(() => new Error('درس یافت نشد'));
+    return of({ ...lesson, contentBlocks: this.contentBlocks.filter(c => c.studyLessonId === id), quizzes: this.quizzes.filter(q => q.studyLessonId === id) }).pipe(delay(300));
+  }
+  getLessonById(id: number): Observable<StudyLesson> {
+    return this.getStudyLesson(id);
+  }
+
+  createStudyLesson(payload: CreateStudyLessonPayload): Observable<StudyLesson> {
+    const lesson: StudyLesson = { id: this.nextLearningId++, ...payload, isPremium: payload.isPremium ?? false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.studyLessons.push(lesson);
+    return of(lesson).pipe(delay(300));
+  }
+
+  updateStudyLesson(id: number, payload: UpdateStudyLessonPayload): Observable<StudyLesson> {
+    const idx = this.studyLessons.findIndex(l => l.id === id);
+    if (idx === -1) return throwError(() => new Error('درس یافت نشد'));
+    this.studyLessons[idx] = { ...this.studyLessons[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.studyLessons[idx]).pipe(delay(300));
+  }
+
+  deleteStudyLesson(id: number): Observable<void> {
+    this.studyLessons = this.studyLessons.filter(l => l.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getContentBlocks(lessonId: number): Observable<LessonContentBlock[]> {
+    return of(this.contentBlocks.filter(c => c.studyLessonId === lessonId)).pipe(delay(300));
+  }
+
+  createContentBlock(payload: CreateContentBlockPayload): Observable<LessonContentBlock> {
+    const block: LessonContentBlock = { id: this.nextLearningId++, ...payload, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.contentBlocks.push(block);
+    return of(block).pipe(delay(300));
+  }
+
+  updateContentBlock(id: number, payload: UpdateContentBlockPayload): Observable<LessonContentBlock> {
+    const idx = this.contentBlocks.findIndex(c => c.id === id);
+    if (idx === -1) return throwError(() => new Error('بلاک محتوا یافت نشد'));
+    this.contentBlocks[idx] = { ...this.contentBlocks[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.contentBlocks[idx]).pipe(delay(300));
+  }
+
+  deleteContentBlock(id: number): Observable<void> {
+    this.contentBlocks = this.contentBlocks.filter(c => c.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getQuizzes(lessonId: number): Observable<PersLitQuiz[]> {
+    return of(this.quizzes.filter(q => q.studyLessonId === lessonId)).pipe(delay(300));
+  }
+
+  getQuiz(id: number): Observable<PersLitQuiz> {
+    const quiz = this.quizzes.find(q => q.id === id);
+    if (!quiz) return throwError(() => new Error('آزمون یافت نشد'));
+    return of({ ...quiz, questions: this.quizQuestions.filter(q => q.quizId === id) }).pipe(delay(300));
+  }
+  getQuizById(id: number): Observable<PersLitQuiz> {
+    return this.getQuiz(id);
+  }
+
+  createQuiz(payload: CreatePersLitQuizPayload): Observable<PersLitQuiz> {
+    const quiz: PersLitQuiz = { id: this.nextLearningId++, ...payload, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    this.quizzes.push(quiz);
+    return of(quiz).pipe(delay(300));
+  }
+
+  updateQuiz(id: number, payload: UpdatePersLitQuizPayload): Observable<PersLitQuiz> {
+    const idx = this.quizzes.findIndex(q => q.id === id);
+    if (idx === -1) return throwError(() => new Error('آزمون یافت نشد'));
+    this.quizzes[idx] = { ...this.quizzes[idx], ...payload, updatedAt: new Date().toISOString() };
+    return of(this.quizzes[idx]).pipe(delay(300));
+  }
+
+  deleteQuiz(id: number): Observable<void> {
+    this.quizzes = this.quizzes.filter(q => q.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  getQuizQuestions(quizId: number): Observable<PersLitQuizQuestion[]> {
+    return of(this.quizQuestions.filter(q => q.quizId === quizId)).pipe(delay(300));
+  }
+
+  createQuizQuestion(payload: CreatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion> {
+    const q = { id: this.nextLearningId++, ...payload, options: typeof payload.options === 'string' ? JSON.parse(payload.options) : payload.options, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as PersLitQuizQuestion;
+    this.quizQuestions.push(q);
+    return of(q).pipe(delay(300));
+  }
+
+  updateQuizQuestion(id: number, payload: UpdatePersLitQuizQuestionPayload): Observable<PersLitQuizQuestion> {
+    const idx = this.quizQuestions.findIndex(q => q.id === id);
+    if (idx === -1) return throwError(() => new Error('سؤال یافت نشد'));
+    const updated = { ...this.quizQuestions[idx], ...payload, options: payload.options ? (typeof payload.options === 'string' ? JSON.parse(payload.options) : payload.options) : this.quizQuestions[idx].options, updatedAt: new Date().toISOString() } as unknown as PersLitQuizQuestion;
+    this.quizQuestions[idx] = updated;
+    return of(updated).pipe(delay(300));
+  }
+
+  deleteQuizQuestion(id: number): Observable<void> {
+    this.quizQuestions = this.quizQuestions.filter(q => q.id !== id);
+    return of(void 0).pipe(delay(300));
+  }
+
+  enrollUser(payload: EnrollUserRequest): Observable<UserEnrollment> {
+    const enrollment: UserEnrollment = {
+      id: this.nextLearningId++, userId: 1, learningPathId: payload.learningPathId,
+      progress: 0, xpEarned: 0, isCompleted: false,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+    };
+    this.userEnrollments.push(enrollment);
+    return of(enrollment).pipe(delay(300));
+  }
+
+  getUserEnrollments(userId?: number): Observable<UserEnrollment[]> {
+    const enrollments = userId
+      ? this.userEnrollments.filter(e => e.userId === userId)
+      : this.userEnrollments;
+    return of(enrollments.map(e => ({
+      ...e,
+      lessonProgress: this.lessonProgress.filter(p => p.userEnrollmentId === e.id)
+    }))).pipe(delay(300));
+  }
+
+  getUserDashboard(userId: number, pathId: number): Observable<UserDashboardDto> {
+    const enrollment = this.userEnrollments.find(e => e.userId === userId && e.learningPathId === pathId);
+    if (!enrollment) return throwError(() => new Error('ثبت‌نام یافت نشد'));
+    const path = this.learningPaths.find(p => p.id === pathId)!;
+    return of({
+      enrollment,
+      path,
+      currentLevel: undefined,
+      recentLessons: this.lessonProgress.filter(p => p.userEnrollmentId === enrollment.id),
+      quizAttempts: this.quizAttempts.filter(a => a.userEnrollmentId === enrollment.id),
+      xpProgress: { current: enrollment.xpEarned, nextLevel: 100 }
+    }).pipe(delay(300));
+  }
+
+  getLearningDashboardStats(): Observable<LearningDashboardStatsDto> {
+    const totalPaths = this.learningPaths.length;
+    const totalLessons = this.studyLessons.length;
+    const completedLessons = this.lessonProgress.filter(p => p.status === 'completed').length;
+    const averageScore = this.lessonProgress.filter(p => p.score != null).reduce((s, p) => s + (p.score ?? 0), 0) / Math.max(1, this.lessonProgress.filter(p => p.score != null).length);
+    const badges = 0;
+    return of({ totalPaths, completedLessons, totalLessons, averageScore: Math.round(averageScore), badges }).pipe(delay(300));
+  }
+
+  updateLessonProgress(payload: { lessonId: number; status: string; score?: number }): Observable<UserLessonProgress> {
+    const existing = this.lessonProgress.find(p => p.id === payload.lessonId);
+    if (existing) {
+      const idx = this.lessonProgress.indexOf(existing);
+      this.lessonProgress[idx] = { ...existing, status: payload.status, score: payload.score ?? existing.score, updatedAt: new Date().toISOString() };
+      return of(this.lessonProgress[idx]).pipe(delay(300));
+    }
+    const newProgress: UserLessonProgress = {
+      id: this.nextLearningId++,
+      userEnrollmentId: 1,
+      studyLessonId: payload.lessonId,
+      status: payload.status,
+      score: payload.score ?? 0,
+      completedAt: payload.status === 'completed' ? new Date().toISOString() : undefined,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.lessonProgress.push(newProgress);
+    return of(newProgress).pipe(delay(300));
+  }
+
+  submitQuiz(payload: SubmitQuizRequest): Observable<any> {
+    const quiz = this.quizzes.find(q => q.id === payload.quizId);
+    if (!quiz) return throwError(() => new Error('آزمون یافت نشد'));
+    const questions = this.quizQuestions.filter(q => q.quizId === payload.quizId);
+    const answered = payload.answers.map(a => {
+      const q = questions.find(qq => qq.id === a.questionId);
+      const selectedOption = q?.options.find(o => o.optionText === a.answer);
+      const isCorrect = selectedOption?.isCorrect ?? false;
+      return { questionId: a.questionId, answer: a.answer, isCorrect };
+    });
+    const score = answered.filter(a => a.isCorrect).length * (questions.length > 0 ? 100 / questions.length : 0);
+    const isPassed = score >= quiz.passingScore;
+    return of({ quizId: payload.quizId, score, totalPoints: 100, isPassed, attemptNumber: 1, answers: answered }).pipe(delay(300));
+  }
+
+  getUserQuizAttempts(enrollmentId: number): Observable<UserQuizAttempt[]> {
+    return of(this.quizAttempts.filter(a => a.userEnrollmentId === enrollmentId)).pipe(delay(300));
   }
 }

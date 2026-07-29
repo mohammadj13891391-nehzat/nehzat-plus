@@ -155,6 +155,19 @@ import {
   RecitationLevel,
   QuranCurriculum,
   QuranStudentProgress,
+  HadithBook,
+  HadithBookDetail,
+  HadithChapter,
+  HadithChapterDetail,
+  HadithItem,
+  HadithReviewCard,
+  UserHadithProgress,
+  HadithAssessment,
+  SubmitReviewPayload,
+  HadithDashboardStats,
+  HadithReview,
+  HadithReviewStats,
+  SubmitHadithReviewPayload,
   PersianLiteraturePoet,
   PersianLiteraturePoem,
   PersianLiteratureAnalysis,
@@ -239,9 +252,11 @@ import {
   CreatePersLitQuizQuestionPayload,
   UpdatePersLitQuizQuestionPayload,
   EnrollUserRequest,
+  QuizResultDto,
   SubmitQuizRequest,
   LearningPathTreeDto,
   UserDashboardDto,
+  LearningDashboardStatsDto,
 } from '../models/lesson-planner.models';
 
 export abstract class LessonPlannerApi {
@@ -612,6 +627,33 @@ export abstract class LessonPlannerApi {
   abstract getQuranDashboardStats(): Observable<any>;
   abstract searchAyahs(query: string, max?: number): Observable<Ayah[]>;
 
+  // ===== Hadith Module =====
+  abstract getHadithBooks(): Observable<HadithBook[]>;
+  abstract getHadithBookById(id: number): Observable<HadithBookDetail>;
+  abstract createHadithBook(payload: Partial<HadithBook>): Observable<HadithBook>;
+  abstract updateHadithBook(id: number, payload: Partial<HadithBook>): Observable<HadithBook>;
+  abstract deleteHadithBook(id: number): Observable<void>;
+  abstract getHadithChaptersByBook(bookId: number): Observable<HadithChapter[]>;
+  abstract getHadithChapterById(id: number): Observable<HadithChapterDetail>;
+  abstract createHadithChapter(payload: Partial<HadithChapter>): Observable<HadithChapter>;
+  abstract updateHadithChapter(id: number, payload: Partial<HadithChapter>): Observable<HadithChapter>;
+  abstract deleteHadithChapter(id: number): Observable<void>;
+  abstract getHadithsByChapter(chapterId: number): Observable<HadithItem[]>;
+  abstract getHadithById(id: number): Observable<HadithItem>;
+  abstract createHadith(payload: Partial<HadithItem>): Observable<HadithItem>;
+  abstract updateHadith(id: number, payload: Partial<HadithItem>): Observable<HadithItem>;
+  abstract deleteHadith(id: number): Observable<void>;
+  abstract getDueHadithReviews(count: number): Observable<HadithReviewCard[]>;
+  abstract submitHadithReview(payload: SubmitReviewPayload): Observable<UserHadithProgress>;
+  abstract getHadithProgressSummary(): Observable<Record<string, number>>;
+  abstract getHadithAssessmentsByChapter(chapterId: number): Observable<HadithAssessment[]>;
+  abstract createHadithAssessment(payload: Partial<HadithAssessment>): Observable<HadithAssessment>;
+  abstract getHadithDashboardStats(): Observable<HadithDashboardStats>;
+  abstract getHadithChapters(bookId: number): Observable<HadithChapter[]>;
+  abstract getHadithReviewStats(studentId: number): Observable<HadithReviewStats>;
+  abstract getPendingHadithReviews(studentId: number, limit?: number): Observable<HadithItem[]>;
+  abstract submitHadithStudentReview(studentId: number, payload: SubmitHadithReviewPayload): Observable<HadithReview>;
+
   // Persian Literature
   abstract getPoets(difficulty?: string): Observable<PersianLiteraturePoet[]>;
   abstract getPoetById(id: number): Observable<PersianLiteraturePoet>;
@@ -762,7 +804,8 @@ export abstract class LessonPlannerApi {
 
   // ===== Persian Literature Learning System =====
   abstract getLearningPaths(): Observable<LearningPath[]>;
-  abstract getLearningPath(id: number): Observable<LearningPathTreeDto>;
+  abstract getLearningPath(id: number): Observable<LearningPath>;
+  abstract getLearningPathTree(id: number): Observable<LearningPathTreeDto>;
   abstract createLearningPath(payload: CreateLearningPathPayload): Observable<LearningPath>;
   abstract updateLearningPath(id: number, payload: UpdateLearningPathPayload): Observable<LearningPath>;
   abstract deleteLearningPath(id: number): Observable<void>;
@@ -781,6 +824,7 @@ export abstract class LessonPlannerApi {
 
   abstract getStudyLessons(moduleId: number): Observable<StudyLesson[]>;
   abstract getStudyLesson(id: number): Observable<StudyLesson>;
+  abstract getLessonById(id: number): Observable<StudyLesson>;
   abstract createStudyLesson(payload: CreateStudyLessonPayload): Observable<StudyLesson>;
   abstract updateStudyLesson(id: number, payload: UpdateStudyLessonPayload): Observable<StudyLesson>;
   abstract deleteStudyLesson(id: number): Observable<void>;
@@ -792,6 +836,7 @@ export abstract class LessonPlannerApi {
 
   abstract getQuizzes(lessonId: number): Observable<PersLitQuiz[]>;
   abstract getQuiz(id: number): Observable<PersLitQuiz>;
+  abstract getQuizById(id: number): Observable<PersLitQuiz>;
   abstract createQuiz(payload: CreatePersLitQuizPayload): Observable<PersLitQuiz>;
   abstract updateQuiz(id: number, payload: UpdatePersLitQuizPayload): Observable<PersLitQuiz>;
   abstract deleteQuiz(id: number): Observable<void>;
@@ -802,10 +847,11 @@ export abstract class LessonPlannerApi {
   abstract deleteQuizQuestion(id: number): Observable<void>;
 
   abstract enrollUser(payload: EnrollUserRequest): Observable<UserEnrollment>;
-  abstract getUserEnrollments(userId: number): Observable<UserEnrollment[]>;
+  abstract getUserEnrollments(userId?: number): Observable<UserEnrollment[]>;
   abstract getUserDashboard(userId: number, pathId: number): Observable<UserDashboardDto>;
+  abstract getLearningDashboardStats(): Observable<LearningDashboardStatsDto>;
 
-  abstract updateLessonProgress(progressId: number, status: string, score?: number): Observable<UserLessonProgress>;
+  abstract updateLessonProgress(payload: { lessonId: number; status: string; score?: number }): Observable<UserLessonProgress>;
 
   abstract submitQuiz(payload: SubmitQuizRequest): Observable<QuizResultDto>;
   abstract getUserQuizAttempts(enrollmentId: number): Observable<UserQuizAttempt[]>;

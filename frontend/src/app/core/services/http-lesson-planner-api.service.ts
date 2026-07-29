@@ -157,6 +157,16 @@ Ring,
   RecitationLevel,
   QuranCurriculum,
   QuranStudentProgress,
+  HadithBook,
+  HadithBookDetail,
+  HadithChapter,
+  HadithChapterDetail,
+  HadithItem,
+  HadithReviewCard,
+  UserHadithProgress,
+  SubmitReviewPayload,
+  HadithAssessment,
+  HadithDashboardStats,
   PersianLiteraturePoet,
   PersianLiteraturePoem,
   PersianLiteratureAnalysis,
@@ -216,6 +226,7 @@ Ring,
   StudentProgressDto,
   UpdateStudentProgressRequest,
   LearningPath,
+  LearningPathTreeDto,
   LearningLevel,
   StudyModule,
   StudyLesson,
@@ -241,8 +252,9 @@ Ring,
   CreatePersLitQuizQuestionPayload,
   UpdatePersLitQuizQuestionPayload,
   EnrollUserRequest,
+  QuizResultDto,
   SubmitQuizRequest,
-  LearningPathTreeDto,
+  LearningDashboardStatsDto,
   UserDashboardDto,
 } from '../models/lesson-planner.models';
 import { LessonPlannerApi } from './lesson-planner-api.interface';
@@ -1424,6 +1436,87 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
     return this.http.get<any>(this.url('/api/quran/dashboard/stats'));
   }
 
+  // Hadith
+  getHadithBooks(): Observable<HadithBook[]> {
+    return this.http.get<HadithBook[]>(this.url('/api/hadith/books'));
+  }
+  getHadithBookById(id: number): Observable<HadithBookDetail> {
+    return this.http.get<HadithBookDetail>(this.url(`/api/hadith/books/${id}`));
+  }
+  createHadithBook(payload: Partial<HadithBook>): Observable<HadithBook> {
+    return this.http.post<HadithBook>(this.url('/api/hadith/books'), payload);
+  }
+  updateHadithBook(id: number, payload: Partial<HadithBook>): Observable<HadithBook> {
+    return this.http.put<HadithBook>(this.url(`/api/hadith/books/${id}`), payload);
+  }
+  deleteHadithBook(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/api/hadith/books/${id}`));
+  }
+  getHadithChaptersByBook(bookId: number): Observable<HadithChapter[]> {
+    return this.http.get<HadithChapter[]>(this.url(`/api/hadith/books/${bookId}/chapters`));
+  }
+  getHadithChapterById(id: number): Observable<HadithChapterDetail> {
+    return this.http.get<HadithChapterDetail>(this.url(`/api/hadith/chapters/${id}`));
+  }
+  createHadithChapter(payload: Partial<HadithChapter>): Observable<HadithChapter> {
+    return this.http.post<HadithChapter>(this.url('/api/hadith/chapters'), payload);
+  }
+  updateHadithChapter(id: number, payload: Partial<HadithChapter>): Observable<HadithChapter> {
+    return this.http.put<HadithChapter>(this.url(`/api/hadith/chapters/${id}`), payload);
+  }
+  deleteHadithChapter(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/api/hadith/chapters/${id}`));
+  }
+  getHadithsByChapter(chapterId: number): Observable<HadithItem[]> {
+    return this.http.get<HadithItem[]>(this.url(`/api/hadith/chapters/${chapterId}/hadiths`));
+  }
+  getHadithById(id: number): Observable<HadithItem> {
+    return this.http.get<HadithItem>(this.url(`/api/hadith/hadiths/${id}`));
+  }
+  createHadith(payload: Partial<HadithItem>): Observable<HadithItem> {
+    return this.http.post<HadithItem>(this.url('/api/hadith/hadiths'), payload);
+  }
+  updateHadith(id: number, payload: Partial<HadithItem>): Observable<HadithItem> {
+    return this.http.put<HadithItem>(this.url(`/api/hadith/hadiths/${id}`), payload);
+  }
+  deleteHadith(id: number): Observable<void> {
+    return this.http.delete<void>(this.url(`/api/hadith/hadiths/${id}`));
+  }
+  getDueHadithReviews(count: number): Observable<HadithReviewCard[]> {
+    let params = new HttpParams().set('count', count.toString());
+    return this.http.get<HadithReviewCard[]>(this.url('/api/hadith/reviews/due'), { params });
+  }
+  submitHadithReview(payload: SubmitReviewPayload): Observable<UserHadithProgress> {
+    return this.http.post<UserHadithProgress>(this.url('/api/hadith/reviews'), payload);
+  }
+  getHadithProgressSummary(): Observable<Record<string, number>> {
+    return this.http.get<Record<string, number>>(this.url('/api/hadith/progress/summary'));
+  }
+  getHadithAssessmentsByChapter(chapterId: number): Observable<HadithAssessment[]> {
+    return this.http.get<HadithAssessment[]>(this.url(`/api/hadith/chapters/${chapterId}/assessments`));
+  }
+  createHadithAssessment(payload: Partial<HadithAssessment>): Observable<HadithAssessment> {
+    return this.http.post<HadithAssessment>(this.url('/api/hadith/assessments'), payload);
+  }
+  getHadithDashboardStats(): Observable<HadithDashboardStats> {
+    return this.http.get<HadithDashboardStats>(this.url('/api/hadith/dashboard/stats'));
+  }
+
+  getHadithChapters(bookId: number): Observable<HadithChapter[]> {
+    return this.http.get<HadithChapter[]>(this.url(`/api/hadith/books/${bookId}/chapters`));
+  }
+  getHadithReviewStats(studentId: number): Observable<HadithReviewStats> {
+    return this.http.get<HadithReviewStats>(this.url(`/api/hadith/reviews/stats/${studentId}`));
+  }
+  getPendingHadithReviews(studentId: number, limit?: number): Observable<HadithItem[]> {
+    let params = new HttpParams();
+    if (limit) params = params.set('limit', limit.toString());
+    return this.http.get<HadithItem[]>(this.url(`/api/hadith/reviews/pending/${studentId}`), { params });
+  }
+  submitHadithStudentReview(studentId: number, payload: SubmitHadithReviewPayload): Observable<HadithReview> {
+    return this.http.post<HadithReview>(this.url(`/api/hadith/reviews/${studentId}`), payload);
+  }
+
   // Persian Literature
   getPoets(difficulty?: string): Observable<PersianLiteraturePoet[]> {
     let params = new HttpParams();
@@ -1834,8 +1927,11 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
   getLearningPaths(): Observable<LearningPath[]> {
     return this.http.get<LearningPath[]>(this.url('/learning/paths'));
   }
-  getLearningPath(id: number): Observable<LearningPathTreeDto> {
-    return this.http.get<LearningPathTreeDto>(this.url(`/learning/paths/${id}`));
+  getLearningPath(id: number): Observable<LearningPath> {
+    return this.http.get<LearningPath>(this.url(`/learning/paths/${id}`));
+  }
+  getLearningPathTree(id: number): Observable<LearningPathTreeDto> {
+    return this.http.get<LearningPathTreeDto>(this.url(`/learning/paths/${id}/tree`));
   }
   createLearningPath(payload: CreateLearningPathPayload): Observable<LearningPath> {
     return this.http.post<LearningPath>(this.url('/learning/paths'), payload);
@@ -1885,6 +1981,9 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
   getStudyLesson(id: number): Observable<StudyLesson> {
     return this.http.get<StudyLesson>(this.url(`/learning/lessons/${id}`));
   }
+  getLessonById(id: number): Observable<StudyLesson> {
+    return this.http.get<StudyLesson>(this.url(`/learning/lessons/${id}`));
+  }
   createStudyLesson(payload: CreateStudyLessonPayload): Observable<StudyLesson> {
     return this.http.post<StudyLesson>(this.url('/learning/lessons'), payload);
   }
@@ -1914,6 +2013,9 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
   getQuiz(id: number): Observable<PersLitQuiz> {
     return this.http.get<PersLitQuiz>(this.url(`/learning/quizzes/${id}`));
   }
+  getQuizById(id: number): Observable<PersLitQuiz> {
+    return this.http.get<PersLitQuiz>(this.url(`/learning/quizzes/${id}`));
+  }
   createQuiz(payload: CreatePersLitQuizPayload): Observable<PersLitQuiz> {
     return this.http.post<PersLitQuiz>(this.url('/learning/quizzes'), payload);
   }
@@ -1940,15 +2042,19 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
   enrollUser(payload: EnrollUserRequest): Observable<UserEnrollment> {
     return this.http.post<UserEnrollment>(this.url('/learning/enroll'), payload);
   }
-  getUserEnrollments(userId: number): Observable<UserEnrollment[]> {
-    return this.http.get<UserEnrollment[]>(this.url(`/learning/enrollments/${userId}`));
+  getUserEnrollments(userId?: number): Observable<UserEnrollment[]> {
+    const url = userId ? this.url(`/learning/enrollments/${userId}`) : this.url('/learning/enrollments');
+    return this.http.get<UserEnrollment[]>(url);
   }
   getUserDashboard(userId: number, pathId: number): Observable<UserDashboardDto> {
     return this.http.get<UserDashboardDto>(this.url(`/learning/dashboard/${userId}/${pathId}`));
   }
+  getLearningDashboardStats(): Observable<LearningDashboardStatsDto> {
+    return this.http.get<LearningDashboardStatsDto>(this.url('/learning/dashboard/stats'));
+  }
 
-  updateLessonProgress(progressId: number, status: string, score?: number): Observable<UserLessonProgress> {
-    return this.http.patch<UserLessonProgress>(this.url(`/learning/progress/${progressId}`), { status, score });
+  updateLessonProgress(payload: { lessonId: number; status: string; score?: number }): Observable<UserLessonProgress> {
+    return this.http.patch<UserLessonProgress>(this.url(`/learning/progress/${payload.lessonId}`), { status: payload.status, score: payload.score });
   }
 
   submitQuiz(payload: SubmitQuizRequest): Observable<any> {
