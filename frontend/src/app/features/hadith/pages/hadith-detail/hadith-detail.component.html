@@ -1,0 +1,63 @@
+<div class="hadith-container" dir="rtl">
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="error-banner" *ngIf="errorMessage()">
+    <p>{{ errorMessage() }}</p>
+  </div>
+
+  <div class="hadith-detail" *ngIf="hadith && !loading()">
+    <mat-card class="arabic-card">
+      <mat-card-content>
+        <p class="arabic-text">{{ hadith.arabicText }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="translation-card">
+      <mat-card-header>
+        <mat-card-title>ترجمه فارسی</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="persian-text">{{ hadith.persianTranslation }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card" *ngIf="hadith.isnad">
+      <mat-card-header>
+        <mat-card-title>سند</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ hadith.isnad }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card" *ngIf="hadith.explanation">
+      <mat-card-header>
+        <mat-card-title>شرح حدیث</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ hadith.explanation }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card" *ngIf="hadith.fiqhTakeaway">
+      <mat-card-header>
+        <mat-card-title>احکام فقهی</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ hadith.fiqhTakeaway }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="hadith-footer">
+      <span class="grade-badge" *ngIf="hadith.grade" [ngClass]="getGradeClass()">
+        {{ hadith.grade }}
+      </span>
+      <span class="source-ref" *ngIf="hadith.sourceReference">
+        {{ hadith.sourceReference }}
+      </span>
+      <button mat-icon-button *ngIf="hadith.audioUrl" (click)="toggleAudio()" class="audio-btn">
+        <mat-icon>{{ audioPlaying() ? 'pause' : 'headphones' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

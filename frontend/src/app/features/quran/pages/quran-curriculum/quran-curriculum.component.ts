@@ -1,12 +1,13 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 import { QuranCurriculum } from '../../services/quran.service';
 import { QuranService } from '../../services/quran.service';
 
 @Component({
   selector: 'app-quran-curriculum',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatCardModule],
   templateUrl: './quran-curriculum.component.html',
   styleUrls: ['./quran-curriculum.component.scss']
 })

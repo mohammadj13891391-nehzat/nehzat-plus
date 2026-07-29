@@ -1,0 +1,122 @@
+.hadith-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.header-card {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-hover));
+  color: #fff;
+
+  mat-card-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.spinner {
+  margin: 40px auto;
+}
+
+.loading-text {
+  text-align: center;
+  padding: 16px;
+  color: var(--lp-muted);
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px;
+}
+
+.error-message {
+  color: var(--lp-danger);
+  font-weight: 500;
+}
+
+.hadith-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hadith-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.hadith-number {
+  background: var(--lp-gold-light);
+  color: var(--lp-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.arabic-text {
+  font-family: 'Amiri', 'Scheherazade New', serif;
+  direction: rtl;
+  font-size: 1.1em;
+  line-height: 1.8;
+}
+
+.hadith-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hadith-source {
+  color: var(--lp-muted);
+  font-size: 0.85em;
+}
+
+.grade-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+.grade-sahih {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.grade-hasan {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+}
+
+.grade-daif {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.audio-indicator {
+  color: var(--lp-primary);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--lp-muted);
+}

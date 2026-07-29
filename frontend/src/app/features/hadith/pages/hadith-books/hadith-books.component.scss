@@ -1,0 +1,92 @@
+.hadith-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.header-card {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-hover));
+  color: #fff;
+
+  mat-card-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.spinner {
+  margin: 40px auto;
+}
+
+.loading-text {
+  text-align: center;
+  padding: 16px;
+  color: var(--lp-muted);
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px;
+}
+
+.error-message {
+  color: var(--lp-danger);
+  font-weight: 500;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.book-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.book-icon {
+  background: var(--lp-gold-light);
+  color: var(--lp-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-author {
+  color: var(--lp-muted);
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.book-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+  color: var(--lp-muted);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--lp-muted);
+}

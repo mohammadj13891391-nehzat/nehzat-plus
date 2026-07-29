@@ -1,7 +1,7 @@
 <div class="tajweed-container">
   <h2>قوانین تجوید</h2>
 
-  <mat-progress-spinner *ngIf="loading" mode="indeterminate"></mat-progress-spinner>
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate"></mat-progress-spinner>
 
   <div class="error-banner" *ngIf="errorMessage()">
     <p>{{ errorMessage() }}</p>

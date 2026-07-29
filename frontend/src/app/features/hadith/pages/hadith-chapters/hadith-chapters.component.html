@@ -1,0 +1,35 @@
+<div class="hadith-container" dir="rtl">
+  <mat-card class="header-card" *ngIf="book">
+    <mat-card-header>
+      <mat-card-title><h1>{{ book.title }}</h1></mat-card-title>
+      <mat-card-subtitle>{{ book.titleTranslation }} — {{ book.author }}</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="loading-text" *ngIf="loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="errorMessage()">
+    <p class="error-message">{{ errorMessage() }}</p>
+  </div>
+
+  <div class="chapter-list" *ngIf="!loading() && !errorMessage()">
+    <mat-card *ngFor="let chapter of chapters" class="chapter-card" [routerLink]="['/hadith/chapters', chapter.id, 'hadiths']">
+      <mat-card-header>
+        <div mat-card-avatar class="chapter-number">{{ chapter.chapterNumber }}</div>
+        <mat-card-title>{{ chapter.title }}</mat-card-title>
+        <mat-card-subtitle>{{ chapter.titleTranslation }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="hadith-count">{{ chapter.hadithCount }} حدیث</span>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading() && !errorMessage() && chapters.length === 0" class="empty-state">
+    <p>بابی یافت نشد.</p>
+  </div>
+</div>

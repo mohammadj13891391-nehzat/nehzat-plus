@@ -7,7 +7,7 @@
 .header-card {
   padding: 24px;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, var(--lp-accent), var(--lp-accent-secondary, #37474f));
+  background: linear-gradient(135deg, var(--lp-primary), var(--lp-primary-hover));
   border-radius: 12px;
   color: white;
 }
@@ -65,7 +65,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lp-accent-bg, rgba(26,35,126,0.08));
+  background: color-mix(in srgb, var(--lp-primary) 8%, transparent);
   border-radius: 12px;
   flex-shrink: 0;
 }

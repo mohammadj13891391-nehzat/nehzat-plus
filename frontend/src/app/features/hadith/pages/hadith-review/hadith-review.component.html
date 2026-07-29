@@ -1,0 +1,69 @@
+<div class="hadith-container" dir="rtl">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title><h1>مرور حدیث</h1></mat-card-title>
+      <mat-card-subtitle>تکرار فاصله‌دار احادیث</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <div class="stats-bar" *ngIf="stats">
+    <div class="stat">
+      <span class="stat-value">{{ stats.masteredCount }}</span>
+      <span class="stat-label">تسلط یافته</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ stats.learningCount }}</span>
+      <span class="stat-label">در حال یادگیری</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ stats.newCount }}</span>
+      <span class="stat-label">جدید</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">{{ stats.streakDays }}</span>
+      <span class="stat-label">روز پیاپی</span>
+    </div>
+  </div>
+
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="error-state" *ngIf="errorMessage()">
+    <p class="error-message">{{ errorMessage() }}</p>
+  </div>
+
+  <div class="review-complete" *ngIf="reviewComplete() && !loading()">
+    <mat-icon class="complete-icon">check_circle</mat-icon>
+    <h2>تبریک!</h2>
+    <p>تمام حدیث‌های امروز را مرور کردید.</p>
+  </div>
+
+  <div class="review-card" *ngIf="currentHadith && !loading() && !reviewComplete()" [class.flipped]="flipped()">
+    <div class="card-front" *ngIf="!flipped()" (click)="flipCard()">
+      <p class="arabic-text">{{ currentHadith.arabicText }}</p>
+      <p class="flip-hint">برای دیدن ترجمه کلیک کنید</p>
+    </div>
+
+    <div class="card-back" *ngIf="flipped()">
+      <div class="translation-section">
+        <h3>ترجمه فارسی</h3>
+        <p class="persian-text">{{ currentHadith.persianTranslation }}</p>
+      </div>
+
+      <div class="explanation-section" *ngIf="currentHadith.explanation">
+        <h3>شرح</h3>
+        <p>{{ currentHadith.explanation }}</p>
+      </div>
+
+      <div class="review-actions">
+        <button mat-raised-button color="warn" (click)="submitReview(false)" [disabled]="reviewing()" class="action-btn">
+          <mat-icon>close</mat-icon>
+          نمی‌دانم
+        </button>
+        <button mat-raised-button color="primary" (click)="submitReview(true)" [disabled]="reviewing()" class="action-btn">
+          <mat-icon>check</mat-icon>
+          یاد گرفتم
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

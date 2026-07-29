@@ -1,0 +1,41 @@
+<div class="hadith-container" dir="rtl">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title><h1>احادیث</h1></mat-card-title>
+      <mat-card-subtitle>فهرست احادیث این باب</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="loading-text" *ngIf="loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="errorMessage()">
+    <p class="error-message">{{ errorMessage() }}</p>
+  </div>
+
+  <div class="hadith-list" *ngIf="!loading() && !errorMessage()">
+    <mat-card *ngFor="let hadith of hadiths" class="hadith-card" [routerLink]="['/hadith/hadith', hadith.id]">
+      <mat-card-header>
+        <div mat-card-avatar class="hadith-number">{{ hadith.hadithNumber }}</div>
+        <mat-card-title class="arabic-text">{{ hadith.arabicText | slice:0:80 }}...</mat-card-title>
+        <mat-card-subtitle>{{ hadith.persianTranslation | slice:0:100 }}...</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="hadith-meta">
+          <span class="hadith-source" *ngIf="hadith.sourceReference">{{ hadith.sourceReference }}</span>
+          <span class="grade-badge" *ngIf="hadith.grade" [ngClass]="getGradeClass(hadith)">{{ hadith.grade }}</span>
+          <span class="audio-indicator" *ngIf="hadith.audioUrl">
+            <mat-icon>headphones</mat-icon>
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading() && !errorMessage() && hadiths.length === 0" class="empty-state">
+    <p>حدیثی یافت نشد.</p>
+  </div>
+</div>

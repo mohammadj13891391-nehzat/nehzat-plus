@@ -1,0 +1,47 @@
+<div class="hadith-container" dir="rtl">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title><h1>کتاب‌های حدیث</h1></mat-card-title>
+      <mat-card-subtitle>مجموعه کتاب‌های حدیثی</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <mat-progress-spinner *ngIf="loading()" mode="indeterminate" class="spinner"></mat-progress-spinner>
+
+  <div class="loading-text" *ngIf="loading()">
+    <p>در حال بارگذاری...</p>
+  </div>
+
+  <div class="error-state" *ngIf="errorMessage()">
+    <p class="error-message">{{ errorMessage() }}</p>
+  </div>
+
+  <div class="book-grid" *ngIf="!loading() && !errorMessage()">
+    <mat-card *ngFor="let book of books" class="book-card" [routerLink]="['/hadith/books', book.id, 'chapters']">
+      <mat-card-header>
+        <div mat-card-avatar class="book-icon">
+          <mat-icon>menu_book</mat-icon>
+        </div>
+        <mat-card-title>{{ book.title }}</mat-card-title>
+        <mat-card-subtitle>{{ book.titleTranslation }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="book-author">{{ book.author }}</p>
+        <div class="book-stats">
+          <span class="stat-item">
+            <mat-icon>article</mat-icon>
+            {{ book.hadithCount }} حدیث
+          </span>
+          <span class="stat-item">
+            <mat-icon>bookmark</mat-icon>
+            {{ book.chapterCount }} باب
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading() && !errorMessage() && books.length === 0" class="empty-state">
+    <p>کتابی یافت نشد.</p>
+  </div>
+</div>
