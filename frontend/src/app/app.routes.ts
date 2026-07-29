@@ -65,6 +65,12 @@ export const routes: Routes = [
       import('./features/surveys/surveys.routes').then((m) => m.SURVEYS_ROUTES),
   },
   {
+    path: 'hadith',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/hadith/hadith.routes').then((m) => m.HADITH_ROUTES),
+  },
+  {
     path: 'quran',
     canActivate: [authGuard],
     loadChildren: () =>

@@ -187,6 +187,9 @@ import {
   SubmitReviewPayload,
   HadithAssessment,
   HadithDashboardStats,
+  HadithReviewStats,
+  HadithReview,
+  SubmitHadithReviewPayload,
   PersianLiteraturePoet,
   PersianLiteraturePoem,
   PersianLiteratureAnalysis,
@@ -3743,6 +3746,50 @@ return this.delayed(summary);
       currentStreak: 0,
       totalXp: 0,
     });
+  }
+
+  getHadithChapters(bookId: number): Observable<HadithChapter[]> {
+    return this.delayed(this.mockHadithChapters.filter(c => c.bookId === bookId));
+  }
+
+  getHadithReviewStats(studentId: number): Observable<HadithReviewStats> {
+    const totalHadith = this.mockHadithItems.length;
+    const mastered = this.mockHadithProgress.size > 0
+      ? Array.from(this.mockHadithProgress.values()).filter(p => p.memorizationStatus === 'mastered').length
+      : 0;
+    return this.delayed({
+      totalReviewed: this.mockHadithProgress.size,
+      masteredCount: mastered,
+      learningCount: this.mockHadithProgress.size - mastered,
+      newCount: totalHadith - this.mockHadithProgress.size,
+      streakDays: 0,
+      accuracyRate: 0,
+    });
+  }
+
+  getPendingHadithReviews(studentId: number, limit?: number): Observable<HadithItem[]> {
+    let pending = this.mockHadithItems.filter(h => !this.mockHadithProgress.has(h.id));
+    if (limit) pending = pending.slice(0, limit);
+    return this.delayed(pending);
+  }
+
+  submitHadithStudentReview(studentId: number, payload: SubmitHadithReviewPayload): Observable<HadithReview> {
+    const hadith = this.mockHadithItems.find(h => h.id === payload.hadithId);
+    if (!hadith) return throwError(() => new Error('حدیث یافت نشد'));
+    const review: HadithReview = {
+      id: this.mockHadithProgressNextId++,
+      studentId,
+      hadithId: payload.hadithId,
+      hadith,
+      reviewCount: 1,
+      correctCount: payload.isCorrect ? 1 : 0,
+      lastReviewedAt: this.now(),
+      nextReviewAt: new Date(Date.now() + 86400000).toISOString(),
+      masteryLevel: payload.isCorrect ? 1 : 0,
+      createdAt: this.now(),
+      updatedAt: this.now(),
+    };
+    return this.delayed(review);
   }
 
   // Persian Literature
