@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Domain.Entities.Quran;
+using EducationalPlatform.Nehzat.Domain.Entities.Hadith;
 using EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature;
+using EducationalPlatform.Nehzat.Domain.Entities.Math;
 using EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature;
 using EducationalPlatform.Nehzat.Domain.Entities.Math;
-using EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences;
+using EducationalPlatform.Nehzat.Domain.Entities.ExperimentalScience;
 using PersLitQuiz = EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature.Quiz;
 using PersLitQuizQuestion = EducationalPlatform.Nehzat.Domain.Entities.PersianLiterature.QuizQuestion;
 
@@ -89,9 +91,20 @@ public class AppDbContext : DbContext
   public DbSet<QuranCurriculum> QuranCurricula => Set<QuranCurriculum>();
   public DbSet<QuranStudentProgress> QuranStudentProgresses => Set<QuranStudentProgress>();
 
+  public DbSet<HadithBook> HadithBooks => Set<HadithBook>();
+  public DbSet<HadithChapter> HadithChapters => Set<HadithChapter>();
+  public DbSet<Hadith> Hadiths => Set<Hadith>();
+  public DbSet<UserHadithProgress> UserHadithProgresses => Set<UserHadithProgress>();
+  public DbSet<HadithAssessment> HadithAssessments => Set<HadithAssessment>();
+
   public DbSet<Poet> PersianLiteraturePoets => Set<Poet>();
   public DbSet<Poem> PersianLiteraturePoems => Set<Poem>();
   public DbSet<PoemAnalysis> PersianLiteratureAnalyses => Set<PoemAnalysis>();
+
+  public DbSet<MathTopic> MathTopics => Set<MathTopic>();
+  public DbSet<MathLesson> MathLessons => Set<MathLesson>();
+  public DbSet<MathQuestion> MathQuestions => Set<MathQuestion>();
+  public DbSet<MathProgress> MathProgresses => Set<MathProgress>();
 
   public DbSet<ArabicPoet> ArabicLiteraturePoets => Set<ArabicPoet>();
   public DbSet<ArabicPoem> ArabicLiteraturePoems => Set<ArabicPoem>();
@@ -119,13 +132,12 @@ public class AppDbContext : DbContext
   public DbSet<UserLessonProgress> UserLessonProgresses => Set<UserLessonProgress>();
   public DbSet<UserQuizAttempt> UserQuizAttempts => Set<UserQuizAttempt>();
 
-  public DbSet<Phase> ExperimentalSciencesPhases => Set<Phase>();
-  public DbSet<Topic> ExperimentalSciencesTopics => Set<Topic>();
-  public DbSet<Lesson> ExperimentalSciencesLessons => Set<Lesson>();
-  public DbSet<Experiment> ExperimentalSciencesExperiments => Set<Experiment>();
-  public DbSet<Domain.Entities.ExperimentalSciences.Quiz> ExperimentalSciencesQuizzes => Set<Domain.Entities.ExperimentalSciences.Quiz>();
-  public DbSet<Domain.Entities.ExperimentalSciences.QuizQuestion> ExperimentalSciencesQuizQuestions => Set<Domain.Entities.ExperimentalSciences.QuizQuestion>();
-  public DbSet<StudentProgress> ExperimentalSciencesStudentProgresses => Set<StudentProgress>();
+  public DbSet<ExperimentTopic> ExperimentalScienceTopics => Set<ExperimentTopic>();
+  public DbSet<Experiment> ExperimentalScienceExperiments => Set<Experiment>();
+  public DbSet<ExperimentAnalysis> ExperimentalScienceAnalyses => Set<ExperimentAnalysis>();
+  public DbSet<ExperimentQuestion> ExperimentalScienceQuestions => Set<ExperimentQuestion>();
+  public DbSet<ExperimentAttempt> ExperimentalScienceAttempts => Set<ExperimentAttempt>();
+  public DbSet<ExperimentProgress> ExperimentalScienceProgresses => Set<ExperimentProgress>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -838,6 +850,39 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<HadithBook>(entity =>
+        {
+            entity.HasMany(e => e.Chapters)
+                  .WithOne(e => e.HadithBook)
+                  .HasForeignKey(e => e.HadithBookId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<HadithChapter>(entity =>
+        {
+            entity.HasMany(e => e.Hadiths)
+                  .WithOne(e => e.HadithChapter)
+                  .HasForeignKey(e => e.HadithChapterId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Hadith>(entity =>
+        {
+            entity.HasMany(e => e.UserProgress)
+                  .WithOne(e => e.Hadith)
+                  .HasForeignKey(e => e.HadithId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UserHadithProgress>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.HadithId }).IsUnique();
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<Poet>(entity =>
         {
             entity.HasIndex(e => e.Name).IsUnique();
@@ -896,6 +941,7 @@ public class AppDbContext : DbContext
         {
             entity.HasIndex(e => e.Title);
             entity.HasIndex(e => e.DifficultyLevel);
+            entity.HasIndex(e => e.DisplayOrder);
         });
 
         modelBuilder.Entity<MathLesson>(entity =>
@@ -905,6 +951,8 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.MathTopicId)
                   .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(e => e.MathTopicId);
+            entity.HasIndex(e => e.DisplayOrder);
+            entity.HasIndex(e => e.IsPublished);
         });
 
         modelBuilder.Entity<MathQuestion>(entity =>
@@ -914,6 +962,7 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.MathLessonId)
                   .OnDelete(DeleteBehavior.Cascade);
             entity.HasIndex(e => e.MathLessonId);
+            entity.HasIndex(e => e.DifficultyLevel);
         });
 
         modelBuilder.Entity<MathProgress>(entity =>
@@ -921,17 +970,17 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Student)
                   .WithMany()
                   .HasForeignKey(e => e.StudentId)
-                  .OnDelete(DeleteBehavior.Restrict);
+                  .OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(e => e.Lesson)
                   .WithMany(l => l.ProgressRecords)
                   .HasForeignKey(e => e.MathLessonId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(e => e.Question)
                   .WithMany()
                   .HasForeignKey(e => e.MathQuestionId)
                   .IsRequired(false)
                   .OnDelete(DeleteBehavior.SetNull);
-            entity.HasIndex(e => new { e.StudentId, e.MathLessonId });
+            entity.HasIndex(e => new { e.StudentId, e.MathLessonId, e.MathQuestionId });
         });
 
         modelBuilder.Entity<MathScholar>(entity =>
@@ -1059,6 +1108,54 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.QuizId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ExperimentTopic>(entity =>
+        {
+            entity.HasIndex(e => e.Title).IsUnique();
+            entity.HasIndex(e => e.DifficultyLevel);
+        });
+
+        modelBuilder.Entity<Experiment>(entity =>
+        {
+            entity.HasOne(e => e.Topic)
+                  .WithMany(t => t.Experiments)
+                  .HasForeignKey(e => e.TopicId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.TopicId);
+            entity.HasIndex(e => e.DifficultyLevel);
+        });
+
+        modelBuilder.Entity<ExperimentAnalysis>(entity =>
+        {
+            entity.HasOne(e => e.Experiment)
+                  .WithMany(e => e.Analyses)
+                  .HasForeignKey(e => e.ExperimentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.AnalysisType);
+        });
+
+        modelBuilder.Entity<ExperimentQuestion>(entity =>
+        {
+            entity.HasOne(e => e.Experiment)
+                  .WithMany(e => e.Questions)
+                  .HasForeignKey(e => e.ExperimentId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.ExperimentId);
+        });
+
+        modelBuilder.Entity<ExperimentAttempt>(entity =>
+        {
+            entity.HasOne(e => e.Student).WithMany().HasForeignKey(e => e.StudentId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Question).WithMany().HasForeignKey(e => e.QuestionId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => new { e.StudentId, e.QuestionId });
+        });
+
+        modelBuilder.Entity<ExperimentProgress>(entity =>
+        {
+            entity.HasIndex(e => new { e.StudentId, e.ExperimentId }).IsUnique();
+            entity.HasOne(e => e.Student).WithMany().HasForeignKey(e => e.StudentId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Experiment).WithMany().HasForeignKey(e => e.ExperimentId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

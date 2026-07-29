@@ -11,6 +11,7 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column(TypeName = "int")]
         public int TopicId { get; set; }
 
         [Column(TypeName = "nvarchar(200)")]
@@ -20,19 +21,16 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences
         public string Content { get; set; } = string.Empty;
 
         [Column(TypeName = "nvarchar(500)")]
-        public string VideoUrl { get; set; } = string.Empty;
+        public string? VideoUrl { get; set; }
 
         [Column(TypeName = "int")]
         public int Order { get; set; }
-
-        [Column(TypeName = "int")]
-        public int EstimatedMinutes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Relationships
-        [ForeignKey("TopicId")]
+        [JsonIgnore]
         public Topic Topic { get; set; } = null!;
 
         [JsonIgnore]

@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences;
 
 namespace EducationalPlatform.Nehzat.Application.DTOs
 {
-    // Phase DTOs
+    // ===== Phase DTOs =====
     public record CreatePhaseRequest(
         [Required] string Title,
         string Description = "",
@@ -28,13 +27,13 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         DateTime UpdatedAt
     );
 
-    // Topic DTOs
+    // ===== Topic DTOs =====
     public record CreateTopicRequest(
         [Required] int PhaseId,
         [Required] string Title,
         string Description = "",
         int Order = 0,
-        DifficultyLevel DifficultyLevel = DifficultyLevel.Child,
+        string DifficultyLevel = "child",
         string Icon = ""
     );
 
@@ -43,7 +42,7 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         string? Title = null,
         string? Description = null,
         int? Order = null,
-        DifficultyLevel? DifficultyLevel = null,
+        string? DifficultyLevel = null,
         string? Icon = null
     );
 
@@ -53,13 +52,13 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         string Title,
         string Description,
         int Order,
-        DifficultyLevel DifficultyLevel,
+        string DifficultyLevel,
         string Icon,
         DateTime CreatedAt,
         DateTime UpdatedAt
     );
 
-    // Lesson DTOs
+    // ===== Lesson DTOs =====
     public record CreateLessonRequest(
         [Required] int TopicId,
         [Required] string Title,
@@ -90,7 +89,7 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         DateTime UpdatedAt
     );
 
-    // Experiment DTOs
+    // ===== Experiment DTOs =====
     public record CreateExperimentRequest(
         [Required] int LessonId,
         [Required] string Title,
@@ -127,7 +126,7 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         DateTime UpdatedAt
     );
 
-    // Quiz DTOs (prefixed to avoid conflict with LearningDtos)
+    // ===== Quiz DTOs =====
     public record CreateExpSciQuizRequest(
         [Required] int LessonId,
         [Required] string Title,
@@ -152,11 +151,11 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         DateTime UpdatedAt
     );
 
-    // QuizQuestion DTOs (prefixed to avoid conflict with LearningDtos)
+    // ===== QuizQuestion DTOs =====
     public record CreateExpSciQuizQuestionRequest(
         [Required] int QuizId,
         [Required] string QuestionText,
-        [Required] string Options,
+        string Options = "[]",
         int CorrectAnswer = 0,
         string Explanation = "",
         int Order = 0,
@@ -186,30 +185,32 @@ namespace EducationalPlatform.Nehzat.Application.DTOs
         DateTime UpdatedAt
     );
 
-    // StudentProgress DTOs
+    // ===== StudentProgress DTOs =====
     public record CreateStudentProgressRequest(
         [Required] int StudentId,
         [Required] int TopicId,
-        ProgressStatus Status = ProgressStatus.NotStarted,
+        string Status = "notStarted",
         double Score = 0,
         int CompletedLessons = 0,
-        int TotalLessons = 0
+        int TotalLessons = 0,
+        DateTime? CompletedAt = null
     );
 
     public record UpdateStudentProgressRequest(
         int? StudentId = null,
         int? TopicId = null,
-        ProgressStatus? Status = null,
+        string? Status = null,
         double? Score = null,
         int? CompletedLessons = null,
-        int? TotalLessons = null
+        int? TotalLessons = null,
+        DateTime? CompletedAt = null
     );
 
     public record StudentProgressDto(
         int Id,
         int StudentId,
         int TopicId,
-        ProgressStatus Status,
+        string Status,
         double Score,
         int CompletedLessons,
         int TotalLessons,

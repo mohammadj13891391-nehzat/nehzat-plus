@@ -87,8 +87,10 @@ builder.Services.AddScoped<ICompetitionService, CompetitionService>();
     builder.Services.AddScoped<ArabicLiteratureDataSeeder>();
     builder.Services.AddScoped<IMathService, MathService>();
     builder.Services.AddScoped<MathDataSeeder>();
-    builder.Services.AddScoped<IExperimentalSciencesService, ExperimentalSciencesService>();
-    builder.Services.AddScoped<ExperimentalSciencesDataSeeder>();
+    builder.Services.AddScoped<IExperimentalScienceService, ExperimentalScienceService>();
+    builder.Services.AddScoped<ExperimentalScienceDataSeeder>();
+    builder.Services.AddScoped<IHadithService, HadithService>();
+    builder.Services.AddScoped<HadithDataSeeder>();
 
     builder.Services.AddCors(options =>
 {
@@ -163,11 +165,17 @@ using (var scope = app.Services.CreateScope())
     var quranSeeder = scope.ServiceProvider.GetRequiredService<QuranDataSeeder>();
     await quranSeeder.SeedAsync();
 
+    var hadithSeeder = scope.ServiceProvider.GetRequiredService<HadithDataSeeder>();
+    await hadithSeeder.SeedAsync();
+
     var arabicLitSeeder = scope.ServiceProvider.GetRequiredService<ArabicLiteratureDataSeeder>();
     await arabicLitSeeder.SeedAsync();
 
     var mathSeeder = scope.ServiceProvider.GetRequiredService<MathDataSeeder>();
     await mathSeeder.SeedAsync();
+
+    var experimentalScienceSeeder = scope.ServiceProvider.GetRequiredService<ExperimentalScienceDataSeeder>();
+    await experimentalScienceSeeder.SeedAsync();
 
     var logService = scope.ServiceProvider.GetRequiredService<ILogService>();
 

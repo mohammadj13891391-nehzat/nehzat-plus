@@ -11,6 +11,7 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column(TypeName = "int")]
         public int LessonId { get; set; }
 
         [Column(TypeName = "nvarchar(200)")]
@@ -25,20 +26,14 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences
         [Column(TypeName = "text")]
         public string ExpectedResult { get; set; } = string.Empty;
 
-        [Column(TypeName = "text")]
-        public string SafetyNotes { get; set; } = string.Empty;
-
         [Column(TypeName = "int")]
         public int Order { get; set; }
-
-        [Column(TypeName = "int")]
-        public int EstimatedMinutes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Relationships
-        [ForeignKey("LessonId")]
+        [JsonIgnore]
         public Lesson Lesson { get; set; } = null!;
     }
 }

@@ -11,31 +11,26 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.ExperimentalSciences
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column(TypeName = "int")]
         public int QuizId { get; set; }
 
         [Column(TypeName = "text")]
         public string QuestionText { get; set; } = string.Empty;
 
-        [Column(TypeName = "text")]
-        public string Options { get; set; } = "[]";
+        [Column(TypeName = "nvarchar(max)")]
+        public string Options { get; set; } = string.Empty;
 
-        [Column(TypeName = "int")]
-        public int CorrectAnswer { get; set; }
-
-        [Column(TypeName = "text")]
-        public string Explanation { get; set; } = string.Empty;
+        [Column(TypeName = "nvarchar(500)")]
+        public string CorrectAnswer { get; set; } = string.Empty;
 
         [Column(TypeName = "int")]
         public int Order { get; set; }
-
-        [Column(TypeName = "int")]
-        public int Points { get; set; } = 10;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Relationships
-        [ForeignKey("QuizId")]
+        [JsonIgnore]
         public Quiz Quiz { get; set; } = null!;
     }
 }
