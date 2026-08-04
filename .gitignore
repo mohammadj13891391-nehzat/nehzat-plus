@@ -8,6 +8,10 @@ stdout.txt
 dist/
 **/dist/
 
+# Dependencies
+node_modules/
+**/node_modules/
+
 # IDE
 .omo/
 .playwright-mcp/
