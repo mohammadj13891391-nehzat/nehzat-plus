@@ -199,9 +199,13 @@ public class HadithController : ControllerBase
     [HttpPost("review")]
     public async Task<IActionResult> SubmitReview([FromBody] SubmitReviewRequest request)
     {
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized(new { message = "شناسه کاربر نامعتبر است." });
+
         try
         {
-            var result = await _service.SubmitReviewAsync(request);
+            var result = await _service.SubmitReviewAsync(userId, request);
             return Ok(result);
         }
         catch (InvalidOperationException ex)
@@ -213,15 +217,21 @@ public class HadithController : ControllerBase
     [HttpGet("progress/summary")]
     public async Task<IActionResult> GetProgressSummary()
     {
-        // TODO: userId extraction from claims should be implemented
-        return Ok(await _service.GetProgressSummaryAsync());
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized(new { message = "شناسه کاربر نامعتبر است." });
+
+        return Ok(await _service.GetProgressSummaryAsync(userId));
     }
 
     [HttpGet("progress/{hadithId}")]
     public async Task<IActionResult> GetUserProgress(int hadithId)
     {
-        // TODO: userId extraction from claims should be implemented
-        var result = await _service.GetUserProgressAsync(hadithId);
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized(new { message = "شناسه کاربر نامعتبر است." });
+
+        var result = await _service.GetUserProgressAsync(userId, hadithId);
         if (result == null) return NotFound(new { message = "پیشرفت حدیث یافت نشد." });
         return Ok(result);
     }
@@ -251,6 +261,10 @@ public class HadithController : ControllerBase
     [HttpGet("dashboard-stats")]
     public async Task<IActionResult> GetDashboardStats()
     {
-        return Ok(await _service.GetDashboardStatsAsync());
+        var userIdClaim = User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return Unauthorized(new { message = "شناسه کاربر نامعتبر است." });
+
+        return Ok(await _service.GetDashboardStatsAsync(userId));
     }
 }

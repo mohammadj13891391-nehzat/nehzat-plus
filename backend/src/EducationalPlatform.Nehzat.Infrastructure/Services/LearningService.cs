@@ -402,7 +402,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services
             return entity;
         }
 
-        public async Task<Quiz> UpdateQuizAsync(int id, UpdateQuizRequest request)
+        public async Task<Quiz> UpdateQuizAsync(int id, UpdateLearningQuizRequest request)
         {
             var existing = await _db.Quizzes.FindAsync(id)
                 ?? throw new KeyNotFoundException("کوئیز یافت نشد.");
@@ -437,7 +437,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services
 
         // ========== QuizQuestion operations ==========
 
-        public async Task<QuizQuestion> CreateQuestionAsync(CreateQuizQuestionRequest request)
+        public async Task<QuizQuestion> CreateQuestionAsync(CreateLearningQuizQuestionRequest request)
         {
             var quizExists = await _db.Quizzes.AnyAsync(q => q.Id == request.QuizId);
             if (!quizExists)
@@ -457,7 +457,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services
             return entity;
         }
 
-        public async Task<QuizQuestion> UpdateQuestionAsync(int id, UpdateQuizQuestionRequest request)
+        public async Task<QuizQuestion> UpdateQuestionAsync(int id, UpdateLearningQuizQuestionRequest request)
         {
             var existing = await _db.QuizQuestions.FindAsync(id)
                 ?? throw new KeyNotFoundException("سوال یافت نشد.");

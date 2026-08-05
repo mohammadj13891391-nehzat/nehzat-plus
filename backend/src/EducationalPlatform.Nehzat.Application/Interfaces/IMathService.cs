@@ -34,6 +34,21 @@ namespace EducationalPlatform.Nehzat.Application.Interfaces
         Task<MathProgress> RecordProgressAsync(MathProgress progress);
         Task<MathProgress> UpdateProgressAsync(int id, MathProgress progress);
 
+        // Scholar operations
+        Task<List<MathScholar>> GetAllScholarsAsync();
+        Task<MathScholar?> FindScholarByIdAsync(int id);
+        Task<MathScholar> CreateScholarAsync(MathScholar scholar);
+        Task<MathScholar> UpdateScholarAsync(int id, MathScholar scholar);
+        Task DeleteScholarAsync(int id);
+        Task<List<MathScholar>> SearchScholarsAsync(string query, int maxResults = 10);
+
+        // Contribution operations
+        Task<List<MathContribution>> GetContributionsByTopicAsync(int topicId);
+        Task<List<MathContribution>> GetContributionsByScholarAsync(int scholarId);
+        Task<MathContribution> CreateContributionAsync(MathContribution contribution);
+        Task<MathContribution> UpdateContributionAsync(int id, MathContribution contribution);
+        Task DeleteContributionAsync(int id);
+
         // Dashboard
         Task<Dictionary<string, object>> GetDashboardStatsAsync();
     }

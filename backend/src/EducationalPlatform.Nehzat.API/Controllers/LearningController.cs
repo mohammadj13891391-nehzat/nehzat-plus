@@ -323,7 +323,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         }
 
         [HttpPost("quizzes")]
-        public async Task<IActionResult> CreateQuiz([FromBody] CreateQuizRequest request)
+        public async Task<IActionResult> CreateQuiz([FromBody] CreateLearningQuizRequest request)
         {
             try
             {
@@ -337,7 +337,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         }
 
         [HttpPut("quizzes/{id}")]
-        public async Task<IActionResult> UpdateQuiz(int id, [FromBody] UpdateQuizRequest request)
+        public async Task<IActionResult> UpdateQuiz(int id, [FromBody] UpdateLearningQuizRequest request)
         {
             try
             {
@@ -373,7 +373,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         // ========== Question endpoints ==========
 
         [HttpPost("questions")]
-        public async Task<IActionResult> CreateQuestion([FromBody] CreateQuizQuestionRequest request)
+        public async Task<IActionResult> CreateQuestion([FromBody] CreateLearningQuizQuestionRequest request)
         {
             try
             {
@@ -387,7 +387,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         }
 
         [HttpPut("questions/{id}")]
-        public async Task<IActionResult> UpdateQuestion(int id, [FromBody] UpdateQuizQuestionRequest request)
+        public async Task<IActionResult> UpdateQuestion(int id, [FromBody] UpdateLearningQuizQuestionRequest request)
         {
             try
             {

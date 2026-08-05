@@ -105,6 +105,8 @@ public class AppDbContext : DbContext
   public DbSet<MathLesson> MathLessons => Set<MathLesson>();
   public DbSet<MathQuestion> MathQuestions => Set<MathQuestion>();
   public DbSet<MathProgress> MathProgresses => Set<MathProgress>();
+  public DbSet<MathScholar> MathScholars => Set<MathScholar>();
+  public DbSet<MathContribution> MathContributions => Set<MathContribution>();
 
   public DbSet<ArabicPoet> ArabicLiteraturePoets => Set<ArabicPoet>();
   public DbSet<ArabicPoem> ArabicLiteraturePoems => Set<ArabicPoem>();
@@ -112,13 +114,6 @@ public class AppDbContext : DbContext
   public DbSet<ArabicCourse> ArabicCourses => Set<ArabicCourse>();
   public DbSet<ArabicLesson> ArabicLessons => Set<ArabicLesson>();
   public DbSet<ArabicUserProgress> ArabicUserProgresses => Set<ArabicUserProgress>();
-
-  public DbSet<MathTopic> MathTopics => Set<MathTopic>();
-  public DbSet<MathLesson> MathLessons => Set<MathLesson>();
-  public DbSet<MathQuestion> MathQuestions => Set<MathQuestion>();
-  public DbSet<MathProgress> MathProgresses => Set<MathProgress>();
-  public DbSet<MathScholar> MathScholars => Set<MathScholar>();
-  public DbSet<MathContribution> MathContributions => Set<MathContribution>();
 
   public DbSet<LearningPath> LearningPaths => Set<LearningPath>();
   public DbSet<LearningLevel> LearningLevels => Set<LearningLevel>();
