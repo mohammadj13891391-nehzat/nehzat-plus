@@ -48,9 +48,36 @@ export class LoginComponent implements OnInit {
   }
 
   protected loginAs(role: string): void {
-    this.authService.mockLogin(role);
-    const target = this.authService.getDashboardPathForRole(role);
-    void this.router.navigateByUrl(target);
+    const account = this.devAccountForRole(role);
+    this.authService.signinLocal(account.username, account.password).subscribe({
+      next: () => {
+        const target = this.authService.getDashboardPathForRole(role);
+        void this.router.navigateByUrl(target);
+      },
+      error: () => {
+        console.warn(`[LoginComponent] centralized sign-in failed for role=${role}; falling back to mock login`);
+        this.authService.mockLogin(role);
+        const target = this.authService.getDashboardPathForRole(role);
+        void this.router.navigateByUrl(target);
+      }
+    });
+  }
+
+  private devAccountForRole(role: string): { username: string; password: string } {
+    switch (role) {
+      case 'admin':
+      case 'manager':
+      case 'headquarters':
+      case 'branch_manager':
+      case 'coach':
+      case 'parent':
+      case 'evaluator':
+        return { username: 'test', password: 'password' };
+      case 'trainee':
+        return { username: 'ali.ahmadi', password: 'password123' };
+      default:
+        return { username: 'test', password: 'password' };
+    }
   }
 
   protected redirectToOtuh2(): void {

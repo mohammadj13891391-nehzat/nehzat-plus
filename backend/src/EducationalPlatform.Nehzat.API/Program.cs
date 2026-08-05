@@ -1,9 +1,11 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using EducationalPlatform.Nehzat.API.Middleware;
+using EducationalPlatform.Nehzat.API.Security;
 using EducationalPlatform.Nehzat.Application.Interfaces;
 using EducationalPlatform.Nehzat.Infrastructure.Clients;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
@@ -34,7 +36,6 @@ builder.Services.AddAuthentication(options =>
     // Keep JWT claim names as-is (sub, role) instead of remapping to WIF URIs,
     // so NameClaimType="sub" and RoleClaimType="role" match the OTUH2 token.
     options.MapInboundClaims = false;
-    options.Authority = oidcConfig["Authority"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false,
@@ -42,8 +43,46 @@ builder.Services.AddAuthentication(options =>
         NameClaimType = "sub",
         RoleClaimType = "role"
     };
-    options.RequireHttpsMetadata = oidcConfig.GetValue<bool>("RequireHttpsMetadata");
+
+    // Production: validate tokens against the OTUH2 authority (JWKS).
+    // Development: allow a local HMAC-issued token for the dev-only /auth/signin flow
+    // without running OTUH2. UseMockAuth defaults false here; only enabled in Development
+    // via appsettings.Development.json "DevAuth".
+    var devAuthConfig = builder.Configuration.GetSection("DevAuth");
+    var useMockAuth = builder.Environment.IsDevelopment()
+        && devAuthConfig.GetValue<bool>("UseMockAuth", false);
+
+    if (useMockAuth)
+    {
+        var devKey = devAuthConfig["DevAuthKey"]
+            ?? throw new InvalidOperationException("DevAuth:DevAuthKey is required when DevAuth:UseMockAuth is true");
+        var issuer = devAuthConfig["Issuer"] ?? "http://localhost:3000";
+        var audience = devAuthConfig["Audience"] ?? "http://localhost:3000";
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(devKey));
+
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateAudience = true,
+            ValidAudiences = new[] { audience },
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = key,
+            ValidateLifetime = true,
+            ValidTypes = new[] { "at+jwt" },
+            NameClaimType = "sub",
+            RoleClaimType = "role"
+        };
+    }
+    else
+    {
+        options.Authority = oidcConfig["Authority"];
+        options.RequireHttpsMetadata = oidcConfig.GetValue<bool>("RequireHttpsMetadata");
+    }
 });
+
+builder.Services.AddSingleton<IDevTokenService, DevTokenService>();
 
 builder.Services.AddAuthorization();
 

@@ -4,8 +4,9 @@ import { Observable, of, switchMap, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { OTUH2_API } from './otuh2-api.token';
+import { LESSON_PLANNER_API } from './lesson-planner-api.token';
 import { AuthTokenResponse, RegisterPayload, ApiMessageResponse } from '../models/otuh2.models';
-import { CurrentUser } from '../models/lesson-planner.models';
+import { AuthSigninPayload, AuthSigninResponse, CurrentUser } from '../models/lesson-planner.models';
 import { resolveOtuh2BaseUrl } from './api-url.util';
 
 const ACCESS_TOKEN_KEY = 'otuh2_access_token';
@@ -38,6 +39,7 @@ interface JwtPayload {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(OTUH2_API);
+  private readonly lessonPlannerApi = inject(LESSON_PLANNER_API);
   private readonly router = inject(Router);
   private readonly storage = inject(LOCAL_STORAGE);
 
@@ -50,6 +52,20 @@ export class AuthService {
         }
         if (response.refresh_token) {
           this.storage.setItem(REFRESH_TOKEN_KEY, response.refresh_token);
+        }
+      })
+    );
+  }
+
+  /** Centralized dev sign-in via the backend /auth/signin endpoint.
+   *  Stores the returned token as both access+id token so the Bearer
+   *  interceptor attaches it to every subsequent API call. */
+  signinLocal(username: string, password: string): Observable<AuthSigninResponse> {
+    return this.lessonPlannerApi.signin({ username, password }).pipe(
+      tap(response => {
+        if (response.token) {
+          sessionStorage.setItem(ACCESS_TOKEN_KEY, response.token);
+          sessionStorage.setItem(ID_TOKEN_KEY, response.token);
         }
       })
     );
