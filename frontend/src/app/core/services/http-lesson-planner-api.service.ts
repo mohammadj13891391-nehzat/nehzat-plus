@@ -496,6 +496,10 @@ export class HttpLessonPlannerApi extends LessonPlannerApi {
     return this.http.get<Student[]>(this.url('/admin/students'));
   }
 
+  getCoachStudents(): Observable<Student[]> {
+    return this.http.get<Student[]>(this.url('/students'));
+  }
+
   createStudent(payload: CreateStudentPayload): Observable<Student> {
     return this.http.post<Student>(this.url('/admin/students'), payload);
   }

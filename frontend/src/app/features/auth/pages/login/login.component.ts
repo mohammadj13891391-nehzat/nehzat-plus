@@ -63,22 +63,23 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  private devAccountForRole(role: string): { username: string; password: string } {
-    switch (role) {
-      case 'admin':
-      case 'manager':
-      case 'headquarters':
-      case 'branch_manager':
-      case 'coach':
-      case 'parent':
-      case 'evaluator':
-        return { username: 'test', password: 'password' };
-      case 'trainee':
-        return { username: 'ali.ahmadi', password: 'password123' };
-      default:
-        return { username: 'test', password: 'password' };
-    }
-  }
+    private devAccountForRole(role: string): { username: string; password: string } {
+        switch (role) {
+          case 'admin':
+          case 'manager':
+          case 'headquarters':
+          case 'branch_manager':
+          case 'parent':
+          case 'evaluator':
+            return { username: 'test', password: 'password' };
+          case 'coach':
+            return { username: 'coach', password: 'password123' };
+          case 'trainee':
+            return { username: 'ali.ahmadi', password: 'password123' };
+          default:
+            return { username: 'test', password: 'password' };
+        }
+      }
 
   protected redirectToOtuh2(): void {
     window.location.href = this.otuh2LoginUrl;

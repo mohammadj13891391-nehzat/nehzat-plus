@@ -72,7 +72,7 @@ export class CoachComponent implements OnInit {
   loadStudents(): void {
     this._loading.set(true);
     this._error.set(null);
-    this.api.getStudents().subscribe({
+    this.api.getCoachStudents().subscribe({
       next: (students) => {
         this._rows.set(students.map(s => ({ student: s, progress: null, loading: false, error: null })));
         this._loading.set(false);

@@ -1063,6 +1063,10 @@ export class MockLessonPlannerApi extends LessonPlannerApi {
     return this.delayed([...this.students]);
   }
 
+  getCoachStudents(): Observable<Student[]> {
+    return this.delayed([...this.students]);
+  }
+
   createStudent(payload: CreateStudentPayload): Observable<Student> {
     const student: Student = {
       id: this.nextId(this.students),
