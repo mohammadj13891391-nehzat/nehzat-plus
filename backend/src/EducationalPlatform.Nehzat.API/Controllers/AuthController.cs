@@ -79,6 +79,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
             new DevAccount("ali.ahmadi",        "password123",   "trainee", 101, 101,  1, "/assets/avatars/ali.png"),
             new DevAccount("fateme.mohammadi",  "password123",   "trainee", 102, 102,  1, "/assets/avatars/fateme.png"),
             new DevAccount("mohammad.rezaei",     "password123",   "trainee", 103, 103,  1, "/assets/avatars/mohammad.png"),
+            new DevAccount("coach",               "password123",   "coach",   200, null, 1, null),
         };
 
         public static DevAccount? Lookup(string username, string password)
