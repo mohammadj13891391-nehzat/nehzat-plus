@@ -68,7 +68,7 @@
 4. ✅ دکمه "مشاهده تکالیف" → زیرصفحه `coach-student-detail` (در همین پوشه) با `getStudentSubmissions`.
 5. ✅ فیلتر تاریخ با `shared/persian-date-input`.
 
-**API تأییدشده:** `getStudents`, `getStudentProgress`, `getStudentSubmissions`, `getAssignmentProgress`.
+**API تأییدشده:** `getCoachStudents`, `getStudentProgress`, `getStudentSubmissions`, `getAssignmentProgress`.
 
 ---
 

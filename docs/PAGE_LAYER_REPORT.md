@@ -74,7 +74,7 @@ features/coach/
 └── coach-dashboard/            # زیرصفحه داشبورد مربی
     └── coach-dashboard.component.ts
 ```
-- **لایه‌ها:** Component → AuthService (hasRole) → LessonPlannerApi (getStudents, getStudentProgress)
+- **لایه‌ها:** Component → AuthService (hasRole) → LessonPlannerApi (getCoachStudents, getStudentProgress)
 - **نیاز:** جداسازی HTML + SCSS
 
 ### Parent (~۸۰۰ خط / ۴ فایل TS + ۳ HTML + ۳ SCSS)
