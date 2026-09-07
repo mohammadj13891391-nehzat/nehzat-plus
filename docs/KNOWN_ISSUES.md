@@ -6,15 +6,20 @@ Recorded per user request so these don't get lost. Recent fixes pushed to `main`
 
 ## Frontend
 
-### 1. NG0203 — `takeUntilDestroyed()` outside injection context
+### 1. NG0203 — `takeUntilDestroyed()` outside injection context — RESOLVED
 - Location: `frontend/src/app/features/dashboard/dashboard.component.ts` → `loadBiweeklyProgress` (called from `selectCourse`).
-- Error: `NG0203 takeUntilDestroyed() can only be used within an injection context`.
-- Likely cause: calling `signal()`/`computed()` or `takeUntilDestroyed` outside an injection context. Confirm the call site of `loadBiweeklyProgress` and whether it runs outside injection context.
+- **Fixed**: `.pipe(takeUntilDestroyed())` → `.pipe(takeUntilDestroyed(this.destroyRef))`. `takeUntilDestroyed()` with no argument grabs `DestroyRef` from the injection context, but `loadBiweeklyProgress` runs outside it (plain method via subscribe callback). Verified: NG0203 no longer appears in the console after trainee login.
 
 ### 2. 404s (endpoints/assets not implemented or missing)
 - `GET /assets/nehzat.png` — missing image asset.
 - `GET /api/quran/dashboard/stats` — endpoint not implemented.
 - `GET /daily-nudges` — endpoint not implemented.
+
+### 3. Trainee 403 on assessment history
+- `GET /assessments/student/1/course/1/history` → 403 for trainee. Similar auth gap to the student-403 fix (the `AssessmentsController` likely has a class-level role filter excluding `trainee`). Surfaces on trainee dashboard via `loadAssessmentHistory()`.
+
+### 4. Admin-widget errors on dashboard (pre-existing)
+- `403` on `/admin/students` and `/admin/branch-managers`, and `TypeError: data.coaches.filter is not a function`. These appear in the trainee dashboard console; investigation needed to determine which widget fetches admin data on the trainee view.
 
 ## Untracked-in-worktree (not ours, do not stage)
 

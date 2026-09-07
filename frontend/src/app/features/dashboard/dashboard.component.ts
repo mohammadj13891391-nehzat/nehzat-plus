@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.api
       .getBiweeklyProgress(studentId)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (progress) => {
           this.biweeklyProgress = this.mapToChartData(progress);
