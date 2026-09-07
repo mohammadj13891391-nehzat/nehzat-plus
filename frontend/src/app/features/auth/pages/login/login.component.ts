@@ -4,6 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../core/services/auth.service';
 import { resolveOtuh2BaseUrl } from '../../../../core/services/api-url.util';
+import { PhaseSwitcherComponent } from '../../../dashboard/components/phase-switcher.component';
 
 interface RoleOption {
   key: string;
@@ -15,7 +16,7 @@ interface RoleOption {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, PhaseSwitcherComponent],
   templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit {
@@ -37,6 +38,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
+      this.authService.loadProfileAndEnrich();
       const user = this.authService.getCurrentUser();
       const target = user
         ? this.authService.getDashboardPathForRole(user.userType)
@@ -51,12 +53,14 @@ export class LoginComponent implements OnInit {
     const account = this.devAccountForRole(role);
     this.authService.signinLocal(account.username, account.password).subscribe({
       next: () => {
+        this.authService.loadProfileAndEnrich();
         const target = this.authService.getDashboardPathForRole(role);
         void this.router.navigateByUrl(target);
       },
       error: () => {
         console.warn(`[LoginComponent] centralized sign-in failed for role=${role}; falling back to mock login`);
         this.authService.mockLogin(role);
+        this.authService.loadProfileAndEnrich();
         const target = this.authService.getDashboardPathForRole(role);
         void this.router.navigateByUrl(target);
       }

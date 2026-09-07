@@ -24,6 +24,11 @@ export class MockProfileService {
     approvalStatus: 'approved',
     createdAt: new Date().toISOString(),
     lastLoginAt: new Date().toISOString(),
+    phase: 'E',
+    ageCluster: 'youngAdult',
+    ringNumber: 8,
+    maktabNameEn: 'central',
+    age: 21,
   };
 
   private notifications: NotificationSettingsDto = {

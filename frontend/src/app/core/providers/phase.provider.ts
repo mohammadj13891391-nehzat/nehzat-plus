@@ -18,11 +18,6 @@ function readStoredPhase(): PhaseConfig['phase'] | null {
   return v && PHASE_MATURITY[v] ? (v as PhaseConfig['phase']) : null;
 }
 
-function writeStoredPhase(p: PhaseConfig['phase']): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, p);
-}
-
 export function providePhaseConfig(): Provider {
   return {
     provide: PHASE_CONFIG,
@@ -32,14 +27,8 @@ export function providePhaseConfig(): Provider {
 
       return computed<PhaseConfig>(() => {
         const authPhase = auth.phase() as PhaseConfig['phase'] | null;
-        const resolved = authPhase && PHASE_MATURITY[authPhase]
-          ? authPhase
-          : storedPhase() ?? 'A';
-
-        if (authPhase && PHASE_MATURITY[authPhase] && !storedPhase()) {
-          writeStoredPhase(authPhase);
-          storedPhase.set(authPhase);
-        }
+        const stored = storedPhase();
+        const resolved = stored ?? (authPhase && PHASE_MATURITY[authPhase] ? authPhase : 'A');
 
         return {
           phase: resolved,

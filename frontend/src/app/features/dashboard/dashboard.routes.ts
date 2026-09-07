@@ -14,7 +14,7 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
     canActivate: [roleGuard('trainee')],
-    loadComponent: () => import('./dashboard.component').then((m) => m.DashboardComponent)
+    loadComponent: () => import('./dashboard-wrapper.component').then((m) => m.DashboardWrapperComponent)
   },
   {
     path: 'spiritual',

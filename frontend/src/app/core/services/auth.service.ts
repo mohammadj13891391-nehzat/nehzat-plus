@@ -66,6 +66,20 @@ export class AuthService {
     this.#enrichedUser.set(null);
   }
 
+  loadProfileAndEnrich(): void {
+    if (!this.isAuthenticated()) {
+      return;
+    }
+    this.lessonPlannerApi.getProfile().subscribe({
+      next: (profile) => {
+        this.enrichCurrentUser(profile);
+      },
+      error: (err) => {
+        console.warn('[AuthService.loadProfileAndEnrich] profile fetch failed:', err);
+      },
+    });
+  }
+
   signin(username: string, password: string): Observable<AuthTokenResponse> {
     return this.api.signin(username, password).pipe(
       tap(response => {
