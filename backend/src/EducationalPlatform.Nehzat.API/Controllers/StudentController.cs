@@ -11,7 +11,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("students")]
-[Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
+[Authorize]
 public class StudentController : ControllerBase
 {
     private readonly IStudentService _studentService;
@@ -23,7 +23,23 @@ public class StudentController : ControllerBase
         _submissionService = submissionService;
     }
 
+    private static readonly string[] StaffRoles = { "admin", "manager", "headquarters", "branch_manager", "coach" };
+
+    private bool IsStaff()
+    {
+        var role = User.FindFirst("role")?.Value;
+        return role != null && StaffRoles.Contains(role, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private bool CanAccessStudent(int id)
+    {
+        if (IsStaff()) return true;
+        var studentIdClaim = User.FindFirst("studentId")?.Value;
+        return int.TryParse(studentIdClaim, out var sid) && sid == id;
+    }
+
     [HttpPost]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> Create([FromBody] Student student)
     {
         var result = await _studentService.CreateAsync(student);
@@ -31,6 +47,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _studentService.GetAllAsync();
@@ -38,6 +55,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPost("findByEmail_Phone")]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> FindByEmailPhone([FromBody] FindByEmailPhoneRequest request)
     {
         var student = await _studentService.FindByEmailAsync(request.Email);
@@ -49,12 +67,14 @@ public class StudentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        if (!CanAccessStudent(id)) return Forbid();
         var result = await _studentService.FindByIdAsync(id);
         if (result == null) return NotFound();
         return Ok(result);
     }
 
 [HttpGet("me/profile")]
+        [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
         public async Task<IActionResult> GetCurrentProfile([FromBody] string username)
         {
             try
@@ -74,6 +94,7 @@ public class StudentController : ControllerBase
         {
             try
             {
+                if (!CanAccessStudent(id)) return Forbid();
                 var result = await _studentService.GetStudentProgressAsync(id);
                 return Ok(result);
             }
@@ -92,6 +113,7 @@ public class StudentController : ControllerBase
         {
             try
             {
+                if (!CanAccessStudent(id)) return Forbid();
                 var result = await _studentService.GetBiweeklyProgressAsync(id);
                 return Ok(result);
             }
@@ -110,6 +132,7 @@ public class StudentController : ControllerBase
         {
             try
             {
+                if (!CanAccessStudent(id)) return Forbid();
                 var result = await _submissionService.GetStudentProgressAsync(id, assignmentId);
                 return Ok(result);
             }
@@ -126,11 +149,13 @@ public class StudentController : ControllerBase
     [HttpGet("{id}/submissions")]
     public async Task<IActionResult> GetSubmissions(int id, [FromQuery] int? assignmentId)
     {
+        if (!CanAccessStudent(id)) return Forbid();
         var result = await _submissionService.GetStudentSubmissionsAsync(id, assignmentId);
         return Ok(result);
     }
 
     [HttpPost("{id}/assignments/{assignmentId}/submit")]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> SubmitDailyWork(
         int id,
         int assignmentId,
@@ -173,6 +198,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpPost("{id}/submissions/{submissionId}/upload")]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> UploadSubmissionFile(int id, int submissionId, IFormFile audioFile)
     {
         if (audioFile == null)
@@ -197,6 +223,7 @@ public class StudentController : ControllerBase
     }
 
 [HttpPut("{id}")]
+        [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
         public async Task<IActionResult> Update(int id, [FromBody] Student student)
         {
             try
@@ -215,6 +242,7 @@ public class StudentController : ControllerBase
         }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "admin,manager,headquarters,branch_manager,coach")]
     public async Task<IActionResult> Delete(int id)
     {
         await _studentService.DeleteAsync(id);
