@@ -2,9 +2,11 @@ using System.Security.Claims;
 using EducationalPlatform.Nehzat.API.Security;
 using EducationalPlatform.Nehzat.Application.DTOs;
 using EducationalPlatform.Nehzat.Application.Interfaces;
+using EducationalPlatform.Nehzat.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace EducationalPlatform.Nehzat.API.Controllers
@@ -16,12 +18,16 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         private readonly IDevTokenService _devTokenService;
         private readonly IConfiguration _configuration;
         private readonly IAuthService _authService;
+        private readonly IUserService _userService;
+        private readonly AppDbContext _db;
 
-        public AuthController(IDevTokenService devTokenService, IConfiguration configuration, IAuthService authService)
+        public AuthController(IDevTokenService devTokenService, IConfiguration configuration, IAuthService authService, IUserService userService, AppDbContext db)
         {
             _devTokenService = devTokenService;
             _configuration = configuration;
             _authService = authService;
+            _userService = userService;
+            _db = db;
         }
 
     [HttpPost("login")]
@@ -88,7 +94,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         /// </summary>
         [HttpPost("signin")]
         [AllowAnonymous]
-        public IActionResult SignIn([FromBody] SignInRequest request)
+        public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
             var useMockAuth = _configuration.GetValue<bool>("DevAuth:UseMockAuth", false);
             if (!useMockAuth)
@@ -107,11 +113,33 @@ namespace EducationalPlatform.Nehzat.API.Controllers
                 return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
             }
 
+            var user = await _userService.FindByUsernameAsync(account.Username);
+            if (user == null)
+            {
+                user = await _userService.CreateLocalUserAsync(account.Username, account.Role, account.UserId.ToString());
+            }
+
+            if (user.StudentId == null && account.StudentId.HasValue)
+            {
+                var student = await _db.Students.FirstOrDefaultAsync(s =>
+                    s.Email != null && s.Email.StartsWith(account.Username + "@"));
+                if (student != null)
+                {
+                    user.StudentId = student.Id;
+                    if (string.IsNullOrEmpty(user.FirstName)) user.FirstName = student.FirstName;
+                    if (string.IsNullOrEmpty(user.LastName)) user.LastName = student.LastName;
+                    if (string.IsNullOrEmpty(user.Email)) user.Email = student.Email;
+                    if (string.IsNullOrEmpty(user.PhoneNumber)) user.PhoneNumber = student.PhoneNumber;
+                    user.UpdatedAt = DateTime.UtcNow;
+                    await _db.SaveChangesAsync();
+                }
+            }
+
             var token = _devTokenService.CreateToken(
                 username: account.Username,
                 role: account.Role,
-                userId: account.UserId.ToString(),
-                studentId: account.StudentId?.ToString(),
+                userId: user.Id.ToString(),
+                studentId: user.StudentId?.ToString(),
                 branchId: account.BranchId.ToString());
 
             return Ok(new
