@@ -1,0 +1,27 @@
+<header class="shared-header">
+  <div class="header-content">
+    <!-- Logo: optional, BM provides asset, admin can omit -->
+    @if (logoSrc) {
+      <img
+        [src]="logoSrc"
+        alt="لوگو سایت"
+        class="site-logo"
+        (error)="onLogoError($event)"
+      />
+    }
+
+    <div class="header-title">
+      <h1>{{ pageTitle || 'داشبورد' }}</h1>
+      <p class="muted">خوش آمدید {{ username }}</p>
+    </div>
+  </div>
+
+  <!-- Logout button: shared across all roles -->
+  <div class="header-actions">
+    @if (showLogout) {
+      <button type="button" class="btn btn-secondary" (click)="logout()">
+        خروج
+      </button>
+    }
+  </div>
+</header>
