@@ -12,7 +12,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("assessments")]
-[Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
+[Authorize]
 public class AssessmentController : ControllerBase
 {
     private readonly IAssessmentService _assessmentService;
@@ -22,7 +22,23 @@ public class AssessmentController : ControllerBase
         _assessmentService = assessmentService;
     }
 
+    private static readonly string[] StaffRoles = { "manager", "headquarters", "branch_manager", "coach", "evaluator" };
+
+    private bool IsStaff()
+    {
+        var role = User.FindFirst("role")?.Value;
+        return role != null && StaffRoles.Contains(role, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private bool CanAccessStudent(int id)
+    {
+        if (IsStaff()) return true;
+        var studentIdClaim = User.FindFirst("studentId")?.Value;
+        return int.TryParse(studentIdClaim, out var sid) && sid == id;
+    }
+
     [HttpPost]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> Create([FromBody] Assessment assessment)
     {
         var result = await _assessmentService.CreateAsync(assessment);
@@ -30,6 +46,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _assessmentService.GetAllAsync();
@@ -37,6 +54,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _assessmentService.FindByIdAsync(id);
@@ -45,6 +63,7 @@ public class AssessmentController : ControllerBase
     }
 
 [HttpPut("{id}")]
+        [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAssessmentRequest request)
         {
             try
@@ -70,6 +89,7 @@ public class AssessmentController : ControllerBase
         }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> Delete(int id)
     {
         await _assessmentService.DeleteAsync(id);
@@ -77,6 +97,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("course/{courseId}")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetByCourse(int courseId)
     {
         var result = await _assessmentService.GetByCourseAsync(courseId);
@@ -84,6 +105,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("course/{courseId}/date-range")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetByCourseAndDateRange(int courseId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
     {
         var result = await _assessmentService.GetByCourseAndDateRangeAsync(courseId, startDate, endDate);
@@ -91,6 +113,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("status/{status}")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetByStatus(string status)
     {
         var result = await _assessmentService.GetByStatusAsync(status);
@@ -98,6 +121,7 @@ public class AssessmentController : ControllerBase
     }
 
 [HttpPost("generate-weekly")]
+        [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
         public async Task<IActionResult> GenerateWeekly([FromBody] GenerateWeeklyAssessmentRequest request)
         {
             try
@@ -128,6 +152,7 @@ public class AssessmentController : ControllerBase
         }
 
     [HttpGet("{id}/questions")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetQuestions(int id)
     {
         var result = await _assessmentService.GetQuestionsAsync(id);
@@ -135,6 +160,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpPost("{id}/questions")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> CreateQuestion(int id, [FromBody] AssessmentQuestion question)
     {
         question.AssessmentId = id;
@@ -143,6 +169,7 @@ public class AssessmentController : ControllerBase
     }
 
 [HttpPut("questions/{questionId}")]
+        [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
         public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] AssessmentQuestion question)
         {
             try
@@ -161,6 +188,7 @@ public class AssessmentController : ControllerBase
         }
 
     [HttpDelete("questions/{questionId}")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> DeleteQuestion(int questionId)
     {
         await _assessmentService.DeleteQuestionAsync(questionId);
@@ -171,6 +199,7 @@ public class AssessmentController : ControllerBase
     [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator,trainee")]
     public async Task<IActionResult> SubmitResult(int id, [FromBody] SubmitAssessmentResultRequest request)
     {
+        if (!CanAccessStudent(request.StudentId)) return Forbid();
         var result = new AssessmentResult
         {
             AssessmentId = id,
@@ -192,6 +221,7 @@ public class AssessmentController : ControllerBase
     }
 
 [HttpPost("{id}/archive")]
+        [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
         public async Task<IActionResult> Archive(int id)
         {
             try
@@ -209,6 +239,7 @@ public class AssessmentController : ControllerBase
     [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator,trainee")]
     public async Task<IActionResult> StartAssessment(int id, int studentId)
     {
+        if (!CanAccessStudent(studentId)) return Forbid();
         var existing = await _assessmentService.GetResultByAssessmentAndStudentAsync(id, studentId);
         if (existing != null)
         {
@@ -238,6 +269,7 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("{id}/results")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetResults(int id)
     {
         var result = await _assessmentService.GetResultsAsync(id);
@@ -248,11 +280,13 @@ public class AssessmentController : ControllerBase
     [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator,parent,trainee")]
     public async Task<IActionResult> GetResultsByStudent(int studentId)
     {
+        if (!CanAccessStudent(studentId)) return Forbid();
         var result = await _assessmentService.GetResultsByStudentAsync(studentId);
         return Ok(result);
     }
 
     [HttpGet("{id}/analytics")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator")]
     public async Task<IActionResult> GetAnalytics(int id)
     {
         var result = await _assessmentService.GetAssessmentAnalyticsAsync(id);
@@ -260,8 +294,10 @@ public class AssessmentController : ControllerBase
     }
 
     [HttpGet("student/{studentId}/course/{courseId}/history")]
+    [Authorize(Roles = "manager,headquarters,branch_manager,coach,evaluator,trainee")]
     public async Task<IActionResult> GetStudentHistory(int studentId, int courseId)
     {
+        if (!CanAccessStudent(studentId)) return Forbid();
         var result = await _assessmentService.GetStudentAssessmentHistoryAsync(studentId, courseId);
         return Ok(result);
     }
