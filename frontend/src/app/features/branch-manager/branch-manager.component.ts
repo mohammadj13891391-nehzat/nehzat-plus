@@ -71,41 +71,20 @@ export class BranchManagerComponent implements OnInit {
     this.errorMessage.set('');
 
     forkJoin({
-      branches: this.api.getBranches().pipe(catchError(() => of([] as Branch[]))),
-      managers: this.api.getBranchManagers().pipe(catchError(() => of([] as BranchManager[]))),
-      performance: this.api.getBranchPerformance().pipe(catchError(() => of([] as BranchPerformance[]))),
-      coachPerf: this.api.getCoachPerformance().pipe(catchError(() => of([] as CoachPerformance[]))),
-      coaches: this.api.getCoaches().pipe(catchError(() => of([] as Coach[]))),
-      students: this.api.getStudents().pipe(catchError(() => of([] as Student[])))
+      branch: this.api.getMyBranch().pipe(catchError(() => of(null as Branch | null))),
+      managers: this.api.getMyBranchManagers().pipe(catchError(() => of([] as BranchManager[]))),
+      performance: this.api.getMyBranchPerformance().pipe(catchError(() => of(null as BranchPerformance | null))),
+      coachPerf: this.api.getMyCoachPerformance().pipe(catchError(() => of([] as CoachPerformance[]))),
+      coaches: this.api.getMyCoaches().pipe(catchError(() => of([] as Coach[]))),
+      students: this.api.getMyStudents().pipe(catchError(() => of([] as Student[])))
     }).subscribe({
       next: (data) => {
-        const branchId = this.currentUser?.branchId;
-
-        const myBranch = branchId != null
-          ? data.branches.find((b) => b.id === branchId) ?? null
-          : data.branches[0] ?? null;
-        this.branch.set(myBranch);
-
-        const resolvedBranchId = myBranch?.id ?? branchId;
-        const myManager = data.managers.find((m) => m.branchId === resolvedBranchId) ?? null;
-        this.manager.set(myManager);
-
-        const myPerf = resolvedBranchId != null
-          ? data.performance.find((p) => p.branchId === resolvedBranchId) ?? null
-          : null;
-        this.branchPerformance.set(myPerf);
-
-        this.coachPerformance.set(data.coachPerf);
-        this.coaches.set(
-          resolvedBranchId != null
-            ? data.coaches.filter((c) => c.branchId === resolvedBranchId)
-            : data.coaches
-        );
-        this.students.set(
-          resolvedBranchId != null
-            ? data.students.filter((s) => s.branchId === resolvedBranchId)
-            : data.students
-        );
+        this.branch.set(data.branch);
+        this.manager.set(data.managers[0] ?? null);
+        this.branchPerformance.set(data.performance);
+        this.coachPerformance.set(Array.isArray(data.coachPerf) ? data.coachPerf : []);
+        this.coaches.set(Array.isArray(data.coaches) ? data.coaches : []);
+        this.students.set(Array.isArray(data.students) ? data.students : []);
 
         this.loading.set(false);
       },

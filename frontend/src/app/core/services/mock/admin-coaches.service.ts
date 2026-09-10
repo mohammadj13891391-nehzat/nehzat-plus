@@ -4,6 +4,7 @@ import { MockDataContext } from './mock-data-context';
 import {
   Coach,
   Student,
+  BranchManager,
   CreateCoachPayload,
   CreateStudentPayload,
   UpdateStudentPayload,
@@ -16,6 +17,14 @@ export class MockAdminCoachesService {
 
   getCoaches(): Observable<Coach[]> {
     return this.ctx.delayed([...this.ctx.coaches]);
+  }
+
+  getMyCoaches(): Observable<Coach[]> {
+    return this.ctx.delayed([...this.ctx.coaches]);
+  }
+
+  getMyBranchManagers(): Observable<BranchManager[]> {
+    return this.ctx.delayed([...this.ctx.branchManagers]);
   }
 
   createCoach(payload: CreateCoachPayload): Observable<Coach> {

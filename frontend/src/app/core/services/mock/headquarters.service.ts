@@ -67,4 +67,20 @@ export class MockHeadquartersService {
       })),
     );
   }
+
+  getMyCoachPerformance(): Observable<CoachPerformance[]> {
+    return this.ctx.delayed(
+      this.ctx.coaches.map((c) => ({
+        coachId: c.id,
+        coachName: `${c.firstName} ${c.lastName}`,
+        specialization: c.specialization,
+        assignedCourseCount: c.assignedCourseIds.length,
+        studentCount: this.ctx.students.filter((s) => s.branchId === c.branchId).length,
+        averageStudentScore: 0,
+        evaluationCount: 0,
+        averageEvaluationScore: 0,
+        status: c.status,
+      })),
+    );
+  }
 }

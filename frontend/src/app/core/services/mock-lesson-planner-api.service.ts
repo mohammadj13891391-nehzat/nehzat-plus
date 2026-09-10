@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 import { LessonPlannerApi } from './lesson-planner-api.interface';
-import { QrCodeResponse, QrPollResponse, QrScanConfirm } from '../models/lesson-planner.models';
+import { QrCodeResponse, QrPollResponse, QrScanConfirm, Student, Coach, Branch, BranchPerformance } from '../models/lesson-planner.models';
 import { MockLessonPlannerApiBase } from './mock-lesson-planner-base';
 import { MockAuthService } from './mock/auth.service';
 import { MockAdminUsersService } from './mock/admin-users.service';
@@ -180,7 +180,6 @@ export class MockLessonPlannerApi
       )
     )
   )
-  implements LessonPlannerApi
 {
   constructor(
     auth: MockAuthService,
@@ -281,5 +280,26 @@ export class MockLessonPlannerApi
 
   confirmQrLogin(_payload: { sessionId: string; username: string }): Observable<QrScanConfirm> {
     return of({ status: 'confirmed' as const, message: 'QR با موفقیت تأیید شد' }).pipe(delay(300));
+  }
+
+  // Methods from StudentsApi & AdminResourcesApi (not covered by mixin chain)
+  getMyStudents(): Observable<Student[]> {
+    return of([] as Student[]);
+  }
+
+  getMyCoaches(): Observable<Coach[]> {
+    return of([] as Coach[]);
+  }
+
+  getMyBranchManagers(): Observable<BranchManager[]> {
+    return of([] as BranchManager[]);
+  }
+
+  getMyBranch(): Observable<Branch> {
+    return of({} as Branch);
+  }
+
+  getMyBranchPerformance(): Observable<BranchPerformance> {
+    return of({} as BranchPerformance);
   }
 }

@@ -15,6 +15,10 @@ import {
 export class MockStudentProgressService {
   constructor(private ctx: MockDataContext) {}
 
+  getMyStudents(): Observable<Student[]> {
+    return this.ctx.delayed([...this.ctx.students]);
+  }
+
   getStudentProgress(studentId: number): Observable<StudentProgressResponse> {
     const student = this.ctx.students.find((s) => s.id === studentId);
     if (!student) throw new Error('Student not found');
