@@ -4354,6 +4354,82 @@ export interface EnrollRequest {
   studyPathId: number;
 }
 
+// Analytics Types
+export interface StepAnalyticsDto {
+  stepId: number;
+  stepOrder: number;
+  title: string;
+  cognitiveLevel: string;
+  estimatedDurationMinutes: number;
+  actualDurationMinutes?: number;
+  isCompleted: boolean;
+  isSkipped: boolean;
+  isCurrent: boolean;
+  completedAt?: string;
+}
+
+export interface StudyPathProgressAnalyticsDto {
+  enrollmentId: number;
+  studyPathTitle: string;
+  totalSteps: number;
+  completedSteps: number;
+  skippedSteps: number;
+  currentStepIndex: number;
+  progressPercentage: number;
+  status: string;
+  enrollmentDate: string;
+  startedAt?: string;
+  completedAt?: string;
+  steps: StepAnalyticsDto[];
+  estimatedTimeRemaining?: string;
+  averageTimePerStepMinutes: number;
+}
+
+export interface StudyPathSummaryDto {
+  enrollmentId: number;
+  studyPathId: number;
+  studyPathTitle: string;
+  subjectAreaName: string;
+  progressPercentage: number;
+  status: string;
+  enrollmentDate: string;
+  completedAt?: string;
+}
+
+export interface StudentOverallProgressDto {
+  studentId: number;
+  studentName: string;
+  totalEnrollments: number;
+  activeEnrollments: number;
+  completedEnrollments: number;
+  averageProgressPercentage: number;
+  enrollments: StudyPathSummaryDto[];
+}
+
+export interface CoachStudentProgressDto {
+  studentId: number;
+  studentName: string;
+  branchId: number;
+  branchName: string;
+  enrollments: StudyPathSummaryDto[];
+  totalEnrollments: number;
+  activeEnrollments: number;
+  completedEnrollments: number;
+  averageProgressPercentage: number;
+}
+
+export interface CoachBranchProgressDto {
+  branchId: number;
+  branchName: string;
+  totalStudents: number;
+  studentsWithEnrollments: number;
+  totalEnrollments: number;
+  activeEnrollments: number;
+  completedEnrollments: number;
+  averageProgressPercentage: number;
+  students: CoachStudentProgressDto[];
+}
+
 export interface QrCodeResponse {
   sessionId: string;
   qrData: string; // "NEHZAT-QR:{sessionId}"

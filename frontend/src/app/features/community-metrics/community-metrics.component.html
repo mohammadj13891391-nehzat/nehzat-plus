@@ -17,228 +17,260 @@
     </nav>
   </header>
 
-  <div class="loading-state" *ngIf="loading">
-    <div class="spinner"></div>
-    <p class="muted">در حال بارگذاری شاخص‌های جامعه...</p>
-  </div>
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p class="muted">در حال بارگذاری شاخص‌های جامعه...</p>
+    </div>
+  }
 
-  <div class="content-area" *ngIf="!loading">
-    <!-- OVERVIEW -->
-    <section *ngIf="activeView === 'overview'" class="overview-section">
-      <div class="stats-grid" *ngIf="metrics$ | async as m">
-        <article class="stat-card primary">
-          <span class="stat-icon">👥</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(m.totalTrainees) }}</span>
-            <span class="stat-label">کل راه‌نماها</span>
-          </div>
-        </article>
-        <article class="stat-card success">
-          <span class="stat-icon">🟢</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(m.activeThisWeek) }}</span>
-            <span class="stat-label">فعال این هفته</span>
-          </div>
-        </article>
-        <article class="stat-card info">
-          <span class="stat-icon">🤝</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(m.totalCollaborations) }}</span>
-            <span class="stat-label">همکاری‌های فعال</span>
-          </div>
-        </article>
-        <article class="stat-card warning">
-          <span class="stat-icon">📁</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(m.totalPortfolioItems) }}</span>
-            <span class="stat-label">نمونه کارها</span>
-          </div>
-        </article>
-        <article class="stat-card purple">
-          <span class="stat-icon">📈</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ m.avgSkillLevel.toFixed(1) }}</span>
-            <span class="stat-label">میانگین سطح مهارت</span>
-          </div>
-        </article>
-      </div>
-
-      <div class="domains-section">
-        <h2>توزیع حوزه‌ها</h2>
-        <div class="domains-grid" *ngIf="metrics$ | async as m">
-          <article class="domain-card" *ngFor="let domain of m.topDomains">
-            <div class="domain-header">
-              <span class="domain-name">{{ domain.domain }}</span>
-              <span class="domain-count">{{ formatNumber(domain.traineeCount) }} راه‌نما</span>
+  @if (!loading()) {
+    <div class="content-area">
+      <!-- OVERVIEW -->
+      @if (activeView === 'overview') {
+        <section class="overview-section">
+          @if (metrics(); as m) {
+            <div class="stats-grid">
+              <article class="stat-card primary">
+                <span class="stat-icon">👥</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(m.totalTrainees) }}</span>
+                  <span class="stat-label">کل راه‌نماها</span>
+                </div>
+              </article>
+              <article class="stat-card success">
+                <span class="stat-icon">🟢</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(m.activeThisWeek) }}</span>
+                  <span class="stat-label">فعال این هفته</span>
+                </div>
+              </article>
+              <article class="stat-card info">
+                <span class="stat-icon">🤝</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(m.totalCollaborations) }}</span>
+                  <span class="stat-label">همکاری‌های فعال</span>
+                </div>
+              </article>
+              <article class="stat-card warning">
+                <span class="stat-icon">📁</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(m.totalPortfolioItems) }}</span>
+                  <span class="stat-label">نمونه کارها</span>
+                </div>
+              </article>
+              <article class="stat-card purple">
+                <span class="stat-icon">📈</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ m.avgSkillLevel.toFixed(1) }}</span>
+                  <span class="stat-label">میانگین سطح مهارت</span>
+                </div>
+              </article>
             </div>
-            <div class="domain-metrics">
-              <div class="metric">
-                <span class="metric-label">میانگین XP</span>
-                <span class="metric-value">{{ formatNumber(domain.avgXp) }}</span>
+          }
+
+          <div class="domains-section">
+            <h2>توزیع حوزه‌ها</h2>
+            @if (metrics(); as m) {
+              <div class="domains-grid">
+                <article class="domain-card" *ngFor="let domain of m.topDomains">
+                  <div class="domain-header">
+                    <span class="domain-name">{{ domain.domain }}</span>
+                    <span class="domain-count">{{ formatNumber(domain.traineeCount) }} راه‌نما</span>
+                  </div>
+                  <div class="domain-metrics">
+                    <div class="metric">
+                      <span class="metric-label">میانگین XP</span>
+                      <span class="metric-value">{{ formatNumber(domain.avgXp) }}</span>
+                    </div>
+                    <div class="metric">
+                      <span class="metric-label">میانگین سطح</span>
+                      <span class="metric-value">{{ domain.avgLevel }}</span>
+                    </div>
+                  </div>
+                  <div class="domain-bar">
+                    <div class="domain-fill" [style.width.%]="(domain.traineeCount / (m.totalTrainees || 1)) * 100"></div>
+                  </div>
+                </article>
               </div>
-              <div class="metric">
-                <span class="metric-label">میانگین سطح</span>
-                <span class="metric-value">{{ domain.avgLevel }}</span>
-              </div>
-            </div>
-            <div class="domain-bar">
-              <div class="domain-fill" [style.width.%]="(domain.traineeCount / (m.totalTrainees || 1)) * 100"></div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ACTIVITY -->
-    <section *ngIf="activeView === 'activity'" class="activity-section">
-      <div class="activity-list" *ngIf="activity$ | async as activities">
-        <article class="activity-item" *ngFor="let act of activities">
-          <div class="activity-icon">{{ getActivityIcon(act.activityType) }}</div>
-          <div class="activity-content">
-            <div class="activity-main">
-              <span class="activity-trainee">{{ act.traineeName }}</span>
-              <span class="activity-time">{{ formatDate(act.timestamp) }}</span>
-            </div>
-            <p class="activity-description">{{ act.description }}</p>
-          </div>
-        </article>
-        <div class="empty-state" *ngIf="activities.length === 0">
-          <p>هیچ فعالیتی ثبت نشده است</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SKILLS -->
-    <section *ngIf="activeView === 'skills'" class="skills-section">
-      <div class="skills-summary" *ngIf="skills$ | async as s">
-        <article class="stat-card primary">
-          <span class="stat-icon">💡</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(s.totalShared) }}</span>
-            <span class="stat-label">کل مهارت‌های اشتراک‌گذاری شده</span>
-          </div>
-        </article>
-      </div>
-
-      <div class="skills-grid">
-        <section class="skills-subsection">
-          <h3>پراشتراک‌ترین مهارت‌ها</h3>
-          <div class="skills-list" *ngIf="skills$ | async as s">
-            <article class="skill-card" *ngFor="let skill of s.topSharedSkills">
-              <div class="skill-header">
-                <span class="skill-name">{{ skill.skillName }}</span>
-                <span class="skill-category">{{ skill.category }}</span>
-              </div>
-              <div class="skill-meta">
-                <span class="skill-author">به اشتراک‌گذار: {{ skill.sharedBy }}</span>
-                <span class="skill-stats">
-                  <span>👁 {{ formatNumber(skill.viewCount) }}</span>
-                  <span>❤️ {{ skill.likeCount }}</span>
-                </span>
-              </div>
-            </article>
-            <div class="empty-state" *ngIf="s.topSharedSkills.length === 0">
-              <p>هنوز مهارتی اشتراک‌گذاری نشده</p>
-            </div>
+            }
           </div>
         </section>
+      }
 
-        <section class="skills-subsection">
-          <h3>مهارت‌های اخیر</h3>
-          <div class="skills-list" *ngIf="skills$ | async as s">
-            <article class="skill-card recent" *ngFor="let skill of s.recentShares">
-              <div class="skill-header">
-                <span class="skill-name">{{ skill.skillName }}</span>
-                <span class="skill-category">{{ skill.category }}</span>
+      <!-- ACTIVITY -->
+      @if (activeView === 'activity') {
+        <section class="activity-section">
+          @if (activity(); as activities) {
+            <div class="activity-list">
+              <article class="activity-item" *ngFor="let act of activities">
+                <div class="activity-icon">{{ getActivityIcon(act.activityType) }}</div>
+                <div class="activity-content">
+                  <div class="activity-main">
+                    <span class="activity-trainee">{{ act.traineeName }}</span>
+                    <span class="activity-time">{{ formatDate(act.timestamp) }}</span>
+                  </div>
+                  <p class="activity-description">{{ act.description }}</p>
+                </div>
+              </article>
+              <div class="empty-state" *ngIf="activities.length === 0">
+                <p>هیچ فعالیتی ثبت نشده است</p>
               </div>
-              <div class="skill-meta">
-                <span class="skill-author">به اشتراک‌گذار: {{ skill.sharedBy }}</span>
-                <span class="skill-time">{{ formatDate(skill.sharedAt) }}</span>
-              </div>
-            </article>
-            <div class="empty-state" *ngIf="s.recentShares.length === 0">
-              <p>مهارت اخیری وجود ندارد</p>
             </div>
+          }
+        </section>
+      }
+
+      <!-- SKILLS -->
+      @if (activeView === 'skills') {
+        <section class="skills-section">
+          @if (skills(); as s) {
+            <div class="skills-summary">
+              <article class="stat-card primary">
+                <span class="stat-icon">💡</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(s.totalShared) }}</span>
+                  <span class="stat-label">کل مهارت‌های اشتراک‌گذاری شده</span>
+                </div>
+              </article>
+            </div>
+          }
+
+          <div class="skills-grid">
+            <section class="skills-subsection">
+              <h3>پراشتراک‌ترین مهارت‌ها</h3>
+              @if (skills(); as s) {
+                <div class="skills-list">
+                  <article class="skill-card" *ngFor="let skill of s.topSharedSkills">
+                    <div class="skill-header">
+                      <span class="skill-name">{{ skill.skillName }}</span>
+                      <span class="skill-category">{{ skill.category }}</span>
+                    </div>
+                    <div class="skill-meta">
+                      <span class="skill-author">به اشتراک‌گذار: {{ skill.sharedBy }}</span>
+                      <span class="skill-stats">
+                        <span>👁 {{ formatNumber(skill.viewCount) }}</span>
+                        <span>❤️ {{ skill.likeCount }}</span>
+                      </span>
+                    </div>
+                  </article>
+                  <div class="empty-state" *ngIf="s.topSharedSkills.length === 0">
+                    <p>هنوز مهارتی اشتراک‌گذاری نشده</p>
+                  </div>
+                </div>
+              }
+            </section>
+
+            <section class="skills-subsection">
+              <h3>مهارت‌های اخیر</h3>
+              @if (skills(); as s) {
+                <div class="skills-list">
+                  <article class="skill-card recent" *ngFor="let skill of s.recentShares">
+                    <div class="skill-header">
+                      <span class="skill-name">{{ skill.skillName }}</span>
+                      <span class="skill-category">{{ skill.category }}</span>
+                    </div>
+                    <div class="skill-meta">
+                      <span class="skill-author">به اشتراک‌گذار: {{ skill.sharedBy }}</span>
+                      <span class="skill-time">{{ formatDate(skill.sharedAt) }}</span>
+                    </div>
+                  </article>
+                  <div class="empty-state" *ngIf="s.recentShares.length === 0">
+                    <p>مهارت اخیری وجود ندارد</p>
+                  </div>
+                </div>
+              }
+            </section>
           </div>
         </section>
-      </div>
-    </section>
+      }
 
-    <!-- COLLABORATION -->
-    <section *ngIf="activeView === 'collaboration'" class="collab-section">
-      <div class="collab-stats" *ngIf="collaboration$ | async as c">
-        <article class="stat-card primary">
-          <span class="stat-icon">📁</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(c.totalProjects) }}</span>
-            <span class="stat-label">کل پروژه‌ها</span>
-          </div>
-        </article>
-        <article class="stat-card success">
-          <span class="stat-icon">🔄</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(c.activeProjects) }}</span>
-            <span class="stat-label">پروژه‌های فعال</span>
-          </div>
-        </article>
-        <article class="stat-card info">
-          <span class="stat-icon">✅</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ formatNumber(c.completedProjects) }}</span>
-            <span class="stat-label">تکمیل شده</span>
-          </div>
-        </article>
-        <article class="stat-card warning">
-          <span class="stat-icon">👥</span>
-          <div class="stat-info">
-            <span class="stat-value">{{ c.avgTeamSize.toFixed(1) }}</span>
-            <span class="stat-label">میانگین اندازه تیم</span>
-          </div>
-        </article>
-      </div>
+      <!-- COLLABORATION -->
+      @if (activeView === 'collaboration') {
+        <section class="collab-section">
+          @if (collaboration(); as c) {
+            <div class="collab-stats">
+              <article class="stat-card primary">
+                <span class="stat-icon">📁</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(c.totalProjects) }}</span>
+                  <span class="stat-label">کل پروژه‌ها</span>
+                </div>
+              </article>
+              <article class="stat-card success">
+                <span class="stat-icon">🔄</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(c.activeProjects) }}</span>
+                  <span class="stat-label">پروژه‌های فعال</span>
+                </div>
+              </article>
+              <article class="stat-card info">
+                <span class="stat-icon">✅</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ formatNumber(c.completedProjects) }}</span>
+                  <span class="stat-label">تکمیل شده</span>
+                </div>
+              </article>
+              <article class="stat-card warning">
+                <span class="stat-icon">👥</span>
+                <div class="stat-info">
+                  <span class="stat-value">{{ c.avgTeamSize.toFixed(1) }}</span>
+                  <span class="stat-label">میانگین اندازه تیم</span>
+                </div>
+              </article>
+            </div>
+          }
 
-      <section class="collaborators-section">
-        <h3>بیشترین مشارکت‌کنندگان</h3>
-        <div class="collaborators-list" *ngIf="collaboration$ | async as c">
-          <article class="collaborator-card" *ngFor="let col of c.topCollaborators; let i = index">
-            <span class="collab-rank">{{ i + 1 }}</span>
-            <div class="collab-info">
-              <span class="collab-name">{{ col.traineeName }}</span>
-              <span class="collab-projects">{{ col.projectCount }} پروژه</span>
-            </div>
-            <div class="collab-score">
-              <span class="score-value">{{ col.contributionScore }}</span>
-              <span class="score-label">امتیاز مشارکت</span>
-            </div>
-          </article>
-          <div class="empty-state" *ngIf="c.topCollaborators.length === 0">
-            <p>هنوز مشارکت‌کننده‌ای وجود ندارد</p>
-          </div>
-        </div>
-      </section>
-    </section>
+          <section class="collaborators-section">
+            <h3>بیشترین مشارکت‌کنندگان</h3>
+            @if (collaboration(); as c) {
+              <div class="collaborators-list">
+                <article class="collaborator-card" *ngFor="let col of c.topCollaborators; let i = index">
+                  <span class="collab-rank">{{ i + 1 }}</span>
+                  <div class="collab-info">
+                    <span class="collab-name">{{ col.traineeName }}</span>
+                    <span class="collab-projects">{{ col.projectCount }} پروژه</span>
+                  </div>
+                  <div class="collab-score">
+                    <span class="score-value">{{ col.contributionScore }}</span>
+                    <span class="score-label">امتیاز مشارکت</span>
+                  </div>
+                </article>
+                <div class="empty-state" *ngIf="c.topCollaborators.length === 0">
+                  <p>هنوز مشارکت‌کننده‌ای وجود ندارد</p>
+                </div>
+              </div>
+            }
+          </section>
+        </section>
+      }
 
-    <!-- SHOWCASE -->
-    <section *ngIf="activeView === 'showcase'" class="showcase-section">
-      <div class="showcase-grid" *ngIf="showcase$ | async as items">
-        <article class="showcase-card" *ngFor="let item of items">
-          <div class="showcase-thumb">
-            <img [src]="item.thumbnailUrl" [alt]="item.title" loading="lazy" />
-            <span class="showcase-type">{{ getShowcaseIcon(item.type) }} {{ item.type }}</span>
-          </div>
-          <div class="showcase-info">
-            <h3 class="showcase-title">{{ item.title }}</h3>
-            <span class="showcase-author">توسط {{ item.traineeName }}</span>
-            <div class="showcase-stats">
-              <span>👁 {{ formatNumber(item.viewCount) }}</span>
-              <span>❤️ {{ item.likeCount }}</span>
+      <!-- SHOWCASE -->
+      @if (activeView === 'showcase') {
+        <section class="showcase-section">
+          @if (showcase(); as items) {
+            <div class="showcase-grid">
+              <article class="showcase-card" *ngFor="let item of items">
+                <div class="showcase-thumb">
+                  <img [src]="item.thumbnailUrl" [alt]="item.title" loading="lazy" />
+                  <span class="showcase-type">{{ getShowcaseIcon(item.type) }} {{ item.type }}</span>
+                </div>
+                <div class="showcase-info">
+                  <h3 class="showcase-title">{{ item.title }}</h3>
+                  <span class="showcase-author">توسط {{ item.traineeName }}</span>
+                  <div class="showcase-stats">
+                    <span>👁 {{ formatNumber(item.viewCount) }}</span>
+                    <span>❤️ {{ item.likeCount }}</span>
+                  </div>
+                </div>
+              </article>
+              <div class="empty-state" *ngIf="items.length === 0" style="grid-column: 1 / -1;">
+                <p>هنوز محتوایی برای نمایش وجود ندارد</p>
+              </div>
             </div>
-          </div>
-        </article>
-        <div class="empty-state" *ngIf="items.length === 0" style="grid-column: 1 / -1;">
-          <p>هنوز محتوایی برای نمایش وجود ندارد</p>
-        </div>
-      </div>
-    </section>
-  </div>
+          }
+        </section>
+      }
+    </div>
+  }
 </div>

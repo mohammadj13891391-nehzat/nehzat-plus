@@ -8,6 +8,8 @@ import {
   CreatedUser,
   PendingUser,
   StudentInfo,
+  Coach,
+  CreateCoachPayload,
 } from './mock-lesson-planner-models';
 
 /**
@@ -35,6 +37,19 @@ export function withAdminUsers<T extends MockApiCtor>(Base: T) {
 
     createUser(payload: CreateUserPayload): Observable<CreatedUser> {
       return this.adminUsers.createUser(payload);
+    }
+
+    // ===== Branch Manager Coaches =====
+    createMyCoach(payload: CreateCoachPayload): Observable<Coach> {
+      return this.adminCoaches.createCoach(payload);
+    }
+
+    updateMyCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach> {
+      return this.adminCoaches.updateCoach(id, payload);
+    }
+
+    deleteMyCoach(id: number): Observable<ApiMessageResponse> {
+      return this.adminCoaches.deleteCoach(id);
     }
   };
 }

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectionStrategy, Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import type {
@@ -27,7 +27,7 @@ export class TeacherPendingSectionComponent implements OnInit {
   @Input({ required: true }) currentUserId = 0;
   @Output() gradeSubmitted = new EventEmitter<void>();
 
-  pendingGradings$: Observable<AssignmentGrading[]> = of();
+  readonly pendingGradings = signal<AssignmentGrading[]>([]);
   readonly showGradeModal = signal(false);
   readonly selectedGrading = signal<AssignmentGrading | null>(null);
   readonly savingGrade = signal(false);
@@ -47,9 +47,9 @@ export class TeacherPendingSectionComponent implements OnInit {
   }
 
   load(): void {
-    this.pendingGradings$ = this.api.getPendingGradings(this.teacherId).pipe(
+    this.api.getPendingGradings(this.teacherId).pipe(
       catchError(() => of([]))
-    );
+    ).subscribe(gradings => this.pendingGradings.set(gradings));
   }
 
   openGradeModal(grading: AssignmentGrading): void {

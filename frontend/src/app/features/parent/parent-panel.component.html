@@ -20,7 +20,7 @@
   <section class="main-content">
     <h2>متربیان شما</h2>
 
-    @if (students$ | async; as students) {
+    @if (students(); as students) {
       @if (students.length === 0) {
         <p class="muted">هیچ متربی ثبت نشده است.</p>
       } @else {

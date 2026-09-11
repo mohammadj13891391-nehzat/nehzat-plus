@@ -206,7 +206,12 @@
       <!-- مربیان -->
       @if (activeTab() === 'coaches') {
         <article class="card">
-          <h2 class="card-title">فهرست مربیان شعبه</h2>
+          <div class="card-header-row">
+            <h2 class="card-title">فهرست مربیان شعبه</h2>
+            <button type="button" class="btn-primary" (click)="openCreateCoachForm()">
+              افزودن مربی
+            </button>
+          </div>
           @if (coaches().length > 0) {
             <div class="table-wrap">
               <table class="data-table">
@@ -219,6 +224,7 @@
                     <th>تلفن</th>
                     <th>دوره‌ها</th>
                     <th>وضعیت</th>
+                    <th>عملیات</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -231,6 +237,10 @@
                       <td>{{ c.phoneNumber }}</td>
                       <td>{{ c.assignedCourseIds.length }}</td>
                       <td>{{ statusLabel(c.status) }}</td>
+                      <td>
+                        <button type="button" class="btn-link" (click)="openEditCoachForm(c)">ویرایش</button>
+                        <button type="button" class="btn-link-danger" (click)="deleteCoach(c)">حذف</button>
+                      </td>
                     </tr>
                   }
                 </tbody>
@@ -240,6 +250,65 @@
             <p class="muted">هیچ مربی‌ای در این شعبه ثبت نشده است.</p>
           }
         </article>
+
+        @if (coachFormVisible()) {
+          <article class="card form-card">
+            <h2 class="card-title">{{ coachEditingId() === null ? 'افزودن مربی' : 'ویرایش مربی' }}</h2>
+            <form (ngSubmit)="submitCoachForm()" class="coach-form">
+              <div class="form-row">
+                <label class="form-field">
+                  <span>نام</span>
+                  <input type="text" name="firstName" [(ngModel)]="coachFormModel.firstName" required />
+                </label>
+                <label class="form-field">
+                  <span>نام خانوادگی</span>
+                  <input type="text" name="lastName" [(ngModel)]="coachFormModel.lastName" required />
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>نام کاربری</span>
+                  <input type="text" name="username" [(ngModel)]="coachFormModel.username" required />
+                </label>
+                @if (coachEditingId() === null) {
+                  <label class="form-field">
+                    <span>رمز عبور</span>
+                    <input type="password" name="password" [(ngModel)]="coachFormModel.password" required />
+                  </label>
+                }
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>ایمیل</span>
+                  <input type="email" name="email" [(ngModel)]="coachFormModel.email" />
+                </label>
+                <label class="form-field">
+                  <span>تلفن</span>
+                  <input type="text" name="phoneNumber" [(ngModel)]="coachFormModel.phoneNumber" />
+                </label>
+              </div>
+              <div class="form-row">
+                <label class="form-field">
+                  <span>تخصص</span>
+                  <input type="text" name="specialization" [(ngModel)]="coachFormModel.specialization" />
+                </label>
+                <label class="form-field">
+                  <span>کد ملی</span>
+                  <input type="text" name="nationalCode" [(ngModel)]="coachFormModel.nationalCode" />
+                </label>
+              </div>
+              @if (coachFormError()) {
+                <p class="error-text">{{ coachFormError() }}</p>
+              }
+              <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="coachSubmitting()">
+                  {{ coachSubmitting() ? 'در حال ذخیره…' : 'ذخیره' }}
+                </button>
+                <button type="button" class="btn-secondary" (click)="closeCoachForm()" [disabled]="coachSubmitting()">انصراف</button>
+              </div>
+            </form>
+          </article>
+        }
       }
 
       <!-- متربیان -->
@@ -281,9 +350,10 @@
                       <td>{{ s.email }}</td>
                       <td>{{ s.phoneNumber }}</td>
                       <td>{{ statusLabel(s.status) }}</td>
-                      <td>
-                        <button type="button" class="btn-link" (click)="$event.stopPropagation(); openEditForm(s)">ویرایش</button>
-                      </td>
+<td>
+                          <button type="button" class="btn-link" (click)="$event.stopPropagation(); openEditForm(s)">ویرایش</button>
+                          <button type="button" class="btn-link-danger" (click)="$event.stopPropagation(); deleteStudent(s)">حذف</button>
+                        </td>
                     </tr>
                   }
                 </tbody>

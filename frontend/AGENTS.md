@@ -42,7 +42,7 @@ src/
 ## ANTI-PATTERNS
 - NEVER use bare CSS vars (`--gold/--primary/--danger`) — `--lp-*` only.
 - NEVER compare roles by string — `hasRole()`.
-- `admin.component.ts` (~2375 lines) and `mock-lesson-planner-api.service.ts` (~1555 lines) are landmines — extract before growing.
+- `admin.component.ts` (~103 lines) — lazy routes + `AdminNavigationComponent` sidebar. `mock-lesson-planner-api.service.ts` (~285 lines) — thin facade, 40+ domain services via mixins. Both well-structured; follow existing patterns when extending.
 
 ## COMMANDS
 ```bash

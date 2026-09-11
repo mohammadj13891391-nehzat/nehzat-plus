@@ -45,6 +45,7 @@ export abstract class StudentsApi {
   abstract getStudents(): Observable<Student[]>;
   /** Coach-accessible student list (GET /students — StudentController allows coach). */
   abstract getCoachStudents(): Observable<Student[]>;
+  abstract getMyStudents(): Observable<Student[]>;
   abstract createStudent(payload: CreateStudentPayload): Observable<Student>;
   abstract updateStudent(id: number, payload: UpdateStudentPayload): Observable<Student>;
   abstract deleteStudent(id: number): Observable<ApiMessageResponse>;

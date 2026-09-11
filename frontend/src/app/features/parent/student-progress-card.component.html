@@ -31,7 +31,7 @@
     </div>
   }
 
-  @if (progressSummary$ | async; as summary) {
+  @if (progressSummary(); as summary) {
     <div class="progress-summary">
       <div class="summary-row">
         <span>میانگین نمرات</span>
@@ -56,7 +56,7 @@
     <p class="muted">در حال بارگذاری پیشرفت...</p>
   }
 
-  @if (skillProgress$ | async; as skills) {
+  @if (skillProgress(); as skills) {
     @if (skills.length > 0) {
       <div class="skills-section">
         <h4>مهارت‌های اخیر</h4>

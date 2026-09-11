@@ -141,3 +141,79 @@ public record SkipStepRequest(
     int StudyPathId,
     int StepId
 );
+
+// Analytics DTOs
+public record StudyPathProgressAnalyticsDto(
+    int EnrollmentId,
+    string StudyPathTitle,
+    int TotalSteps,
+    int CompletedSteps,
+    int SkippedSteps,
+    int CurrentStepIndex,
+    int ProgressPercentage,
+    string Status,
+    DateTime EnrollmentDate,
+    DateTime? StartedAt,
+    DateTime? CompletedAt,
+    List<StepAnalyticsDto> Steps,
+    TimeSpan? EstimatedTimeRemaining,
+    double AverageTimePerStepMinutes
+);
+
+public record StepAnalyticsDto(
+    int StepId,
+    int StepOrder,
+    string Title,
+    string CognitiveLevel,
+    int EstimatedDurationMinutes,
+    int? ActualDurationMinutes,
+    bool IsCompleted,
+    bool IsSkipped,
+    bool IsCurrent,
+    DateTime? CompletedAt
+);
+
+public record StudentOverallProgressDto(
+    int StudentId,
+    string StudentName,
+    int TotalEnrollments,
+    int ActiveEnrollments,
+    int CompletedEnrollments,
+    double AverageProgressPercentage,
+    List<StudyPathSummaryDto> Enrollments
+);
+
+public record StudyPathSummaryDto(
+    int EnrollmentId,
+    int StudyPathId,
+    string StudyPathTitle,
+    string SubjectAreaName,
+    int ProgressPercentage,
+    string Status,
+    DateTime EnrollmentDate,
+    DateTime? CompletedAt
+);
+
+public record CoachStudentProgressDto(
+    int StudentId,
+    string StudentName,
+    int BranchId,
+    string BranchName,
+    List<StudyPathSummaryDto> Enrollments,
+    int TotalEnrollments,
+    int ActiveEnrollments,
+    int CompletedEnrollments,
+    double AverageProgressPercentage
+);
+
+public record CoachBranchProgressDto(
+    int BranchId,
+    string BranchName,
+    int TotalStudents,
+    int StudentsWithEnrollments,
+    int TotalEnrollments,
+    int ActiveEnrollments,
+    int CompletedEnrollments,
+    double AverageProgressPercentage,
+    List<CoachStudentProgressDto> Students
+);

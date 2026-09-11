@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { StudyPathAdminComponent } from './study-path-admin.component';
@@ -156,7 +156,7 @@ describe('StudyPathAdminComponent (Integration with real seed data)', () => {
         steps: [],
         accommodationIds: [],
       };
-      mockApi['createStudyPath'] = vi.fn().mockReturnValue({ error: () => of(null) } as any);
+      mockApi['createStudyPath'] = vi.fn().mockReturnValue(throwError(() => new Error('fail')));
 
       component.openCreateModal();
       component.newPath = newPath;
@@ -183,6 +183,7 @@ describe('StudyPathAdminComponent (Integration with real seed data)', () => {
     it('should cancel delete when confirm is false', () => {
       const pathToDelete: StudyPath = initialStudyPaths[0];
       vi.spyOn(window, 'confirm').mockReturnValue(false);
+      mockApi['deleteStudyPath'] = vi.fn();
 
       component.deletePath(pathToDelete.id);
 
@@ -192,7 +193,7 @@ describe('StudyPathAdminComponent (Integration with real seed data)', () => {
     it('should show error on delete failure', () => {
       const pathToDelete: StudyPath = initialStudyPaths[0];
       vi.spyOn(window, 'confirm').mockReturnValue(true);
-      mockApi['deleteStudyPath'] = vi.fn().mockReturnValue({ error: () => of(null) } as any);
+      mockApi['deleteStudyPath'] = vi.fn().mockReturnValue(throwError(() => new Error('fail')));
 
       component.deletePath(pathToDelete.id);
 
@@ -271,7 +272,7 @@ describe('StudyPathAdminComponent (Integration with real seed data)', () => {
 
   describe('Error handling', () => {
     it('should show error when getStudyPaths fails', () => {
-      mockApi['getStudyPaths'] = vi.fn().mockReturnValue({ error: () => of(null) } as any);
+      mockApi['getStudyPaths'] = vi.fn().mockReturnValue(throwError(() => new Error('API error')));
       mockApi['getAccommodations'] = vi.fn().mockReturnValue(of(initialAccommodations));
       mockApi['getStudyPathAgeGroups'] = vi.fn().mockReturnValue(of(mockAgeGroups));
       mockApi['getStudyPathSubjectAreas'] = vi.fn().mockReturnValue(of(mockSubjectAreas));

@@ -11,8 +11,8 @@ core/
 ├── services/
 │   ├── auth.service.ts                 # AuthService: login, hasRole(), token storage
 │   ├── lesson-planner-api.interface.ts # LessonPlannerApi token + interface
-│   ├── http-lesson-planner-api.service.ts   # real HTTP impl (~512 lines)
-│   ├── mock-lesson-planner-api.service.ts   # in-browser mock (~1555 lines) — LANDMINE
+│   ├── http-lesson-planner-api.service.ts   # real HTTP impl (~115 lines, mixin pattern)
+│   ├── mock-lesson-planner-api.service.ts   # in-browser mock (~285 lines, thin facade, 40+ domain services via mixins)
 │   ├── http-otuh2-api.service.ts / otuh2-api.interface.ts / otuh2-api.token.ts
 │   ├── api-url.util.ts                 # /config.json → environment cascade
 │   └── notification.service.ts
@@ -41,4 +41,4 @@ core/
 ## ANTI-PATTERNS
 - NEVER add an API method to only one impl — both http and mock must match the interface.
 - NEVER read roles by string — `hasRole()`.
-- `mock-lesson-planner-api.service.ts` is ~1555 lines; extract helpers before extending.
+- `mock-lesson-planner-api.service.ts` is a thin facade (~285 lines); domain services live in `mock/` directory. Follow the mixin pattern when adding new domains.

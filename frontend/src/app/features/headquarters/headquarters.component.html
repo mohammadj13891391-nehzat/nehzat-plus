@@ -58,7 +58,7 @@
 
   <section class="main-content">
     @if (activeTab() === 'summary') {
-      @if (summary$ | async; as summary) {
+      @if (summary(); as summary) {
         <div class="summary-grid">
           <div class="stat-card">
             <div class="stat-icon">👥</div>
@@ -161,7 +161,7 @@
     @if (activeTab() === 'branches') {
       <div class="card-section">
         <h2>عملکرد شعب</h2>
-        @if (branchPerformance$ | async; as branches) {
+        @if (branchPerformance(); as branches) {
           @if (branches.length === 0) {
             <p class="muted">داده‌ای برای نمایش وجود ندارد.</p>
           } @else {
@@ -213,7 +213,7 @@
     @if (activeTab() === 'coaches') {
       <div class="card-section">
         <h2>عملکرد مربیان</h2>
-        @if (coachPerformance$ | async; as coaches) {
+        @if (coachPerformance(); as coaches) {
           @if (coaches.length === 0) {
             <p class="muted">داده‌ای برای نمایش وجود ندارد.</p>
           } @else {
@@ -261,7 +261,7 @@
     @if (activeTab() === 'madrasahs') {
       <div class="card-section">
         <h2>مدیریت مدارس</h2>
-        @if (madrasahs$ | async; as madrasahs) {
+        @if (madrasahs(); as madrasahs) {
           @if (madrasahs.length === 0) {
             <p class="muted">مدرسه‌ای ثبت نشده است.</p>
           } @else {

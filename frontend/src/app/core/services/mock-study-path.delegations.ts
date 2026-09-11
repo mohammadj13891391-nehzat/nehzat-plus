@@ -4,6 +4,10 @@ import {
   type CompleteStepRequest,
   type EnrollRequest,
   type SkipStepRequest,
+  CoachBranchProgressDto,
+  CoachStudentProgressDto,
+  StudentOverallProgressDto,
+  StudyPathProgressAnalyticsDto,
 } from '../models/lesson-planner.models';
 
 /** studyPath delegation mixin: forwards to the injected MockStudyPathService instance. */
@@ -88,6 +92,23 @@ export function withStudyPath<T extends MockApiCtor>(Base: T) {
 
     skipStep(payload: SkipStepRequest): Observable<any> {
       return this.studyPath.skipStep(payload);
+    }
+
+    // Analytics
+    getStudyPathAnalytics(enrollmentId: number): Observable<StudyPathProgressAnalyticsDto> {
+      return this.studyPath.getStudyPathAnalytics(enrollmentId);
+    }
+
+    getMyOverallProgress(): Observable<StudentOverallProgressDto> {
+      return this.studyPath.getMyOverallProgress();
+    }
+
+    getCoachBranchProgress(branchId: number): Observable<CoachBranchProgressDto> {
+      return this.studyPath.getCoachBranchProgress(branchId);
+    }
+
+    getCoachStudentsProgress(branchId: number): Observable<CoachStudentProgressDto[]> {
+      return this.studyPath.getCoachStudentsProgress(branchId);
     }
   };
 }

@@ -4,6 +4,7 @@ import { MockDataContext } from './mock-data-context';
 import {
   Branch,
   BranchManager,
+  BranchPerformance,
   Madrasah,
   MaktabBranch,
   CreateBranchPayload,
@@ -21,6 +22,31 @@ export class MockAdminBranchesService {
 
   getBranchManagers(): Observable<BranchManager[]> {
     return this.ctx.delayed([...this.ctx.branchManagers]);
+  }
+
+  getMyBranch(): Observable<Branch> {
+    const branch = this.ctx.branches[0];
+    return this.ctx.delayed(branch);
+  }
+
+  getMyBranchPerformance(): Observable<BranchPerformance> {
+    const branch = this.ctx.branches[0];
+    const students = this.ctx.students.filter((s) => s.branchId === branch?.id).length;
+    const coaches = this.ctx.coaches.filter((c) => c.branchId === branch?.id).length;
+    const perf: BranchPerformance = {
+      branchId: branch?.id || 1,
+      branchName: branch?.name || 'شعبه مرکزی',
+      province: branch?.province || 'تهران',
+      madrasahName: branch?.name || 'شعبه مرکزی',
+      studentCount: students,
+      averageScore: 85,
+      attendanceRate: 0.92,
+      activeCourses: 12,
+      evaluationCount: 45,
+      averageEvaluationScore: 88,
+      status: students > 0 ? 'active' : 'inactive',
+    };
+    return this.ctx.delayed(perf);
   }
 
   createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {

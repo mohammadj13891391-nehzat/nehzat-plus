@@ -1,6 +1,6 @@
 <div class="card-section">
   <h2>دوره‌های من</h2>
-  @if (courses$ | async; as courses) {
+  @if (courses(); as courses) {
     @if (courses.length === 0) {
       <p class="muted">دوره‌ای به شما تخصیص داده نشده است.</p>
     } @else {

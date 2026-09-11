@@ -68,7 +68,7 @@ cd frontend && npm run build:capacitor && npx cap sync android  # APK
 - NEVER append to one admin controller — split by domain.
 - JWT `ValidTypes` MUST stay `["at+jwt"]` (gateway rejects other types).
 - `AdminController.cs` was ~1130 lines — already split into 8 sub-controllers; don't re-grow it.
-- `admin.component.ts` (~2375 lines) and `mock-lesson-planner-api.service.ts` (~1555 lines) are landmines — extract before extending.
+- `admin.component.ts` (~103 lines after refactor) — uses lazy routes + `AdminNavigationComponent`. `mock-lesson-planner-api.service.ts` (~285 lines) — thin facade delegating to 40+ domain services via mixin pattern. Both well-structured; follow existing patterns when extending.
 
 ## Landmines & quirks
 - `README.md` at root is **partly stale** (historically claimed .NET 8 / NestJS / SQLite / `dummy-token`). Trust this file and actual code over README. Other docs like `docs/FRONTEND_PRD.md` and `docs/SYSTEM_ARCHITECTURE.md` may also contain legacy references.

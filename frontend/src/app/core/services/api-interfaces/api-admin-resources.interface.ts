@@ -6,6 +6,7 @@ import {
   ApiMessageResponse,
   Book,
   Branch,
+  BranchPerformance,
   CreateBranchPayload,
   UpdateBranchPayload,
   CreateBookPayload,
@@ -31,6 +32,8 @@ import {
 
 export abstract class AdminResourcesApi {
   abstract getBranches(): Observable<Branch[]>;
+  abstract getMyBranch(): Observable<Branch>;
+  abstract getMyBranchPerformance(): Observable<BranchPerformance>;
   abstract createBranch(payload: CreateBranchPayload): Observable<Branch>;
   abstract updateBranch(id: number, payload: UpdateBranchPayload): Observable<Branch>;
   abstract deleteBranch(id: number): Observable<ApiMessageResponse>;

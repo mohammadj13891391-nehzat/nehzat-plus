@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import type {
   MonthlyBooklet,
@@ -40,11 +40,8 @@ export class MonthlyBookletComponent implements OnInit {
   readonly activeTab = signal<TabKey>('list');
   readonly editingBooklet = signal<MonthlyBooklet | null>(null);
 
-  readonly booklets$ = this.api.getMonthlyBooklets();
-  readonly students$ = this.api.getAllStudents();
-
-  // Parse students from getAllStudents()
-  students = signal<StudentInfo[]>([]);
+  readonly booklets = toSignal(this.api.getMonthlyBooklets(), { initialValue: [] as any[] });
+  readonly students = toSignal(this.api.getAllStudents(), { initialValue: [] as any[] });
 
   formData: CreateMonthlyBookletPayload & { status?: string } = {
     studentId: 0,
@@ -76,11 +73,6 @@ export class MonthlyBookletComponent implements OnInit {
       void this.router.navigateByUrl('/auth/login');
       return;
     }
-
-    // Load students for dropdown
-    this.api.getAllStudents().pipe(takeUntilDestroyed()).subscribe(students => {
-      this.students.set(students as StudentInfo[]);
-    });
 
     // Set current user as default creator
     if (this.currentUser.studentId) {
@@ -144,8 +136,7 @@ export class MonthlyBookletComponent implements OnInit {
   deleteBooklet(id: number): void {
     this.api.deleteMonthlyBooklet(id).pipe(takeUntilDestroyed()).subscribe({
       next: () => {
-        // Refresh the list
-        this.booklets$.subscribe();
+        this.api.getMonthlyBooklets().pipe(takeUntilDestroyed()).subscribe();
       },
       error: (err) => {
         alert('خطا در حذف: ' + (err.error?.message || err.message));

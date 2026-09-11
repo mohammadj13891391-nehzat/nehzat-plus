@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
 
 interface SelectedWord {
   word: string;
@@ -733,8 +732,6 @@ interface SelectedWord {
   `]
 })
 export class VocabularyBookMarkerComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-
   // Tab state
   activeTab: 'text' | 'image' = 'text';
 
@@ -769,8 +766,6 @@ export class VocabularyBookMarkerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     window.removeEventListener('keydown', this.handleKeydown);
   }
 

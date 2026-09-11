@@ -4,6 +4,8 @@ import {
   Accommodation,
   AgeGroup,
   ApiMessageResponse,
+  CoachBranchProgressDto,
+  CoachStudentProgressDto,
   CompleteStepRequest,
   CreateAccommodationRequest,
   CreateStudyPathRequest,
@@ -13,7 +15,9 @@ import {
   SkipStepRequest,
   StudentStudyPath,
   StudyPath,
+  StudyPathProgressAnalyticsDto,
   StudyPathStep,
+  StudentOverallProgressDto,
   SubjectArea,
   UpdateStudyPathRequest,
   UpdateStudyPathStepRequest,
@@ -106,6 +110,23 @@ export function WithStudyPath<TBase extends Constructor<HttpServiceContext>>(Bas
         this.url(`/study-path/${payload.studyPathId}/steps/${payload.stepId}/skip`),
         {},
       );
+    }
+
+    // Analytics
+    getStudyPathAnalytics(enrollmentId: number): Observable<StudyPathProgressAnalyticsDto> {
+      return this.http.get<StudyPathProgressAnalyticsDto>(this.url(`/study-path/my-paths/${enrollmentId}/analytics`));
+    }
+
+    getMyOverallProgress(): Observable<StudentOverallProgressDto> {
+      return this.http.get<StudentOverallProgressDto>(this.url('/study-path/my-progress'));
+    }
+
+    getCoachBranchProgress(branchId: number): Observable<CoachBranchProgressDto> {
+      return this.http.get<CoachBranchProgressDto>(this.url(`/study-path/coach/branch/${branchId}/progress`));
+    }
+
+    getCoachStudentsProgress(branchId: number): Observable<CoachStudentProgressDto[]> {
+      return this.http.get<CoachStudentProgressDto[]>(this.url(`/study-path/coach/branch/${branchId}/students-progress`));
     }
   };
 }

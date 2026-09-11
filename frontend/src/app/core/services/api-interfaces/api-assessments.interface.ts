@@ -63,6 +63,7 @@ export abstract class AssessmentsApi {
     abstract getHeadquartersSummary(): Observable<HeadquartersSummary>;
     abstract getBranchPerformance(): Observable<BranchPerformance[]>;
     abstract getCoachPerformance(): Observable<CoachPerformance[]>;
+    abstract getMyCoachPerformance(): Observable<CoachPerformance[]>;
 
     abstract getSkillProgressByStudent(studentId: number): Observable<StudentSkillProgress[]>;
     abstract getSkillProgressByRing(ringId: number): Observable<StudentSkillProgress[]>;

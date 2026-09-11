@@ -11,6 +11,7 @@ import type {
   BranchPerformance,
   Coach,
   CoachPerformance,
+  CreateCoachPayload,
   CreateStudentPayload,
   CurrentUser,
   Student,
@@ -53,6 +54,12 @@ export class BranchManagerComponent implements OnInit {
   readonly submitting = signal(false);
   readonly formError = signal('');
   formModel: CreateStudentPayload = this.emptyFormModel();
+
+  readonly coachFormVisible = signal(false);
+  readonly coachEditingId = signal<number | null>(null);
+  readonly coachSubmitting = signal(false);
+  readonly coachFormError = signal('');
+  coachFormModel: CreateCoachPayload = this.emptyCoachFormModel();
 
   readonly drillDownCoach = signal<CoachPerformance | null>(null);
   readonly drillDownStudent = signal<Student | null>(null);
@@ -198,6 +205,123 @@ export class BranchManagerComponent implements OnInit {
   closeDrillDown(): void {
     this.drillDownCoach.set(null);
     this.drillDownStudent.set(null);
+  }
+
+  deleteStudent(student: Student): void {
+    if (!confirm('آیا از حذف این متربی اطمینان دارید؟')) return;
+
+    const id = student.id!;
+    this.api.deleteStudent(id).subscribe({
+      next: () => {
+        this.students.set(this.students().filter((s) => s.id !== id));
+        this.errorMessage.set('');
+      },
+      error: () => {
+        this.errorMessage.set('حذف متربی با خطا مواجه شد.');
+      }
+    });
+  }
+
+  openCreateCoachForm(): void {
+    this.coachEditingId.set(null);
+    this.coachFormModel = this.emptyCoachFormModel();
+    this.coachFormError.set('');
+    this.coachFormVisible.set(true);
+  }
+
+  openEditCoachForm(coach: Coach): void {
+    this.coachEditingId.set(coach.id);
+    this.coachFormModel = {
+      username: coach.username,
+      password: '',
+      firstName: coach.firstName,
+      lastName: coach.lastName,
+      email: coach.email,
+      phoneNumber: coach.phoneNumber,
+      specialization: coach.specialization,
+      branchId: coach.branchId,
+      nationalCode: coach.nationalCode,
+      assignedCourseIds: coach.assignedCourseIds || []
+    };
+    this.coachFormError.set('');
+    this.coachFormVisible.set(true);
+  }
+
+  closeCoachForm(): void {
+    this.coachFormVisible.set(false);
+    this.coachEditingId.set(null);
+    this.coachFormError.set('');
+    this.coachFormModel = this.emptyCoachFormModel();
+  }
+
+  submitCoachForm(): void {
+    this.coachFormError.set('');
+    const branchId = this.branch()?.id ?? this.currentUser?.branchId;
+    if (!branchId) {
+      this.coachFormError.set('شناسه شعبه مشخص نیست.');
+      return;
+    }
+
+    this.coachSubmitting.set(true);
+    const payload: CreateCoachPayload = { ...this.coachFormModel, branchId };
+
+    if (this.coachEditingId() === null) {
+      this.api.createMyCoach(payload).subscribe({
+        next: (created) => {
+          this.coaches.update((list) => [...list, created]);
+          this.coachSubmitting.set(false);
+          this.closeCoachForm();
+        },
+        error: () => {
+          this.coachFormError.set('افزودن مربی با خطا مواجه شد.');
+          this.coachSubmitting.set(false);
+        }
+      });
+    } else {
+      const id = this.coachEditingId()!;
+      const updatePayload: Partial<CreateCoachPayload> = { ...payload };
+      this.api.updateMyCoach(id, updatePayload).subscribe({
+        next: (updated) => {
+          this.coaches.update((list) => list.map((c) => (c.id === id ? updated : c)));
+          this.coachSubmitting.set(false);
+          this.closeCoachForm();
+        },
+        error: () => {
+          this.coachFormError.set('به‌روزرسانی مربی با خطا مواجه شد.');
+          this.coachSubmitting.set(false);
+        }
+      });
+    }
+  }
+
+  deleteCoach(coach: Coach): void {
+    if (!confirm('آیا از حذف این مربی اطمینان دارید؟')) return;
+
+    const id = coach.id!;
+    this.api.deleteMyCoach(id).subscribe({
+      next: () => {
+        this.coaches.set(this.coaches().filter((c) => c.id !== id));
+        this.errorMessage.set('');
+      },
+      error: () => {
+        this.errorMessage.set('حذف مربی با خطا مواجه شد.');
+      }
+    });
+  }
+
+  private emptyCoachFormModel(): CreateCoachPayload {
+    return {
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      specialization: '',
+      branchId: this.currentUser?.branchId,
+      nationalCode: '',
+      assignedCourseIds: []
+    };
   }
 
   private emptyFormModel(): CreateStudentPayload {

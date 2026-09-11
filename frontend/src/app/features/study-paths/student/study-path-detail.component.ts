@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,6 +21,7 @@ export class StudyPathDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   readonly notify = inject(NotificationService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   loading = true;
   enrollment: StudentStudyPath | null = null;
@@ -41,7 +42,7 @@ export class StudyPathDetailComponent implements OnInit {
       return;
     }
 
-    this.api.getMyStudyPath(id).pipe(takeUntilDestroyed()).subscribe({
+    this.api.getMyStudyPath(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (enrollment) => {
         this.enrollment = enrollment;
         this.loading = false;
@@ -75,7 +76,7 @@ export class StudyPathDetailComponent implements OnInit {
     this.api.completeStep({
       studyPathId: this.enrollment.studyPathId,
       stepId: this.enrollment.currentStepId!,
-    }).pipe(takeUntilDestroyed()).subscribe({
+    }).subscribe({
       next: (updated) => {
         this.enrollment = updated;
         this.notify.show('مرحله با موفقیت تکمیل شد!', 'success');
@@ -91,7 +92,7 @@ export class StudyPathDetailComponent implements OnInit {
     this.api.skipStep({
       studyPathId: this.enrollment.studyPathId,
       stepId: this.enrollment.currentStepId!,
-    }).pipe(takeUntilDestroyed()).subscribe({
+    }).subscribe({
       next: (updated) => {
         this.enrollment = updated;
         this.notify.show('مرحله نادیده گرفته شد', 'success');

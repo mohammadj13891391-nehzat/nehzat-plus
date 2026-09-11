@@ -1,6 +1,6 @@
 <div class="card-section">
   <h2>نمره‌دهی‌های انجام شده</h2>
-  @if (gradings$ | async; as gradings) {
+  @if (gradings(); as gradings) {
     @if (gradings.length === 0) {
       <p class="muted">هنوز نمره‌دهی‌ای انجام نشده است.</p>
     } @else {

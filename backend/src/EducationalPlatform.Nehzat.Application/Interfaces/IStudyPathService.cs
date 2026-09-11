@@ -32,4 +32,10 @@ public interface IStudyPathService
     Task<StudentStudyPathDto> GetMyStudyPathAsync(string username, int enrollmentId);
     Task<StudentStudyPathDto> CompleteStepAsync(string username, int studyPathId, int stepId);
     Task<StudentStudyPathDto> SkipStepAsync(string username, int studyPathId, int stepId);
+
+    // Analytics
+    Task<StudyPathProgressAnalyticsDto> GetStudyPathProgressAsync(string username, int enrollmentId);
+    Task<StudentOverallProgressDto> GetStudentOverallProgressAsync(string username);
+    Task<List<CoachStudentProgressDto>> GetCoachStudentsProgressAsync(int branchId);
+    Task<CoachBranchProgressDto> GetCoachBranchProgressAsync(int branchId);
 }

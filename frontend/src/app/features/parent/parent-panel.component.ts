@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CurrentUser, ParentStudentInfo } from '../../core/models/lesson-planner.models';
 import { AuthService } from '../../core/services/auth.service';
@@ -20,10 +20,11 @@ export class ParentPanelComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   currentUser: CurrentUser | null = null;
   logoHidden = false;
-  students$: Observable<ParentStudentInfo[]> = new Observable();
+  readonly students = signal<ParentStudentInfo[]>([]);
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
@@ -36,7 +37,9 @@ export class ParentPanelComponent implements OnInit {
 
     // Fetch parent's students
     const parentId = this.currentUser.studentId ?? 0;
-    this.students$ = this.api.getParentStudents(parentId);
+    this.api.getParentStudents(parentId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+      students => this.students.set(students)
+    );
   }
 
   logout(): void {

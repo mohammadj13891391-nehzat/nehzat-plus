@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, finalize } from 'rxjs';
 
 import type { StudyPath, StudentStudyPath } from '../../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.token';
@@ -22,6 +21,7 @@ export class StudentStudyPathsComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly notify = inject(NotificationService);
   readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   loading = true;
   availablePaths: StudyPath[] = [];
@@ -41,7 +41,7 @@ export class StudentStudyPathsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.api.getAvailableStudyPaths().pipe(takeUntilDestroyed()).subscribe({
+    this.api.getAvailableStudyPaths().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (paths) => {
         this.availablePaths = paths;
         this.loadEnrollments();
@@ -54,7 +54,7 @@ export class StudentStudyPathsComponent implements OnInit {
   }
 
   private loadEnrollments(): void {
-    this.api.getMyStudyPaths().pipe(takeUntilDestroyed()).subscribe({
+    this.api.getMyStudyPaths().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (enrollments) => {
         this.myEnrollments = enrollments;
         this.loading = false;
@@ -66,8 +66,8 @@ export class StudentStudyPathsComponent implements OnInit {
     });
   }
 
-  enroll(pathId: number): void {
-    this.api.enroll({ studyPathId: pathId }).pipe(takeUntilDestroyed()).subscribe({
+enroll(pathId: number): void {
+    this.api.enroll({ studyPathId: pathId }).subscribe({
       next: (enrollment) => {
         this.notify.show('با موفقیت ثبت‌نام شدید!', 'success');
         void this.router.navigateByUrl(`/study-paths/student/${enrollment.id}`);

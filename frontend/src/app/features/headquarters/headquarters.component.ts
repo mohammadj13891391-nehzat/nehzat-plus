@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import type {
@@ -41,17 +41,10 @@ export class HeadquartersComponent implements OnInit {
   readonly expandedMadrasahId = signal<number | null>(null);
   readonly branchCache = signal<Record<number, MaktabBranch[]>>({});
 
-  readonly summary$: Observable<HeadquartersSummary>;
-  readonly branchPerformance$: Observable<BranchPerformance[]>;
-  readonly coachPerformance$: Observable<CoachPerformance[]>;
-  readonly madrasahs$: Observable<Madrasah[]>;
-
-  constructor() {
-    this.summary$ = this.api.getHeadquartersSummary();
-    this.branchPerformance$ = this.api.getBranchPerformance();
-    this.coachPerformance$ = this.api.getCoachPerformance();
-    this.madrasahs$ = this.api.getMadrasahs();
-  }
+  readonly summary = toSignal(this.api.getHeadquartersSummary());
+  readonly branchPerformance = toSignal(this.api.getBranchPerformance());
+  readonly coachPerformance = toSignal(this.api.getCoachPerformance());
+  readonly madrasahs = toSignal(this.api.getMadrasahs());
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();

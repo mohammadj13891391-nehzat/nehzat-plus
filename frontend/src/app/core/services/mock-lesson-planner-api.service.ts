@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 import { LessonPlannerApi } from './lesson-planner-api.interface';
-import { QrCodeResponse, QrPollResponse, QrScanConfirm, Student, Coach, Branch, BranchPerformance } from '../models/lesson-planner.models';
+import { QrCodeResponse, QrPollResponse, QrScanConfirm, Student, Coach, Branch, BranchPerformance, BranchManager } from '../models/lesson-planner.models';
 import { MockLessonPlannerApiBase } from './mock-lesson-planner-base';
 import { MockAuthService } from './mock/auth.service';
 import { MockAdminUsersService } from './mock/admin-users.service';

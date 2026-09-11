@@ -31,10 +31,14 @@ export function createMockAuthService(): AuthService {
 }
 
 export function createMockApi(): LessonPlannerApi {
+  const mocks = new Map<string | symbol, ReturnType<typeof vi.fn>>();
   return new Proxy({} as Record<string, unknown>, {
     get(_target, prop: string | symbol) {
       if (prop === 'then') return undefined; // not a thenable
-      return vi.fn().mockReturnValue(of(null));
+      if (!mocks.has(prop)) {
+        mocks.set(prop, vi.fn().mockReturnValue(of(null)));
+      }
+      return mocks.get(prop);
     },
   }) as unknown as LessonPlannerApi;
 }

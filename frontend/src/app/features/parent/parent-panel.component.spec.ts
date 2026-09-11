@@ -12,6 +12,7 @@ import type { LessonPlannerApi } from '../../core/services/lesson-planner-api.in
 import type { ParentStudentInfo } from '../../core/models/lesson-planner.models';
 
 describe('ParentPanelComponent', () => {
+  let fixture: ReturnType<typeof TestBed.createComponent<ParentPanelComponent>>;
   let component: ParentPanelComponent;
   let mockApi: Record<string, ReturnType<typeof vi.fn>>;
   let mockRouter: Router;
@@ -22,11 +23,6 @@ describe('ParentPanelComponent', () => {
     { studentId: 20, studentName: 'فاطمه محمدی', studentCode: 'S002', courseName: 'ادبیات', latestGrade: 90, attendanceRate: 98,
       age: 14, phase: 'دبیرستان', completedLevels: 5, totalLevels: 12, completedLessons: 25, totalLessons: 80 },
   ];
-
-  function createComponent(): ParentPanelComponent {
-    const fixture = TestBed.createComponent(ParentPanelComponent);
-    return fixture.componentInstance;
-  }
 
   beforeEach(() => {
     mockApi = {};
@@ -53,7 +49,8 @@ describe('ParentPanelComponent', () => {
   });
 
   it('should be defined', () => {
-    component = createComponent();
+    fixture = TestBed.createComponent(ParentPanelComponent);
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
 
@@ -68,18 +65,18 @@ describe('ParentPanelComponent', () => {
         studentId: 1,
       });
       mockApi['getParentStudents'] = vi.fn().mockReturnValue(of(mockStudents));
-      component = createComponent();
+      fixture = TestBed.createComponent(ParentPanelComponent);
+      component = fixture.componentInstance;
     });
 
     it('should load parent students on init', () => {
-      component.ngOnInit();
+      fixture.detectChanges();
       expect(mockApi['getParentStudents']).toHaveBeenCalledWith(1);
     });
 
-    it('should expose students$ observable', () => {
-      component.ngOnInit();
-      let result: ParentStudentInfo[] = [];
-      component.students$.subscribe(s => result = s);
+    it('should expose students signal', () => {
+      fixture.detectChanges();
+      const result = component.students();
       expect(result.length).toBe(2);
       expect(result[0].studentName).toBe('علی احمدی');
     });
@@ -98,11 +95,12 @@ describe('ParentPanelComponent', () => {
         roles: ['manager'],
         userType: 'manager',
       });
-      component = createComponent();
+      fixture = TestBed.createComponent(ParentPanelComponent);
+      component = fixture.componentInstance;
     });
 
     it('should redirect to dashboard on init', () => {
-      component.ngOnInit();
+      fixture.detectChanges();
       expect(mockRouter.navigateByUrl).toHaveBeenCalled();
     });
   });

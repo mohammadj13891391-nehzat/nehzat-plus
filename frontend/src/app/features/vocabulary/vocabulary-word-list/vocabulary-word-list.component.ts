@@ -1,12 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LESSON_PLANNER_API } from '@core/services/lesson-planner-api.token';
-import { VocabularyWordDto } from '@core/models/lesson-planner.models';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { VocabularyTextDto } from '@core/models/lesson-planner.models';
+import { VocabularyWordDto, VocabularyTextDto } from '@core/models/lesson-planner.models';
 
 @Component({
   selector: 'app-vocabulary-word-list',
@@ -60,7 +58,7 @@ import { VocabularyTextDto } from '@core/models/lesson-planner.models';
 })
 export class VocabularyWordListComponent implements OnInit {
   private api = inject(LESSON_PLANNER_API);
-  private destroy$ = new Subject<void>();
+  private destroyRef = inject(DestroyRef);
   
   words: VocabularyWordDto[] = [];
   texts: VocabularyTextDto[] = [];
@@ -72,14 +70,9 @@ export class VocabularyWordListComponent implements OnInit {
     this.loadTexts();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   private loadWords(): void {
     this.isLoading = true;
-    this.api.getVocabularyWordsByText(0).pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getVocabularyWordsByText(0).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         this.words = result || [];
         this.isLoading = false;
@@ -93,7 +86,7 @@ export class VocabularyWordListComponent implements OnInit {
   }
 
   private loadTexts(): void {
-    this.api.getVocabularyTexts().pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getVocabularyTexts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         this.texts = result || [];
       }

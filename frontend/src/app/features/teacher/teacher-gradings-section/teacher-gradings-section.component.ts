@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, of } from 'rxjs';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
+import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import type { AssignmentGrading } from '../../../core/models/lesson-planner.models';
@@ -17,11 +16,10 @@ import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.to
 })
 export class TeacherGradingsSectionComponent implements OnInit {
   private readonly api = inject(LESSON_PLANNER_API);
-  private readonly destroyRef = inject(DestroyRef);
 
   @Input({ required: true }) teacherId = 0;
 
-  gradings$: Observable<AssignmentGrading[]> = of();
+  readonly gradings = signal<AssignmentGrading[]>([]);
 
   ngOnInit(): void {
     if (!this.teacherId) return;
@@ -29,9 +27,9 @@ export class TeacherGradingsSectionComponent implements OnInit {
   }
 
   load(): void {
-    this.gradings$ = this.api.getTeacherGradings(this.teacherId).pipe(
+    this.api.getTeacherGradings(this.teacherId).pipe(
       catchError(() => of([]))
-    );
+    ).subscribe(gradings => this.gradings.set(gradings));
   }
 
   getStatusClass(status?: string): string {

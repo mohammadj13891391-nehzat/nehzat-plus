@@ -41,7 +41,7 @@
     @if (activeTab() === 'list') {
       <div class="card-section">
         <h2>لیست دفترچه‌های ماهانه</h2>
-        @if (booklets$ | async; as booklets) {
+        @if (booklets(); as booklets) {
           @if (booklets.length === 0) {
             <p class="muted">هیچ دفترچه ماهانه‌ای یافت نشد.</p>
           } @else {

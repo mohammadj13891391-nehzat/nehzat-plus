@@ -475,6 +475,208 @@ public class StudyPathService : IStudyPathService
         return await MapEnrollmentToDtoAsync(enrollment.Id);
     }
 
+    #region Analytics
+
+    public async Task<StudyPathProgressAnalyticsDto> GetStudyPathProgressAsync(string username, int enrollmentId)
+    {
+        var student = await _studentService.FindByUsernameAsync(username);
+        if (student == null)
+            throw new KeyNotFoundException(GenericErrorMessages.NotFound);
+
+        var enrollment = await _db.StudentStudyPaths
+            .Include(e => e.StudyPath)
+                .ThenInclude(p => p.AgeGroup)
+            .Include(e => e.StudyPath)
+                .ThenInclude(p => p.SubjectArea)
+            .Include(e => e.StudyPath)
+                .ThenInclude(p => p.Steps)
+            .Include(e => e.StudyPath)
+                .ThenInclude(p => p.Accommodations)
+                    .ThenInclude(pa => pa.Accommodation)
+            .Include(e => e.CurrentStep)
+            .FirstOrDefaultAsync(e => e.Id == enrollmentId && e.StudentId == student.Id);
+
+        if (enrollment == null)
+            throw new KeyNotFoundException(GenericErrorMessages.NotFound);
+
+        return MapEnrollmentToAnalytics(enrollment);
+    }
+
+    public async Task<StudentOverallProgressDto> GetStudentOverallProgressAsync(string username)
+    {
+        var student = await _studentService.FindByUsernameAsync(username);
+        if (student == null)
+            throw new KeyNotFoundException(GenericErrorMessages.NotFound);
+
+        var enrollments = await _db.StudentStudyPaths
+            .Where(e => e.StudentId == student.Id)
+            .Include(e => e.StudyPath)
+                .ThenInclude(p => p.SubjectArea)
+            .ToListAsync();
+
+        var summaries = enrollments.Select(e => new StudyPathSummaryDto(
+            e.Id,
+            e.StudyPathId,
+            e.StudyPath?.Title ?? string.Empty,
+            e.StudyPath?.SubjectArea?.Name ?? string.Empty,
+            e.ProgressPercentage,
+            e.Status,
+            e.EnrollmentDate,
+            e.CompletedAt
+        )).ToList();
+
+        var activeCount = summaries.Count(s => s.Status == "active");
+        var completedCount = summaries.Count(s => s.Status == "completed");
+        var avgProgress = summaries.Any() ? summaries.Average(s => s.ProgressPercentage) : 0;
+
+        return new StudentOverallProgressDto(
+            student.Id,
+            $"{student.FirstName} {student.LastName}".Trim(),
+            summaries.Count,
+            activeCount,
+            completedCount,
+            avgProgress,
+            summaries
+        );
+    }
+
+    public async Task<List<CoachStudentProgressDto>> GetCoachStudentsProgressAsync(int branchId)
+    {
+        // Get all students in the branch
+        var students = await _db.Students
+            .Where(s => s.BranchId == branchId)
+            .Include(s => s.Branch)
+            .ToListAsync();
+
+        var result = new List<CoachStudentProgressDto>();
+
+        foreach (var student in students)
+        {
+            var enrollments = await _db.StudentStudyPaths
+                .Where(e => e.StudentId == student.Id)
+                .Include(e => e.StudyPath)
+                    .ThenInclude(p => p.SubjectArea)
+                .ToListAsync();
+
+            var summaries = enrollments.Select(e => new StudyPathSummaryDto(
+                e.Id,
+                e.StudyPathId,
+                e.StudyPath?.Title ?? string.Empty,
+                e.StudyPath?.SubjectArea?.Name ?? string.Empty,
+                e.ProgressPercentage,
+                e.Status,
+                e.EnrollmentDate,
+                e.CompletedAt
+            )).ToList();
+
+            var activeCount = summaries.Count(s => s.Status == "active");
+            var completedCount = summaries.Count(s => s.Status == "completed");
+            var avgProgress = summaries.Any() ? summaries.Average(s => s.ProgressPercentage) : 0;
+
+            result.Add(new CoachStudentProgressDto(
+                student.Id,
+                $"{student.FirstName} {student.LastName}".Trim(),
+                branchId,
+                student.Branch?.Name ?? string.Empty,
+                summaries,
+                summaries.Count,
+                activeCount,
+                completedCount,
+                avgProgress
+            ));
+        }
+
+        return result;
+    }
+
+    public async Task<CoachBranchProgressDto> GetCoachBranchProgressAsync(int branchId)
+    {
+        var branch = await _db.Branches.FindAsync(branchId);
+        if (branch == null)
+            throw new KeyNotFoundException(GenericErrorMessages.NotFound);
+
+        var students = await GetCoachStudentsProgressAsync(branchId);
+        
+        var totalStudents = students.Count;
+        var studentsWithEnrollments = students.Count(s => s.TotalEnrollments > 0);
+        var totalEnrollments = students.Sum(s => s.TotalEnrollments);
+        var activeEnrollments = students.Sum(s => s.ActiveEnrollments);
+        var completedEnrollments = students.Sum(s => s.CompletedEnrollments);
+        var avgProgress = studentsWithEnrollments > 0 
+            ? students.Where(s => s.TotalEnrollments > 0).Average(s => s.AverageProgressPercentage) 
+            : 0;
+
+        return new CoachBranchProgressDto(
+            branchId,
+            branch.Name,
+            totalStudents,
+            studentsWithEnrollments,
+            totalEnrollments,
+            activeEnrollments,
+            completedEnrollments,
+            avgProgress,
+            students
+        );
+    }
+
+    private StudyPathProgressAnalyticsDto MapEnrollmentToAnalytics(StudentStudyPath enrollment)
+    {
+        var steps = enrollment.StudyPath?.Steps.OrderBy(s => s.StepOrder).ToList() ?? new List<StudyPathStep>();
+        var currentStepIndex = enrollment.CurrentStepId.HasValue 
+            ? steps.FindIndex(s => s.Id == enrollment.CurrentStepId) 
+            : steps.Count;
+        if (enrollment.Status == "completed") currentStepIndex = steps.Count - 1;
+
+        var completedStepsCount = enrollment.Status == "completed" 
+            ? steps.Count 
+            : Math.Max(0, currentStepIndex);
+
+        var stepAnalytics = steps.Select(s => {
+            var isCompleted = enrollment.Status == "completed" || (enrollment.CurrentStepId.HasValue && steps.FindIndex(st => st.Id == enrollment.CurrentStepId) > steps.FindIndex(st => st.Id == s.Id));
+            var isSkipped = false; // Could be tracked separately if needed
+            var isCurrent = enrollment.CurrentStepId == s.Id;
+            
+            return new StepAnalyticsDto(
+                s.Id,
+                s.StepOrder,
+                s.Title,
+                s.CognitiveLevel,
+                s.EstimatedDurationMinutes,
+                null, // Actual duration not tracked yet
+                isCompleted,
+                isSkipped,
+                isCurrent,
+                isCompleted ? enrollment.CompletedAt : null
+            );
+        }).ToList();
+
+        var estimatedTimeRemaining = steps
+            .Where(s => !stepAnalytics.Any(sa => sa.StepId == s.Id && sa.IsCompleted))
+            .Sum(s => s.EstimatedDurationMinutes);
+
+        var totalEstimated = steps.Sum(s => s.EstimatedDurationMinutes);
+        var avgTimePerStep = steps.Any() ? (double)totalEstimated / steps.Count : 0;
+
+        return new StudyPathProgressAnalyticsDto(
+            enrollment.Id,
+            enrollment.StudyPath?.Title ?? string.Empty,
+            steps.Count,
+            completedStepsCount,
+            0, // Skipped steps not tracked separately yet
+            currentStepIndex + 1,
+            enrollment.ProgressPercentage,
+            enrollment.Status,
+            enrollment.EnrollmentDate,
+            enrollment.StartedAt,
+            enrollment.CompletedAt,
+            stepAnalytics,
+            TimeSpan.FromMinutes(estimatedTimeRemaining),
+            avgTimePerStep
+        );
+    }
+
+    #endregion
+
     #endregion
 
     #region Private Helpers

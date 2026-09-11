@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { StudentProgressSummary, StudentSkillProgress } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
@@ -33,8 +33,8 @@ export class StudentProgressCardComponent {
   @Input() completedLessons?: number;
   @Input() totalLessons?: number;
 
-  progressSummary$: Observable<StudentProgressSummary> = this.api.getProgressSummary(this.studentId);
-  skillProgress$: Observable<StudentSkillProgress[]> = this.api.getSkillProgressByStudent(this.studentId);
+  readonly progressSummary = toSignal(this.api.getProgressSummary(this.studentId));
+  readonly skillProgress = toSignal(this.api.getSkillProgressByStudent(this.studentId));
 
   get phaseColor(): string {
     switch (this.phase) {

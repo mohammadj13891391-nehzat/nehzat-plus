@@ -84,23 +84,27 @@ export function WithStudents<TBase extends Constructor<HttpServiceContext>>(Base
     }
 
     getStudents(): Observable<Student[]> {
-      return this.http.get<Student[]>(this.url('/admin/students'));
+      return this.http.get<Student[]>(this.url('/students'));
     }
 
     getCoachStudents(): Observable<Student[]> {
       return this.http.get<Student[]>(this.url('/students'));
     }
 
+    getMyStudents(): Observable<Student[]> {
+      return this.http.get<Student[]>(this.url('/branch-manager/students'));
+    }
+
     createStudent(payload: CreateStudentPayload): Observable<Student> {
-      return this.http.post<Student>(this.url('/admin/students'), payload);
+      return this.http.post<Student>(this.url('/students'), payload);
     }
 
     updateStudent(id: number, payload: UpdateStudentPayload): Observable<Student> {
-      return this.http.put<Student>(this.url(`/admin/students/${id}`), payload);
+      return this.http.put<Student>(this.url(`/students/${id}`), payload);
     }
 
     deleteStudent(id: number): Observable<ApiMessageResponse> {
-      return this.http.delete<ApiMessageResponse>(this.url(`/admin/students/${id}`));
+      return this.http.delete<ApiMessageResponse>(this.url(`/students/${id}`));
     }
 
     getProgressSummary(studentId: number): Observable<StudentProgressSummary> {

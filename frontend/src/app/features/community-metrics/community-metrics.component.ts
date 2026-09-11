@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, combineLatest } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import type {
   CommunityMetrics,
@@ -11,7 +10,7 @@ import type {
   PublicShowcase
 } from '../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
-import { NotificationService } from '../../core/services/notification.service';
+import { inject } from '@angular/core';
 
 type MetricsView = 'overview' | 'activity' | 'skills' | 'collaboration' | 'showcase';
 
@@ -23,19 +22,18 @@ type MetricsView = 'overview' | 'activity' | 'skills' | 'collaboration' | 'showc
   styleUrls: ['./community-metrics.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CommunityMetricsComponent implements OnInit {
+export class CommunityMetricsComponent {
   private readonly api = inject(LESSON_PLANNER_API);
-  private readonly notify = inject(NotificationService);
-  private readonly destroyRef = inject(DestroyRef);
 
   activeView: MetricsView = 'overview';
-  loading = true;
 
-  metrics$!: Observable<CommunityMetrics>;
-  activity$!: Observable<PeerActivity[]>;
-  skills$!: Observable<SkillSharingMetrics>;
-  collaboration$!: Observable<CollaborationMetrics>;
-  showcase$!: Observable<PublicShowcase[]>;
+  readonly metrics = toSignal(this.api.getCommunityMetrics());
+  readonly activity = toSignal(this.api.getPeerActivity(10));
+  readonly skills = toSignal(this.api.getSkillSharingMetrics());
+  readonly collaboration = toSignal(this.api.getCollaborationMetrics());
+  readonly showcase = toSignal(this.api.getPublicShowcases(6));
+
+  readonly loading = computed(() => this.metrics() === undefined);
 
   VIEW_LABELS: Record<MetricsView, string> = {
     overview: 'نمای کلی',
@@ -54,26 +52,6 @@ export class CommunityMetricsComponent implements OnInit {
   };
 
   views: MetricsView[] = ['overview', 'activity', 'skills', 'collaboration', 'showcase'];
-
-  ngOnInit(): void {
-    this.loadAll();
-  }
-
-  private loadAll(): void {
-    this.loading = true;
-
-    this.metrics$ = this.api.getCommunityMetrics();
-    this.activity$ = this.api.getPeerActivity(10);
-    this.skills$ = this.api.getSkillSharingMetrics();
-    this.collaboration$ = this.api.getCollaborationMetrics();
-    this.showcase$ = this.api.getPublicShowcases(6);
-
-    // Wait for first metrics to stop loading
-    this.metrics$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.loading = false,
-      error: () => this.loading = false
-    });
-  }
 
   switchView(view: MetricsView): void {
     this.activeView = view;

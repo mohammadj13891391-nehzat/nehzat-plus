@@ -1,0 +1,106 @@
+<aside class="admin-sidebar" aria-label="منوی مدیریت">
+  <ul class="sidebar-menu">
+    @for (item of visibleMenuItems(); track trackByKey($index, item)) {
+      @if (item.key === 'makatib') {
+        <li
+          class="sidebar-item sidebar-parent"
+          [class.expanded]="isExpanded('makatib')"
+          (click)="toggleExpand('makatib'); onMenuClick('makatib')"
+          (keydown.enter)="toggleExpand('makatib'); onMenuClick('makatib')"
+          tabindex="0"
+          role="button"
+        >
+          <span class="sidebar-parent-label">{{ item.label }}</span>
+          <span class="sidebar-arrow">{{ isExpanded('makatib') ? '▲' : '▼' }}</span>
+        </li>
+        @if (isExpanded('makatib')) {
+          <li class="sidebar-submenu">
+            <ul>
+              <li
+                class="sidebar-item sidebar-sub-parent"
+                [class.expanded]="isExpanded('makatib-girls')"
+                (click)="toggleExpand('makatib-girls'); $event.stopPropagation()"
+                tabindex="0"
+                role="button"
+              >
+                <span>مکاتب دخترانه</span>
+                <span class="sidebar-arrow">{{ isExpanded('makatib-girls') ? '▲' : '▼' }}</span>
+              </li>
+              @if (isExpanded('makatib-girls')) {
+                @if (loadingMadrasahs()) {
+                  <li class="sidebar-item sidebar-child muted">در حال بارگذاری...</li>
+                } @else {
+                  @for (maktab of makatibGirls(); track trackByMadrasah($index, maktab)) {
+                    <li
+                      class="sidebar-item sidebar-child"
+                      [class.active]="activeMenu() === maktab.key"
+                      (click)="onMadrasahClick(maktab); $event.stopPropagation()"
+                      tabindex="0"
+                      role="button"
+                    >
+                      <span class="sidebar-child-name">{{ maktab.label }}</span>
+                    </li>
+                  } @empty {
+                    <li class="sidebar-item sidebar-child muted">مکتب دخترانه‌ای ثبت نشده</li>
+                  }
+                }
+              }
+              <li
+                class="sidebar-item sidebar-sub-parent"
+                [class.expanded]="isExpanded('makatib-boys')"
+                (click)="toggleExpand('makatib-boys'); $event.stopPropagation()"
+                tabindex="0"
+                role="button"
+              >
+                <span>مکاتب پسرانه</span>
+                <span class="sidebar-arrow">{{ isExpanded('makatib-boys') ? '▲' : '▼' }}</span>
+              </li>
+              @if (isExpanded('makatib-boys')) {
+                @if (loadingMadrasahs()) {
+                  <li class="sidebar-item sidebar-child muted">در حال بارگذاری...</li>
+                } @else {
+                  @for (maktab of makatibBoys(); track trackByMadrasah($index, maktab)) {
+                    <li
+                      class="sidebar-item sidebar-child"
+                      [class.active]="activeMenu() === maktab.key"
+                      (click)="onMadrasahClick(maktab); $event.stopPropagation()"
+                      tabindex="0"
+                      role="button"
+                    >
+                      <span class="sidebar-child-name">{{ maktab.label }}</span>
+                    </li>
+                  } @empty {
+                    <li class="sidebar-item sidebar-child muted">مکتب پسرانه‌ای ثبت نشده</li>
+                  }
+                }
+              }
+            </ul>
+          </li>
+        }
+      } @else if (item.key === 'spiritual') {
+        <li
+          class="sidebar-item"
+          tabindex="0"
+          role="button"
+          (click)="onSpiritualClick()"
+          (keydown.enter)="onSpiritualClick()"
+        >
+          {{ item.label }}
+        </li>
+      } @else {
+        <li
+          class="sidebar-item"
+          [class.active]="activeMenu() === item.key"
+          (click)="onMenuClick(item.key)"
+          (keydown.enter)="onMenuClick(item.key)"
+          tabindex="0"
+          role="button"
+        >
+          {{ item.label }}
+        </li>
+      }
+    } @empty {
+      <li class="sidebar-item muted">دسترسی به منویی نیست</li>
+    }
+  </ul>
+</aside>

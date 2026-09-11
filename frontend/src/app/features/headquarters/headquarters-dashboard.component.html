@@ -22,7 +22,7 @@
   </header>
 
   <section class="main-content">
-    @if (summary$ | async; as summary) {
+    @if (summary(); as summary) {
       <!-- Summary Cards -->
       <div class="summary-grid">
         <div class="stat-card">
@@ -72,7 +72,7 @@
       <!-- Branch Performance Table -->
       <div class="card-section">
         <h2>عملکرد شعب</h2>
-        @if (branchPerformance$ | async; as branches) {
+          @if (branchPerformance(); as branches) {
           <div class="table-container">
             <table class="data-table">
               <thead>
@@ -117,7 +117,7 @@
       <!-- Coach Performance Table -->
       <div class="card-section">
         <h2>عملکرد مربیان</h2>
-        @if (coachPerformance$ | async; as coaches) {
+        @if (coachPerformance(); as coaches) {
           <div class="table-container">
             <table class="data-table">
               <thead>

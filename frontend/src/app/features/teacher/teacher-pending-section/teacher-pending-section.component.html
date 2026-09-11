@@ -1,6 +1,6 @@
 <div class="card-section">
   <h2>ارسال‌های در انتظار نمره‌دهی</h2>
-  @if (pendingGradings$ | async; as gradings) {
+  @if (pendingGradings(); as gradings) {
     @if (gradings.length === 0) {
       <p class="muted">هیچ ارسالی در انتظار نمره‌دهی نیست.</p>
     } @else {

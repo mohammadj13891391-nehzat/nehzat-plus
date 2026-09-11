@@ -260,4 +260,52 @@ public class StudyPathController : ControllerBase
         }
     }
     #endregion
+
+    #region Analytics
+    [HttpGet("my-paths/{enrollmentId:int}/analytics")]
+    public async Task<IActionResult> GetStudyPathAnalytics(int enrollmentId)
+    {
+        try
+        {
+            var username = User?.Identity?.Name ?? string.Empty;
+            var result = await _studyPathService.GetStudyPathProgressAsync(username, enrollmentId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = GenericErrorMessages.NotFound });
+        }
+    }
+
+    [HttpGet("my-progress")]
+    public async Task<IActionResult> GetMyOverallProgress()
+    {
+        var username = User?.Identity?.Name ?? string.Empty;
+        var result = await _studyPathService.GetStudentOverallProgressAsync(username);
+        return Ok(result);
+    }
+
+    [HttpGet("coach/branch/{branchId:int}/progress")]
+    [Authorize(Roles = "coach,branch_manager,admin,manager,headquarters")]
+    public async Task<IActionResult> GetCoachBranchProgress(int branchId)
+    {
+        try
+        {
+            var result = await _studyPathService.GetCoachBranchProgressAsync(branchId);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = GenericErrorMessages.NotFound });
+        }
+    }
+
+    [HttpGet("coach/branch/{branchId:int}/students-progress")]
+    [Authorize(Roles = "coach,branch_manager,admin,manager,headquarters")]
+    public async Task<IActionResult> GetCoachStudentsProgress(int branchId)
+    {
+        var result = await _studyPathService.GetCoachStudentsProgressAsync(branchId);
+        return Ok(result);
+    }
+    #endregion
 }

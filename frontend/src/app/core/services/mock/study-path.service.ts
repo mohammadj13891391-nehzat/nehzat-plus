@@ -5,6 +5,8 @@ import {
   Accommodation,
   AgeGroup,
   ApiMessageResponse,
+  CoachBranchProgressDto,
+  CoachStudentProgressDto,
   CompleteStepRequest,
   CreateAccommodationRequest,
   CreateStudyPathRequest,
@@ -12,8 +14,10 @@ import {
   EnrollRequest,
   ReorderStepsRequest,
   SkipStepRequest,
+  StudentOverallProgressDto,
   StudentStudyPath,
   StudyPath,
+  StudyPathProgressAnalyticsDto,
   StudyPathStep,
   SubjectArea,
   UpdateStudyPathRequest,
@@ -320,6 +324,205 @@ export class MockStudyPathService {
     enrollment.currentStepId = nextStep ? nextStep.id : undefined;
 
     return this.ctx.delayed(this.mapEnrollment(enrollment));
+  }
+
+  // Analytics
+  getStudyPathAnalytics(enrollmentId: number): Observable<StudyPathProgressAnalyticsDto> {
+    const enrollment = this.ctx.studentStudyPaths.find((e) => e.id === enrollmentId);
+    if (!enrollment) throw new Error('Enrollment not found');
+
+    const path = this.ctx.studyPaths.find((p) => p.id === enrollment.studyPathId);
+    const steps = path
+      ? this.ctx.studyPathSteps
+          .filter((s) => s.studyPathId === enrollment.studyPathId)
+          .sort((a, b) => a.stepOrder - b.stepOrder)
+          .map(this.mapStep.bind(this))
+      : [];
+
+    let currentStepIndex = enrollment.currentStepId
+      ? steps.findIndex((s) => s.id === enrollment.currentStepId)
+      : steps.length;
+    if (enrollment.status === 'completed') currentStepIndex = steps.length - 1;
+
+    const completedStepsCount = enrollment.status === 'completed'
+      ? steps.length
+      : Math.max(0, currentStepIndex);
+
+    const stepAnalytics = steps.map(s => {
+      const completedIdx = enrollment.currentStepId ? steps.findIndex(st => st.id === enrollment.currentStepId) : -1;
+      const isCompleted = enrollment.status === 'completed' || (completedIdx >= 0 && completedIdx > steps.findIndex(st => st.id === s.id));
+      return {
+        stepId: s.id,
+        stepOrder: s.stepOrder,
+        title: s.title,
+        cognitiveLevel: s.cognitiveLevel,
+        estimatedDurationMinutes: s.estimatedDurationMinutes,
+        actualDurationMinutes: undefined,
+        isCompleted,
+        isSkipped: false,
+        isCurrent: enrollment.currentStepId === s.id,
+        completedAt: enrollment.status === 'completed' ? enrollment.completedAt : undefined,
+      };
+    });
+
+    const estimatedTimeRemaining = steps
+      .filter(s => !stepAnalytics.some(sa => sa.stepId === s.id && sa.isCompleted))
+      .reduce((sum, s) => sum + s.estimatedDurationMinutes, 0);
+
+    const totalEstimated = steps.reduce((sum, s) => sum + s.estimatedDurationMinutes, 0);
+    const avgTimePerStep = steps.length > 0 ? totalEstimated / steps.length : 0;
+
+    return this.ctx.delayed({
+      enrollmentId: enrollment.id,
+      studyPathTitle: path?.title ?? '',
+      totalSteps: steps.length,
+      completedSteps: completedStepsCount,
+      skippedSteps: 0,
+      currentStepIndex: currentStepIndex + 1,
+      progressPercentage: enrollment.progressPercentage ?? 0,
+      status: enrollment.status ?? 'active',
+      enrollmentDate: enrollment.enrollmentDate ?? this.ctx.now(),
+      startedAt: enrollment.startedAt,
+      completedAt: enrollment.completedAt,
+      steps: stepAnalytics,
+      estimatedTimeRemaining: `${Math.floor(estimatedTimeRemaining / 60)}h ${estimatedTimeRemaining % 60}m`,
+      averageTimePerStepMinutes: Math.round(avgTimePerStep * 10) / 10,
+    });
+  }
+
+  getMyOverallProgress(): Observable<StudentOverallProgressDto> {
+    const username = this.ctx.currentUsername ?? '';
+    const student = this.ctx.students.find((s) => (s as any).username === username);
+    if (!student) throw new Error('Student not found');
+
+    const enrollments = this.ctx.studentStudyPaths
+      .filter((e) => e.studentId === student.id)
+      .map(this.mapEnrollment.bind(this));
+
+    const summaries = enrollments.map(e => ({
+      enrollmentId: e.id,
+      studyPathId: e.studyPathId,
+      studyPathTitle: e.studyPathTitle ?? '',
+      subjectAreaName: this.ctx.studyPaths.find(p => p.id === e.studyPathId)?.subjectAreaName ?? '',
+      progressPercentage: e.progressPercentage,
+      status: e.status,
+      enrollmentDate: e.enrollmentDate,
+      completedAt: e.completedAt,
+    }));
+
+    const activeCount = summaries.filter(s => s.status === 'active').length;
+    const completedCount = summaries.filter(s => s.status === 'completed').length;
+    const avgProgress = summaries.length > 0 ? summaries.reduce((sum, s) => sum + s.progressPercentage, 0) / summaries.length : 0;
+
+    return this.ctx.delayed({
+      studentId: student.id,
+      studentName: `${student.firstName} ${student.lastName}`.trim(),
+      totalEnrollments: summaries.length,
+      activeEnrollments: activeCount,
+      completedEnrollments: completedCount,
+      averageProgressPercentage: Math.round(avgProgress * 10) / 10,
+      enrollments: summaries,
+    });
+  }
+
+  getCoachStudentsProgress(branchId: number): Observable<CoachStudentProgressDto[]> {
+    const students = this.ctx.students.filter((s) => s.branchId === branchId);
+    const branch = this.ctx.branches.find(b => b.id === branchId);
+
+    const result = students.map(student => {
+      const enrollments = this.ctx.studentStudyPaths
+        .filter((e) => e.studentId === student.id)
+        .map(this.mapEnrollment.bind(this));
+
+      const summaries = enrollments.map(e => ({
+        enrollmentId: e.id,
+        studyPathId: e.studyPathId,
+        studyPathTitle: e.studyPathTitle ?? '',
+        subjectAreaName: this.ctx.studyPaths.find(p => p.id === e.studyPathId)?.subjectAreaName ?? '',
+        progressPercentage: e.progressPercentage,
+        status: e.status,
+        enrollmentDate: e.enrollmentDate,
+        completedAt: e.completedAt,
+      }));
+
+      const activeCount = summaries.filter(s => s.status === 'active').length;
+      const completedCount = summaries.filter(s => s.status === 'completed').length;
+      const avgProgress = summaries.length > 0 ? summaries.reduce((sum, s) => sum + s.progressPercentage, 0) / summaries.length : 0;
+
+      return {
+        studentId: student.id,
+        studentName: `${student.firstName} ${student.lastName}`.trim(),
+        branchId,
+        branchName: branch?.name ?? '',
+        enrollments: summaries,
+        totalEnrollments: summaries.length,
+        activeEnrollments: activeCount,
+        completedEnrollments: completedCount,
+        averageProgressPercentage: Math.round(avgProgress * 10) / 10,
+      };
+    });
+
+    return this.ctx.delayed(result);
+  }
+
+  getCoachBranchProgress(branchId: number): Observable<CoachBranchProgressDto> {
+    const branch = this.ctx.branches.find(b => b.id === branchId);
+    if (!branch) throw new Error('Branch not found');
+
+    const students = this.ctx.students.filter((s) => s.branchId === branchId);
+    const studentsProgress = students.map(student => {
+      const enrollments = this.ctx.studentStudyPaths
+        .filter((e) => e.studentId === student.id)
+        .map(this.mapEnrollment.bind(this));
+
+      const summaries = enrollments.map(e => ({
+        enrollmentId: e.id,
+        studyPathId: e.studyPathId,
+        studyPathTitle: e.studyPathTitle ?? '',
+        subjectAreaName: this.ctx.studyPaths.find(p => p.id === e.studyPathId)?.subjectAreaName ?? '',
+        progressPercentage: e.progressPercentage,
+        status: e.status,
+        enrollmentDate: e.enrollmentDate,
+        completedAt: e.completedAt,
+      }));
+
+      const activeCount = summaries.filter(s => s.status === 'active').length;
+      const completedCount = summaries.filter(s => s.status === 'completed').length;
+      const avgProgress = summaries.length > 0 ? summaries.reduce((sum, s) => sum + s.progressPercentage, 0) / summaries.length : 0;
+
+      return {
+        studentId: student.id,
+        studentName: `${student.firstName} ${student.lastName}`.trim(),
+        branchId,
+        branchName: branch.name,
+        enrollments: summaries,
+        totalEnrollments: summaries.length,
+        activeEnrollments: activeCount,
+        completedEnrollments: completedCount,
+        averageProgressPercentage: Math.round(avgProgress * 10) / 10,
+      };
+    });
+
+    const totalStudents = students.length;
+    const studentsWithEnrollments = studentsProgress.filter(s => s.totalEnrollments > 0).length;
+    const totalEnrollments = studentsProgress.reduce((sum, s) => sum + s.totalEnrollments, 0);
+    const activeEnrollments = studentsProgress.reduce((sum, s) => sum + s.activeEnrollments, 0);
+    const completedEnrollments = studentsProgress.reduce((sum, s) => sum + s.completedEnrollments, 0);
+    const avgProgress = studentsWithEnrollments > 0
+      ? studentsProgress.filter(s => s.totalEnrollments > 0).reduce((sum, s) => sum + s.averageProgressPercentage, 0) / studentsWithEnrollments
+      : 0;
+
+    return this.ctx.delayed({
+      branchId,
+      branchName: branch.name,
+      totalStudents,
+      studentsWithEnrollments,
+      totalEnrollments,
+      activeEnrollments,
+      completedEnrollments,
+      averageProgressPercentage: Math.round(avgProgress * 10) / 10,
+      students: studentsProgress,
+    });
   }
 
   private mapStudyPaths(paths: any[]): StudyPath[] {

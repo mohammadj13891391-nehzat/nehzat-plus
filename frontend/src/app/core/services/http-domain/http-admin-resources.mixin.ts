@@ -43,6 +43,18 @@ export function WithAdminResources<TBase extends Constructor<HttpServiceContext>
       return this.http.get<Branch[]>(this.url('/admin/branches'));
     }
 
+    getMyBranch(): Observable<Branch> {
+      return this.http.get<Branch>(this.url('/branch-manager/branch'));
+    }
+
+    getMyBranchPerformance(): Observable<BranchPerformance> {
+      return this.http.get<BranchPerformance>(this.url('/branch-manager/branch-performance'));
+    }
+
+    getMyCoachPerformance(): Observable<CoachPerformance[]> {
+      return this.http.get<CoachPerformance[]>(this.url('/branch-manager/coach-performance'));
+    }
+
     createBranch(payload: CreateBranchPayload): Observable<Branch> {
       return this.http.post<Branch>(this.url('/admin/branches'), payload);
     }

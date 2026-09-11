@@ -1,12 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LESSON_PLANNER_API } from '@core/services/lesson-planner-api.token';
-import { UserVocabularyCardDto } from '@core/models/lesson-planner.models';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { VocabularyWordDto } from '@core/models/lesson-planner.models';
+import { UserVocabularyCardDto, VocabularyWordDto } from '@core/models/lesson-planner.models';
 
 @Component({
   selector: 'app-vocabulary-card-list',
@@ -120,7 +118,7 @@ import { VocabularyWordDto } from '@core/models/lesson-planner.models';
 })
 export class VocabularyCardListComponent implements OnInit {
   private api = inject(LESSON_PLANNER_API);
-  private destroy$ = new Subject<void>();
+  private destroyRef = inject(DestroyRef);
   
   cards: UserVocabularyCardDto[] = [];
   dueCards: UserVocabularyCardDto[] = [];
@@ -134,38 +132,33 @@ export class VocabularyCardListComponent implements OnInit {
     this.loadCards();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   private loadCards(): void {
     this.isLoading = true;
     // Get user ID from auth service or use a default
     const userId = 1; // TODO: Get from auth
     
     // Load all card types in parallel
-    this.api.getDueVocabularyCards(userId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getDueVocabularyCards(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         this.dueCards = result || [];
         this.checkCardType(result, 'due');
       }
     });
     
-    this.api.getLearningVocabularyCards(userId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getLearningVocabularyCards(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         // learning cards logic
       }
     });
     
-    this.api.getReviewVocabularyCards(userId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getReviewVocabularyCards(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         this.reviewCards = result || [];
         this.checkCardType(result, 'review');
       }
     });
     
-    this.api.getVocabularyEaseFactorInfo(userId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.api.getVocabularyEaseFactorInfo(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
         console.log('Ease factor info:', result);
       }

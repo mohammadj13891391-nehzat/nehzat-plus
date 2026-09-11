@@ -51,6 +51,22 @@ export function WithAdminUsers<TBase extends Constructor<HttpServiceContext>>(Ba
       return this.http.get<Coach[]>(this.url('/admin/coaches'));
     }
 
+    getMyCoaches(): Observable<Coach[]> {
+      return this.http.get<Coach[]>(this.url('/branch-manager/coaches'));
+    }
+
+    createMyCoach(payload: CreateCoachPayload): Observable<Coach> {
+      return this.http.post<Coach>(this.url('/branch-manager/coaches'), payload);
+    }
+
+    updateMyCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach> {
+      return this.http.put<Coach>(this.url(`/branch-manager/coaches/${id}`), payload);
+    }
+
+    deleteMyCoach(id: number): Observable<ApiMessageResponse> {
+      return this.http.delete<ApiMessageResponse>(this.url(`/branch-manager/coaches/${id}`));
+    }
+
     createCoach(payload: CreateCoachPayload): Observable<Coach> {
       return this.http.post<Coach>(this.url('/admin/coaches'), payload);
     }
@@ -65,6 +81,10 @@ export function WithAdminUsers<TBase extends Constructor<HttpServiceContext>>(Ba
 
     getBranchManagers(): Observable<BranchManager[]> {
       return this.http.get<BranchManager[]>(this.url('/admin/branch-managers'));
+    }
+
+    getMyBranchManagers(): Observable<BranchManager[]> {
+      return this.http.get<BranchManager[]>(this.url('/branch-manager/branch-managers'));
     }
 
     createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {

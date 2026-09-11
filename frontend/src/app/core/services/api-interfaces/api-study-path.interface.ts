@@ -4,6 +4,8 @@ import {
   Accommodation,
   AgeGroup,
   ApiMessageResponse,
+  CoachBranchProgressDto,
+  CoachStudentProgressDto,
   CompleteStepRequest,
   CreateAccommodationRequest,
   CreateStudyPathRequest,
@@ -13,7 +15,9 @@ import {
   SkipStepRequest,
   StudentStudyPath,
   StudyPath,
+  StudyPathProgressAnalyticsDto,
   StudyPathStep,
+  StudentOverallProgressDto,
   SubjectArea,
   UpdateStudyPathRequest,
   UpdateStudyPathStepRequest,
@@ -48,4 +52,10 @@ export abstract class StudyPathApi {
   abstract getMyStudyPath(enrollmentId: number): Observable<StudentStudyPath>;
   abstract completeStep(payload: CompleteStepRequest): Observable<StudentStudyPath>;
   abstract skipStep(payload: SkipStepRequest): Observable<StudentStudyPath>;
+
+  // Analytics
+  abstract getStudyPathAnalytics(enrollmentId: number): Observable<StudyPathProgressAnalyticsDto>;
+  abstract getMyOverallProgress(): Observable<StudentOverallProgressDto>;
+  abstract getCoachBranchProgress(branchId: number): Observable<CoachBranchProgressDto>;
+  abstract getCoachStudentsProgress(branchId: number): Observable<CoachStudentProgressDto[]>;
 }

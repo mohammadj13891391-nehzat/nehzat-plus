@@ -32,11 +32,17 @@ export abstract class AdminUsersApi {
   abstract createUser(payload: CreateUserPayload): Observable<CreatedUser>;
 
   abstract getCoaches(): Observable<Coach[]>;
+  abstract getMyCoaches(): Observable<Coach[]>;
+  abstract createMyCoach(payload: CreateCoachPayload): Observable<Coach>;
+  abstract updateMyCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach>;
+  abstract deleteMyCoach(id: number): Observable<ApiMessageResponse>;
+
   abstract createCoach(payload: CreateCoachPayload): Observable<Coach>;
   abstract updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach>;
   abstract deleteCoach(id: number): Observable<ApiMessageResponse>;
 
   abstract getBranchManagers(): Observable<BranchManager[]>;
+  abstract getMyBranchManagers(): Observable<BranchManager[]>;
   abstract createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager>;
   abstract updateBranchManager(
     id: number,
