@@ -11,16 +11,18 @@ import type {
   BranchPerformance,
   Coach,
   CoachPerformance,
+  CreateBranchManagerPayload,
   CreateCoachPayload,
   CreateStudentPayload,
   CurrentUser,
   Student,
+  UpdateBranchManagerPayload,
   UpdateStudentPayload
 } from '../../core/models/lesson-planner.models';
 import { AuthService } from '../../core/services/auth.service';
 import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token';
 
-type Tab = 'info' | 'performance' | 'coaches' | 'students';
+type Tab = 'info' | 'performance' | 'coaches' | 'students' | 'managers';
 
 @Component({
   selector: 'app-branch-manager',
@@ -44,6 +46,7 @@ export class BranchManagerComponent implements OnInit {
 
   readonly branch = signal<Branch | null>(null);
   readonly manager = signal<BranchManager | null>(null);
+  readonly managers = signal<BranchManager[]>([]);
   readonly branchPerformance = signal<BranchPerformance | null>(null);
   readonly coachPerformance = signal<CoachPerformance[]>([]);
   readonly coaches = signal<Coach[]>([]);
@@ -60,6 +63,12 @@ export class BranchManagerComponent implements OnInit {
   readonly coachSubmitting = signal(false);
   readonly coachFormError = signal('');
   coachFormModel: CreateCoachPayload = this.emptyCoachFormModel();
+
+  readonly managerFormVisible = signal(false);
+  readonly managerEditingId = signal<number | null>(null);
+  readonly managerSubmitting = signal(false);
+  readonly managerFormError = signal('');
+  managerFormModel: CreateBranchManagerPayload = this.emptyManagerFormModel();
 
   readonly drillDownCoach = signal<CoachPerformance | null>(null);
   readonly drillDownStudent = signal<Student | null>(null);
@@ -88,6 +97,7 @@ export class BranchManagerComponent implements OnInit {
       next: (data) => {
         this.branch.set(data.branch);
         this.manager.set(data.managers[0] ?? null);
+        this.managers.set(Array.isArray(data.managers) ? data.managers : []);
         this.branchPerformance.set(data.performance);
         this.coachPerformance.set(Array.isArray(data.coachPerf) ? data.coachPerf : []);
         this.coaches.set(Array.isArray(data.coaches) ? data.coaches : []);
@@ -306,6 +316,75 @@ export class BranchManagerComponent implements OnInit {
       error: () => {
         this.errorMessage.set('حذف مربی با خطا مواجه شد.');
       }
+});
+  }
+
+  openManagerForm(): void {
+    this.managerEditingId.set(null);
+    this.managerFormModel = this.emptyManagerFormModel();
+    this.managerFormError.set('');
+    this.managerFormVisible.set(true);
+  }
+
+  closeManagerForm(): void {
+    this.managerFormVisible.set(false);
+    this.managerEditingId.set(null);
+    this.managerFormError.set('');
+    this.managerFormModel = this.emptyManagerFormModel();
+  }
+
+  submitManagerForm(): void {
+    this.managerFormError.set('');
+    const branchId = this.branch()?.id ?? this.currentUser?.branchId;
+    if (!branchId) {
+      this.managerFormError.set('شناسه شعبه مشخص نیست.');
+      return;
+    }
+
+    this.managerSubmitting.set(true);
+    const payload: CreateBranchManagerPayload = { ...this.managerFormModel, branchId };
+
+    if (this.managerEditingId() === null) {
+      this.api.createMyBranchManager(payload).subscribe({
+        next: (created) => {
+          this.managers.update((list) => [...list, created]);
+          this.managerSubmitting.set(false);
+          this.closeManagerForm();
+        },
+        error: () => {
+          this.managerFormError.set('افزودن مدیر شعبه با خطا مواجه شد.');
+          this.managerSubmitting.set(false);
+        }
+      });
+    } else {
+      const id = this.managerEditingId()!;
+      const updatePayload: UpdateBranchManagerPayload = { ...payload };
+      this.api.updateMyBranchManager(id, updatePayload).subscribe({
+        next: (updated) => {
+          this.managers.update((list) => list.map((m) => (m.id === id ? updated : m)));
+          this.managerSubmitting.set(false);
+          this.closeManagerForm();
+        },
+        error: () => {
+          this.managerFormError.set('به‌روزرسانی مدیر شعبه با خطا مواجه شد.');
+          this.managerSubmitting.set(false);
+        }
+      });
+    }
+  }
+
+  deleteManager(manager: BranchManager): void {
+    if (!confirm('آیا از حذف این مدیر شعبه اطمینان دارید؟')) return;
+
+    const id = manager.id!;
+    this.api.deleteMyBranchManager(id).subscribe({
+      next: () => {
+        this.managers.set(this.managers().filter((m) => m.id !== id));
+        this.errorMessage.set('');
+      },
+      error: () => {
+        this.errorMessage.set('حذف مدیر شعبه با خطا مواجه شد.');
+      }
     });
   }
 
@@ -323,6 +402,7 @@ export class BranchManagerComponent implements OnInit {
       assignedCourseIds: []
     };
   }
+}
 
   private emptyFormModel(): CreateStudentPayload {
     return {

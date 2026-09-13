@@ -51,5 +51,18 @@ export function withAdminUsers<T extends MockApiCtor>(Base: T) {
     deleteMyCoach(id: number): Observable<ApiMessageResponse> {
       return this.adminCoaches.deleteCoach(id);
     }
+
+    // ===== Branch Manager Branch Managers =====
+    createMyBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {
+      return this.adminBranchManagers.createBranchManager(payload);
+    }
+
+    updateMyBranchManager(id: number, payload: UpdateBranchManagerPayload): Observable<BranchManager> {
+      return this.adminBranchManagers.updateBranchManager(id, payload);
+    }
+
+    deleteMyBranchManager(id: number): Observable<ApiMessageResponse> {
+      return this.adminBranchManagers.deleteBranchManager(id);
+    }
   };
 }

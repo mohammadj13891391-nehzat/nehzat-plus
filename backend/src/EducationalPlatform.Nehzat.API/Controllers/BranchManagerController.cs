@@ -280,6 +280,119 @@ public class BranchManagerController : ControllerBase
         return Ok(managers);
     }
 
+    [HttpPost("branch-managers")]
+    public async Task<IActionResult> CreateBranchManager([FromBody] CreateBranchManagerRequest request)
+    {
+        var resolved = ResolveBranchId(request.BranchId);
+        if (resolved is null)
+        {
+            return Forbid();
+        }
+
+        using var transaction = await _db.Database.BeginTransactionAsync();
+        try
+        {
+            var manager = await _branchManagerService.CreateAsync(request with { BranchId = resolved.Value });
+
+            var existing = await _userService.FindUserAsync(request.Username);
+            if (existing == null)
+            {
+                await _userService.CreateUserAsync(
+                    request.Username,
+                    request.Password ?? "password123",
+                    null,
+                    null,
+                    RoleNames.BranchManager,
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber
+                );
+            }
+
+            await transaction.CommitAsync();
+
+            return Ok(new
+            {
+                manager.Id,
+                manager.Username,
+                manager.FirstName,
+                manager.LastName,
+                manager.Email,
+                manager.PhoneNumber,
+                manager.BranchId,
+                manager.Gender,
+                manager.NationalCode,
+                manager.Status,
+                manager.CreatedAt
+            });
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    [HttpPut("branch-managers/{id}")]
+    public async Task<IActionResult> UpdateBranchManager(int id, [FromBody] UpdateBranchManagerRequest request)
+    {
+        var resolved = ResolveBranchId(request.BranchId);
+        if (resolved is null)
+        {
+            return Forbid();
+        }
+
+        try
+        {
+            var manager = await _branchManagerService.UpdateAsync(id, request);
+            return Ok(new
+            {
+                manager.Id,
+                manager.Username,
+                manager.FirstName,
+                manager.LastName,
+                manager.Email,
+                manager.PhoneNumber,
+                manager.BranchId,
+                manager.Gender,
+                manager.NationalCode,
+                manager.Status,
+                manager.CreatedAt
+            });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(GenericErrorMessages.NotFound);
+        }
+    }
+
+    [HttpDelete("branch-managers/{id}")]
+    public async Task<IActionResult> DeleteBranchManager(int id)
+    {
+        var manager = await _db.BranchManagers.FindAsync(id);
+        if (manager == null)
+        {
+            return NotFound(GenericErrorMessages.NotFound);
+        }
+
+        var resolved = ResolveBranchId(manager.BranchId);
+        if (resolved is null || manager.BranchId != resolved.Value)
+        {
+            return Forbid();
+        }
+
+        try
+        {
+            await _branchManagerService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(GenericErrorMessages.NotFound);
+        }
+    }
+
     [HttpGet("branch-performance")]
     public async Task<IActionResult> GetBranchPerformance([FromQuery] int? branchId)
     {

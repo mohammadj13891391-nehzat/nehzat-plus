@@ -1,0 +1,140 @@
+<div class="lesson-detail-page" [class.child-theme]="phaseConfig().isChild" [class.teen-theme]="!phaseConfig().isChild">
+  <header class="page-header">
+    <button class="back-btn" (click)="goBack()" aria-label="بازگشت">
+      ← بازگشت
+    </button>
+    <div class="header-content">
+      <h1>{{ lesson()?.title ?? 'بارگذاری...' }}</h1>
+      @if (lesson(); as l) {
+        <div class="meta">
+          <span class="meta-item">⏱ {{ formatDuration(l.estimatedMinutes) }}</span>
+          <span class="meta-item">📂 {{ l.module?.title ?? 'بدون ماژول' }}</span>
+          @if (l.difficultyLevel) {
+            <span class="meta-item badge">{{ l.difficultyLevel }}</span>
+          }
+        </div>
+      }
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-state">در حال بارگذاری درس...</div>
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn-primary" (click)="goBack()">بازگشت به مسیرها</button>
+    </div>
+  } @else if (lesson(); as l) {
+
+    <nav class="tab-nav" [class.hidden]="!hasQuizzes()">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === 'content'"
+        (click)="activeTab.set('content')"
+      >
+        📖 محتوا
+      </button>
+      @if (hasQuizzes()) {
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'quiz'"
+          (click)="activeTab.set('quiz')"
+        >
+          ❓ آزمون‌ها ({{ l.quizzes?.length }})
+        </button>
+      }
+    </nav>
+
+    @if (activeTab() === 'content') {
+      <section class="content-section">
+        @if (l.description) {
+          <div class="description-card">
+            <h3>📋 توضیحات درس</h3>
+            <p>{{ l.description }}</p>
+          </div>
+        }
+
+        @if (l.objectives) {
+          <div class="description-card">
+            <h3>🎯 اهداف یادگیری</h3>
+            <p>{{ l.objectives }}</p>
+          </div>
+        }
+
+        @if (hasContent()) {
+          <div class="blocks-container">
+            <h3>📚 بلوک‌های محتوا</h3>
+            @for (block of l.contentBlocks!; track block.id; let i = $index) {
+              <article class="content-block" [class.block-type]="block.blockType">
+                <header class="block-header">
+                  <span class="block-order">{{ i + 1 }}</span>
+                  <span class="block-icon">{{ getBlockIcon(block.blockType) }}</span>
+                  <span class="block-type-label">{{ getBlockTypeLabel(block.blockType) }}</span>
+                  @if (block.title) {
+                    <h4 class="block-title">{{ block.title }}</h4>
+                  }
+                </header>
+                <div class="block-content" [innerHTML]="block.content"></div>
+                @if (block.explanation) {
+                  <div class="block-explanation">
+                    <strong>💡 توضیح:</strong>
+                    <p [innerHTML]="block.explanation"></p>
+                  </div>
+                }
+                @if (block.mediaUrl) {
+                  <div class="block-media">
+                    @if (block.blockType === 'audio') {
+                      <audio controls [src]="block.mediaUrl"></audio>
+                    } @else if (block.blockType === 'video') {
+                      <video controls [src]="block.mediaUrl"></video>
+                    } @else if (block.blockType === 'image') {
+                      <img [src]="block.mediaUrl" [alt]="block.title || 'تصویر درس'" />
+                    }
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <p>محتوا برای این درس تنظیم نشده است.</p>
+          </div>
+        }
+      </section>
+    }
+
+    @if (activeTab() === 'quiz' && hasQuizzes()) {
+      <section class="quiz-section">
+        <h3>📝 آزمون‌های این درس</h3>
+        @for (quiz of l.quizzes!; track quiz.id) {
+          <article class="quiz-card">
+            <header class="quiz-header">
+              <h4>{{ quiz.title }}</h4>
+              <div class="quiz-meta">
+                <span>⭐ {{ quiz.passingScore }}٪ برای قبولی</span>
+                <span>🔁 {{ quiz.maxAttempts }} تلاش</span>
+                @if (quiz.timeLimitMinutes) {
+                  <span>⏱ {{ quiz.timeLimitMinutes }} دقیقه</span>
+                }
+              </div>
+            </header>
+            @if (quiz.description) {
+              <p class="quiz-desc">{{ quiz.description }}</p>
+            }
+            @if (quiz.questions?.length) {
+              <div class="quiz-preview">
+                <span>{{ quiz.questions!.length }} سؤال</span>
+                <button class="btn-outline" (click)="startQuiz(quiz.id)">
+                  شروع آزمون
+                </button>
+              </div>
+            }
+          </article>
+        }
+      </section>
+    }
+
+  }
+</div>

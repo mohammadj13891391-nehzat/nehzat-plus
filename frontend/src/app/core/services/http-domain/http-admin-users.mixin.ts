@@ -199,5 +199,17 @@ export function WithAdminUsers<TBase extends Constructor<HttpServiceContext>>(Ba
     gradeSubmission(payload: GradeSubmissionPayload): Observable<AssignmentGrading> {
       return this.http.post<AssignmentGrading>(this.url('/api/teachers/grade'), payload);
     }
+
+    createMyBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {
+      return this.http.post<BranchManager>(this.url('/branch-manager/branch-managers'), payload);
+    }
+
+    updateMyBranchManager(id: number, payload: UpdateBranchManagerPayload): Observable<BranchManager> {
+      return this.http.put<BranchManager>(this.url(`/branch-manager/branch-managers/${id}`), payload);
+    }
+
+    deleteMyBranchManager(id: number): Observable<ApiMessageResponse> {
+      return this.http.delete<ApiMessageResponse>(this.url(`/branch-manager/branch-managers/${id}`));
+    }
   };
 }

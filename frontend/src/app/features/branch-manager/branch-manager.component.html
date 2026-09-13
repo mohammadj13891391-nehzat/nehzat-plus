@@ -60,6 +60,15 @@
     >
       متربیان
     </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab"
+      [class.tab-active]="activeTab() === 'managers'"
+      (click)="activeTab.set('managers')"
+    >
+      مدیران شعبه
+    </button>
   </nav>
 
   <section class="main-content">
@@ -309,6 +318,53 @@
             </form>
           </article>
         }
+      }
+
+      }
+
+      <!-- مدیران شعبه -->
+      @if (activeTab() === 'managers') {
+        <article class="card">
+          <div class="card-header-row">
+            <h2 class="card-title">مدیران شعبه</h2>
+            <button type="button" class="btn-primary" (click)="openManagerForm()">افزودن مدیر شعبه</button>
+          </div>
+          @if (managers().length > 0) {
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>نام</th>
+                    <th>نام کاربری</th>
+                    <th>ایمیل</th>
+                    <th>تلفن</th>
+                    <th>جنسیت</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (m of managers(); track m.id) {
+                    <tr>
+                      <td>{{ m.firstName }} {{ m.lastName }}</td>
+                      <td>{{ m.username }}</td>
+                      <td>{{ m.email }}</td>
+                      <td>{{ m.phoneNumber }}</td>
+                      <td>{{ genderLabel(m.gender) }}</td>
+                      <td>{{ statusLabel(m.status) }}</td>
+                      <td>
+                        <button type="button" class="btn-link" (click)="openEditManagerForm(m)">ویرایش</button>
+                        <button type="button" class="btn-link-danger" (click)="deleteManager(m)">حذف</button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="muted">هیچ مدیر شعبه ثبت نشده است.</p>
+          }
+        </article>
       }
 
       <!-- متربیان -->

@@ -1,2 +1,4 @@
 {
+  "apiBase": "http://localhost:3000",
+  "otuh2Base": "http://localhost:5000"
 }

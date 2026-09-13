@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PHASE_CONFIG } from '../../../core/tokens/phase.token';
+import { Router, RouterModule } from '@angular/router';
 import {
   LearningPathService,
   LearningPathDto,
@@ -10,6 +11,7 @@ import {
 @Component({
   selector: 'app-learning-path',
   standalone: true,
+  imports: [RouterModule],
   template: `
     <div class="learning-path" [class.child-theme]="phaseConfig().isChild"
                                [class.teen-theme]="!phaseConfig().isChild">
@@ -58,7 +60,7 @@ import {
                     </summary>
                     <div class="lessons">
                       @for (les of mod.lessons; track les.id) {
-                        <div class="lesson-item">
+                        <div class="lesson-item" (click)="goToLesson(les.id)">
                           <span>{{ les.title }}</span>
                           <span class="duration">{{ les.estimatedMinutes }} دق</span>
                         </div>
@@ -72,6 +74,7 @@ import {
         </div>
       }
     </div>
+    <router-outlet></router-outlet>
   `,
   styles: [`
     .learning-path { padding: 1.5rem; direction: rtl; }
@@ -92,8 +95,11 @@ import {
                     justify-content: center; margin-left: 0.5rem; }
     .modules { padding-right: 1.5rem; }
     .module-card { background: #f9f9f9; border-radius: 8px; padding: 0.8rem; margin: 0.5rem 0; }
-    .lesson-item { display: flex; justify-content: space-between; padding: 0.4rem 0;
-                     border-bottom: 1px solid #f0f0f0; }
+    .lessons { margin-top: 0.5rem; }
+    .lesson-item { display: flex; justify-content: space-between; padding: 0.6rem 0.8rem;
+                     border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s;
+                     border-radius: 6px; margin: 0.2rem 0; }
+    .lesson-item:hover { background: color-mix(in srgb, var(--primary) 10%, transparent); }
     .duration { color: #999; font-size: 0.85rem; }
     .back-btn { background: none; border: none; color: var(--primary); cursor: pointer;
                   font-size: 1rem; margin-bottom: 1rem; }
@@ -102,6 +108,7 @@ import {
 })
 export class LearningPathComponent {
   private service = inject(LearningPathService);
+  private router = inject(Router);
   protected phaseConfig = inject(PHASE_CONFIG);
 
   protected paths = toSignal(this.service.getLearningPaths());
@@ -111,5 +118,9 @@ export class LearningPathComponent {
     this.service.getLearningPathTree(path.id).subscribe({
       next: (tree) => this.selectedTree.set(tree),
     });
+  }
+
+  goToLesson(lessonId: number): void {
+    this.router.navigate(['/dashboard/learning-path/lesson', lessonId]);
   }
 }

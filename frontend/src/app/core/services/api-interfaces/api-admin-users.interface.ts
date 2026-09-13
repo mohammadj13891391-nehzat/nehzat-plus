@@ -43,6 +43,10 @@ export abstract class AdminUsersApi {
 
   abstract getBranchManagers(): Observable<BranchManager[]>;
   abstract getMyBranchManagers(): Observable<BranchManager[]>;
+  abstract createMyBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager>;
+  abstract updateMyBranchManager(id: number, payload: UpdateBranchManagerPayload): Observable<BranchManager>;
+  abstract deleteMyBranchManager(id: number): Observable<ApiMessageResponse>;
+
   abstract createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager>;
   abstract updateBranchManager(
     id: number,
