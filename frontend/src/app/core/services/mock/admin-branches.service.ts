@@ -57,7 +57,7 @@ export class MockAdminBranchesService {
       lastName: payload.lastName,
       email: payload.email,
       phoneNumber: payload.phoneNumber,
-      branchId: payload.branchId,
+      branchId: payload.branchId ?? 0,
       gender: payload.gender,
       nationalCode: payload.nationalCode,
       status: 'active',

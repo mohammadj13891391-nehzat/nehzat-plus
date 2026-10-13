@@ -7,6 +7,7 @@ export type {
   UpdateStudentPayload,
   BranchManager,
   CreateBranchManagerPayload,
+  UpdateBranchManagerPayload,
   Branch,
   CreateBranchPayload,
   UpdateBranchPayload,

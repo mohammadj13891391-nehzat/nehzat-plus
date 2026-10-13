@@ -326,6 +326,23 @@ export class BranchManagerComponent implements OnInit {
     this.managerFormVisible.set(true);
   }
 
+  openEditManagerForm(manager: BranchManager): void {
+    this.managerEditingId.set(manager.id);
+    this.managerFormModel = {
+      username: manager.username,
+      password: '',
+      firstName: manager.firstName,
+      lastName: manager.lastName,
+      email: manager.email,
+      phoneNumber: manager.phoneNumber,
+      branchId: manager.branchId,
+      gender: manager.gender,
+      nationalCode: manager.nationalCode ?? '',
+    };
+    this.managerFormError.set('');
+    this.managerFormVisible.set(true);
+  }
+
   closeManagerForm(): void {
     this.managerFormVisible.set(false);
     this.managerEditingId.set(null);
@@ -388,7 +405,7 @@ export class BranchManagerComponent implements OnInit {
     });
   }
 
-  private emptyCoachFormModel(): CreateCoachPayload {
+private emptyCoachFormModel(): CreateCoachPayload {
     return {
       username: '',
       password: '',
@@ -402,7 +419,6 @@ export class BranchManagerComponent implements OnInit {
       assignedCourseIds: []
     };
   }
-}
 
   private emptyFormModel(): CreateStudentPayload {
     return {
@@ -416,6 +432,20 @@ export class BranchManagerComponent implements OnInit {
       nationalCode: '',
       branchId: this.currentUser?.branchId,
       gender: ''
+    };
+  }
+
+  private emptyManagerFormModel(): CreateBranchManagerPayload {
+    return {
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      branchId: this.currentUser?.branchId,
+      gender: 'mixed',
+      nationalCode: ''
     };
   }
 }

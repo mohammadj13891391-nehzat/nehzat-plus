@@ -23,6 +23,7 @@ import {
   PendingUser,
   Teacher,
   TeacherDashboardSummary,
+  UpdateBranchManagerPayload,
   UpdateTeacherPayload,
 } from '../../models/lesson-planner.models';
 

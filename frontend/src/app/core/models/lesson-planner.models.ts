@@ -661,8 +661,21 @@ export interface CreateBranchManagerPayload {
   lastName: string;
   email: string;
   phoneNumber: string;
-  branchId: number;
+  branchId?: number;
   gender: 'male' | 'female' | 'mixed';
+}
+
+export interface UpdateBranchManagerPayload {
+  nationalCode?: string;
+  username?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  branchId?: number;
+  gender?: 'male' | 'female' | 'mixed';
+  status?: 'active' | 'inactive';
 }
 
 export interface CreateCoachPayload {

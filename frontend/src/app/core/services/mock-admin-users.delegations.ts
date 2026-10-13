@@ -10,6 +10,9 @@ import {
   StudentInfo,
   Coach,
   CreateCoachPayload,
+  CreateBranchManagerPayload,
+  UpdateBranchManagerPayload,
+  BranchManager,
 } from './mock-lesson-planner-models';
 
 /**
@@ -54,15 +57,15 @@ export function withAdminUsers<T extends MockApiCtor>(Base: T) {
 
     // ===== Branch Manager Branch Managers =====
     createMyBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager> {
-      return this.adminBranchManagers.createBranchManager(payload);
+      return this.adminBranches.createBranchManager(payload);
     }
 
     updateMyBranchManager(id: number, payload: UpdateBranchManagerPayload): Observable<BranchManager> {
-      return this.adminBranchManagers.updateBranchManager(id, payload);
+      return this.adminBranches.updateBranchManager(id, payload);
     }
 
     deleteMyBranchManager(id: number): Observable<ApiMessageResponse> {
-      return this.adminBranchManagers.deleteBranchManager(id);
+      return this.adminBranches.deleteBranchManager(id);
     }
   };
 }

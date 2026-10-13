@@ -23,6 +23,7 @@ import {
   Teacher,
   TeacherDashboardSummary,
   UpdateTeacherPayload,
+  UpdateBranchManagerPayload,
 } from '../../models/lesson-planner.models';
 
 export abstract class AdminUsersApi {
@@ -50,7 +51,7 @@ export abstract class AdminUsersApi {
   abstract createBranchManager(payload: CreateBranchManagerPayload): Observable<BranchManager>;
   abstract updateBranchManager(
     id: number,
-    payload: Partial<CreateBranchManagerPayload>,
+    payload: UpdateBranchManagerPayload,
   ): Observable<BranchManager>;
   abstract deleteBranchManager(id: number): Observable<ApiMessageResponse>;
 
