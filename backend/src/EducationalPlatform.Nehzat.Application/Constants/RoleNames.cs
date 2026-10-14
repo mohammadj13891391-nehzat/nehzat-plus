@@ -9,7 +9,7 @@ public static class RoleNames
     public const string Manager = "manager";
     public const string Headquarters = "headquarters";
     public const string Evaluator = "evaluator";
-    public const string BranchManager = "branch-manager";
+    public const string BranchManager = "branch_manager";
     public const string Trainee = "trainee";
     public const string Teacher = "teacher";
     public const string Owner = "owner";

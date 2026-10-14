@@ -9,7 +9,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("api/vocabulary")]
-[Authorize(Roles = "admin,manager,headquarters,parent,student,branch-manager,coach,evaluator")]
+[Authorize(Roles = "admin,manager,headquarters,parent,student,branch_manager,coach,evaluator")]
 public class VocabularyController : ControllerBase
 {
     private readonly IVocabularyService _vocabularyService;

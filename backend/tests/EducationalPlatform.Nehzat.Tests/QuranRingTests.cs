@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using EducationalPlatform.Nehzat.API.Controllers;
 using EducationalPlatform.Nehzat.Application.DTOs;
 using EducationalPlatform.Nehzat.Application.Interfaces;
+using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Domain.Entities.Quran;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
 using EducationalPlatform.Nehzat.Infrastructure.Services;
@@ -25,6 +26,14 @@ public class QuranRingServiceTests : IDisposable
             .Options;
         _db = new AppDbContext(options);
         _service = new QuranRingService(_db);
+
+        foreach (var id in new[] { 1, 2, 3, 4, 5, 6 })
+            _db.Students.Add(new Student { Id = id });
+        foreach (var id in new[] { 10, 20, 21 })
+            _db.Users.Add(new User { Id = id });
+        foreach (var id in new[] { 59, 68, 71 })
+            _db.Surahs.Add(new Surah { Id = id });
+        _db.SaveChanges();
     }
 
     public void Dispose()

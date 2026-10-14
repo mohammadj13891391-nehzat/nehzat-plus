@@ -5,6 +5,7 @@ using EducationalPlatform.Nehzat.Application.Interfaces;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,14 +18,16 @@ namespace EducationalPlatform.Nehzat.API.Controllers
     {
         private readonly IDevTokenService _devTokenService;
         private readonly IConfiguration _configuration;
+        private readonly IHostEnvironment _env;
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
         private readonly AppDbContext _db;
 
-        public AuthController(IDevTokenService devTokenService, IConfiguration configuration, IAuthService authService, IUserService userService, AppDbContext db)
+        public AuthController(IDevTokenService devTokenService, IConfiguration configuration, IHostEnvironment env, IAuthService authService, IUserService userService, AppDbContext db)
         {
             _devTokenService = devTokenService;
             _configuration = configuration;
+            _env = env;
             _authService = authService;
             _userService = userService;
             _db = db;
@@ -96,7 +99,10 @@ namespace EducationalPlatform.Nehzat.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SignIn([FromBody] SignInRequest request)
         {
-            var useMockAuth = _configuration.GetValue<bool>("DevAuth:UseMockAuth", false);
+            // Hard gate: only in a Development environment, and only when
+            // DevAuth:UseMockAuth is explicitly enabled in configuration.
+            var useMockAuth = _env.IsDevelopment()
+                && _configuration.GetValue<bool>("DevAuth:UseMockAuth", false);
             if (!useMockAuth)
             {
                 return NotFound();
@@ -107,7 +113,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers
                 return Unauthorized(new { message = "نام کاربری یا رمز عبور نامعتبر است" });
             }
 
-            var account = DevAccounts.Lookup(request.Username, request.Password);
+            var account = LookupDevAccount(request.Username, request.Password);
             if (account is null)
             {
                 return Unauthorized(new { message = "نام کاربری یا رمز عبور اشتباه است" });
@@ -153,38 +159,24 @@ namespace EducationalPlatform.Nehzat.API.Controllers
                 message = "Sign-in successful"
             });
         }
-    }
 
-    /// <summary>
-    /// Dev-only in-process credential allowlist (no DB password storage exists: the User
-    /// entity stores OidcSubject, not a hash). Mirrors the test accounts in docs/AGENTS.md.
-    /// </summary>
-    internal static class DevAccounts
-    {
-        private static readonly List<DevAccount> _accounts = new()
+        /// <summary>
+        /// Dev-only credential allowlist, loaded from configuration (DevAuth:Accounts in
+        /// appsettings.Development.json) instead of source, so no credentials live in code.
+        /// The User entity stores OidcSubject, not a hash — no DB password verification exists.
+        /// </summary>
+        private DevAccount? LookupDevAccount(string username, string password)
         {
-            new DevAccount("test",              "password",      "manager",   1,  null, 1, null),
-            new DevAccount("ali.ahmadi",        "password123",   "trainee", 101, 101,  1, "/assets/avatars/ali.png"),
-            new DevAccount("fateme.mohammadi",  "password123",   "trainee", 102, 102,  1, "/assets/avatars/fateme.png"),
-            new DevAccount("mohammad.rezaei",     "password123",   "trainee", 103, 103,  1, "/assets/avatars/mohammad.png"),
-            new DevAccount("coach",               "password123",   "coach",   200, null, 1, null),
-            new DevAccount("parent",              "password123",   "parent",   300, null, 1, null),
-            new DevAccount("branch.manager",      "password123",   "branch_manager", 400, null, 1, null),
-            new DevAccount("headquarters",        "password123",   "headquarters", 500, null, 1, null),
-            new DevAccount("evaluator",           "password123",   "evaluator", 600, null, 1, null),
-            new DevAccount("teacher",             "password123",   "teacher", 700, null, 1, null),
-        };
-
-        public static DevAccount? Lookup(string username, string password)
-        {
-            return _accounts.FirstOrDefault(a =>
+            var accounts = _configuration.GetSection("DevAuth:Accounts").Get<List<DevAccount>>()
+                ?? new List<DevAccount>();
+            return accounts.FirstOrDefault(a =>
                 a.Username.Equals(username, StringComparison.Ordinal) &&
-                a.Secret.Equals(password, StringComparison.Ordinal));
+                a.Password.Equals(password, StringComparison.Ordinal));
         }
+
+        private record DevAccount(string Username, string Password, string Role, int UserId, int? StudentId, int BranchId, string? ImageUrl);
+
+        public record SignInRequest(string Username, string Password);
+        public record QrScanRequest(string SessionId, string Username);
     }
-
-    internal record DevAccount(string Username, string Secret, string Role, int UserId, int? StudentId, int BranchId, string? ImageUrl);
-
-    public record SignInRequest(string Username, string Password);
-    public record QrScanRequest(string SessionId, string Username);
 }

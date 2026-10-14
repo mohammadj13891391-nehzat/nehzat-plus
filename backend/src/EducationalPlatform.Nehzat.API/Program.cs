@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -61,7 +62,8 @@ builder.Services.AddAuthentication(options =>
     if (useMockAuth)
     {
         var devKey = devAuthConfig["DevAuthKey"]
-            ?? throw new InvalidOperationException("DevAuth:DevAuthKey is required when DevAuth:UseMockAuth is true");
+            ?? Environment.GetEnvironmentVariable("NEHZAT_DEV_AUTH_KEY")
+            ?? throw new InvalidOperationException("DevAuth:DevAuthKey (or NEHZAT_DEV_AUTH_KEY env var) is required when DevAuth:UseMockAuth is true");
         var issuer = devAuthConfig["Issuer"] ?? "http://localhost:3000";
         var audience = devAuthConfig["Audience"] ?? "http://localhost:3000";
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(devKey));
@@ -90,7 +92,14 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<IDevTokenService, DevTokenService>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Default-deny: any endpoint without an explicit authorization attribute
+    // (and without [AllowAnonymous]) requires an authenticated user.
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var otuh2ClientConfig = builder.Configuration.GetSection("Otuh2Client");
 var otuh2BaseUrl = otuh2ClientConfig["BaseUrl"] ?? oidcConfig["Authority"] ?? "http://localhost:5000";
@@ -262,12 +271,31 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+    // Database lifecycle (safe adoption of legacy EnsureCreated databases):
+    //  - Missing DB:            create via real migrations when available
+    //  - Existing DB w/ history: apply pending migrations
+    //  - Existing DB w/o history (legacy EnsureCreated, has tables): leave as-is
+    //  - Existing empty DB:     create via migrations
     if (args.Contains("--seed"))
     {
         db.Database.EnsureDeleted();
+        if (db.Database.GetMigrations().Any()) db.Database.Migrate();
+        else db.Database.EnsureCreated();
     }
-
-    db.Database.EnsureCreated();
+    else if (!db.Database.CanConnect())
+    {
+        if (db.Database.GetMigrations().Any()) db.Database.Migrate();
+        else db.Database.EnsureCreated();
+    }
+    else if (db.Database.GetAppliedMigrations().Any())
+    {
+        if (db.Database.GetPendingMigrations().Any()) db.Database.Migrate();
+    }
+    else if (!HasTables(db))
+    {
+        if (db.Database.GetMigrations().Any()) db.Database.Migrate();
+        else db.Database.EnsureCreated();
+    }
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     // Users are synced from OTUH2 via OidcSyncMiddleware on first request
@@ -335,3 +363,12 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+static bool HasTables(AppDbContext db)
+{
+    using var conn = db.Database.GetDbConnection();
+    conn.Open();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+    return cmd.ExecuteScalar() is not null;
+}

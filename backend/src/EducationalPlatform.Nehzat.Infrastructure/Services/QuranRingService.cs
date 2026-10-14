@@ -517,9 +517,12 @@ public class QuranRingService : IQuranRingService
             category.AssignedAt = DateTime.UtcNow;
         }
 
+        if (request.DailyLines.HasValue) category.DailyLines = request.DailyLines.Value;
         if (request.MasteryScore.HasValue) category.MasteryScore = request.MasteryScore.Value;
         if (request.ActiveDays.HasValue) category.ActiveDays = request.ActiveDays.Value;
         if (request.ActualDailyLines.HasValue) category.ActualDailyLines = request.ActualDailyLines.Value;
+        if (request.IsEligibleForPromotion.HasValue) category.IsEligibleForPromotion = request.IsEligibleForPromotion.Value;
+        if (request.IsAtRiskOfDemotion.HasValue) category.IsAtRiskOfDemotion = request.IsAtRiskOfDemotion.Value;
         if (request.PreviousCategory != null) category.PreviousCategory = request.PreviousCategory;
         if (request.ChangeReason != null) category.ChangeReason = request.ChangeReason;
         category.LastEvaluationAt = DateTime.UtcNow;
@@ -1059,6 +1062,7 @@ public class QuranRingService : IQuranRingService
         SortOrder = ring.SortOrder,
         IsActive = ring.IsActive,
         HasSpecializedPath = ring.HasSpecializedPath,
+        SpecializedPeriods = ring.SpecializedPeriods,
         SpecializedTimePercent = ring.SpecializedTimePercent,
         CreatedAt = ring.CreatedAt,
         Sessions = ring.Sessions?.OrderBy(s => s.SessionNumber).Select(ToSessionDto).ToList() ?? [],

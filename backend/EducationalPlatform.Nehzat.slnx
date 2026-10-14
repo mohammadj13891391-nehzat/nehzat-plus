@@ -5,4 +5,7 @@
     <Project Path="src/EducationalPlatform.Nehzat.Domain/EducationalPlatform.Nehzat.Domain.csproj" />
     <Project Path="src/EducationalPlatform.Nehzat.Infrastructure/EducationalPlatform.Nehzat.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EducationalPlatform.Nehzat.Tests/EducationalPlatform.Nehzat.Tests.csproj" />
+  </Folder>
 </Solution>

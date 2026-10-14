@@ -9,6 +9,7 @@ namespace EducationalPlatform.Nehzat.API.Controllers;
 
 [ApiController]
 [Route("admin/parents")]
+[Authorize(Roles = "admin,manager,headquarters")]
 public class AdminParentsController : ControllerBase
 {
     private readonly IParentService _parentService;
@@ -22,16 +23,9 @@ public class AdminParentsController : ControllerBase
         _db = db;
     }
 
-    private bool CheckRole()
-    {
-        var role = User.FindFirst("role")?.Value;
-        return role == "admin" || role == "manager" || role == "headquarters";
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAllParents()
     {
-        if (!CheckRole()) return Ok(new { message = "دسترسی محدود", data = (object?)null });
         var parents = await _parentService.GetAllAsync();
         var result = parents.Select(p => new
         {
