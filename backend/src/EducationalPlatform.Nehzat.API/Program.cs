@@ -282,19 +282,25 @@ using (var scope = app.Services.CreateScope())
         if (db.Database.GetMigrations().Any()) db.Database.Migrate();
         else db.Database.EnsureCreated();
     }
-    else if (!db.Database.CanConnect())
+    else
     {
-        if (db.Database.GetMigrations().Any()) db.Database.Migrate();
-        else db.Database.EnsureCreated();
-    }
-    else if (db.Database.GetAppliedMigrations().Any())
-    {
-        if (db.Database.GetPendingMigrations().Any()) db.Database.Migrate();
-    }
-    else if (!HasTables(db))
-    {
-        if (db.Database.GetMigrations().Any()) db.Database.Migrate();
-        else db.Database.EnsureCreated();
+        try
+        {
+            if (db.Database.GetAppliedMigrations().Any())
+            {
+                if (db.Database.GetPendingMigrations().Any()) db.Database.Migrate();
+            }
+            else if (!HasTables(db))
+            {
+                if (db.Database.GetMigrations().Any()) db.Database.Migrate();
+                else db.Database.EnsureCreated();
+            }
+        }
+        catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 918)
+        {
+            if (db.Database.GetMigrations().Any()) db.Database.Migrate();
+            else db.Database.EnsureCreated();
+        }
     }
 
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
@@ -365,10 +371,4 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 static bool HasTables(AppDbContext db)
-{
-    using var conn = db.Database.GetDbConnection();
-    conn.Open();
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
-    return cmd.ExecuteScalar() is not null;
-}
+    => db.Database.SqlQueryRaw<int>("SELECT 1 AS [Value] FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'").Any();
