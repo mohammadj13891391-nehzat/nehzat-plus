@@ -9,7 +9,7 @@ Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend
 ### Database
 - SQL Server via Windows auth: `Server=.;Database=LessonPlanner;Trusted_Connection=True;TrustServerCertificate=True`
 - Dev database: `LessonPlanner_Dev` (in `appsettings.Development.json`)
-- `EnsureCreated()` on startup (no migrations). `--seed` flag drops + recreates.
+- Startup DB lifecycle (Program.cs): missing DB → `Migrate()`; existing DB with EF history → apply pending migrations; legacy `EnsureCreated` DB that already has tables → adopted as-is; existing empty DB → `Migrate()`. `--seed` flag drops + recreates.
 
 ### Auth — OTUH2 OIDC (CRITICAL)
 - **Production**: JWT Bearer validated against OTUH2 Authority (`https://api.nehzat128.ir/oauth`)
@@ -95,7 +95,7 @@ With `MockAuthHandler` enabled, any username/password works — the handler alwa
 - **`AdminController.cs`**: was ~1K+ lines, now split into 8 domain sub-controllers (`AdminBranches*`, `AdminCourses*`, `AdminCoaches*`, `AdminBranchManagers*`, `AdminParents*`, `AdminEvaluators*`, `AdminStudents*`, `AdminStatistics*`)
 - **CSV columns**: `Parent.StudentIds` was a comma-separated CSV column — already migrated to `ParentStudent` junction table (`Nehzat_parent_students`).
 - **One default branch**: multi-branch workflows are only partially implemented
-- **`EnsureCreated()`**: no migration history; schema changes require manual DB drops or `--seed`
+- **DB lifecycle**: migrations apply on startup (missing DB or existing EF history); legacy `EnsureCreated` DBs with tables are adopted, not migrated. `--seed` drops + recreates.
 - **Backend csproj**: had `Microsoft.EntityFrameworkCore.Sqlite` — replaced with `SqlServer`. If you see Sqlite package added back, remove it.
 
 ---

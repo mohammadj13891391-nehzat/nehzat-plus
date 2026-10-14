@@ -54,4 +54,4 @@ src/EducationalPlatform.Nehzat.Domain/
 cd backend && dotnet run            # http://localhost:3000
 cd backend && dotnet run --seed     # reset + reseed DB
 ```
-Dev DB `LessonPlanner_Dev` (appsettings.Development.json). `EnsureCreated()` only — no migrations.
+Dev DB `LessonPlanner_Dev` (appsettings.Development.json). Startup lifecycle: missing DB → `Migrate()`; EF history present → apply pending migrations; legacy `EnsureCreated` DB with tables → adopted as-is. `--seed` drops + recreates. Tests: `backend/tests/EducationalPlatform.Nehzat.Tests` (xUnit, 147 tests) — stop the dev API first, its running process locks `bin/`.

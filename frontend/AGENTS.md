@@ -1,6 +1,6 @@
 # FRONTEND — AGENTS.md
 
-Angular 21 standalone + Capacitor 8 (Android). ~137 files. 8 lazy role-feature modules + shared.
+Angular 21 standalone + Capacitor 8 (Android). ~550 TS files (non-spec). 8 lazy role-feature modules + shared.
 
 ## OVERVIEW
 Standalone-component SPA. Interface-based API layer (HTTP ⇄ Mock swap). OTUH2 redirect-based OIDC auth. OnPush on admin/dashboard. Vitest + jsdom tests.
@@ -15,7 +15,7 @@ src/
 │   │   ├── services/            # auth, http/mock lesson-planner API, otuh2 API, notification
 │   │   ├── guards/              # auth.guard, admin.guard, role.guard
 │   │   ├── interceptors/        # auth interceptor (Bearer)
-│   │   └── models/             # lesson-planner.models.ts (~700 lines)
+│   │   └── models/             # lesson-planner.models.ts (barrel) → 29 lp-*.models.ts domain files
 │   └── features/
 │       ├── auth/ dashboard/ admin/ coach/ parent/
 │       ├── branch-manager/ evaluator/ headquarters/ shared/

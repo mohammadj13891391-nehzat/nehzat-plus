@@ -18,7 +18,7 @@ core/
 │   └── notification.service.ts
 ├── guards/   auth.guard.ts  admin.guard.ts  role.guard.ts
 ├── interceptors/  (Bearer injection)
-└── models/   lesson-planner.models.ts  (~700 lines — central types)
+└── models/   lesson-planner.models.ts  (barrel → 29 lp-*.models.ts domain files; edit those, not the barrel)
 ```
 
 ## WHERE TO LOOK
@@ -29,7 +29,7 @@ core/
 | Change token storage | `auth.service.ts` (sessionStorage access/id, localStorage refresh) |
 | Redirect-to-OTUH2 URL | `api-url.util.ts` → `resolveOtuh2BaseUrl()`; `auth.guard.ts` builds the `/auth/login?returnUrl=` link |
 | Route protection | `guards/` |
-| Shared TS types | `models/lesson-planner.models.ts`, `models/otuh2.models.ts` |
+| Shared TS types | `models/lp-*.models.ts` (via `lesson-planner.models.ts` barrel), `models/otuh2.models.ts` |
 
 ## CONVENTIONS
 - Auth is **redirect-based**: `auth.guard` sends the browser to `{otuh2Url}/auth/login?returnUrl={callback}`; OTUH2 redirects back to `/auth/callback` with tokens in the query string (handled by `auth-callback.component.ts`). The SPA never collects credentials.

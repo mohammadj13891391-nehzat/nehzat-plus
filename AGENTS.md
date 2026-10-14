@@ -12,6 +12,9 @@ cd backend && dotnet run --seed     # drop + recreate DB + seed
 cd frontend && npm install && npm start   # ng serve
 cd frontend && ng test              # Vitest + jsdom
 cd frontend && npm run build:capacitor && npx cap sync android  # APK
+
+# Backend tests (xUnit, 147 tests) — stop the dev API first or bin/ is locked
+cd backend && dotnet test
 ```
 
 ## Layout
@@ -24,13 +27,13 @@ cd frontend && npm run build:capacitor && npx cap sync android  # APK
 | Frontend | `frontend/src/app/` | `core/` (services/guards/interceptors) + `features/<role>/` (lazy routes) |
 
 ## Backend — Critical facts
-- **Framework**: ASP.NET Core 10 (`net10.0`). EF Core + **SQL Server** (Windows auth). EnsureCreated only — **no migrations**. Schema change → `--seed` or manual drop.
+- **Framework**: ASP.NET Core 10 (`net10.0`). EF Core + **SQL Server** (Windows auth). Startup DB lifecycle (Program.cs): missing DB → `Migrate()`; existing DB with EF history → apply pending migrations; legacy `EnsureCreated` DB that already has tables → **adopted as-is** (no migration applied); existing empty DB → `Migrate()`. `--seed` drops + recreates.
 - **Dev DB**: `LessonPlanner_Dev` — `Server=.;Database=LessonPlanner_Dev;Trusted_Connection=True;TrustServerCertificate=True;` (in `appsettings.Development.json`).
-- **Auth**: Redirect-based OIDC via OTUH2. **Production** validates `at+jwt` against `https://api.nehzat128.ir/oauth` (JWKS). **Dev** uses `DevAuth:UseMockAuth` (in `appsettings.Development.json`, under the `DevAuth` section — NOT a top-level `UseMockAuth` flag) with HMAC symmetric key. Claims: `sub`→username, `role`→role (NOT `ClaimTypes.Role`).
+- **Auth**: Redirect-based OIDC via OTUH2. **Production** validates `at+jwt` against `https://api.nehzat128.ir/oauth` (JWKS). **Dev** uses `DevAuth:UseMockAuth` (in `appsettings.Development.json`, under the `DevAuth` section — NOT a top-level `UseMockAuth` flag) with HMAC symmetric key. Mock `SignIn` is hard-gated on `Development` env + `DevAuth:UseMockAuth`; dev accounts come from `DevAuth:Accounts` in config (10 accounts); `DevAuthKey` can be overridden by the `NEHZAT_DEV_AUTH_KEY` env var. Claims: `sub`→username, `role`→role (NOT `ClaimTypes.Role`).
 - **Middleware order** (Program.cs): `GlobalException` → `Cors` → `Authentication` → `OidcSyncMiddleware` → `Authorization` → `StaticFiles` → `MapControllers` → `MapHub`.
 - **OidcSyncMiddleware**: auto-creates local `User` row on first authenticated request from OTUH2.
-- **Controllers**: All `[Authorize]` except `AuthController` (only `SignUp`). Admin endpoints split into 8 domain controllers (`AdminBranches*`, `AdminCourses*`, `AdminCoaches*`, `AdminBranchManagers*`, `AdminParents*`, `AdminEvaluators*`, `AdminStudents*`, `AdminStatistics*`) — **never append to one admin controller**.
-- **Services**: ~40 scoped `I*-Service` interfaces registered explicitly in Program.cs. Add new ones there.
+- **Controllers**: All `[Authorize]` except `AuthController` (only `SignUp`). **Default-deny**: a `FallbackPolicy` (`RequireAuthenticatedUser`) is registered in Program.cs, so any endpoint without explicit `[Authorize]` still requires authentication. Course endpoints require `admin,manager,headquarters` (class-level `[Authorize(Roles = ...)]` on `CourseController` — role lists live in `Application/Constants/RoleNames.cs`; canonical role is `branch_manager` with underscore; hyphen form only appears in URL route paths). Admin endpoints split into 8 domain controllers (`AdminBranches*`, `AdminCourses*`, `AdminCoaches*`, `AdminBranchManagers*`, `AdminParents*`, `AdminEvaluators*`, `AdminStudents*`, `AdminStatistics*`) — **never append to one admin controller**.
+- **Services**: ~70 scoped `I*-Service` interfaces registered explicitly in Program.cs. Add new ones there.
 
 ## Frontend — Critical facts
 - **Framework**: Angular 21 standalone + Capacitor 8 (Android only, app ID `com.nsafari.lessonplanner`).
@@ -39,6 +42,7 @@ cd frontend && npm run build:capacitor && npx cap sync android  # APK
 - **API layer**: Interface-based. `useMockApi` flag in `environment.ts` swaps `HttpLessonPlannerApiService` ⇄ `MockLessonPlannerApiService`. Also `useMockAuth` for mock auth mode.
 - **API URL**: Runtime `/config.json` → fallback to `environment.ts` → `apiUrl`. Same cascade for `otuh2Url`.
 - **Styling**: CSS custom properties prefixed `--lp-*` only. Never bare `--gold`, `--primary`, `--danger`.
+- **Shared models**: `core/models/lesson-planner.models.ts` is a **barrel** that re-exports 29 domain files `lp-*.models.ts` (split from the former ~4500-line monolith). Edit the relevant `lp-*.models.ts` — never the barrel.
 - **Routes**: lazy per role — `auth`, `dashboard`, `admin`, `coach`, `parent`, `branch-manager`, `evaluator`, `headquarters`, `shared`. OnPush on admin/dashboard.
 
 ## Where to look (task → file)
@@ -52,13 +56,19 @@ cd frontend && npm run build:capacitor && npx cap sync android  # APK
 | New page/feature | `frontend/src/app/features/<role>/` |
 | Styling variables | `--lp-*` CSS custom props only |
 
-## Test accounts (MockAuth → any password works, returns manager claims)
-| Type | Username | Password |
+## Test accounts (MockAuth — defined in `DevAuth:Accounts`, `appsettings.Development.json`)
+| Role | Username | Password |
 |------|----------|----------|
 | manager | `test` | `password` |
-| student | `ali.ahmadi` | `password123` |
-| student | `fateme.mohammadi` | `password123` |
-| student | `mohammad.rezaei` | `password123` |
+| trainee | `ali.ahmadi` | `password123` |
+| trainee | `fateme.mohammadi` | `password123` |
+| trainee | `mohammad.rezaei` | `password123` |
+| coach | `coach` | `password123` |
+| parent | `parent` | `password123` |
+| branch_manager | `branch.manager` | `password123` |
+| headquarters | `headquarters` | `password123` |
+| evaluator | `evaluator` | `password123` |
+| teacher | `teacher` | `password123` |
 
 ## Anti-patterns (will break things)
 - NEVER add `Microsoft.EntityFrameworkCore.Sqlite` — SQL Server only.

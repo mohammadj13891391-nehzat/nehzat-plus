@@ -1,6 +1,6 @@
 # 📦 گزارش کامل دارایی‌های پروژه — نهضت‌پلاس (Nehzat Plus)
 
-> **نسخه:** v3.3.0 (baseline — همگام با آخرین تگ گیت) — 2026-08-25
+> **نسخه:** v3.4.0 (baseline — همگام با آخرین تگ گیت) — 2026-10-13
 > **هدف فایل:** آرشیو مرجع از تمام صفحات، دارایی‌ها و ساختار پروژه. پس از هر مرحله توسعه، یک نسخه جدید با شماره نسخه افزایش‌یافته در همین فایل اضافه شود.
 >
 > **قاعده آرشیو:** هر تغییر = یک سکشن `## تغییرات نسخه X` در انتهای فایل (بدون حذف تاریخچه قبلی).
@@ -10,7 +10,7 @@
 ---
 
 ## ۱. نمای کلی معماری
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 | لایه | تکنولوژی | توضیح |
 |------|----------|-------|
@@ -44,7 +44,7 @@ nehzat-plus/
 ---
 
 ## ۲. فرانت‌اند — تمام مسیرها و صفحات
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 ### ۲.۱ احراز هویت — `/auth`
 | مسیر | کامپوننت | گارد |
@@ -226,7 +226,7 @@ nehzat-plus/
 ---
 
 ## ۳. کامپوننت‌های اشتراکی — `features/shared/`
-> آخرین تغییر: v3.2.0
+> آخرین تغییر: v3.4.0
 
 | کامپوننت | مسیر | کاربرد |
 |-----------|------|-------|
@@ -244,7 +244,7 @@ nehzat-plus/
 ---
 
 ## ۴. سرویس‌های هسته — `core/services/`
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 | سرویس/فایل | وظیفه |
 |--------|-------|
@@ -295,7 +295,7 @@ nehzat-plus/
 ---
 
 ## ۵. بک‌اند — تمام کنترلرها (۴۱ عدد)
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 ### ۵.۱ احراز هویت و کاربران
 | کنترلر | مسیر پایه | نکات |
@@ -372,7 +372,7 @@ nehzat-plus/
 ---
 
 ## ۶. موجودیت‌های دامنه — `Domain/Entities/` (۱۰۰+)
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 ### ۶.۱ کاربران و نقش‌ها
 `User` (دارای `OidcSubject` — بدون PasswordHash)، `Student`، `Teacher`، `Coach`، `Parent`، `BranchManager`، `Evaluator`، `Branch`، `Madrasah`، `MadrasahBranch`، `NehzatSection`، `MaktabSubSection`، `ParentStudent` (junction)، `AgeGroup`
@@ -410,7 +410,7 @@ nehzat-plus/
 ---
 
 ## ۷. سرویس‌های بک‌اند
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 ### ۷.۱ پیاده‌سازی‌ها — `Infrastructure/Services/` (۴۰+)
 `UserService`، `CourseService`، `AssessmentService`، `AssignmentSubmissionService`، `BranchService`، `BranchManagerService`، `CoachService`، `CompetitionService`، `CurriculumService`، `CurriculumVersionService`، `DailyActivityService`، `EvaluatorService`، `ExperimentalScienceService`، `HadithService`، `IssueSurveyService`، `LeagueService`، `LearningService`، `LogService`، `MadrasahService`، `MathService`، `MonthlyBookletService`، `ParentService`، `PersianLiteratureService`، `ProgressionService`، `QuranService`، `RingService`، `SkillProgressService`، `SpiritualCatalogService`، `SpiritualEntryService`، `SpiritualOccasionService`، `SpiritualPathService`، `SrsService`، `StudentService`، `TeacherService`، `TrainingService`، `XpService`، `ArabicLiteratureService`، `ArtsService`
@@ -424,7 +424,7 @@ nehzat-plus/
 ---
 
 ## ۸. زیرساخت بک‌اند
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 ### ۸.۱ DbContext — `Infrastructure/Data/AppDbContext.cs`
 - `EnsureCreated()` فقط (بدون migration)
@@ -504,7 +504,7 @@ nehzat-plus/
 ---
 
 ## ۱۱. تست
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 | لایه | فریم‌ورک | فرمان |
 |------|----------|-------|
@@ -541,7 +541,7 @@ nehzat-plus/
 ---
 
 ## ۱۳. مستندات مرجع — `docs/`
-> آخرین تغییر: v3.3.0
+> آخرین تغییر: v3.4.0
 
 | فایل | محتوا |
 |------|-------|
@@ -784,3 +784,37 @@ cd frontend && npm run build:capacitor && npx cap sync android   # mobile
 - W1-W5: Backend study path system + backend EducationalProcess/Feedback/MaktabLookup/PhaseTransition + frontend mock API layer and mock services
 - feat: add Ai, Calendar, Conversation, CourierReport, Evaluation, Gamification, Halgheh, Maktab, Map, Message, Notification, Profile, Progress, Workflow features
 - chore: PROJECT_INVENTORY.md updated by archive script
+
+## تغییرات نسخه v3.4.0 — خودکار (archive-version.ps1)
+
+### نسخه v3.4.0 — 2026-09-13 (19 کامیت)
+>  305 files changed, 114079 insertions(+), 1920 deletions(-)
+
+#### ویژگی‌ها (5)
+- feat(frontend): extract shared header component for admin and branch-manager dashboards
+- feat(frontend): activate 5-phase system with dev phase switcher
+- feat(dashboard): wire lessons card to learning-path route
+- feat(frontend): responsive design for 11 pages (mobile/tablet/desktop)
+- feat(vocabulary): add book-marker module for word extraction
+
+#### اصلاحات (7)
+- fix(frontend): wire branch-manager component to use branch-scoped API methods\n\n- Update loadData() to use getMyBranch(), getMyBranchPerformance(), getMyCoaches(), getMyBranchManagers(), getMyCoachPerformance(), getMyStudents()\n- Update mock-lesson-planner-api.service.ts to delegate to domain services\n- Update mock-admin-coaches.service.ts with getMyCoaches() and getMyBranchManagers()\n- Update mock-student-progress.service.ts with getMyStudents()\n- Update mock-headquarters.service.ts with getMyCoachPerformance()
+- fix(backend): allow trainee to access own assessment history
+- fix(frontend): fix NG0203 by passing explicit destroyRef to takeUntilDestroyed
+- fix(backend): allow trainee to access only their own student endpoints
+- fix(backend): resolve real user/student in dev signin so trainee /api/profile returns 200
+- fix(frontend): notification-bell 401 guard + correct dev role logins + e2e test selectors
+- fix(backend): null type fixes in admin controllers + add Playwright test config
+
+#### بازسازی (1)
+- refactor(backend): split LearningController into 3 domain controllers + fix Program.cs
+
+#### مستندات (1)
+- docs(backend): mark trainee assessment-history 403 as resolved in KNOWN_ISSUES
+
+#### سایر (5)
+- feat: lesson detail page + learning path navigation
+- feat: Coach CRUD for branch-manager + Student CRUD fixes + AdminCoachesController 403 fix
+- docs: record pre-existing frontend issues (NG0203 + 404s) as tracked known-issues note
+- fix: role-based dashboard + controller auth + responsive + e2e tests
+- feat: quran rings, vocabulary SRS, study paths, tadabbor, and responsive UI
