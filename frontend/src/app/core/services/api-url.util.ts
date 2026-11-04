@@ -22,6 +22,12 @@ export function resolveOtuh2BaseUrl(): string {
   return trimTrailingSlash(configuredOtuh2Url);
 }
 
+export function resolveMorabbiApiBaseUrl(): string {
+  const runtimeMorabbiUrl = (window as unknown as { __morabbiApiBase?: string }).__morabbiApiBase ?? '';
+  const configuredMorabbiUrl = runtimeMorabbiUrl || (environment as Record<string, unknown>)['morabbiApiUrl'] as string || 'http://localhost:3010';
+  return trimTrailingSlash(configuredMorabbiUrl);
+}
+
 export function isSafeRedirectPath(value: string | null | undefined): boolean {
   if (!value) {
     return false;

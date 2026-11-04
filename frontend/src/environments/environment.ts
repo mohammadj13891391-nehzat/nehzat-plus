@@ -3,6 +3,7 @@ export const environment = {
   apiUrl: 'https://api.nehzat128.ir',
   apiPublicUrl: 'https://api.nehzat128.ir',
   otuh2Url: 'https://api.nehzat128.ir/oauth',
+  morabbiApiUrl: 'https://morabbi.nehzat128.ir',
   useMockApi: false,
   useMockAuth: false,
   mockUser: null as { id: string; name: string; email: string; role: string } | null

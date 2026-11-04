@@ -1,0 +1,331 @@
+.morabbi-scope {
+  --lp-bg: #f4f6f5;
+  --lp-surface: #ffffff;
+  --lp-sidebar: #10201a;
+  --lp-sidebar-text: #cfe0d8;
+  --lp-sidebar-active: #1d3a2f;
+  --lp-primary: #14604a;
+  --lp-primary-hover: #0f4a39;
+  --lp-accent: #c9a227;
+  --lp-text: #1c2622;
+  --lp-muted: #6b7a74;
+  --lp-border: #dde5e1;
+  --lp-danger: #b3372f;
+  --lp-success: #1e7e4e;
+  --lp-warning: #a66a00;
+  --lp-info: #2b6cb0;
+  --lp-radius: 10px;
+  --lp-shadow: 0 1px 3px rgba(16, 32, 26, 0.08);
+  --lp-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  font-family: var(--lp-font);
+  color: var(--lp-text);
+  font-size: 14px;
+  background: var(--lp-bg);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 30px;
+}
+
+.morabbi-scope *,
+.morabbi-scope *::before,
+.morabbi-scope *::after {
+  box-sizing: border-box;
+}
+
+.morabbi-scope a {
+  color: var(--lp-primary);
+  text-decoration: none;
+}
+
+.morabbi-scope a:hover {
+  text-decoration: underline;
+}
+
+.morabbi-scope button {
+  font-family: var(--lp-font);
+  cursor: pointer;
+}
+
+.morabbi-scope input,
+.morabbi-scope select,
+.morabbi-scope textarea {
+  font-family: var(--lp-font);
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--lp-border);
+  border-radius: 8px;
+  background: var(--lp-surface);
+  color: var(--lp-text);
+  width: 100%;
+}
+
+.morabbi-scope input:focus,
+.morabbi-scope select:focus,
+.morabbi-scope textarea:focus {
+  outline: 2px solid rgba(20, 96, 74, 0.25);
+  border-color: var(--lp-primary);
+}
+
+.morabbi-scope textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.morabbi-scope label {
+  display: block;
+  font-size: 13px;
+  color: var(--lp-muted);
+  margin-bottom: 4px;
+}
+
+.morabbi-scope .field {
+  margin-bottom: 12px;
+}
+
+.morabbi-scope .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--lp-primary);
+  color: #fff;
+}
+
+.morabbi-scope .btn:hover {
+  background: var(--lp-primary-hover);
+}
+
+.morabbi-scope .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.morabbi-scope .btn-secondary {
+  background: var(--lp-surface);
+  color: var(--lp-text);
+  border-color: var(--lp-border);
+}
+
+.morabbi-scope .btn-secondary:hover {
+  background: var(--lp-bg);
+}
+
+.morabbi-scope .btn-danger {
+  background: var(--lp-danger);
+}
+
+.morabbi-scope .btn-danger:hover {
+  background: #8f2b24;
+}
+
+.morabbi-scope .btn-sm {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.morabbi-scope .card {
+  background: var(--lp-surface);
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius);
+  box-shadow: var(--lp-shadow);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.morabbi-scope .card-title {
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.morabbi-scope .badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e8ede9;
+  color: var(--lp-muted);
+}
+
+.morabbi-scope .badge-draft {
+  background: #e8ede9;
+  color: var(--lp-muted);
+}
+
+.morabbi-scope .badge-submitted,
+.morabbi-scope .badge-under_review {
+  background: #dbeafe;
+  color: var(--lp-info);
+}
+
+.morabbi-scope .badge-approved {
+  background: #dcfce7;
+  color: var(--lp-success);
+}
+
+.morabbi-scope .badge-returned {
+  background: #fee2e2;
+  color: var(--lp-danger);
+}
+
+.morabbi-scope .badge-pending {
+  background: #fef3c7;
+  color: var(--lp-warning);
+}
+
+.morabbi-scope .badge-rejected {
+  background: #fee2e2;
+  color: var(--lp-danger);
+}
+
+.morabbi-scope .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.morabbi-scope .page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.morabbi-scope .toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.morabbi-scope .toolbar select,
+.morabbi-scope .toolbar input {
+  width: auto;
+  min-width: 160px;
+}
+
+.morabbi-scope table.lp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.morabbi-scope .lp-table th {
+  text-align: right;
+  font-size: 12px;
+  color: var(--lp-muted);
+  font-weight: 500;
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--lp-border);
+  white-space: nowrap;
+}
+
+.morabbi-scope .lp-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--lp-border);
+  vertical-align: top;
+}
+
+.morabbi-scope .lp-table tr:last-child td {
+  border-bottom: none;
+}
+
+.morabbi-scope .lp-table tr.clickable {
+  cursor: pointer;
+}
+
+.morabbi-scope .lp-table tr.clickable:hover {
+  background: #f7faf8;
+}
+
+.morabbi-scope .alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.morabbi-scope .alert-error {
+  background: #fee2e2;
+  color: var(--lp-danger);
+}
+
+.morabbi-scope .alert-success {
+  background: #dcfce7;
+  color: var(--lp-success);
+}
+
+.morabbi-scope .empty {
+  text-align: center;
+  color: var(--lp-muted);
+  padding: 40px 0;
+}
+
+.morabbi-scope .tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--lp-border);
+  margin-bottom: 16px;
+}
+
+.morabbi-scope .tabs button {
+  border: none;
+  background: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--lp-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.morabbi-scope .tabs button.active {
+  color: var(--lp-primary);
+  font-weight: 600;
+  border-bottom-color: var(--lp-primary);
+}
+
+.morabbi-scope .kv {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  row-gap: 10px;
+  column-gap: 12px;
+}
+
+.morabbi-scope .kv dt {
+  color: var(--lp-muted);
+  font-size: 13px;
+}
+
+.morabbi-scope .kv dd {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.morabbi-scope .section-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 18px 0 10px;
+  color: var(--lp-primary);
+}
+
+.morabbi-scope .grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .morabbi-scope .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .morabbi-scope .kv {
+    grid-template-columns: 1fr;
+  }
+}

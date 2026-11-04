@@ -14,13 +14,19 @@ export function loadApiConfig(): () => Promise<void> {
           return {};
         });
       })
-      .then((config: { apiUrl?: string; otuh2Url?: string }) => {
-        const win = window as unknown as { __apiBase?: string; __otuh2Base?: string };
-        if (typeof config.apiUrl === 'string') {
-          win.__apiBase = config.apiUrl;
+      .then((config: { apiUrl?: string; otuh2Url?: string; apiBase?: string; otuh2Base?: string; morabbiApiBase?: string }) => {
+        const win = window as unknown as { __apiBase?: string; __otuh2Base?: string; __morabbiApiBase?: string };
+        const apiBase = config.apiUrl ?? config.apiBase;
+        const otuh2Base = config.otuh2Url ?? config.otuh2Base;
+        const morabbiApiBase = config.morabbiApiBase;
+        if (typeof apiBase === 'string') {
+          win.__apiBase = apiBase;
         }
-        if (typeof config.otuh2Url === 'string') {
-          win.__otuh2Base = config.otuh2Url;
+        if (typeof otuh2Base === 'string') {
+          win.__otuh2Base = otuh2Base;
+        }
+        if (typeof morabbiApiBase === 'string') {
+          win.__morabbiApiBase = morabbiApiBase;
         }
       })
       .catch((err) => {

@@ -39,6 +39,7 @@
             ],
             "styles": [
               "src/styles.scss",
+              "src/app/features/coach/morabbi/morabbi.styles.scss",
               "node_modules/leaflet/dist/leaflet.css"
             ],
             "allowedCommonJsDependencies": ["jalali-ts"]
