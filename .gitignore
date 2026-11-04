@@ -7,6 +7,14 @@ stdout.txt
 # Build output
 dist/
 **/dist/
+build_output.txt
+build-output*.txt
+build_log*.txt
+build_errors.txt
+test-output.txt
+
+# Generated API spec
+openapi.json
 
 # Dependencies
 node_modules/
@@ -22,3 +30,7 @@ CURRICULUM-DESIGN.md
 docs/PAGE_DEVELOPMENT_PLAN.md
 docs/PAGE_DEVELOPMENT_PLAN.md.bak
 docs/plans/
+
+# Runtime logs
+*.out
+*.err

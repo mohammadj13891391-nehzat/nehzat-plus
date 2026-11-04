@@ -1,1 +1,0 @@
-cd /d "D:/nehzat-plus/nehzat-plus\backend\src\EducationalPlatform.Nehzat.API" && dotnet run --project "D:\nehzat-plus\nehzat-plus\backend\src\EducationalPlatform.Nehzat.API\EducationalPlatform.Nehzat.API.csproj" --no-build > "D:\nehzat-plus\nehzat-plus\backend-run.log" 2>&1
