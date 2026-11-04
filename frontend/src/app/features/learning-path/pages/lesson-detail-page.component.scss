@@ -4,8 +4,8 @@
   min-height: 100vh;
 }
 
-.child-theme { --accent: #FF6B6B; --bg: #FFF0F0; }
-.teen-theme  { --accent: #4ECDC4; --bg: #F0FFFE; }
+.child-theme { --lp-lesson-accent: #FF6B6B; --lp-lesson-bg: #FFF0F0; }
+.teen-theme  { --lp-lesson-accent: #4ECDC4; --lp-lesson-bg: #F0FFFE; }
 
 .page-header {
   display: flex;
@@ -17,14 +17,14 @@
 .back-btn {
   background: none;
   border: none;
-  color: var(--accent);
+  color: var(--lp-lesson-accent);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 8px;
   transition: background 0.2s;
 }
-.back-btn:hover { background: color-mix(in srgb, var(--accent) 15%, transparent); }
+.back-btn:hover { background: color-mix(in srgb, var(--lp-lesson-accent) 15%, transparent); }
 
 .header-content h1 {
   margin: 0 0 0.5rem;
@@ -39,14 +39,14 @@
   font-size: 0.9rem;
 }
 .meta-item {
-  background: var(--bg);
+  background: var(--lp-lesson-bg);
   padding: 0.3rem 0.8rem;
   border-radius: 20px;
-  color: var(--accent);
+  color: var(--lp-lesson-accent);
   font-weight: 500;
 }
 .badge {
-  background: var(--accent) !important;
+  background: var(--lp-lesson-accent) !important;
   color: white !important;
 }
 
@@ -67,10 +67,10 @@
   color: var(--lp-text-muted);
   transition: all 0.2s;
 }
-.tab-btn:hover { color: var(--accent); }
+.tab-btn:hover { color: var(--lp-lesson-accent); }
 .tab-btn.active {
-  color: var(--accent);
-  border-bottom: 3px solid var(--accent);
+  color: var(--lp-lesson-accent);
+  border-bottom: 3px solid var(--lp-lesson-accent);
 }
 
 .loading-state,
@@ -89,14 +89,14 @@
 }
 
 .description-card {
-  background: var(--bg);
+  background: var(--lp-lesson-bg);
   border-radius: 12px;
   padding: 1.25rem;
-  border-right: 4px solid var(--accent);
+  border-right: 4px solid var(--lp-lesson-accent);
 }
 .description-card h3 {
   margin: 0 0 0.5rem;
-  color: var(--accent);
+  color: var(--lp-lesson-accent);
   font-size: 1.1rem;
 }
 .description-card p {
@@ -120,7 +120,7 @@
 }
 .content-block:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-color: color-mix(in srgb, var(--accent) 30%, #eee);
+  border-color: color-mix(in srgb, var(--lp-lesson-accent) 30%, #eee);
 }
 .block-header {
   display: flex;
@@ -130,7 +130,7 @@
   flex-wrap: wrap;
 }
 .block-order {
-  background: var(--accent);
+  background: var(--lp-lesson-accent);
   color: white;
   width: 28px;
   height: 28px;
@@ -143,11 +143,11 @@
 }
 .block-icon { font-size: 1.3rem; }
 .block-type-label {
-  background: var(--bg);
+  background: var(--lp-lesson-bg);
   padding: 0.2rem 0.6rem;
   border-radius: 12px;
   font-size: 0.75rem;
-  color: var(--accent);
+  color: var(--lp-lesson-accent);
   font-weight: 600;
 }
 .block-title {
@@ -166,9 +166,9 @@
 .block-explanation {
   margin-top: 1rem;
   padding: 0.75rem;
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  background: color-mix(in srgb, var(--lp-lesson-accent) 8%, transparent);
   border-radius: 8px;
-  border-right: 3px solid var(--accent);
+  border-right: 3px solid var(--lp-lesson-accent);
   line-height: 1.7;
 }
 .block-media {
@@ -241,16 +241,16 @@
   border: none;
 }
 .btn-primary {
-  background: var(--accent);
+  background: var(--lp-lesson-accent);
   color: white;
 }
 .btn-primary:hover { filter: brightness(1.1); }
 .btn-outline {
   background: transparent;
-  border: 2px solid var(--accent);
-  color: var(--accent);
+  border: 2px solid var(--lp-lesson-accent);
+  color: var(--lp-lesson-accent);
 }
-.btn-outline:hover { background: var(--accent); color: white; }
+.btn-outline:hover { background: var(--lp-lesson-accent); color: white; }
 
 .hidden { display: none !important; }
 

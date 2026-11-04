@@ -135,7 +135,6 @@ export class AuthService {
     const mockToken = `${header}.${payload}.mock-signature`;
     sessionStorage.setItem(ID_TOKEN_KEY, mockToken);
     sessionStorage.setItem(ACCESS_TOKEN_KEY, mockToken);
-    console.log('[AuthService.mockLogin] mock session created role=' + finalRole + ' for:', mockUser.name);
   }
 
   logout(): void {
@@ -201,17 +200,13 @@ export class AuthService {
   isAuthenticated(): boolean {
     const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
     if (!idToken) {
-      console.warn('[AuthService.isAuthenticated] NO id_token in sessionStorage');
       return false;
     }
     const payload = this.decodeToken(idToken);
     if (!payload?.exp) {
-      console.warn('[AuthService.isAuthenticated] id_token found but NO exp claim:', payload);
       return false;
     }
-    const valid = payload.exp * 1000 > Date.now();
-    console.log('[AuthService.isAuthenticated] id_token exp=', new Date(payload.exp * 1000).toISOString(), 'now=', new Date().toISOString(), 'valid=', valid);
-    return valid;
+    return payload.exp * 1000 > Date.now();
   }
 
   getAccessToken(): string | null {
@@ -221,7 +216,6 @@ export class AuthService {
   getCurrentUser(): CurrentUser | null {
     const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
     if (!idToken) {
-      console.log('[AuthService.getCurrentUser] no id_token');
       return null;
     }
     const payload = this.decodeToken(idToken);
@@ -239,7 +233,6 @@ export class AuthService {
       studentId: payload.studentId ? parseInt(payload.studentId, 10) : undefined,
       branchId: payload.branchId ? parseInt(payload.branchId, 10) : undefined
     };
-    console.log('[AuthService.getCurrentUser] user:', user);
     return user;
   }
 
@@ -338,12 +331,6 @@ export class AuthService {
     if (!sessionId) {
       return of({ status: 'expired', message: 'QR session not found' });
     }
-    return this.lessonPlannerApi.confirmQrScan({ sessionId, username }).pipe(
-      tap(({ status, message }) => {
-        if (status === 'confirmed') {
-          console.log('[AuthService.confirmQrScan] QR confirmed for:', username);
-        }
-      })
-    );
+    return this.lessonPlannerApi.confirmQrScan({ sessionId, username });
   }
 }
