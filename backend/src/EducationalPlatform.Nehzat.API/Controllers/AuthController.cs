@@ -171,10 +171,23 @@ namespace EducationalPlatform.Nehzat.API.Controllers
                 ?? new List<DevAccount>();
             return accounts.FirstOrDefault(a =>
                 a.Username.Equals(username, StringComparison.Ordinal) &&
-                a.Password.Equals(password, StringComparison.Ordinal));
+                a.Password.Equals(password, StringComparison.Ordinal) &&
+                !string.IsNullOrEmpty(a.Role));
         }
 
-        private record DevAccount(string Username, string Password, string Role, int UserId, int? StudentId, int BranchId, string? ImageUrl);
+        // NOTE: must be a mutable class — the configuration binder silently binds
+        // positional records / ctor-only types to empty values (returns an empty
+        // list), which made every dev sign-in fail with 401.
+        private sealed class DevAccount
+        {
+            public string Username { get; set; } = "";
+            public string Password { get; set; } = "";
+            public string Role { get; set; } = "";
+            public int UserId { get; set; }
+            public int? StudentId { get; set; }
+            public int BranchId { get; set; }
+            public string? ImageUrl { get; set; }
+        }
 
         public record SignInRequest(string Username, string Password);
         public record QrScanRequest(string SessionId, string Username);

@@ -269,6 +269,7 @@ app.MapHub<NotificationHub>("/hubs/notifications");
 
 using (var scope = app.Services.CreateScope())
 {
+    var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     // Database lifecycle (safe adoption of legacy EnsureCreated databases):
@@ -313,11 +314,11 @@ using (var scope = app.Services.CreateScope())
         try
         {
             await branchService.CreateAsync("شعبه مرکزی", "تهران", "شعبه اصلی و مرکزی");
-            Console.WriteLine("✅ شعبه پیش‌فرض (شعبه مرکزی) ایجاد شد");
+            logger.LogInformation("✅ شعبه پیش‌فرض (شعبه مرکزی) ایجاد شد");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"⚠️ خطا در ایجاد شعبه پیش‌فرض: {ex.Message}");
+            logger.LogWarning("⚠️ خطا در ایجاد شعبه پیش‌فرض: {Message}", ex.Message);
         }
     }
 
@@ -362,7 +363,7 @@ using (var scope = app.Services.CreateScope())
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"⚠️ OTUH2 role seeding failed: {ex.Message}");
+            logger.LogWarning("⚠️ OTUH2 role seeding failed: {Message}", ex.Message);
             await taskLogService.LogErrorAsync("Otuh2RoleSeeder", ex);
         }
     });
