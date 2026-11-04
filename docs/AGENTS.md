@@ -2,6 +2,8 @@
 
 Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend/` (Angular 21). Both run with zero infrastructure — `dotnet run` and `npm start` are all you need.
 
+> **Morabbi (third runtime)**: the `/coach` route integrates the Morabbi product — an independent backend on `:3010` whose source lives at `D:\morabbi` (outside this repo, no git). Integration code: `frontend/src/app/features/coach/morabbi/`. `MorabbiApiService` MUST use `new HttpClient(inject(HttpBackend))` to bypass Nehzat's global auth interceptor (see root `AGENTS.md` → "Morabbi" section for the full picture).
+
 ---
 
 ## Backend — ASP.NET Core 10 + EF Core + SQL Server
@@ -18,7 +20,7 @@ Two sub-projects: `backend/` (ASP.NET Core 10, Clean Architecture) and `frontend
 - Token type MUST be `at+jwt` (gateway rejects typed JWT)
 - Claims mapping: `sub` → username, `userId` → user ID, `role` (NOT `ClaimTypes.Role`)
 - `OidcSyncMiddleware` auto-creates a local `User` row on first authenticated request
-- `AuthController` has only `SignUp` — sign-in is entirely delegated to OTUH2
+- Sign-in is delegated to OTUH2 (redirect flow); `AuthController` also exposes `/login` — a **dev-only** mock sign-in hard-gated on `Development` + `DevAuth:UseMockAuth` (accounts from `DevAuth:Accounts`) — plus `/signup`, `/register`, and `/qr/*` endpoints
 
 ### User entity quirks
 - `OidcSubject` field replaces the old `PasswordHash` — users have no local password

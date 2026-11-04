@@ -1,6 +1,6 @@
 # 📦 گزارش کامل دارایی‌های پروژه — نهضت‌پلاس (Nehzat Plus)
 
-> **نسخه:** v3.4.0 (baseline — همگام با آخرین تگ گیت) — 2026-10-13
+> **نسخه:** v3.5.0 (baseline — همگام با آخرین تگ گیت) — 2026-11-05
 > **هدف فایل:** آرشیو مرجع از تمام صفحات، دارایی‌ها و ساختار پروژه. پس از هر مرحله توسعه، یک نسخه جدید با شماره نسخه افزایش‌یافته در همین فایل اضافه شود.
 >
 > **قاعده آرشیو:** هر تغییر = یک سکشن `## تغییرات نسخه X` در انتهای فایل (بدون حذف تاریخچه قبلی).
@@ -10,7 +10,7 @@
 ---
 
 ## ۱. نمای کلی معماری
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 | لایه | تکنولوژی | توضیح |
 |------|----------|-------|
@@ -44,7 +44,7 @@ nehzat-plus/
 ---
 
 ## ۲. فرانت‌اند — تمام مسیرها و صفحات
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 ### ۲.۱ احراز هویت — `/auth`
 | مسیر | کامپوننت | گارد |
@@ -244,7 +244,7 @@ nehzat-plus/
 ---
 
 ## ۴. سرویس‌های هسته — `core/services/`
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 | سرویس/فایل | وظیفه |
 |--------|-------|
@@ -295,7 +295,7 @@ nehzat-plus/
 ---
 
 ## ۵. بک‌اند — تمام کنترلرها (۴۱ عدد)
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 ### ۵.۱ احراز هویت و کاربران
 | کنترلر | مسیر پایه | نکات |
@@ -410,7 +410,7 @@ nehzat-plus/
 ---
 
 ## ۷. سرویس‌های بک‌اند
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 ### ۷.۱ پیاده‌سازی‌ها — `Infrastructure/Services/` (۴۰+)
 `UserService`، `CourseService`، `AssessmentService`، `AssignmentSubmissionService`، `BranchService`، `BranchManagerService`، `CoachService`، `CompetitionService`، `CurriculumService`، `CurriculumVersionService`، `DailyActivityService`، `EvaluatorService`، `ExperimentalScienceService`، `HadithService`، `IssueSurveyService`، `LeagueService`، `LearningService`، `LogService`، `MadrasahService`، `MathService`، `MonthlyBookletService`، `ParentService`، `PersianLiteratureService`، `ProgressionService`، `QuranService`، `RingService`، `SkillProgressService`، `SpiritualCatalogService`، `SpiritualEntryService`، `SpiritualOccasionService`، `SpiritualPathService`، `SrsService`، `StudentService`، `TeacherService`، `TrainingService`، `XpService`، `ArabicLiteratureService`، `ArtsService`
@@ -541,7 +541,7 @@ nehzat-plus/
 ---
 
 ## ۱۳. مستندات مرجع — `docs/`
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.5.0
 
 | فایل | محتوا |
 |------|-------|
@@ -818,3 +818,29 @@ cd frontend && npm run build:capacitor && npx cap sync android   # mobile
 - docs: record pre-existing frontend issues (NG0203 + 404s) as tracked known-issues note
 - fix: role-based dashboard + controller auth + responsive + e2e tests
 - feat: quran rings, vocabulary SRS, study paths, tadabbor, and responsive UI
+
+## تغییرات نسخه v3.5.0 — خودکار (archive-version.ps1)
+
+### نسخه v3.5.0 — 2026-11-04 (11 کامیت)
+>  1987 files changed, 265328 insertions(+), 21085 deletions(-)
+
+#### ویژگی‌ها (1)
+- feat(coach): integrate Morabbi system at /coach with shared-session bridge
+
+#### اصلاحات (4)
+- fix(backend): dev sign-in 401 (DevAccount record not config-bindable) + structured startup logging
+- fix(backend): startup crash - HasTables disposed EF-managed connection
+- fix(backend): default-deny auth, role hardening, safe migration lifecycle, test suite green
+- fix(frontend): BranchManager CRUD - resolve 9 build errors
+
+#### بازسازی (1)
+- refactor(frontend): split lesson-planner.models.ts into 29 lp-* domain files
+
+#### نگهداری (1)
+- chore(frontend): drop debug console logs, unused profile route; --lp-* vars in lesson-detail theme
+
+#### سایر (4)
+- docs: role-features and asnad content; AGENTS refresh; frontend brand asset
+- chore: remove scratch files and ignore build/runtime outputs
+- docs: refresh AGENTS.md files (auth, DB lifecycle, models barrel, tests); bump PROJECT_INVENTORY to v3.4.0
+- docs: add project SPEC + .env.example template; mark BranchManager fix as done (84b13ed)

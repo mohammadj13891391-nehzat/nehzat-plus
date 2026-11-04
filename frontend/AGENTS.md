@@ -37,6 +37,12 @@ src/
 - Routes lazy-loaded per role; `authGuard` redirects unauthenticated users to OTUH2, `adminGuard`/`roleGuard('role')` for protection.
 - OnPush CD on admin/dashboard components.
 
+## MORABBI INTEGRATION (`features/coach/morabbi/`)
+- `/coach` hosts the second system **Morabbi** (external backend on `:3010`, source at `D:\morabbi`, not in this repo). 12 lazy pages + `Morabbi`-prefixed classes.
+- `MorabbiApiService` uses `new HttpClient(inject(HttpBackend))` on purpose — a DI `HttpClient` would inherit the global `authInterceptor` (Nehzat token → 401 on :3010 → force-logout). Keep it that way.
+- Session bridge: `ensureSession(role)` auto-logins to :3010 via phone map; tokens in `localStorage` (`morabbi_token`/`morabbi_user`).
+- Base URL: `public/config.json` (`morabbiApiBase`) → `environment.morabbiApiUrl` → `http://localhost:3010`.
+
 ## ANTI-PATTERNS
 - NEVER use bare CSS vars (`--gold/--primary/--danger`) — `--lp-*` only.
 - NEVER compare roles by string — `hasRole()`.
