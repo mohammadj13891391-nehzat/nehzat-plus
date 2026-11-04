@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0383",
+    "TotalBytes":  6428,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۱۵ ژانویه،‏ ۸.۴۵​.txt",
+                      "Bytes":  "3404"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/16 Aug, 11.53​ (1).txt",
+                      "Bytes":  "1512"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/16 Aug, 11.53​ (2).txt",
+                      "Bytes":  "1512"
+                  }
+              ]
+}

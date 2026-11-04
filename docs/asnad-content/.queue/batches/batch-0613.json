@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0613",
+    "TotalBytes":  9703,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/06-مدیریت-شعب-و-ارزیابی/درباره مسیر رشد-AudioConverter.txt",
+                      "Bytes":  "8760"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/06-مدیریت-شعب-و-ارزیابی/ساعت تربیتی شعبه شهید صدر ۱۹ بهمن ۱۴۰۴.txt",
+                      "Bytes":  "943"
+                  }
+              ]
+}

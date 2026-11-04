@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0588",
+    "TotalBytes":  9266,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/06-مدیریت-شعب-و-ارزیابی/15-جلسه مربیان ۵ شنبه ۱۶ آذر __part4.txt",
+                      "Bytes":  1598
+                  },
+                  {
+                      "Path":  "docs/asnad-content/06-مدیریت-شعب-و-ارزیابی/۱۸ مه،‏ ۱۰.۰۰​.txt",
+                      "Bytes":  "3290"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/06-مدیریت-شعب-و-ارزیابی/۲ ژوئن،‏ ۸.۵۸​.txt",
+                      "Bytes":  "4378"
+                  }
+              ]
+}

@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0507",
+    "TotalBytes":  3935,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/ادبیات عرب مربی‌یاران دختر ۸ بهمن ۱۴۰۴__part2.txt",
+                      "Bytes":  3818
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/ادبیات عربی شعبه .txt",
+                      "Bytes":  "117"
+                  }
+              ]
+}

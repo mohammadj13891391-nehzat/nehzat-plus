@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0060",
+    "TotalBytes":  22073,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/Eitaa-Live-1708611741441__part3.txt",
+                      "Bytes":  6666
+                  },
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/VID_20220525_164131.txt",
+                      "Bytes":  "15407"
+                  }
+              ]
+}

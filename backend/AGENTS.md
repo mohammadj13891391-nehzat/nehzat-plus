@@ -3,24 +3,24 @@
 ASP.NET Core 10 + EF Core + SQL Server. Clean Architecture: `Domain → Application → Infrastructure → API` (dependencies flow inward).
 
 ## OVERVIEW
-Monolithic Web API. 4 csproj layers under `src/`. OTUH2 OIDC auth (Mock in dev). 10 domain services, 6 controllers.
+Monolithic Web API. 4 csproj layers under `src/`. OTUH2 OIDC auth (Mock in dev). 60+ domain services, 73 controllers.
 
 ## STRUCTURE
 ```
 src/EducationalPlatform.Nehzat.API/
 ├── Program.cs              # entry: DI, auth scheme, CORS, middleware order, --seed
-├── Controllers/            # Auth, Student, Course, Admin, Assessment, Seeder
+├── Controllers/            # 73 controllers (domain-split; Admin* sub-controllers)
 └── Middleware/             # OidcSyncMiddleware
 src/EducationalPlatform.Nehzat.Application/
 ├── DTOs/                   # one file per domain (AdminDtos, CourseDtos, ...)
-└── Interfaces/             # I*Service contracts (10)
+└── Interfaces/             # I*Service contracts (62)
 src/EducationalPlatform.Nehzat.Infrastructure/
 ├── Data/                   # AppDbContext
-├── Services/               # I*Service implementations (10)
+├── Services/               # I*Service implementations (60+)
 ├── Seeders/                # SampleDataSeeder, Otuh2RoleSeeder
 └── Clients/                # Refit IOtuh2AuthClient
 src/EducationalPlatform.Nehzat.Domain/
-└── Entities/               # 15 entities (User, Student, Course, Assignment, ...)
+└── Entities/               # 126 entities (User, Student, Course, ...)
 ```
 
 ## WHERE TO LOOK
@@ -47,7 +47,7 @@ src/EducationalPlatform.Nehzat.Domain/
 - NEVER return `ex.Message` to client.
 - JWT `ValidTypes` MUST stay `["at+jwt"]`.
 - Claims: `sub`=username, `userId`=id, `role` (NOT `ClaimTypes.Role`).
-- `AdminController.cs` (~1130 lines) is a landmine — split before extending.
+- `AdminController.cs` was ~1130 lines — already split into 8 domain sub-controllers (`AdminBranches*`, `AdminCourses*`, `AdminCoaches*`, `AdminBranchManagers*`, `AdminParents*`, `AdminEvaluators*`, `AdminStudents*`, `AdminStatistics*`). Keep them domain-split; never re-grow one admin controller.
 
 ## COMMANDS
 ```bash

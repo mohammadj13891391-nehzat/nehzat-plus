@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0548",
+    "TotalBytes":  8840,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/جلسه تربیت مربی ۱۶ آبان__part4.txt",
+                      "Bytes":  2570
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/جلسه مربیان پنجشنبه ۳۰ بهمن ۱۴۰۴.txt",
+                      "Bytes":  "6270"
+                  }
+              ]
+}

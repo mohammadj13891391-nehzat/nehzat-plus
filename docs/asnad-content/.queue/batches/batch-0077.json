@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0077",
+    "TotalBytes":  21615,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/گفتگو با آقای ح-AudioConverter.txt",
+                      "Bytes":  "8580"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/گفتگو با آقای حسینی گندما .txt",
+                      "Bytes":  "13035"
+                  }
+              ]
+}

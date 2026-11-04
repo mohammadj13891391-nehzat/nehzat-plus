@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0434",
+    "TotalBytes":  24767,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۲۸ ژانویه،‏ ۱۱.۳۱​__part2.txt",
+                      "Bytes":  5598
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۲۸ مه،‏ ۱۰.۵۵​.txt",
+                      "Bytes":  "19169"
+                  }
+              ]
+}

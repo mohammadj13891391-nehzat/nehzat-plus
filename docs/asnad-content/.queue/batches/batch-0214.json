@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0214",
+    "TotalBytes":  22062,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/02-تربیت-مربی-و-مربیگری/VID_20220518_182136__part2.txt",
+                      "Bytes":  11706
+                  },
+                  {
+                      "Path":  "docs/asnad-content/02-تربیت-مربی-و-مربیگری/VID_20220526_091010.txt",
+                      "Bytes":  "8249"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/02-تربیت-مربی-و-مربیگری/VID_20220526_101807.txt",
+                      "Bytes":  "2107"
+                  }
+              ]
+}

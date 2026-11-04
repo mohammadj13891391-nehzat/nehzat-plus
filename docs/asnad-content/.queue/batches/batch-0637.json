@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0637",
+    "TotalBytes":  8961,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/۱۷ ژانویه،‏ ۱۸.۳۹​.txt",
+                      "Bytes":  "20"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/۱۷ مه،‏ ۱۰.۲۴​.txt",
+                      "Bytes":  "8770"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/17-VID_20230510_170530.txt",
+                      "Bytes":  "171"
+                  }
+              ]
+}

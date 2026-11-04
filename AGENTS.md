@@ -8,7 +8,7 @@ ASP.NET Core 10 backend + Angular 21 frontend. See [docs/AGENTS.md](docs/AGENTS.
 cd backend && dotnet run            # dev server (MockAuth on in Development)
 cd backend && dotnet run --seed     # drop + recreate DB + seed
 
-# Frontend — http://localhost:4200
+# Frontend — http://localhost:4201
 cd frontend && npm install && npm start   # ng serve
 cd frontend && ng test              # Vitest + jsdom
 cd frontend && npm run build:capacitor && npx cap sync android  # APK
@@ -42,8 +42,8 @@ cd backend && dotnet test
 - **API layer**: Interface-based. `useMockApi` flag in `environment.ts` swaps `HttpLessonPlannerApiService` ⇄ `MockLessonPlannerApiService`. Also `useMockAuth` for mock auth mode.
 - **API URL**: Runtime `/config.json` → fallback to `environment.ts` → `apiUrl`. Same cascade for `otuh2Url`.
 - **Styling**: CSS custom properties prefixed `--lp-*` only. Never bare `--gold`, `--primary`, `--danger`.
-- **Shared models**: `core/models/lesson-planner.models.ts` is a **barrel** that re-exports 29 domain files `lp-*.models.ts` (split from the former ~4500-line monolith). Edit the relevant `lp-*.models.ts` — never the barrel.
-- **Routes**: lazy per role — `auth`, `dashboard`, `admin`, `coach`, `parent`, `branch-manager`, `evaluator`, `headquarters`, `shared`. OnPush on admin/dashboard.
+- **Shared models**: `core/models/lesson-planner.models.ts` is a **barrel** that re-exports 31 domain files `lp-*.models.ts` (split from the former ~4500-line monolith). Edit the relevant `lp-*.models.ts` — never the barrel.
+- **Routes**: lazy per feature — ~45 feature routes (`auth`, `dashboard`, `admin`, `coach`, `parent`, `branch-manager`, `evaluator`, `headquarters`, `teacher`, `quran`, `vocabulary`, ...). OnPush on admin/dashboard.
 
 ## Where to look (task → file)
 | Need | Go to |

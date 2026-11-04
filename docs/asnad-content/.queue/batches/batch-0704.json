@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0704",
+    "TotalBytes":  1207,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/VID_20241118_081400.txt",
+                      "Bytes":  "119"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/VID-20220715-WA0027.txt",
+                      "Bytes":  "515"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/video_2022-04-27_02-08-04.txt",
+                      "Bytes":  "573"
+                  }
+              ]
+}

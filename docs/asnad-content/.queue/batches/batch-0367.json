@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0367",
+    "TotalBytes":  17485,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۱۰ ژوئن،‏ ۱۰.۲۱​ (2)__part2.txt",
+                      "Bytes":  5696
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۱۰ ژوئن،‏ ۹.۱۳​.txt",
+                      "Bytes":  "2175"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/۱۰ ژوئن،‏ ۹.۲۱​.txt",
+                      "Bytes":  "9614"
+                  }
+              ]
+}

@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0618",
+    "TotalBytes":  11904,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/021013 Mr Rafiei - Ep01.txt",
+                      "Bytes":  "11702"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/07-VID_20220929_204245.txt",
+                      "Bytes":  "168"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/۱ فوریه،‏ ۱۵.۰۹​.txt",
+                      "Bytes":  "34"
+                  }
+              ]
+}

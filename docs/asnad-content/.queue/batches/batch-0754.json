@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0754",
+    "TotalBytes":  14552,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/08-نیازمند-بازبینی-موضوعی/source_keyword_extract__part3-4.txt",
+                      "Bytes":  13292
+                  },
+                  {
+                      "Path":  "docs/asnad-content/08-نیازمند-بازبینی-موضوعی/پنجشنبه درباره دعای عهد ۲ بهمن ۱۴۰۴ (1).txt",
+                      "Bytes":  "384"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/08-نیازمند-بازبینی-موضوعی/پنجشنبه درباره دعای عهد ۲ بهمن ۱۴۰۴.txt",
+                      "Bytes":  "876"
+                  }
+              ]
+}

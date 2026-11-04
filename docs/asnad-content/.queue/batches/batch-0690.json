@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0690",
+    "TotalBytes":  15765,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/Eitaa-Live-1707981519577.txt",
+                      "Bytes":  "15536"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/part2.txt",
+                      "Bytes":  "16"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/07-جلسات-و-سخنرانی‌های-عمومی/VID_20220404_174354_445.txt",
+                      "Bytes":  "213"
+                  }
+              ]
+}

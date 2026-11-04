@@ -1,6 +1,6 @@
 # FRONTEND — AGENTS.md
 
-Angular 21 standalone + Capacitor 8 (Android). ~550 TS files (non-spec). 8 lazy role-feature modules + shared.
+Angular 21 standalone + Capacitor 8 (Android). ~550 TS files (non-spec). ~45 lazy feature routes under `features/`.
 
 ## OVERVIEW
 Standalone-component SPA. Interface-based API layer (HTTP ⇄ Mock swap). OTUH2 redirect-based OIDC auth. OnPush on admin/dashboard. Vitest + jsdom tests.
@@ -15,10 +15,8 @@ src/
 │   │   ├── services/            # auth, http/mock lesson-planner API, otuh2 API, notification
 │   │   ├── guards/              # auth.guard, admin.guard, role.guard
 │   │   ├── interceptors/        # auth interceptor (Bearer)
-│   │   └── models/             # lesson-planner.models.ts (barrel) → 29 lp-*.models.ts domain files
-│   └── features/
-│       ├── auth/ dashboard/ admin/ coach/ parent/
-│       ├── branch-manager/ evaluator/ headquarters/ shared/
+│   │   └── models/             # lesson-planner.models.ts (barrel) → 31 lp-*.models.ts domain files
+│   └── features/               # ~45 lazy feature folders (auth, dashboard, admin, quran, vocabulary, ...)
 └── public/config.json           # runtime apiUrl / otuh2Url override
 ```
 
@@ -42,11 +40,11 @@ src/
 ## ANTI-PATTERNS
 - NEVER use bare CSS vars (`--gold/--primary/--danger`) — `--lp-*` only.
 - NEVER compare roles by string — `hasRole()`.
-- `admin.component.ts` (~103 lines) — lazy routes + `AdminNavigationComponent` sidebar. `mock-lesson-planner-api.service.ts` (~285 lines) — thin facade, 40+ domain services via mixins. Both well-structured; follow existing patterns when extending.
+- `admin.component.ts` (~103 lines) — lazy routes + `AdminNavigationComponent` sidebar. `mock-lesson-planner-api.service.ts` (~305 lines) — thin facade delegating to 40+ domain mock services in `core/services/mock/` (~9.2k lines) via mixins. Both well-structured; follow existing patterns when extending.
 
 ## COMMANDS
 ```bash
-cd frontend && npm start        # ng serve → :4200
+cd frontend && npm start        # ng serve → :4201 (angular.json serve default = "local")
 cd frontend && ng test          # Vitest + jsdom
 cd frontend && npm run build:capacitor && npx cap sync android
 ```

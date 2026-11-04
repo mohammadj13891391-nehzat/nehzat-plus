@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0482",
+    "TotalBytes":  20430,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/Eitaa-Live-1709146214761__part4.txt",
+                      "Bytes":  3475
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/part1.txt",
+                      "Bytes":  "16180"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/VID_۲۰۲۲۰۴۱۷_۱۱۱۰۱۴.txt",
+                      "Bytes":  "775"
+                  }
+              ]
+}

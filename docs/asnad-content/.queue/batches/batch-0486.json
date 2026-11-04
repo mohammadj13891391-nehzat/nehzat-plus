@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0486",
+    "TotalBytes":  19031,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/VID_20220525_192222__part2.txt",
+                      "Bytes":  9261
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/VID_20221212_104158.txt",
+                      "Bytes":  "5734"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/VID_20221212_111310.txt",
+                      "Bytes":  "4036"
+                  }
+              ]
+}

@@ -1,0 +1,19 @@
+﻿{
+    "Id":  "batch-0286",
+    "TotalBytes":  24763,
+    "Count":  3,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/04-متربیان-و-والدین/01-جلسه اسفند۱۴۰۰ مربیان و والدین__part3.txt",
+                      "Bytes":  16001
+                  },
+                  {
+                      "Path":  "docs/asnad-content/04-متربیان-و-والدین/۱۴ ژوئیه،‏ ۱۷.۱۷​.txt",
+                      "Bytes":  "1396"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/04-متربیان-و-والدین/۱۹ مه،‏ ۸.۰۶​.txt",
+                      "Bytes":  "7366"
+                  }
+              ]
+}

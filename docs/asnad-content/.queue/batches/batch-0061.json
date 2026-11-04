@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0061",
+    "TotalBytes":  13018,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/VID_20221212_105111.txt",
+                      "Bytes":  "8896"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/01-مبانی-نهضت-تربیتی/VID_20221212_114316.txt",
+                      "Bytes":  "4122"
+                  }
+              ]
+}

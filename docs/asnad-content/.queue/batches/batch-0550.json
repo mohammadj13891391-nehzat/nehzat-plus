@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0550",
+    "TotalBytes":  24333,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/جلسه مربیان خواهر ۲۶ بهمن ۱۴۰۴__part2.txt",
+                      "Bytes":  23941
+                  },
+                  {
+                      "Path":  "docs/asnad-content/05-محتوای-قرآنی-و-آموزشی/جلسه مربیان خواهر ۲۶ بهمن ۱۴۰۴__part3.txt",
+                      "Bytes":  392
+                  }
+              ]
+}

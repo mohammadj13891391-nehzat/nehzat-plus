@@ -1,0 +1,15 @@
+﻿{
+    "Id":  "batch-0135",
+    "TotalBytes":  13152,
+    "Count":  2,
+    "Files":  [
+                  {
+                      "Path":  "docs/asnad-content/02-تربیت-مربی-و-مربیگری/04-سید شجاعی مربیگری.txt",
+                      "Bytes":  "9273"
+                  },
+                  {
+                      "Path":  "docs/asnad-content/02-تربیت-مربی-و-مربیگری/05-۲۰۲۳۰۵۱۰_۱۸۰۰۲۳.txt",
+                      "Bytes":  "3879"
+                  }
+              ]
+}
