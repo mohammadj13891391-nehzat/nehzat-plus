@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/1 Aug, 13.29​__part1.txt 2690->2692
+summary: done=1 failed=0 skipped=0
