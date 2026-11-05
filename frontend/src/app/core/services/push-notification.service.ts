@@ -5,12 +5,12 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { NotificationEventBus, HubNotification } from './notification-events';
-import { LessonPlannerApi } from './lesson-planner-api.interface';
+import { LESSON_PLANNER_API } from './lesson-planner-api.token';
 
 @Injectable({ providedIn: 'root' })
 export class PushNotificationService {
   private readonly bus = inject(NotificationEventBus);
-  private readonly api = inject(LessonPlannerApi);
+  private readonly api = inject(LESSON_PLANNER_API);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private registered = false;
