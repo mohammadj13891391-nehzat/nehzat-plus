@@ -1,22 +1,4 @@
 <main class="role-page">
-  <header class="site-header">
-    <div class="brand-wrap">
-      <img
-        src="assets/nehzat.png"
-        alt="لوگو سایت"
-        class="site-logo"
-        (error)="$any($event).target.style.display = 'none'"
-      />
-      <div>
-        <h1>داشبورد مربی</h1>
-        <p class="muted">جزئیات ارسال‌های متربی</p>
-      </div>
-    </div>
-    <div class="user-menu">
-      <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
-    </div>
-  </header>
-
   <section class="main-content">
     <div class="page-header">
       <button type="button" class="back-btn" (click)="goBack()">بازگشت</button>

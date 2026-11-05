@@ -20,28 +20,11 @@ import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main class="role-page">
-      <header class="site-header">
-        <div class="brand-wrap">
-          <img
-            src="assets/nehzat.png"
-            alt="لوگو سایت"
-            class="site-logo"
-            (error)="logoHidden = true"
-          />
-          <div>
-            <h1>داشبورد مربی</h1>
-            <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
-          </div>
-        </div>
-        <div class="header-nav">
-          <a class="nav-link" routerLink="/coach/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
-        </div>
-        <div class="user-menu">
-          <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
-        </div>
-      </header>
-
       <section class="main-content">
+        <div class="page-title">
+          <h2>حلقه‌ها</h2>
+          <p class="muted">حلقه‌های تربیتی شما</p>
+        </div>
         @if (myRings$ | async; as rings) {
           @if (rings.length === 0) {
             <div class="empty-state">
@@ -155,6 +138,8 @@ import { LESSON_PLANNER_API } from '../../core/services/lesson-planner-api.token
     .muted { color: var(--lp-muted, #6b7280); margin: 0; }
     .menu-trigger { background: var(--lp-primary, #2563eb); color: #fff; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; cursor: pointer; }
     .main-content { padding: 2rem; }
+    .page-title { margin-bottom: 1.25rem; }
+    .page-title h2 { margin: 0 0 4px; font-size: 1.25rem; }
 
     .empty-state { text-align: center; padding: 3rem; }
 

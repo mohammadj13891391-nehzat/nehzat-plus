@@ -1,30 +1,7 @@
     <main class="role-page">
-      <header class="site-header">
-        <div class="brand-wrap">
-          <img
-            src="assets/nehzat.png"
-            alt="لوگو سایت"
-            class="site-logo"
-            [hidden]="logoHidden"
-            (error)="logoHidden = true"
-          />
-          <div>
-            <h1>داشبورد مربی</h1>
-            <p class="muted">خوش آمدید {{ currentUser?.username }}</p>
-          </div>
-        </div>
-        <nav class="header-nav">
-          <a class="nav-link" routerLink="/coach/spiritual" routerLinkActive="nav-link-active">مسیر معنوی</a>
-          <a class="nav-link" routerLink="/coach/rings" routerLinkActive="nav-link-active">حلقه‌ها</a>
-        </nav>
-        <div class="user-menu">
-          <button type="button" class="menu-trigger" (click)="logout()">خروج</button>
-        </div>
-      </header>
-
       <section class="main-content">
         <div class="page-title">
-          <h2>داشبورد مربی</h2>
+          <h2>شاگردان</h2>
           <p class="muted">فهرست متربیان و پیشرفت تحصیلی آن‌ها</p>
         </div>
 

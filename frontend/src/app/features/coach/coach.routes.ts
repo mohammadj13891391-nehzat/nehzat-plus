@@ -1,18 +1,6 @@
-import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { roleGuard } from '../../core/guards/role.guard';
-import { SpiritualShellComponent } from '../shared/spiritual-shell/spiritual-shell.component';
-import { CoachComponent } from './coach.component';
-import { CoachDashboardComponent } from './coach-dashboard.component';
-import { CoachStudentDetailComponent } from './coach-student-detail.component';
 import { MorabbiShellComponent } from './morabbi/morabbi-shell.component';
-
-@Component({
-  standalone: true,
-  imports: [SpiritualShellComponent],
-  template: '<app-spiritual-shell />'
-})
-export class CoachSpiritualPageComponent {}
 
 export const COACH_ROUTES: Routes = [
   {
@@ -72,27 +60,28 @@ export const COACH_ROUTES: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./morabbi/morabbi-profile.component').then((m) => m.MorabbiProfileComponent)
+      },
+      {
+        path: 'students',
+        canActivate: [roleGuard('coach')],
+        loadComponent: () => import('./coach.component').then((m) => m.CoachComponent)
+      },
+      {
+        path: 'student/:id',
+        canActivate: [roleGuard('coach')],
+        loadComponent: () => import('./coach-student-detail.component').then((m) => m.CoachStudentDetailComponent)
+      },
+      {
+        path: 'rings',
+        canActivate: [roleGuard('coach')],
+        loadComponent: () => import('./coach-dashboard.component').then((m) => m.CoachDashboardComponent)
+      },
+      {
+        path: 'spiritual',
+        canActivate: [roleGuard('coach')],
+        loadComponent: () =>
+          import('./coach-spiritual-page.component').then((m) => m.CoachSpiritualPageComponent)
       }
     ]
-  },
-  {
-    path: 'students',
-    canActivate: [roleGuard('coach')],
-    component: CoachComponent
-  },
-  {
-    path: 'student/:id',
-    canActivate: [roleGuard('coach')],
-    component: CoachStudentDetailComponent
-  },
-  {
-    path: 'rings',
-    canActivate: [roleGuard('coach')],
-    component: CoachDashboardComponent
-  },
-  {
-    path: 'spiritual',
-    canActivate: [roleGuard('coach')],
-    component: CoachSpiritualPageComponent
   }
 ];

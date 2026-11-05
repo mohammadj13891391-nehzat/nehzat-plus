@@ -9,6 +9,7 @@ public interface INotificationService
     Task<int> MarkAllReadAsync(int userId);
     Task DeleteAsync(int userId, int notificationId);
     Task<NotificationDto> SendAsync(int senderUserId, SendNotificationRequest req);
+    Task<NotificationDto> NotifyAsync(int recipientUserId, string type, string title, string body, string? link = null);
     Task RegisterDeviceAsync(int userId, RegisterDeviceRequest req);
     Task<int> GetUnreadCountAsync(int userId);
 }

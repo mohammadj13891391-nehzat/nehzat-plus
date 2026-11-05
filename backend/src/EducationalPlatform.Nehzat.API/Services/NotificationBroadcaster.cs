@@ -7,14 +7,26 @@ namespace EducationalPlatform.Nehzat.API.Services;
 public sealed class NotificationBroadcaster : INotificationBroadcaster
 {
     private readonly IHubContext<NotificationHub> _hub;
+    private readonly INotificationService _notifications;
 
-    public NotificationBroadcaster(IHubContext<NotificationHub> hub)
+    public NotificationBroadcaster(IHubContext<NotificationHub> hub, INotificationService notifications)
     {
         _hub = hub;
+        _notifications = notifications;
     }
 
-    public Task BroadcastAsync(string username, string title, string body)
+    public async Task NotifyAsync(int userId, string username, string type, string title, string body, string? link = null)
     {
-        return _hub.Clients.Group($"user-{username}").SendAsync("ReceiveNotification", new { title, body, ts = DateTime.UtcNow });
+        var dto = await _notifications.NotifyAsync(userId, type, title, body, link);
+
+        await _hub.Clients.Group($"user-{username}").SendAsync("ReceiveNotification", new
+        {
+            dto.Id,
+            dto.Type,
+            dto.Title,
+            dto.Body,
+            dto.Link,
+            ts = dto.CreatedAt
+        });
     }
 }

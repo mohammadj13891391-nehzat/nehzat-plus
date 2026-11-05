@@ -119,7 +119,7 @@ public class RingService : IRingService
             {
                 var name = $"{student?.FirstName} {student?.LastName}".Trim();
                 var studentName = string.IsNullOrEmpty(name) ? $"متربی #{request.StudentId}" : name;
-                await _notifications.BroadcastAsync(username, "حلقه", $"{studentName} به حلقه «{ring.Name}» اضافه شد.");
+                await _notifications.NotifyAsync(coach.Id, username, "success", "حلقه", $"{studentName} به حلقه «{ring.Name}» اضافه شد.", "/coach/rings");
             }
         }
 

@@ -147,6 +147,32 @@ public class NotificationService : INotificationService
         return ToDto(notification, new UserNotification { NotificationId = notification.Id, UserId = senderUserId });
     }
 
+    public async Task<NotificationDto> NotifyAsync(int recipientUserId, string type, string title, string body, string? link = null)
+    {
+        var notification = new Notification
+        {
+            Type = type,
+            Title = title,
+            Body = body,
+            Link = link,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.Notifications.Add(notification);
+        await _db.SaveChangesAsync();
+
+        var userNotification = new UserNotification
+        {
+            NotificationId = notification.Id,
+            UserId = recipientUserId,
+            CreatedAt = DateTime.UtcNow
+        };
+        _db.UserNotifications.Add(userNotification);
+        await _db.SaveChangesAsync();
+
+        return ToDto(notification, userNotification);
+    }
+
     public async Task RegisterDeviceAsync(int userId, RegisterDeviceRequest req)
     {
         if (string.IsNullOrWhiteSpace(req.DeviceToken))

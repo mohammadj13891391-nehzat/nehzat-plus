@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from '../../../core/services/notification.service';
 import { MorabbiApiService } from './morabbi-api.service';
 import { Branch, CreateReportPayload, DailyReport, TargetStatus } from './morabbi.models';
 
@@ -254,6 +255,7 @@ export class MorabbiReportFormComponent implements OnInit {
   private readonly auth = inject(MorabbiApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly notifier = inject(NotificationService);
 
   readonly editId = signal<number | null>(null);
   readonly ready = signal(false);
@@ -334,7 +336,15 @@ export class MorabbiReportFormComponent implements OnInit {
       : this.auth.createReport(payload);
 
     obs.subscribe({
-      next: (res) => this.router.navigate(['/coach/reports', res.report.id]),
+      next: (res) => {
+        this.busy.set(false);
+        if (!res.report) {
+          this.notifier.show('گزارش آفلاین ذخیره شد؛ پس از برقراری اتصال به‌صورت خودکار ارسال می‌شود.', 'info');
+          this.router.navigate(['/coach/reports']);
+          return;
+        }
+        this.router.navigate(['/coach/reports', res.report.id]);
+      },
       error: (err) => {
         this.busy.set(false);
         this.error.set(err?.error?.message ?? 'خطا در ذخیره گزارش');

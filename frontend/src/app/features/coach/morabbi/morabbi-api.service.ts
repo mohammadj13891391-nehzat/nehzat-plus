@@ -1,7 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpBackend, HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, fromEvent, of, throwError } from 'rxjs';
 import { resolveMorabbiApiBaseUrl } from '../../../core/services/api-url.util';
+import {
+  drainOfflineReportQueue,
+  enqueueOfflineReport,
+  pendingOfflineReportCount
+} from './morabbi-offline-queue';
 import {
   ApproveUserPayload,
   AuthUserDto,
@@ -49,8 +54,18 @@ export class MorabbiApiService {
   readonly user = signal<AuthUserDto | null>(this.restoreUser());
   readonly sessionReady = signal<boolean>(!!localStorage.getItem(TOKEN_KEY));
   readonly sessionError = signal<string | null>(null);
+  readonly pendingOfflineReports = signal(0);
 
   private ensureSessionOnce: Promise<void> | null = null;
+  private offlineSyncing = false;
+
+  constructor() {
+    fromEvent(window, 'online').subscribe(() => {
+      void this.syncOfflineReports();
+    });
+    void this.refreshPendingOffline();
+    void this.syncOfflineReports();
+  }
 
   private get base(): string {
     return resolveMorabbiApiBaseUrl();
@@ -157,8 +172,61 @@ export class MorabbiApiService {
     return this.req<DailyReport>({ method: 'GET', path: `/api/reports/${id}` });
   }
 
-  createReport(payload: CreateReportPayload): Observable<{ report: DailyReport }> {
-    return this.req<{ report: DailyReport }>({ method: 'POST', path: '/api/reports', body: payload });
+  createReport(payload: CreateReportPayload): Observable<{ report: DailyReport | null }> {
+    const queueOffline = () =>
+      new Observable<{ report: DailyReport | null }>((subscriber) => {
+        enqueueOfflineReport(payload)
+          .then(() => {
+            this.refreshPendingOffline();
+            subscriber.next({ report: null });
+            subscriber.complete();
+          })
+          .catch((err) => subscriber.error(err));
+      });
+
+    if (!navigator.onLine) {
+      return queueOffline();
+    }
+
+    return new Observable<{ report: DailyReport | null }>((subscriber) => {
+      this.req<{ report: DailyReport }>({ method: 'POST', path: '/api/reports', body: payload }).subscribe({
+        next: (v) => {
+          subscriber.next({ report: v.report });
+          subscriber.complete();
+        },
+        error: (err) => {
+          const networkFailure = err instanceof HttpErrorResponse && (err.status === 0 || !navigator.onLine);
+          if (networkFailure) {
+            queueOffline().subscribe(subscriber);
+          } else {
+            subscriber.error(err);
+          }
+        }
+      });
+    });
+  }
+
+  async syncOfflineReports(): Promise<void> {
+    if (this.offlineSyncing || !this.token || !navigator.onLine) return;
+    this.offlineSyncing = true;
+    try {
+      const sent = await drainOfflineReportQueue(async (payload) => {
+        await this.http
+          .post<{ report: DailyReport }>(`${this.base}/api/reports`, payload, { headers: this.headers() })
+          .toPromise();
+      });
+      if (sent > 0) this.refreshPendingOffline();
+    } catch {
+      // queue stays, retry on next online/startup
+    } finally {
+      this.offlineSyncing = false;
+    }
+  }
+
+  private refreshPendingOffline(): void {
+    pendingOfflineReportCount()
+      .then((n) => this.pendingOfflineReports.set(n))
+      .catch(() => {});
   }
 
   updateReport(id: number, payload: UpdateReportPayload): Observable<{ report: DailyReport }> {

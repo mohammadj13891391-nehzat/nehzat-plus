@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -39,7 +39,7 @@ interface Toast {
         {{ toast.message }}
       </div>
 
-      <header class="page-header">
+      <header class="page-header" *ngIf="!hideHeader">
         <div class="header-content">
           <img src="assets/nehzat.png" alt="لوگو" class="logo" (error)="logoHidden = true" />
           <div>
@@ -198,6 +198,7 @@ export class SpiritualShellComponent implements OnInit {
   private readonly api = inject(LESSON_PLANNER_API);
   private readonly destroyRef = inject(DestroyRef);
 
+  @Input() hideHeader = false;
   activeTab: TabId = 'practice';
   currentUser: CurrentUser | null = null;
   logoHidden = false;
