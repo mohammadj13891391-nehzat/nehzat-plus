@@ -1,6 +1,6 @@
 # 📦 گزارش کامل دارایی‌های پروژه — نهضت‌پلاس (Nehzat Plus)
 
-> **نسخه:** v3.6.0 (baseline — همگام با آخرین تگ گیت) — 2026-11-05
+> **نسخه:** v3.7.0 (baseline — همگام با آخرین تگ گیت) — 2026-11-05
 > **هدف فایل:** آرشیو مرجع از تمام صفحات، دارایی‌ها و ساختار پروژه. پس از هر مرحله توسعه، یک نسخه جدید با شماره نسخه افزایش‌یافته در همین فایل اضافه شود.
 >
 > **قاعده آرشیو:** هر تغییر = یک سکشن `## تغییرات نسخه X` در انتهای فایل (بدون حذف تاریخچه قبلی).
@@ -44,7 +44,7 @@ nehzat-plus/
 ---
 
 ## ۲. فرانت‌اند — تمام مسیرها و صفحات
-> آخرین تغییر: v3.6.0
+> آخرین تغییر: v3.7.0
 
 ### ۲.۱ احراز هویت — `/auth`
 | مسیر | کامپوننت | گارد |
@@ -226,7 +226,7 @@ nehzat-plus/
 ---
 
 ## ۳. کامپوننت‌های اشتراکی — `features/shared/`
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.7.0
 
 | کامپوننت | مسیر | کاربرد |
 |-----------|------|-------|
@@ -244,7 +244,7 @@ nehzat-plus/
 ---
 
 ## ۴. سرویس‌های هسته — `core/services/`
-> آخرین تغییر: v3.6.0
+> آخرین تغییر: v3.7.0
 
 | سرویس/فایل | وظیفه |
 |--------|-------|
@@ -410,7 +410,7 @@ nehzat-plus/
 ---
 
 ## ۷. سرویس‌های بک‌اند
-> آخرین تغییر: v3.6.0
+> آخرین تغییر: v3.7.0
 
 ### ۷.۱ پیاده‌سازی‌ها — `Infrastructure/Services/` (۴۰+)
 `UserService`، `CourseService`، `AssessmentService`، `AssignmentSubmissionService`، `BranchService`، `BranchManagerService`، `CoachService`، `CompetitionService`، `CurriculumService`، `CurriculumVersionService`، `DailyActivityService`، `EvaluatorService`، `ExperimentalScienceService`، `HadithService`، `IssueSurveyService`، `LeagueService`، `LearningService`، `LogService`، `MadrasahService`، `MathService`، `MonthlyBookletService`، `ParentService`، `PersianLiteratureService`، `ProgressionService`، `QuranService`، `RingService`، `SkillProgressService`، `SpiritualCatalogService`، `SpiritualEntryService`، `SpiritualOccasionService`، `SpiritualPathService`، `SrsService`، `StudentService`، `TeacherService`، `TrainingService`، `XpService`، `ArabicLiteratureService`، `ArtsService`
@@ -541,7 +541,7 @@ nehzat-plus/
 ---
 
 ## ۱۳. مستندات مرجع — `docs/`
-> آخرین تغییر: v3.6.0
+> آخرین تغییر: v3.7.0
 
 | فایل | محتوا |
 |------|-------|
@@ -860,3 +860,18 @@ cd frontend && npm run build:capacitor && npx cap sync android   # mobile
 
 #### سایر (1)
 - docs: AGENTS refresh (Morabbi integration, AuthController endpoints, Persian) + v3.5.0 inventory archive
+
+## تغییرات نسخه v3.7.0 — خودکار (archive-version.ps1)
+
+### نسخه v3.7.0 — 2026-11-05 (4 کامیت)
+>  37 files changed, 494 insertions(+), 209 deletions(-)
+
+#### ویژگی‌ها (1)
+- feat(coach): notification center (persist+bell live refresh), unify nehzat pages into morabbi shell, dashboard analytics chart, offline report queue
+
+#### مستندات (2)
+- docs(asnad): content updates from extraction queue
+- docs(asnad): content updates from extraction queue
+
+#### سایر (1)
+- docs: archive v3.6.0 in PROJECT_INVENTORY
