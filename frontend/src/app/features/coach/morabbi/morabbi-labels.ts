@@ -63,9 +63,7 @@ export function parseJsonRecord(raw: string | null | undefined): Record<string, 
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('fa-IR');
-  } catch {
-    return iso;
-  }
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('fa-IR');
 }

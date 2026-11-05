@@ -29,7 +29,7 @@ import { formatDate as formatDateFn, statusLabel as statusLabelFn } from './mora
 
     <div class="card">
       <div class="empty" *ngIf="filtered().length === 0">گزارشی یافت نشد.</div>
-      <table class="lp-table" *ngIf="filtered().length > 0">
+      <table class="lp-table lp-stackable" *ngIf="filtered().length > 0">
         <thead>
           <tr>
             <th>تاریخ</th>
@@ -42,12 +42,12 @@ import { formatDate as formatDateFn, statusLabel as statusLabelFn } from './mora
         </thead>
         <tbody>
           <tr *ngFor="let r of filtered()" class="clickable" (click)="open(r.id)">
-            <td>{{ formatDate(r.date) }}</td>
-            <td>{{ r.subject }}</td>
-            <td>{{ r.instructor?.name ?? '—' }}</td>
-            <td>{{ r.branch?.name ?? '—' }}</td>
-            <td><span class="badge badge-{{ r.status || 'draft' }}">{{ statusLabel(r.status) }}</span></td>
-            <td (click)="$event.stopPropagation()">
+            <td data-label="تاریخ">{{ formatDate(r.date) }}</td>
+            <td data-label="موضوع">{{ r.subject }}</td>
+            <td data-label="مربی">{{ r.instructor?.name ?? '—' }}</td>
+            <td data-label="شعبه">{{ r.branch?.name ?? '—' }}</td>
+            <td data-label="وضعیت"><span class="badge badge-{{ r.status || 'draft' }}">{{ statusLabel(r.status) }}</span></td>
+            <td data-label="عملیات" (click)="$event.stopPropagation()">
               <button class="btn btn-secondary btn-sm" (click)="open(r.id)">مشاهده</button>
               <button *ngIf="canEdit(r)" class="btn btn-secondary btn-sm" (click)="router.navigate(['/coach/reports', r.id, 'edit'])">ویرایش</button>
             </td>

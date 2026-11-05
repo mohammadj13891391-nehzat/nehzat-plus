@@ -329,3 +329,87 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .morabbi-scope {
+    padding: 10px;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+
+  .morabbi-scope .card {
+    padding: 12px;
+  }
+
+  .morabbi-scope .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .morabbi-scope .toolbar {
+    width: 100%;
+  }
+
+  .morabbi-scope .toolbar select,
+  .morabbi-scope .toolbar input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+
+  .morabbi-scope table.lp-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .morabbi-scope table.lp-stackable {
+    display: block;
+    overflow-x: visible;
+  }
+
+  .morabbi-scope table.lp-stackable thead {
+    display: none;
+  }
+
+  .morabbi-scope table.lp-stackable tbody,
+  .morabbi-scope table.lp-stackable tr,
+  .morabbi-scope table.lp-stackable td {
+    display: block;
+  }
+
+  .morabbi-scope table.lp-stackable tr {
+    border: 1px solid var(--lp-border);
+    border-radius: var(--lp-radius);
+    margin-bottom: 10px;
+    padding: 4px 12px;
+    background: var(--lp-surface);
+  }
+
+  .morabbi-scope table.lp-stackable td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    border-bottom: 1px dashed var(--lp-border);
+    padding: 8px 0;
+  }
+
+  .morabbi-scope table.lp-stackable td:last-child {
+    border-bottom: none;
+  }
+
+  .morabbi-scope table.lp-stackable td::before {
+    content: attr(data-label);
+    color: var(--lp-muted);
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .morabbi-scope table.lp-stackable td .btn {
+    margin-left: 0;
+    margin-right: 6px;
+  }
+}

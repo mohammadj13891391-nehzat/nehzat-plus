@@ -9,10 +9,12 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Services;
 public class RingService : IRingService
 {
     private readonly AppDbContext _db;
+    private readonly INotificationBroadcaster _notifications;
 
-    public RingService(AppDbContext db)
+    public RingService(AppDbContext db, INotificationBroadcaster notifications)
     {
         _db = db;
+        _notifications = notifications;
     }
 
     public async Task<List<Ring>> GetAllAsync()
@@ -107,6 +109,20 @@ public class RingService : IRingService
 
         _db.RingStudents.Add(entity);
         await _db.SaveChangesAsync();
+
+        var ring = await _db.Rings.AsNoTracking().FirstOrDefaultAsync(r => r.Id == request.RingId);
+        if (ring?.CoachId is { } coachId)
+        {
+            var coach = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == coachId);
+            var student = await _db.Students.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.StudentId);
+            if (coach is { Username: { } username } && !string.IsNullOrEmpty(username))
+            {
+                var name = $"{student?.FirstName} {student?.LastName}".Trim();
+                var studentName = string.IsNullOrEmpty(name) ? $"متربی #{request.StudentId}" : name;
+                await _notifications.BroadcastAsync(username, "حلقه", $"{studentName} به حلقه «{ring.Name}» اضافه شد.");
+            }
+        }
+
         return entity;
     }
 

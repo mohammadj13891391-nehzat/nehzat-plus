@@ -1,12 +1,16 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LessonPlannerApi } from '../../../core/services/lesson-planner-api.interface';
+import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.token';
+import { Ring } from '../../../core/models/lesson-planner.models';
 import { MorabbiApiService } from './morabbi-api.service';
 import { DashboardData } from './morabbi.models';
 import { notificationTypeLabel as notificationTypeLabelFn, roleLabel as roleLabelFn } from './morabbi-labels';
 
 @Component({
   selector: 'app-dashboard',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, AsyncPipe, RouterLink],
   template: `
     <div class="page-header">
@@ -92,6 +96,27 @@ import { notificationTypeLabel as notificationTypeLabelFn, roleLabel as roleLabe
       </div>
     </div>
 
+    <div class="card" style="margin-top: 16px">
+      <h3 class="card-title">نُهضت — درس‌پلنر</h3>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">{{ rings().length }}</div>
+          <div class="stat-label">حلقه‌های من</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">{{ ringStudentCount() }}</div>
+          <div class="stat-label">شاگردان حلقه‌ها</div>
+        </div>
+      </div>
+      <div *ngIf="rings().length > 0" class="nehzat-rings">
+        <span class="badge" *ngFor="let r of rings()">{{ r.name }}</span>
+      </div>
+      <div class="toolbar" style="margin-top: 12px">
+        <a routerLink="/coach/rings" class="btn btn-sm">مشاهده حلقه‌ها</a>
+        <a routerLink="/coach/students" class="btn btn-secondary btn-sm">شاگردان</a>
+      </div>
+    </div>
+
     <div class="card" style="margin-top: 16px" *ngIf="data()">
       <h3 class="card-title">اعلان‌های اخیر</h3>
       <div *ngIf="data()!.recentNotifications.length === 0" class="empty">اعلانی وجود ندارد.</div>
@@ -136,19 +161,36 @@ import { notificationTypeLabel as notificationTypeLabelFn, roleLabel as roleLabe
       color: var(--lp-muted);
       margin-top: 4px;
     }
+    .nehzat-rings {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
   `
 })
 export class MorabbiDashboardComponent implements OnInit {
   readonly auth = inject(MorabbiApiService);
+  readonly lpApi = inject(LESSON_PLANNER_API) as LessonPlannerApi;
   readonly notificationTypeLabel = notificationTypeLabelFn;
   readonly roleLabel = roleLabelFn;
   readonly data = signal<DashboardData | null>(null);
   readonly error = signal<string | null>(null);
+  readonly rings = signal<Ring[]>([]);
+  readonly ringStudentCount = signal(0);
 
   ngOnInit(): void {
     this.auth.getDashboard().subscribe({
       next: (d) => this.data.set(d),
       error: (err) => this.error.set(err?.error?.message ?? 'خطا در دریافت داشبورد')
+    });
+    this.lpApi.getMyRings().subscribe({
+      next: (r) => this.rings.set(r ?? []),
+      error: () => {}
+    });
+    this.lpApi.getMyRingStudents().subscribe({
+      next: (s) => this.ringStudentCount.set(s?.length ?? 0),
+      error: () => {}
     });
   }
 }

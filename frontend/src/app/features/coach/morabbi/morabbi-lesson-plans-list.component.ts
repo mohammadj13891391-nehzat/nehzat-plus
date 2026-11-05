@@ -29,7 +29,7 @@ import { formatDate as formatDateFn, statusLabel as statusLabelFn } from './mora
 
     <div class="card">
       <div class="empty" *ngIf="filtered().length === 0">طرح درسی یافت نشد.</div>
-      <table class="lp-table" *ngIf="filtered().length > 0">
+      <table class="lp-table lp-stackable" *ngIf="filtered().length > 0">
         <thead>
           <tr>
             <th>عنوان</th>
@@ -43,13 +43,13 @@ import { formatDate as formatDateFn, statusLabel as statusLabelFn } from './mora
         </thead>
         <tbody>
           <tr *ngFor="let p of filtered()" class="clickable" (click)="open(p.id)">
-            <td>{{ p.title }}</td>
-            <td>{{ p.subject || '—' }}</td>
-            <td>{{ p.instructor?.name ?? '—' }}</td>
-            <td>{{ p.branch?.name ?? '—' }}</td>
-            <td>{{ p.sessionCount }}</td>
-            <td><span class="badge badge-{{ p.status || 'draft' }}">{{ statusLabel(p.status) }}</span></td>
-            <td (click)="$event.stopPropagation()">
+            <td data-label="عنوان">{{ p.title }}</td>
+            <td data-label="موضوع">{{ p.subject || '—' }}</td>
+            <td data-label="مربی">{{ p.instructor?.name ?? '—' }}</td>
+            <td data-label="شعبه">{{ p.branch?.name ?? '—' }}</td>
+            <td data-label="جلسه‌ها">{{ p.sessionCount }}</td>
+            <td data-label="وضعیت"><span class="badge badge-{{ p.status || 'draft' }}">{{ statusLabel(p.status) }}</span></td>
+            <td data-label="عملیات" (click)="$event.stopPropagation()">
               <button class="btn btn-secondary btn-sm" (click)="open(p.id)">مشاهده</button>
               <button *ngIf="canEdit(p)" class="btn btn-secondary btn-sm" (click)="router.navigate(['/coach/lesson-plans', p.id, 'edit'])">ویرایش</button>
             </td>
