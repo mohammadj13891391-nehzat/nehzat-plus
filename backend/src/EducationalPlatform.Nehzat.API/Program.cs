@@ -192,6 +192,7 @@ builder.Services.AddHttpClient("OSRM", client =>
 });
 
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IFcmPushService, FcmPushService>();
 builder.Services.AddScoped<ICourierReportService, CourierReportService>();
 builder.Services.AddHostedService<LocationCleanupService>();
 builder.Services.AddHostedService<OrderExpiryService>();

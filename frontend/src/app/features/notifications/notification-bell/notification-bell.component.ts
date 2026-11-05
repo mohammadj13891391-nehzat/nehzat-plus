@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NotificationsService } from '../notifications.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { NotificationHubService } from '../../../core/services/notification-hub.service';
+import { NotificationEventBus } from '../../../core/services/notification-events';
 import type { NotificationDto } from '../../../core/models/lesson-planner.models';
 
 const TYPE_ICONS: Record<NotificationDto['type'], string> = {
@@ -32,7 +32,7 @@ const TYPE_ICONS: Record<NotificationDto['type'], string> = {
 export class NotificationBellComponent implements OnInit {
   private readonly notifications = inject(NotificationsService);
   private readonly auth = inject(AuthService);
-  private readonly hub = inject(NotificationHubService);
+  private readonly bus = inject(NotificationEventBus);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly typeIcons = TYPE_ICONS;
@@ -44,7 +44,7 @@ export class NotificationBellComponent implements OnInit {
 
   ngOnInit(): void {
     this.refresh();
-    this.hub.notification$
+    this.bus.notification$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.refresh());
   }

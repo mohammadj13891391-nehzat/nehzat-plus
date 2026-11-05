@@ -5,16 +5,21 @@ using EducationalPlatform.Nehzat.Application.Interfaces;
 using EducationalPlatform.Nehzat.Domain.Entities;
 using EducationalPlatform.Nehzat.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EducationalPlatform.Nehzat.Infrastructure.Services;
 
 public class NotificationService : INotificationService
 {
     private readonly AppDbContext _db;
+    private readonly IFcmPushService _fcm;
+    private readonly ILogger<NotificationService> _logger;
 
-    public NotificationService(AppDbContext db)
+    public NotificationService(AppDbContext db, IFcmPushService fcm, ILogger<NotificationService> logger)
     {
         _db = db;
+        _fcm = fcm;
+        _logger = logger;
     }
 
     public async Task<NotificationSummaryDto> GetSummaryAsync(int userId, int limit = 20)
@@ -144,7 +149,29 @@ public class NotificationService : INotificationService
         }));
         await _db.SaveChangesAsync();
 
+        await PushToUsersAsync(uniqueUserIds, notification.Type, notification.Title, notification.Body, notification.Link, notification.Id);
+
         return ToDto(notification, new UserNotification { NotificationId = notification.Id, UserId = senderUserId });
+    }
+
+    private async Task PushToUsersAsync(IReadOnlyList<int> userIds, string type, string title, string body, string? link, int notificationId)
+    {
+        try
+        {
+            var tokens = await _db.UserDevices
+                .Where(d => userIds.Contains(d.UserId) && d.Platform == "android")
+                .Select(d => d.DeviceToken)
+                .ToListAsync();
+
+            if (tokens.Count > 0)
+            {
+                await _fcm.PushAsync(tokens, type, title, body, link, notificationId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Notification push fan-out failed");
+        }
     }
 
     public async Task<NotificationDto> NotifyAsync(int recipientUserId, string type, string title, string body, string? link = null)
@@ -169,6 +196,8 @@ public class NotificationService : INotificationService
         };
         _db.UserNotifications.Add(userNotification);
         await _db.SaveChangesAsync();
+
+        await PushToUsersAsync(new[] { recipientUserId }, type, title, body, link, notification.Id);
 
         return ToDto(notification, userNotification);
     }

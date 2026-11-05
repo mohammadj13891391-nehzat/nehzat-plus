@@ -1,27 +1,19 @@
 import { Injectable, inject } from '@angular/core';
 import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@microsoft/signalr';
-import { Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { NotificationService } from './notification.service';
+import { NotificationEventBus, HubNotification } from './notification-events';
 import { resolveApiBaseUrl } from './api-url.util';
 
-export interface HubNotification {
-  id?: number;
-  type?: string;
-  title?: string;
-  body?: string;
-  link?: string;
-  ts?: string;
-}
+export type { HubNotification } from './notification-events';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationHubService {
   private readonly auth = inject(AuthService);
   private readonly notifier = inject(NotificationService);
+  private readonly bus = inject(NotificationEventBus);
   private connection: HubConnection | null = null;
   private starting = false;
-
-  readonly notification$ = new Subject<HubNotification>();
 
   connect(): void {
     if (this.connection || this.starting) return;
@@ -41,7 +33,7 @@ export class NotificationHubService {
       if (n && (n.title || n.body)) {
         const toastType = n.type === 'success' ? 'success' : n.type === 'error' ? 'error' : 'info';
         this.notifier.show(`${n.title ? n.title + ': ' : ''}${n.body ?? ''}`, toastType);
-        this.notification$.next(n);
+        this.bus.next(n);
       }
     });
 

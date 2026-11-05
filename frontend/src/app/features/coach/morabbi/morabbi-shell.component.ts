@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
+import { PushNotificationService } from '../../../core/services/push-notification.service';
 import { MorabbiApiService } from './morabbi-api.service';
 import { roleLabel } from './morabbi-labels';
 
@@ -209,6 +210,7 @@ export class MorabbiShellComponent implements OnInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly notificationHub = inject(NotificationHubService);
+  private readonly push = inject(PushNotificationService);
 
   readonly roleLabelFn = roleLabel;
 
@@ -217,6 +219,7 @@ export class MorabbiShellComponent implements OnInit, OnDestroy {
       error: () => {}
     });
     this.notificationHub.connect();
+    this.push.register();
   }
 
   ngOnDestroy(): void {

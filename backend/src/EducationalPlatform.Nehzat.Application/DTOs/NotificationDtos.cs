@@ -38,6 +38,15 @@ public class RegisterDeviceRequest
     public string? DeviceName { get; set; }
 }
 
+public class InternalNotificationRequest
+{
+    public string Phone { get; set; } = string.Empty;
+    public string Type { get; set; } = "info";
+    public string Title { get; set; } = string.Empty;
+    public string Body { get; set; } = string.Empty;
+    public string? Link { get; set; }
+}
+
 public class CourierStatsDto
 {
     public int CourierUserId { get; set; }
