@@ -1,6 +1,6 @@
 # 📦 گزارش کامل دارایی‌های پروژه — نهضت‌پلاس (Nehzat Plus)
 
-> **نسخه:** v3.5.0 (baseline — همگام با آخرین تگ گیت) — 2026-11-05
+> **نسخه:** v3.6.0 (baseline — همگام با آخرین تگ گیت) — 2026-11-05
 > **هدف فایل:** آرشیو مرجع از تمام صفحات، دارایی‌ها و ساختار پروژه. پس از هر مرحله توسعه، یک نسخه جدید با شماره نسخه افزایش‌یافته در همین فایل اضافه شود.
 >
 > **قاعده آرشیو:** هر تغییر = یک سکشن `## تغییرات نسخه X` در انتهای فایل (بدون حذف تاریخچه قبلی).
@@ -10,7 +10,7 @@
 ---
 
 ## ۱. نمای کلی معماری
-> آخرین تغییر: v3.5.0
+> آخرین تغییر: v3.6.0
 
 | لایه | تکنولوژی | توضیح |
 |------|----------|-------|
@@ -44,7 +44,7 @@ nehzat-plus/
 ---
 
 ## ۲. فرانت‌اند — تمام مسیرها و صفحات
-> آخرین تغییر: v3.5.0
+> آخرین تغییر: v3.6.0
 
 ### ۲.۱ احراز هویت — `/auth`
 | مسیر | کامپوننت | گارد |
@@ -244,7 +244,7 @@ nehzat-plus/
 ---
 
 ## ۴. سرویس‌های هسته — `core/services/`
-> آخرین تغییر: v3.5.0
+> آخرین تغییر: v3.6.0
 
 | سرویس/فایل | وظیفه |
 |--------|-------|
@@ -410,7 +410,7 @@ nehzat-plus/
 ---
 
 ## ۷. سرویس‌های بک‌اند
-> آخرین تغییر: v3.5.0
+> آخرین تغییر: v3.6.0
 
 ### ۷.۱ پیاده‌سازی‌ها — `Infrastructure/Services/` (۴۰+)
 `UserService`، `CourseService`، `AssessmentService`، `AssignmentSubmissionService`، `BranchService`، `BranchManagerService`، `CoachService`، `CompetitionService`، `CurriculumService`، `CurriculumVersionService`، `DailyActivityService`، `EvaluatorService`، `ExperimentalScienceService`، `HadithService`، `IssueSurveyService`، `LeagueService`، `LearningService`، `LogService`، `MadrasahService`، `MathService`، `MonthlyBookletService`، `ParentService`، `PersianLiteratureService`، `ProgressionService`، `QuranService`، `RingService`، `SkillProgressService`، `SpiritualCatalogService`، `SpiritualEntryService`، `SpiritualOccasionService`، `SpiritualPathService`، `SrsService`، `StudentService`، `TeacherService`، `TrainingService`، `XpService`، `ArabicLiteratureService`، `ArtsService`
@@ -504,7 +504,7 @@ nehzat-plus/
 ---
 
 ## ۱۱. تست
-> آخرین تغییر: v3.4.0
+> آخرین تغییر: v3.6.0
 
 | لایه | فریم‌ورک | فرمان |
 |------|----------|-------|
@@ -541,7 +541,7 @@ nehzat-plus/
 ---
 
 ## ۱۳. مستندات مرجع — `docs/`
-> آخرین تغییر: v3.5.0
+> آخرین تغییر: v3.6.0
 
 | فایل | محتوا |
 |------|-------|
@@ -844,3 +844,19 @@ cd frontend && npm run build:capacitor && npx cap sync android   # mobile
 - chore: remove scratch files and ignore build/runtime outputs
 - docs: refresh AGENTS.md files (auth, DB lifecycle, models barrel, tests); bump PROJECT_INVENTORY to v3.4.0
 - docs: add project SPEC + .env.example template; mark BranchManager fix as done (84b13ed)
+
+## تغییرات نسخه v3.6.0 — خودکار (archive-version.ps1)
+
+### نسخه v3.6.0 — 2026-11-05 (5 کامیت)
+>  40 files changed, 955 insertions(+), 264 deletions(-)
+
+#### ویژگی‌ها (1)
+- feat(coach): upgrade ظ¤ grouped nav + mobile bottom bar, stacked mobile tables, combined dashboard, SignalR live notifications, OnPush + tests
+
+#### مستندات (3)
+- docs(asnad): content updates from extraction queue
+- docs(asnad): content updates from extraction queue
+- docs(asnad): content updates from extraction queue
+
+#### سایر (1)
+- docs: AGENTS refresh (Morabbi integration, AuthController endpoints, Persian) + v3.5.0 inventory archive
