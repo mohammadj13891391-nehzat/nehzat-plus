@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/۱۰ مه،‏ ۸.۴۲​.txt 1004->1004
+summary: done=1 failed=0 skipped=0
