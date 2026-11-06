@@ -165,8 +165,11 @@ public class AuthService : IAuthService
 
     private string GenerateJwt(string username, string role, string userId, string? studentId, string? branchId)
     {
+        // Issuer/audience must match the JWT validation in Program.cs, which reads the
+        // same DevAuth section (DevAuth:Issuer / DevAuth:Audience) — single source of truth.
+        var devAuth = _configuration.GetSection("DevAuth");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _configuration["Jwt:Key"] ?? _configuration["DevAuth:DevAuthKey"] ?? "dev-secret-key-for-local-only"));
+            devAuth["DevAuthKey"] ?? _configuration["Jwt:Key"] ?? "dev-secret-key-for-local-only"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
@@ -180,8 +183,8 @@ public class AuthService : IAuthService
         if (branchId is not null) claims.Add(new Claim("branchId", branchId));
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"] ?? "nehzat-plus",
-            audience: _configuration["Jwt:Audience"] ?? "https://api.nehzat128.ir",
+            issuer: devAuth["Issuer"] ?? "http://localhost:3000",
+            audience: devAuth["Audience"] ?? "http://localhost:3000",
             claims: claims,
             expires: DateTime.UtcNow.AddHours(24),
             signingCredentials: creds
