@@ -1,0 +1,90 @@
+version: "3.9"
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=YourStrong!Passw0rd
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mokhmmas
+      POSTGRES_PASSWORD: mokhmmas_dev
+      POSTGRES_DB: mokhmmas
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "mokhmmas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  otuh2:
+    build:
+      context: ../EhrazHoviat/backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Otuh2Auth;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+  lesson:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=LessonPlanner_Dev;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+  share:
+    build:
+      context: ../Mokhmmas sherkat/src/Mokhmmas.Api
+    ports:
+      - "5119:5119"
+    depends_on:
+      - postgres
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=mokhmmas;Username=mokhmmas;Password=mokhmmas_dev
+
+  personality:
+    build:
+      context: ../Shakhsiat-Yab/backend
+    ports:
+      - "3002:3002"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Personality_Dev;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+  shop:
+    build:
+      context: ../hamyar-movasat/backend/Hamyar.Api
+    ports:
+      - "5067:5067"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Hamyar_Dev;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+  gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - otuh2
+      - lesson
+      - share
+      - personality
+      - shop
