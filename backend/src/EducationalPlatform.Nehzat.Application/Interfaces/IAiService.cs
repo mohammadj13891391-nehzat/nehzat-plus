@@ -1,3 +1,4 @@
+using System.IO;
 using EducationalPlatform.Nehzat.Application.DTOs;
 
 namespace EducationalPlatform.Nehzat.Application.Interfaces;
@@ -5,6 +6,7 @@ namespace EducationalPlatform.Nehzat.Application.Interfaces;
 public interface IAiService
 {
     Task<AiChatResponse> AskAsync(int userId, AiChatRequest request);
+    Task<string> TranscribeAudioAsync(Stream audioStream, string fileName);
     Task<AiChatResponse> StreamAskAsync(int userId, AiChatRequest request, Func<string, Task> onTokenReceived);
     Task<List<ConversationDto>> GetConversationsAsync(int userId);
     Task<ConversationDetailDto?> GetConversationAsync(int conversationId, int userId);

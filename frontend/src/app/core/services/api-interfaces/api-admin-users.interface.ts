@@ -6,6 +6,7 @@ import {
   AssignmentGrading,
   BranchManager,
   Coach,
+  CoachFileDto,
   CreatedUser,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -41,6 +42,9 @@ export abstract class AdminUsersApi {
   abstract createCoach(payload: CreateCoachPayload): Observable<Coach>;
   abstract updateCoach(id: number, payload: Partial<CreateCoachPayload>): Observable<Coach>;
   abstract deleteCoach(id: number): Observable<ApiMessageResponse>;
+  abstract getCoachFiles(coachId: number): Observable<CoachFileDto[]>;
+  abstract uploadCoachFile(coachId: number, title: string, file: File): Observable<CoachFileDto>;
+  abstract deleteCoachFile(coachId: number, fileId: number): Observable<void>;
 
   abstract getBranchManagers(): Observable<BranchManager[]>;
   abstract getMyBranchManagers(): Observable<BranchManager[]>;

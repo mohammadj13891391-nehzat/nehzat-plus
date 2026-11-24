@@ -7,6 +7,7 @@ import {
   AssignmentGrading,
   BranchManager,
   Coach,
+  CoachFileDto,
   CreatedUser,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -78,6 +79,21 @@ export function WithAdminUsers<TBase extends Constructor<HttpServiceContext>>(Ba
 
     deleteCoach(id: number): Observable<ApiMessageResponse> {
       return this.http.delete<ApiMessageResponse>(this.url(`/admin/coaches/${id}`));
+    }
+
+    getCoachFiles(coachId: number): Observable<CoachFileDto[]> {
+      return this.http.get<CoachFileDto[]>(this.url(`/admin/coaches/${coachId}/files`));
+    }
+
+    uploadCoachFile(coachId: number, title: string, file: File): Observable<CoachFileDto> {
+      const fd = new FormData();
+      fd.append('title', title);
+      fd.append('file', file, file.name);
+      return this.http.post<CoachFileDto>(this.url(`/admin/coaches/${coachId}/files`), fd);
+    }
+
+    deleteCoachFile(coachId: number, fileId: number): Observable<void> {
+      return this.http.delete<void>(this.url(`/admin/coaches/${coachId}/files/${fileId}`));
     }
 
     getBranchManagers(): Observable<BranchManager[]> {

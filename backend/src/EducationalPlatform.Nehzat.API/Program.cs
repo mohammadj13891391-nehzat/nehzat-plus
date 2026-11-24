@@ -307,6 +307,30 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
+    // Idempotent: create Nehzat_coach_files if missing (legacy EnsureCreated DBs never get Migrate())
+    try
+    {
+        db.Database.ExecuteSqlRaw(@"
+            IF NOT EXISTS (SELECT 1 FROM sys.tables t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'nehzat' AND t.name = 'Nehzat_coach_files')
+            BEGIN
+                CREATE TABLE [nehzat].[Nehzat_coach_files] (
+                    [Id] int NOT NULL IDENTITY(1,1),
+                    [CoachId] int NOT NULL,
+                    [Title] nvarchar(200) NOT NULL,
+                    [FileName] nvarchar(300) NOT NULL,
+                    [StoredPath] nvarchar(500) NOT NULL,
+                    [ContentType] nvarchar(100) NOT NULL,
+                    [Kind] nvarchar(20) NOT NULL,
+                    [SizeBytes] bigint NOT NULL,
+                    [CreatedAt] datetime2 NOT NULL,
+                    CONSTRAINT [PK_Nehzat_coach_files] PRIMARY KEY ([Id]),
+                    CONSTRAINT [FK_Nehzat_coach_files_Nehzat_coaches_CoachId] FOREIGN KEY ([CoachId]) REFERENCES [nehzat].[Nehzat_coaches] ([Id]) ON DELETE CASCADE
+                );
+                CREATE INDEX [IX_Nehzat_coach_files_CoachId] ON [nehzat].[Nehzat_coach_files]([CoachId]);
+            END;");
+    }
+    catch (Exception ddlEx) { logger.LogWarning("coach_files DDL skip: {Msg}", ddlEx.Message); }
+
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     // Users are synced from OTUH2 via OidcSyncMiddleware on first request
 

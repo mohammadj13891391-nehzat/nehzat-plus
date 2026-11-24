@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -112,6 +113,39 @@ public class AiService : IAiService
         var result = await AskAsync(userId, request);
         await onTokenReceived(result.Response);
         return result;
+    }
+
+    public async Task<string> TranscribeAudioAsync(Stream audioStream, string fileName)
+    {
+        if (string.IsNullOrEmpty(_apiKey))
+            throw new InvalidOperationException("AI key is not configured.");
+
+        using var form = new MultipartFormDataContent();
+        var fileContent = new StreamContent(audioStream);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("audio/mpeg");
+        form.Add(fileContent, "file", fileName);
+        form.Add(new StringContent("whisper-1"), "model");
+        form.Add(new StringContent("fa"), "language");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/audio/transcriptions")
+        {
+            Content = form
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+
+        using var response = await _httpClient.SendAsync(request);
+        var responseJson = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Transcription failed with status {StatusCode}: {Body}",
+                response.StatusCode,
+                responseJson.Length > 500 ? responseJson[..500] : responseJson);
+            throw new InvalidOperationException("Transcription request failed.");
+        }
+
+        var result = JsonSerializer.Deserialize<TranscribeResponse>(responseJson);
+        return result?.Text ?? string.Empty;
     }
 
     public async Task<List<ConversationDto>> GetConversationsAsync(int userId)
@@ -474,6 +508,12 @@ public class AiService : IAiService
             _logger.LogError(ex, "Embedding generation failed");
             return Array.Empty<float>();
         }
+    }
+
+    private class TranscribeResponse
+    {
+        [JsonPropertyName("text")]
+        public string? Text { get; set; }
     }
 
     private class OpenAiResponse

@@ -23,6 +23,42 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Accommodation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_accommodations", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AgeGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -60,6 +96,64 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_age_groups", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AiConversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ai_conversations", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AiMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SourcesJson")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ai_messages", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicCourse", b =>
@@ -814,6 +908,50 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_assignment_submissions", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Badge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ConditionType")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ConditionValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("badges", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Book", b =>
                 {
                     b.Property<int>("Id")
@@ -824,6 +962,9 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
 
                     b.Property<string>("Author")
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -949,6 +1090,85 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_branch_managers", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllDay")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.ToTable("Nehzat_calendar_events", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalendarEventAttendee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CalendarEventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CalendarEventId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_calendar_event_attendees", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalligraphySample", b =>
@@ -1090,6 +1310,50 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_coach_courses", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CoachFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoredPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoachId");
+
+                    b.ToTable("Nehzat_coach_files", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Competition", b =>
                 {
                     b.Property<int>("Id")
@@ -1171,6 +1435,115 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_competition_participants", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaktabId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("MaktabId");
+
+                    b.ToTable("Conversations", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ConversationMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ConversationMembers", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CourierDailyStat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AverageDeliveryMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourierUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeliveredCount")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DistanceKm")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("EarningsAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourierUserId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_courier_daily_stats", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Course", b =>
@@ -1385,6 +1758,120 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_daily_spiritual_entries", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.DeliveryRoute", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EstimatedDurationMin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Geometry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double>("TotalDistanceKm")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Nehzat_delivery_routes", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.EducationalProcess", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AutoTrigger")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowId");
+
+                    b.ToTable("Nehzat_educational_processes", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.EvaluationAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("AnsweredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PointsEarned")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RandomEvaluationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("RandomEvaluationId");
+
+                    b.ToTable("Nehzat_evaluation_answers", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Evaluator", b =>
@@ -1748,6 +2235,54 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_experimental_science_topics", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.GamificationProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Coins")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizzesCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StreakDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalLogins")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalXp")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nehzat_gamification_profiles", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Hadith.Hadith", b =>
                 {
                     b.Property<int>("Id")
@@ -1792,7 +2327,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
 
                     b.Property<string>("MatnArabic")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Takhrij")
                         .HasColumnType("nvarchar(max)");
@@ -2013,6 +2548,240 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_user_hadith_progress", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("MaktabId")
+                        .HasColumnType("int")
+                        .HasColumnName("maktab_id");
+
+                    b.Property<int?>("MaxMembers")
+                        .HasColumnType("int")
+                        .HasColumnName("max_members");
+
+                    b.Property<int>("ModeratorUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("moderator_user_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("name_en");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaktabId");
+
+                    b.HasIndex("ModeratorUserId");
+
+                    b.ToTable("halghehs", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("due_date");
+
+                    b.Property<int>("HalghehId")
+                        .HasColumnType("int")
+                        .HasColumnName("halgheh_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HalghehId", "Status");
+
+                    b.ToTable("halgheh_assignments", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignmentSubmission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("content");
+
+                    b.Property<string>("Feedback")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("feedback");
+
+                    b.Property<int?>("Grade")
+                        .HasColumnType("int")
+                        .HasColumnName("grade");
+
+                    b.Property<int>("HalghehAssignmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("halgheh_assignment_id");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("reviewed_at");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("reviewed_by_user_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("submitted_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HalghehAssignmentId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("halgheh_assignment_submissions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("HalghehId")
+                        .HasColumnType("int")
+                        .HasColumnName("halgheh_id");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("joined_at");
+
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("left_at");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("HalghehId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("halgheh_members", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.IssueAction", b =>
@@ -2386,6 +3155,55 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_issue_survey_responses", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.KnowledgeDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("EmbeddingJson")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaktabId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaktabId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("knowledge_documents", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.League", b =>
                 {
                     b.Property<int>("Id")
@@ -2614,6 +3432,175 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_madrasah_branches", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Maktab", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("address");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("city");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("InviteCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("invite_code");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_public");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("name_en");
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("owner_user_id");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InviteCode")
+                        .IsUnique();
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.ToTable("maktabs", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MaktabLookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AgeMax")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AgeMin")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MaktabName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MaktabNameEn")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phase")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Gender", "AgeMin", "AgeMax");
+
+                    b.ToTable("Nehzat_maktab_lookup", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MaktabMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("joined_at");
+
+                    b.Property<DateTime?>("LeftAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("left_at");
+
+                    b.Property<int>("MaktabId")
+                        .HasColumnType("int")
+                        .HasColumnName("maktab_id");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("role");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("MaktabId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("maktab_members", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MaktabSubSection", b =>
                 {
                     b.Property<int>("Id")
@@ -2641,6 +3628,79 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasIndex("MadrasahBranchId");
 
                     b.ToTable("Nehzat_maktab_sub_sections", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MapOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("AssignedToUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeliveredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("DeliveryLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("DeliveryLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HalghehId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("PickedUpAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PickupAddress")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("PickupLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PickupLongitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Nehzat_map_orders", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Math.MathContribution", b =>
@@ -2930,6 +3990,94 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_math_topics", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("ReplyToId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("ReplyToId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MessageAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MimeType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("MessageAttachments", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MonthlyBooklet", b =>
                 {
                     b.Property<int>("Id")
@@ -3065,6 +4213,78 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasIndex("ParentSectionId");
 
                     b.ToTable("Nehzat_nehzat_sections", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("SenderUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("Nehzat_notifications", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.OrderTrackingPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RecordedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("Speed")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Nehzat_order_tracking_points", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Parent", b =>
@@ -3772,6 +4992,203 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_user_quiz_attempts", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.PointTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceType")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("point_transactions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ProgressMetric", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MetricKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MetricLabel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProgressReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("Target")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProgressReportId");
+
+                    b.ToTable("Nehzat_progress_metrics", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ProgressReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AssignmentCompletionRate")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("AttendanceRate")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("CoachNote")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("CompletedAssignments")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("OverallScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("PeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PeriodStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalAssignments")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Nehzat_progress_reports", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.QrSession", b =>
+                {
+                    b.Property<string>("QrSessionId")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ConfirmedToken")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ScannedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ScannedByUsername")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("QrSessionId");
+
+                    b.ToTable("Nehzat_qr_sessions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CorrectAnswer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Difficulty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OptionsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.ToTable("Nehzat_question_bank", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.Ayah", b =>
                 {
                     b.Property<int>("Id")
@@ -3835,6 +5252,184 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_quran_ayahs", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.CoachInterview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoachUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("InterviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Q10_Vocabulary")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q11_Syntax")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q12_Tadabbor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q13_Writing")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q14_Presentations")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q15_Discussions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q16_ParentReports")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q17_Resources")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q18_Needs")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q1_ProcessSteps")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q2_PhoneticLayer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q3_TranslationLayer")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q4_SpeedCategories")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q5_MainChallenges")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q6_CurrentSolutions")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q7_DailyListening")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q8_Memorization")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Q9_Tajweed")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CoachUserId");
+
+                    b.HasIndex("RingId");
+
+                    b.ToTable("Nehzat_coach_interviews", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranAssetEvaluation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DailyThroughputNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DailyThroughputScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EnvironmentalSupportNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("EnvironmentalSupportScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EvaluationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EvaluatorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GeneralNotes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LinguisticFoundationNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("LinguisticFoundationScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MemorizationNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("MemorizationScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MotivationIdentityNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("MotivationIdentityScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneticSkillNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PhoneticSkillScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SemanticComprehensionNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SemanticComprehensionScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SuggestedRingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SuggestedSpeedCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TadabborWritingNotes")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TadabborWritingScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluatorUserId");
+
+                    b.HasIndex("RingId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Nehzat_quran_asset_evaluations", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranCurriculum", b =>
                 {
                     b.Property<int>("Id")
@@ -3889,6 +5484,271 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Nehzat_quran_curricula", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AgeGroup")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("HasSpecializedPath")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinAge")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SpecializedPeriods")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SpecializedTimePercent")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("SortOrder");
+
+                    b.ToTable("Nehzat_quran_rings", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ResourceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RingId");
+
+                    b.ToTable("Nehzat_quran_ring_resources", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("EndAyah")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EndPage")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EndSurahId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EstimatedMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Half")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsAssessment")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PrerequisiteSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SessionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartAyah")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartPage")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartSurahId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Surfaces")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RingId", "SessionNumber")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_quran_ring_sessions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSurah", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActivityType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SurahId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SurahId");
+
+                    b.HasIndex("RingId", "SurahId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_quran_ring_surahs", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranSessionStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompletionCriteria")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("EstimatedMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsOptional")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ResourcesJson")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StepOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StepType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId", "StepOrder")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_quran_session_steps", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranStudentCourse", b =>
@@ -4045,6 +5905,262 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_quran_recitation_levels", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentInterview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("InterviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InterviewerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("S10_Goal")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S11_Tadabbor")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S12_Writing")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S13_Books")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S14_Discussion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S15_Presentations")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S16_FamilyOpinion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S17_Needs")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S18_Satisfaction")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S19_Suggestion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S1_DailyListening")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S2_FamilyListening")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S3_MemorizedSurahs")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S4_DailyProcess")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S5_TimeSpent")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S6_Difficulties")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S7_EasyParts")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S8_SelfSpeedCategory")
+                        .HasColumnType("text");
+
+                    b.Property<string>("S9_Motivation")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterviewerUserId");
+
+                    b.HasIndex("RingId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Nehzat_student_interviews", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentQuranSessionProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssessmentScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CoachNotes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LinesMemorized")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProgressPercent")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SurfacesCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("StudentId", "SessionId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_student_quran_session_progress", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentSpeedCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActiveDays")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActualDailyLines")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ChangeReason")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DailyLines")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAtRiskOfDemotion")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsEligibleForPromotion")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastEvaluationAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MasteryScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreviousCategory")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RingId");
+
+                    b.HasIndex("StudentId", "RingId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_student_speed_categories", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentStepProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RepetitionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionProgressId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("StepId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StepId");
+
+                    b.HasIndex("SessionProgressId", "StepId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_student_step_progress", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", b =>
                 {
                     b.Property<int>("Id")
@@ -4122,6 +6238,63 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_quran_surahs", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.TadabborEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AyahId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AyahNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CoachNote")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DifferenceFromSynonyms")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JalalainReference")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentNote")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("SurahId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SynonymsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WhyThisWord")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Word")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AyahId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SurahId");
+
+                    b.ToTable("Nehzat_tadabbor_entries", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.TajweedRule", b =>
                 {
                     b.Property<int>("Id")
@@ -4177,6 +6350,51 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasIndex("SurahId");
 
                     b.ToTable("Nehzat_quran_tajweed_rules", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RandomEvaluation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalScore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Nehzat_random_evaluations", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Ring", b =>
@@ -4254,6 +6472,51 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_ring_books", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RingMaktab", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AcademicYear")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("academic_year");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("HalghehId")
+                        .HasColumnType("int")
+                        .HasColumnName("halgheh_id");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_active");
+
+                    b.Property<int>("MaktabId")
+                        .HasColumnType("int")
+                        .HasColumnName("maktab_id");
+
+                    b.Property<int>("RingId")
+                        .HasColumnType("int")
+                        .HasColumnName("ring_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HalghehId");
+
+                    b.HasIndex("MaktabId");
+
+                    b.HasIndex("RingId");
+
+                    b.ToTable("ring_maktabs", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RingStudent", b =>
                 {
                     b.Property<int>("Id")
@@ -4305,6 +6568,40 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_ring_teaching_methods", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RoutePoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Label")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PointType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("RouteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("Nehzat_route_points", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.SpacedRepetitionCard", b =>
@@ -4577,6 +6874,9 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Phase")
+                        .HasColumnType("nvarchar(5)");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(20)");
 
@@ -4602,6 +6902,38 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_students", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentBadge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BadgeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("BadgeImageUrl")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("BadgeTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("EarnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Nehzat_student_badges", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentCourse", b =>
@@ -4805,6 +7137,196 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_student_skill_progress", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentStudyPath", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CurrentStepId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProgressPercentage")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudyPathId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentStepId");
+
+                    b.HasIndex("StudyPathId");
+
+                    b.HasIndex("StudentId", "StudyPathId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_student_study_paths", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AgeGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CognitiveLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectAreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgeGroupId");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("SubjectAreaId");
+
+                    b.ToTable("Nehzat_study_paths", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPathAccommodation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccommodationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudyPathId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.HasIndex("StudyPathId", "AccommodationId")
+                        .IsUnique();
+
+                    b.ToTable("Nehzat_study_path_accommodations", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPathStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssessmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CognitiveLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ContentUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EstimatedDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PrerequisitesJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResourceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StepOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudyPathId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssessmentId");
+
+                    b.HasIndex("StudyPathId");
+
+                    b.ToTable("Nehzat_study_path_steps", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.SubjectArea", b =>
@@ -5292,6 +7814,9 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("Biography")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -5304,8 +7829,14 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NationalCode")
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("OidcSubject")
                         .HasColumnType("nvarchar(255)");
@@ -5339,6 +7870,204 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_users", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserBadge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AwardedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BadgeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BadgeId");
+
+                    b.HasIndex("UserId", "BadgeId")
+                        .IsUnique();
+
+                    b.ToTable("user_badges", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserDevice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeviceName")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DeviceToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("RegisteredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceToken")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nehzat_user_devices", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double?>("Accuracy")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Heading")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsSharing")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Speed")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nehzat_user_locations", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserMessageRead", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nehzat_user_message_reads", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("NotificationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("UserId", "IsRead");
+
+                    b.ToTable("Nehzat_user_notifications", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserNotificationSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("NewAssignment")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NewMember")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SessionReminder")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SubmissionReviewed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SystemAnnouncement")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Nehzat_user_notification_settings", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserOccasionProgress", b =>
@@ -5386,6 +8115,53 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Nehzat_user_occasion_progress", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserVocabularyCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("EaseFactor")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsKnown")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("NextReviewAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Quality")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Repetition")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VocabularyWordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VocabularyWordId");
+
+                    b.ToTable("Nehzat_user_vocabulary_cards", "nehzat");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserXp", b =>
@@ -5452,6 +8228,264 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_xp_transactions", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.VocabularyText", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Language")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("OwnerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubjectAreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("SubjectAreaId");
+
+                    b.ToTable("Nehzat_vocabulary_texts", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.VocabularyWord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AudioUrl")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Definition")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DifficultyLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExampleSentence")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ExampleTranslation")
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PartOfSpeech")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("VocabularyTextId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WordText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VocabularyTextId");
+
+                    b.ToTable("Nehzat_vocabulary_words", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ActorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StepId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("StepId");
+
+                    b.ToTable("workflow_actions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("workflow_definitions", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CurrentStepId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EntityType")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CurrentStepId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("WorkflowId");
+
+                    b.ToTable("workflow_requests", "nehzat");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowStep", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsFinalStep")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("RoleRequired")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("StepOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowId", "StepOrder")
+                        .IsUnique();
+
+                    b.ToTable("workflow_steps", "nehzat");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.XpBadge", b =>
                 {
                     b.Property<int>("Id")
@@ -5498,17 +8532,40 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.ToTable("Nehzat_xp_badges", "nehzat");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AiConversation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AiMessage", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.AiConversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicLesson", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicCourse", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicPoem", "Poem")
                         .WithMany()
-                        .HasForeignKey("PoemId");
+                        .HasForeignKey("PoemId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
 
@@ -5542,13 +8599,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicLesson", "Lesson")
                         .WithMany()
                         .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Lesson");
@@ -5620,12 +8677,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
                         .WithMany("Assignments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.CurriculumObjective", "Objective")
                         .WithMany()
-                        .HasForeignKey("ObjectiveId");
+                        .HasForeignKey("ObjectiveId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
 
@@ -5667,13 +8725,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Assignment", "Assignment")
                         .WithMany("Submissions")
                         .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
                         .WithMany("Submissions")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Assignment");
@@ -5703,6 +8761,35 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalendarEventAttendee", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.CalendarEvent", "CalendarEvent")
+                        .WithMany("Attendees")
+                        .HasForeignKey("CalendarEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CalendarEvent");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalligraphySample", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
@@ -5729,13 +8816,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Coach", "Coach")
                         .WithMany("CoachCourses")
                         .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Coach");
@@ -5743,11 +8830,23 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CoachFile", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Coach", "Coach")
+                        .WithMany("Files")
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Competition", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
                         .WithMany()
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
                 });
@@ -5769,6 +8868,54 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Competition");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Conversation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Maktab", "Maktab")
+                        .WithMany()
+                        .HasForeignKey("MaktabId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Maktab");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ConversationMember", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Conversation", "Conversation")
+                        .WithMany("Members")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CourierDailyStat", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Courier");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CurriculumObjective", b =>
@@ -5809,6 +8956,36 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.EducationalProcess", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowDefinition", "Workflow")
+                        .WithMany()
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.EvaluationAnswer", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.RandomEvaluation", "RandomEvaluation")
+                        .WithMany("Answers")
+                        .HasForeignKey("RandomEvaluationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("RandomEvaluation");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Evaluator", b =>
@@ -5911,6 +9088,17 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Experiment");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.GamificationProfile", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Hadith.Hadith", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Hadith.HadithChapter", "HadithChapter")
@@ -5926,11 +9114,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Hadith.HadithChapter", "HadithChapter")
                         .WithMany()
-                        .HasForeignKey("HadithChapterId");
+                        .HasForeignKey("HadithChapterId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Hadith.Hadith", "Hadith")
                         .WithMany()
-                        .HasForeignKey("HadithId");
+                        .HasForeignKey("HadithId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Hadith");
 
@@ -5963,6 +9153,66 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Hadith");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Maktab", "Maktab")
+                        .WithMany()
+                        .HasForeignKey("MaktabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Moderator")
+                        .WithMany()
+                        .HasForeignKey("ModeratorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Maktab");
+
+                    b.Navigation("Moderator");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignment", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", "Halgheh")
+                        .WithMany()
+                        .HasForeignKey("HalghehId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Halgheh");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignmentSubmission", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignment", "HalghehAssignment")
+                        .WithMany("Submissions")
+                        .HasForeignKey("HalghehAssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HalghehAssignment");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehMember", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", "Halgheh")
+                        .WithMany("Members")
+                        .HasForeignKey("HalghehId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Halgheh");
 
                     b.Navigation("User");
                 });
@@ -6091,11 +9341,29 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Survey");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.KnowledgeDocument", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Maktab", "Maktab")
+                        .WithMany()
+                        .HasForeignKey("MaktabId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.SubjectArea", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Maktab");
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.League", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
                         .WithMany()
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
                 });
@@ -6138,6 +9406,36 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Madrasah");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Maktab", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MaktabMember", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Maktab", "Maktab")
+                        .WithMany("Members")
+                        .HasForeignKey("MaktabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Maktab");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MaktabSubSection", b =>
@@ -6218,6 +9516,43 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Lesson");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Message", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Message", "ReplyTo")
+                        .WithMany()
+                        .HasForeignKey("ReplyToId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("ReplyTo");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MessageAttachment", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Message", "Message")
+                        .WithMany("Attachments")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MonthlyBooklet", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "CreatedBy")
@@ -6255,6 +9590,27 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ParentSection");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.OrderTrackingPoint", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.MapOrder", "Order")
+                        .WithMany("TrackingPoints")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Parent", b =>
@@ -6442,6 +9798,50 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.PointTransaction", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ProgressMetric", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.ProgressReport", "Report")
+                        .WithMany("Metrics")
+                        .HasForeignKey("ProgressReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ProgressReport", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Question", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.Ayah", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", "Surah")
@@ -6451,6 +9851,52 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Surah");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.CoachInterview", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany()
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
+
+                    b.Navigation("Ring");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranAssetEvaluation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Evaluator")
+                        .WithMany()
+                        .HasForeignKey("EvaluatorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany()
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Evaluator");
+
+                    b.Navigation("Ring");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranCurriculum", b =>
@@ -6464,6 +9910,58 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingResource", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany("Resources")
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ring");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSession", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany("Sessions")
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ring");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSurah", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany("RingSurahs")
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", "Surah")
+                        .WithMany()
+                        .HasForeignKey("SurahId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ring");
+
+                    b.Navigation("Surah");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranSessionStep", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSession", "Session")
+                        .WithMany("Steps")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranStudentCourse", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
@@ -6475,7 +9973,7 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.RecitationLevel", null)
                         .WithMany("QuranStudentCourses")
                         .HasForeignKey("RecitationLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
@@ -6516,11 +10014,121 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Surah");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentInterview", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Interviewer")
+                        .WithMany()
+                        .HasForeignKey("InterviewerUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany()
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Interviewer");
+
+                    b.Navigation("Ring");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentQuranSessionProgress", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSession", "Session")
+                        .WithMany("StudentProgress")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentSpeedCategory", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", "Ring")
+                        .WithMany()
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Ring");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentStepProgress", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentQuranSessionProgress", "SessionProgress")
+                        .WithMany("StepProgress")
+                        .HasForeignKey("SessionProgressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranSessionStep", "Step")
+                        .WithMany()
+                        .HasForeignKey("StepId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SessionProgress");
+
+                    b.Navigation("Step");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranCurriculum", null)
                         .WithMany("Surahs")
-                        .HasForeignKey("QuranCurriculumId");
+                        .HasForeignKey("QuranCurriculumId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.TadabborEntry", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.Ayah", "Ayah")
+                        .WithMany()
+                        .HasForeignKey("AyahId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", "Surah")
+                        .WithMany()
+                        .HasForeignKey("SurahId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Ayah");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Surah");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.TajweedRule", b =>
@@ -6532,6 +10140,17 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Surah");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RandomEvaluation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Ring", b =>
@@ -6564,6 +10183,33 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Ring");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RingMaktab", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", "Halgheh")
+                        .WithMany()
+                        .HasForeignKey("HalghehId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Maktab", "Maktab")
+                        .WithMany()
+                        .HasForeignKey("MaktabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Ring", "Ring")
+                        .WithMany()
+                        .HasForeignKey("RingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Halgheh");
+
+                    b.Navigation("Maktab");
+
+                    b.Navigation("Ring");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RingStudent", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Ring", "Ring")
@@ -6592,6 +10238,17 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Ring");
 
                     b.Navigation("TeachingMethod");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RoutePoint", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.DeliveryRoute", "Route")
+                        .WithMany("Points")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.SpacedRepetitionCard", b =>
@@ -6634,18 +10291,29 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentBadge", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.GamificationProfile", "Profile")
+                        .WithMany("Badges")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentCourse", b =>
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Course", "Course")
                         .WithMany("StudentCourses")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
                         .WithMany("StudentCourses")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -6733,6 +10401,88 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Ring");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentStudyPath", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.StudyPathStep", "CurrentStep")
+                        .WithMany()
+                        .HasForeignKey("CurrentStepId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", "StudyPath")
+                        .WithMany()
+                        .HasForeignKey("StudyPathId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CurrentStep");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("StudyPath");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.AgeGroup", "AgeGroup")
+                        .WithMany()
+                        .HasForeignKey("AgeGroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.SubjectArea", "SubjectArea")
+                        .WithMany()
+                        .HasForeignKey("SubjectAreaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AgeGroup");
+
+                    b.Navigation("SubjectArea");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPathAccommodation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Accommodation", "Accommodation")
+                        .WithMany("StudyPaths")
+                        .HasForeignKey("AccommodationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", "StudyPath")
+                        .WithMany("Accommodations")
+                        .HasForeignKey("StudyPathId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Accommodation");
+
+                    b.Navigation("StudyPath");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPathStep", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Assessment", "Assessment")
+                        .WithMany()
+                        .HasForeignKey("AssessmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", "StudyPath")
+                        .WithMany("Steps")
+                        .HasForeignKey("StudyPathId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Assessment");
+
+                    b.Navigation("StudyPath");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Teacher", b =>
@@ -6845,7 +10595,8 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
 
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.TrainingStage", "PrerequisiteStage")
                         .WithMany()
-                        .HasForeignKey("PrerequisiteStageId");
+                        .HasForeignKey("PrerequisiteStageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
 
@@ -6875,9 +10626,100 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                 {
                     b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserBadge", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Badge", "Badge")
+                        .WithMany("UserBadges")
+                        .HasForeignKey("BadgeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Badge");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserDevice", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserLocation", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserMessageRead", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserNotification", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.Notification", "Notification")
+                        .WithMany("Recipients")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserNotificationSettings", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserOccasionProgress", b =>
@@ -6905,6 +10747,25 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("PracticeItem");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserVocabularyCard", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.VocabularyWord", "VocabularyWord")
+                        .WithMany()
+                        .HasForeignKey("VocabularyWordId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("VocabularyWord");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.UserXp", b =>
@@ -6936,6 +10797,100 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.VocabularyText", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.SubjectArea", "SubjectArea")
+                        .WithMany()
+                        .HasForeignKey("SubjectAreaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("SubjectArea");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.VocabularyWord", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.VocabularyText", "VocabularyText")
+                        .WithMany()
+                        .HasForeignKey("VocabularyTextId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("VocabularyText");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowAction", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowRequest", "Request")
+                        .WithMany("Actions")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowStep", "Step")
+                        .WithMany()
+                        .HasForeignKey("StepId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+
+                    b.Navigation("Step");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowRequest", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowStep", "CurrentStep")
+                        .WithMany()
+                        .HasForeignKey("CurrentStepId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowDefinition", "Workflow")
+                        .WithMany("Requests")
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("CurrentStep");
+
+                    b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowStep", b =>
+                {
+                    b.HasOne("EducationalPlatform.Nehzat.Domain.Entities.WorkflowDefinition", "Workflow")
+                        .WithMany("Steps")
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Workflow");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Accommodation", b =>
+                {
+                    b.Navigation("StudyPaths");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.AiConversation", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ArabicLiterature.ArabicCourse", b =>
                 {
                     b.Navigation("Lessons");
@@ -6965,19 +10920,38 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Submissions");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Badge", b =>
+                {
+                    b.Navigation("UserBadges");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Book", b =>
                 {
                     b.Navigation("RingBooks");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.Navigation("Attendees");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Coach", b =>
                 {
                     b.Navigation("CoachCourses");
+
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Competition", b =>
                 {
                     b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Conversation", b =>
+                {
+                    b.Navigation("Members");
+
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Course", b =>
@@ -6990,6 +10964,11 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.CurriculumObjective", b =>
                 {
                     b.Navigation("ChildObjectives");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.DeliveryRoute", b =>
+                {
+                    b.Navigation("Points");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Evaluator", b =>
@@ -7009,6 +10988,11 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Experiments");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.GamificationProfile", b =>
+                {
+                    b.Navigation("Badges");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Hadith.Hadith", b =>
                 {
                     b.Navigation("UserProgress");
@@ -7022,6 +11006,16 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Hadith.HadithChapter", b =>
                 {
                     b.Navigation("Hadiths");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Halgheh", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.HalghehAssignment", b =>
+                {
+                    b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.IssueAction", b =>
@@ -7067,6 +11061,16 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("SubSections");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Maktab", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.MapOrder", b =>
+                {
+                    b.Navigation("TrackingPoints");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Math.MathLesson", b =>
                 {
                     b.Navigation("ProgressRecords");
@@ -7084,11 +11088,21 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("Lessons");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Message", b =>
+                {
+                    b.Navigation("Attachments");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.NehzatSection", b =>
                 {
                     b.Navigation("ChildSections");
 
                     b.Navigation("Madrasahs");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Notification", b =>
+                {
+                    b.Navigation("Recipients");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Parent", b =>
@@ -7143,9 +11157,30 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("LessonProgress");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.ProgressReport", b =>
+                {
+                    b.Navigation("Metrics");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranCurriculum", b =>
                 {
                     b.Navigation("Surahs");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRing", b =>
+                {
+                    b.Navigation("Resources");
+
+                    b.Navigation("RingSurahs");
+
+                    b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.QuranRingSession", b =>
+                {
+                    b.Navigation("Steps");
+
+                    b.Navigation("StudentProgress");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.RecitationLevel", b =>
@@ -7153,9 +11188,19 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
                     b.Navigation("QuranStudentCourses");
                 });
 
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.StudentQuranSessionProgress", b =>
+                {
+                    b.Navigation("StepProgress");
+                });
+
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Quran.Surah", b =>
                 {
                     b.Navigation("Ayahs");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.RandomEvaluation", b =>
+                {
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.Ring", b =>
@@ -7182,6 +11227,13 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudentPathSelection", b =>
                 {
                     b.Navigation("Rankings");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.StudyPath", b =>
+                {
+                    b.Navigation("Accommodations");
+
+                    b.Navigation("Steps");
                 });
 
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.SubjectArea", b =>
@@ -7230,6 +11282,18 @@ namespace EducationalPlatform.Nehzat.Infrastructure.Migrations
             modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.TrainingStage", b =>
                 {
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowDefinition", b =>
+                {
+                    b.Navigation("Requests");
+
+                    b.Navigation("Steps");
+                });
+
+            modelBuilder.Entity("EducationalPlatform.Nehzat.Domain.Entities.WorkflowRequest", b =>
+                {
+                    b.Navigation("Actions");
                 });
 #pragma warning restore 612, 618
         }

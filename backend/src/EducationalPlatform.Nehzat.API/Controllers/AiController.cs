@@ -23,6 +23,25 @@ public class AiController : ControllerBase
         return int.TryParse(User.FindFirst("userId")?.Value, out userId);
     }
 
+    [HttpPost("transcribe")]
+    [RequestSizeLimit(15 * 1024 * 1024)]
+    public async Task<IActionResult> Transcribe(IFormFile? file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("فایل صوتی ارسال نشده است.");
+
+        try
+        {
+            using var stream = file.OpenReadStream();
+            var text = await _aiService.TranscribeAudioAsync(stream, file.FileName);
+            return Ok(new { text });
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest("سرویس تبدیل صوت به متن در دسترس نیست (کلید هوش مصنوعی تنظیم نشده است).");
+        }
+    }
+
     [HttpPost("chat")]
     public async Task<IActionResult> Chat([FromBody] AiChatRequest request)
     {

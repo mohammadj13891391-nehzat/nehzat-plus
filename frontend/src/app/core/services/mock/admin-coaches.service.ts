@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { MockDataContext } from './mock-data-context';
 import {
   Coach,
+  CoachFileDto,
   Student,
   BranchManager,
   CreateCoachPayload,
@@ -13,6 +14,8 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class MockAdminCoachesService {
+  private coachFiles = new Map<number, CoachFileDto[]>();
+
   constructor(private ctx: MockDataContext) {}
 
   getCoaches(): Observable<Coach[]> {
@@ -54,7 +57,45 @@ export class MockAdminCoachesService {
 
   deleteCoach(id: number): Observable<ApiMessageResponse> {
     this.ctx.coaches = this.ctx.coaches.filter((c) => c.id !== id);
+    this.coachFiles.delete(id);
     return this.ctx.delayed({ message: 'مربی با موفقیت حذف شد' });
+  }
+
+  getCoachFiles(coachId: number): Observable<CoachFileDto[]> {
+    return this.ctx.delayed([...(this.coachFiles.get(coachId) ?? [])]);
+  }
+
+  uploadCoachFile(coachId: number, title: string, file: File): Observable<CoachFileDto> {
+    const list = this.coachFiles.get(coachId) ?? [];
+    const type = file.type;
+    const kind = type.startsWith('audio/')
+      ? 'audio'
+      : type.startsWith('image/')
+        ? 'image'
+        : type.startsWith('video/')
+          ? 'video'
+          : type === 'application/pdf'
+            ? 'document'
+            : 'other';
+    const dto: CoachFileDto = {
+      id: this.ctx.nextId(list),
+      title: title || file.name,
+      fileName: file.name,
+      storedPath: `/mock/uploads/coach-files/${file.name}`,
+      contentType: type || 'application/octet-stream',
+      kind,
+      sizeBytes: file.size,
+      createdAt: new Date().toISOString(),
+    };
+    list.push(dto);
+    this.coachFiles.set(coachId, list);
+    return this.ctx.delayed(dto);
+  }
+
+  deleteCoachFile(coachId: number, fileId: number): Observable<void> {
+    const list = this.coachFiles.get(coachId) ?? [];
+    this.coachFiles.set(coachId, list.filter((f) => f.id !== fileId));
+    return this.ctx.delayed(undefined as void);
   }
 
   getStudents(): Observable<Student[]> {

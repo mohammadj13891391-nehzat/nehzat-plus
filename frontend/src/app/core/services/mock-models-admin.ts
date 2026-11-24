@@ -1,6 +1,7 @@
 // Admin personnel model types
 export type {
   Coach,
+  CoachFileDto,
   CreateCoachPayload,
   Student,
   CreateStudentPayload,

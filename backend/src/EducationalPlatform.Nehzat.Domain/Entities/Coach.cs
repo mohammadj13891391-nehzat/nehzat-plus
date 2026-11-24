@@ -47,6 +47,8 @@ public class Coach
     public Branch? Branch { get; set; }
 
     public ICollection<CoachCourse> CoachCourses { get; set; } = new List<CoachCourse>();
+
+    public ICollection<CoachFile> Files { get; set; } = new List<CoachFile>();
 }
 
 [Table("Nehzat_coach_courses")]

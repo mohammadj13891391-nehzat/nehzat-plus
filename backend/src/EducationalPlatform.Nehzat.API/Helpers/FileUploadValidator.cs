@@ -6,12 +6,13 @@ public static class FileUploadValidator
 
     private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".jpg", ".jpeg", ".png", ".gif",
-        ".mp3", ".wav",
+        ".jpg", ".jpeg", ".png", ".gif", ".webp",
+        ".mp3", ".wav", ".webm", ".m4a", ".ogg",
         ".mp4",
         ".pdf",
         ".doc", ".docx",
-        ".txt"
+        ".txt", ".md", ".json",
+        ".mm", ".map"
     };
 
     private static readonly byte[] JpegMagic = [0xFF, 0xD8, 0xFF];
@@ -37,7 +38,7 @@ public static class FileUploadValidator
         var extension = Path.GetExtension(file.FileName);
         if (string.IsNullOrEmpty(extension) || !AllowedExtensions.Contains(extension))
         {
-            errorMessage = "نوع فایل مجاز نیست. فرمت‌های مجاز: jpg, jpeg, png, gif, mp3, wav, mp4, pdf, doc, docx, txt";
+            errorMessage = "نوع فایل مجاز نیست. فرمت‌های مجاز: jpg, jpeg, png, gif, webp, mp3, wav, webm, m4a, ogg, mp4, pdf, doc, docx, txt, md, json, mm, map";
             return false;
         }
 
@@ -58,16 +59,17 @@ public static class FileUploadValidator
         return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
             || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase)
             || extension.Equals(".png", StringComparison.OrdinalIgnoreCase)
-            || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase);
+            || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase)
+            || extension.Equals(".webp", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool ValidateImageMagicBytes(IFormFile file)
     {
         try
         {
-            var header = new byte[8];
+            var header = new byte[12];
             using var stream = file.OpenReadStream();
-            var bytesRead = stream.Read(header, 0, 8);
+            var bytesRead = stream.Read(header, 0, 12);
 
             if (bytesRead < 4)
                 return false;
@@ -82,6 +84,11 @@ public static class FileUploadValidator
 
             if (ext == ".gif")
                 return StartsWith(header, GifMagic);
+
+            if (ext == ".webp")
+                return bytesRead >= 12
+                    && header[0] == (byte)'R' && header[1] == (byte)'I' && header[2] == (byte)'F' && header[3] == (byte)'F'
+                    && header[8] == (byte)'W' && header[9] == (byte)'E' && header[10] == (byte)'B' && header[11] == (byte)'P';
         }
         catch
         {

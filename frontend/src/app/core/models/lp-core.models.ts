@@ -665,6 +665,17 @@ export interface CreateCoachPayload {
   assignedCourseIds: number[];
 }
 
+export interface CoachFileDto {
+  id: number;
+  title: string;
+  fileName: string;
+  storedPath: string;
+  contentType: string;
+  kind: string;
+  sizeBytes: number;
+  createdAt: string;
+}
+
 export interface Parent {
   id: number;
   username: string;

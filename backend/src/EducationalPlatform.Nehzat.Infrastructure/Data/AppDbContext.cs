@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
     public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<Coach> Coaches => Set<Coach>();
     public DbSet<CoachCourse> CoachCourses => Set<CoachCourse>();
+    public DbSet<CoachFile> CoachFiles => Set<CoachFile>();
     public DbSet<BranchManager> BranchManagers => Set<BranchManager>();
     public DbSet<Parent> Parents => Set<Parent>();
     public DbSet<Evaluator> Evaluators => Set<Evaluator>();
@@ -337,6 +338,16 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Course)
                   .WithMany()
                   .HasForeignKey(e => e.CourseId);
+        });
+
+        modelBuilder.Entity<CoachFile>(entity =>
+        {
+            entity.HasOne(e => e.Coach)
+                  .WithMany(c => c.Files)
+                  .HasForeignKey(e => e.CoachId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.CoachId);
         });
 
         modelBuilder.Entity<BranchManager>(entity =>

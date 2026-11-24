@@ -4,6 +4,7 @@ import { MockLessonPlannerApiBase, type MockApiCtor } from './mock-lesson-planne
 import {
   ApiMessageResponse,
   Coach,
+  CoachFileDto,
   CreateCoachPayload,
   CreateStudentPayload,
   Student,
@@ -31,6 +32,18 @@ export function withAdminCoaches<T extends MockApiCtor>(Base: T) {
 
     deleteCoach(id: number): Observable<ApiMessageResponse> {
       return this.adminCoaches.deleteCoach(id);
+    }
+
+    getCoachFiles(coachId: number): Observable<CoachFileDto[]> {
+      return this.adminCoaches.getCoachFiles(coachId);
+    }
+
+    uploadCoachFile(coachId: number, title: string, file: File): Observable<CoachFileDto> {
+      return this.adminCoaches.uploadCoachFile(coachId, title, file);
+    }
+
+    deleteCoachFile(coachId: number, fileId: number): Observable<void> {
+      return this.adminCoaches.deleteCoachFile(coachId, fileId);
     }
 
     // ===== Students =====
