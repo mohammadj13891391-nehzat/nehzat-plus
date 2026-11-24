@@ -42,6 +42,8 @@ import { roleLabel } from './morabbi-labels';
             <a routerLink="/coach/students" routerLinkActive="active">شاگردان</a>
             <a routerLink="/coach/rings" routerLinkActive="active">حلقه‌ها</a>
             <a routerLink="/coach/spiritual" routerLinkActive="active">بخش معنوی</a>
+            <a routerLink="/coach/knowledge" routerLinkActive="active">پایگاه دانش</a>
+            <a routerLink="/coach/knowledge-ragflow" routerLinkActive="active">پاسخ‌گو</a>
           </div>
         </div>
       </nav>

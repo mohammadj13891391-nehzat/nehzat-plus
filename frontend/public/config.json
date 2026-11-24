@@ -1,5 +1,8 @@
 {
   "apiBase": "http://localhost:3000",
   "otuh2Base": "http://localhost:5000",
-  "morabbiApiBase": "http://localhost:3010"
+  "morabbiApiBase": "http://localhost:3010",
+  "lightragApiBase": "http://127.0.0.1:9621",
+  "ragflowApiBase": "http://127.0.0.1:8080",
+  "ragflowApiKey": ""
 }

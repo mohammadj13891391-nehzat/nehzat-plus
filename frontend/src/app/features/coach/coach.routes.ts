@@ -81,6 +81,14 @@ export const COACH_ROUTES: Routes = [
         canActivate: [roleGuard('coach')],
         loadComponent: () =>
           import('./coach-spiritual-page.component').then((m) => m.CoachSpiritualPageComponent)
+      },
+      {
+        path: 'knowledge',
+        loadComponent: () => import('./morabbi/lightrag-page.component').then((m) => m.LightragPageComponent)
+      },
+      {
+        path: 'knowledge-ragflow',
+        loadComponent: () => import('./morabbi/ragflow-page.component').then((m) => m.RagflowPageComponent)
       }
     ]
   }

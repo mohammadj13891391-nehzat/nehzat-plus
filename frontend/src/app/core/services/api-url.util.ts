@@ -28,6 +28,18 @@ export function resolveMorabbiApiBaseUrl(): string {
   return trimTrailingSlash(configuredMorabbiUrl);
 }
 
+export function resolveLightragApiBaseUrl(): string {
+  const runtimeLightragUrl = (window as unknown as { __lightragApiBase?: string }).__lightragApiBase ?? '';
+  const configuredLightragUrl = runtimeLightragUrl || (environment as Record<string, unknown>)['lightragApiUrl'] as string || 'http://127.0.0.1:9621';
+  return trimTrailingSlash(configuredLightragUrl);
+}
+
+export function resolveRagflowApiBaseUrl(): string {
+  const runtimeRagflowUrl = (window as unknown as { __ragflowApiBase?: string }).__ragflowApiBase ?? '';
+  const configuredRagflowUrl = runtimeRagflowUrl || (environment as Record<string, unknown>)['ragflowApiUrl'] as string || 'http://127.0.0.1:9380';
+  return trimTrailingSlash(configuredRagflowUrl);
+}
+
 export function isSafeRedirectPath(value: string | null | undefined): boolean {
   if (!value) {
     return false;
