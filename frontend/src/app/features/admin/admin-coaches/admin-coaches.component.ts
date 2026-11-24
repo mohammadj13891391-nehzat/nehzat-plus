@@ -9,6 +9,8 @@ import {
   CoachFileDto,
   Course,
   CreateCoachPayload,
+  TrainingSampleDto,
+  TrainingSummaryDto,
 } from '../../../core/models/lesson-planner.models';
 import { LESSON_PLANNER_API } from '../../../core/services/lesson-planner-api.token';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -34,6 +36,7 @@ interface AiChatMsg {
           مدیریت مربیان
           <span class="count-badge">{{ coaches.length }}</span>
         </h2>
+        <button type="button" class="btn btn-secondary" (click)="openTrainingModal()">آموزش مدل گفتار</button>
         <button type="button" class="btn" (click)="openCoachModal()">مربی جدید</button>
       </header>
 
@@ -470,6 +473,122 @@ interface AiChatMsg {
         </div>
       </div>
     }
+
+    @if (showTrainingModal) {
+      <div class="modal-overlay" (click)="closeTrainingModal()">
+        <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>آموزش مدل گفتار فارسی (Whisper)</h3>
+            <button type="button" class="modal-close" (click)="closeTrainingModal()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="muted training-hint">
+              با بارگذاری فایل‌های صوتی کوتاه و متن دقیقِ آن‌ها، دیتاست آموزش مدل تبدیل گفتار به متن فارسی ساخته می‌شود. هرچه نمونه‌های بیشتری ثبت شود، مدل فارسی دقیق‌تر آموزش داده خواهد شد.
+            </p>
+
+            @if (trainingSummary) {
+              <div class="training-summary">
+                <div class="training-summary__stat">
+                  <span class="training-summary__value">{{ trainingSummary.count }}</span>
+                  <span class="training-summary__label">مجموع نمونه‌ها</span>
+                </div>
+                <div class="training-summary__stat">
+                  <span class="training-summary__value">{{ formatDuration(trainingSummary.totalDurationSec) }}</span>
+                  <span class="training-summary__label">مجموع مدت</span>
+                </div>
+                @for (c of trainingSummary.byCoach; track c.coach) {
+                  <div class="training-summary__stat">
+                    <span class="training-summary__value">{{ c.samples }}</span>
+                    <span class="training-summary__label">{{ c.coach || 'بدون نام' }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="training-form">
+              <div class="training-form__row">
+                <label class="filter-field">
+                  <span class="filter-label">مربی (اختیاری)</span>
+                  <select class="filter-select" [ngModel]="trainCoachId" (ngModelChange)="trainCoachId = $event">
+                    <option [ngValue]="null">— بدون انتخاب —</option>
+                    @for (coach of coaches; track coach.id) {
+                      <option [ngValue]="coach.id">{{ coach.firstName }} {{ coach.lastName }}</option>
+                    }
+                  </select>
+                </label>
+                <label class="filter-field">
+                  <span class="filter-label">فایل صوتی (کوتاه)</span>
+                  <input
+                    type="file"
+                    class="file-file-input"
+                    accept=".wav,.mp3,.m4a,.ogg,.flac,.webm"
+                    (change)="onTrainAudioPicked($event)"
+                  />
+                </label>
+              </div>
+              <textarea
+                [ngModel]="trainText"
+                (ngModelChange)="trainText = $event"
+                class="training-textarea"
+                rows="3"
+                placeholder="متن دقیقِ گفتاری که در فایل صوتی بیان شده را اینجا بنویسید..."
+              ></textarea>
+              <div class="training-form__actions">
+                <button
+                  type="button"
+                  class="btn"
+                  [disabled]="savingTrainingSample || trainAudioFile === null || trainText.trim() === ''"
+                  (click)="addTrainingSample()"
+                >
+                  {{ savingTrainingSample ? 'در حال ثبت...' : 'ثبت نمونه آموزش' }}
+                </button>
+                @if (trainAudioFile) {
+                  <span class="muted">فایل انتخاب‌شده: {{ trainAudioFile.name }}</span>
+                }
+              </div>
+            </div>
+
+            <h4 class="training-list-title">نمونه‌های ثبت‌شده</h4>
+            @if (loadingTraining) {
+              <p class="muted">در حال دریافت نمونه‌ها...</p>
+            } @else if (trainingSamples.length === 0) {
+              <p class="muted">هنوز نمونه آموزشی ثبت نشده است.</p>
+            } @else {
+              <div class="file-list">
+                @for (s of trainingSamples; track s.id) {
+                  <div class="file-item">
+                    <span class="file-kind-chip file-kind-chip--audio">آموزشی</span>
+                    <div class="file-item__info">
+                      <span class="file-item__title">{{ s.text }}</span>
+                      <span class="file-item__meta">
+                        {{ s.coachName || 'بدون نام' }}
+                        @if (s.durationSec !== null) { • {{ formatDuration(s.durationSec) }} }
+                      </span>
+                    </div>
+                    <div class="file-item__actions">
+                      <button type="button" class="icon-btn icon-btn--delete" [disabled]="deletingTrainingId === s.id" (click)="deleteTrainingSample(s)" title="حذف نمونه">
+                        @if (deletingTrainingId === s.id) {
+                          <span class="spinner"></span>
+                        } @else {
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                          </svg>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
@@ -554,6 +673,18 @@ interface AiChatMsg {
     .ai-msg__role { font-size: 0.65rem; opacity: 0.75; margin-bottom: 0.25rem; font-weight: 700; }
     .ai-input-row { display: flex; gap: 0.5rem; align-items: flex-end; }
     .ai-input { flex: 1; padding: 0.5rem 0.625rem; border: 1px solid var(--lp-border, #eaecf0); border-radius: 8px; font-size: 0.875rem; resize: none; font-family: inherit; }
+
+    /* ===== Model training ===== */
+    .training-hint { margin: 0 0 0.75rem; font-size: 0.8125rem; line-height: 1.7; }
+    .training-summary { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+    .training-summary__stat { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; padding: 0.6rem 1rem; border: 1px solid var(--lp-border, #eaecf0); border-radius: 10px; background: var(--lp-surface, #fff); min-width: 96px; }
+    .training-summary__value { font-size: 1.125rem; font-weight: 700; color: var(--lp-primary, #1a73e8); }
+    .training-summary__label { font-size: 0.6875rem; color: var(--lp-muted, #6b7280); text-align: center; }
+    .training-form { border: 1px solid var(--lp-border, #eaecf0); border-radius: 10px; padding: 0.75rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .training-form__row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .training-textarea { width: 100%; padding: 0.5rem 0.625rem; border: 1px solid var(--lp-border, #eaecf0); border-radius: 8px; font-size: 0.875rem; resize: vertical; font-family: inherit; }
+    .training-form__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+    .training-list-title { margin: 0 0 0.5rem; font-size: 0.9375rem; }
   `],
 })
 export class AdminCoachesComponent {
@@ -593,6 +724,17 @@ export class AdminCoachesComponent {
   aiInput = '';
   aiBusy = false;
   private aiConversationId: number | null = null;
+
+  // ===== Model training (Whisper fine-tuning corpus) =====
+  showTrainingModal = false;
+  loadingTraining = false;
+  trainingSamples: TrainingSampleDto[] = [];
+  trainingSummary: TrainingSummaryDto | null = null;
+  trainAudioFile: File | null = null;
+  trainText = '';
+  trainCoachId: number | null = null;
+  savingTrainingSample = false;
+  deletingTrainingId: number | null = null;
 
   coaches: Coach[] = [];
   courses: Course[] = [];
@@ -1127,6 +1269,108 @@ export class AdminCoachesComponent {
 
   fileUrl(f: CoachFileDto): string {
     return resolveMediaUrl(f.storedPath) ?? f.storedPath;
+  }
+
+  // ===== Model training (Whisper fine-tuning corpus) =====
+  openTrainingModal(): void {
+    this.showTrainingModal = true;
+    this.trainAudioFile = null;
+    this.trainText = '';
+    this.trainCoachId = null;
+    this.trainingSamples = [];
+    this.trainingSummary = null;
+    this.loadTrainingData();
+  }
+
+  closeTrainingModal(): void {
+    this.showTrainingModal = false;
+    this.cdr.markForCheck();
+  }
+
+  loadTrainingData(): void {
+    this.loadingTraining = true;
+    this.api
+      .getTrainingSamples()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (samples) => {
+          this.trainingSamples = samples;
+          this.loadingTraining = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.loadingTraining = false;
+          this.setError(this.extractError(error) ?? 'دریافت نمونه‌های آموزشی با خطا مواجه شد.');
+        },
+      });
+    this.api
+      .getTrainingSummary()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (summary) => {
+          this.trainingSummary = summary;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.trainingSummary = null;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  onTrainAudioPicked(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.trainAudioFile = input.files?.[0] ?? null;
+    input.value = '';
+    this.cdr.markForCheck();
+  }
+
+  addTrainingSample(): void {
+    const file = this.trainAudioFile;
+    const text = this.trainText.trim();
+    if (!file || !text) return;
+    this.savingTrainingSample = true;
+    this.api
+      .addTrainingSample(file, text, this.trainCoachId ?? undefined)
+      .pipe(finalize(() => (this.savingTrainingSample = false)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.trainAudioFile = null;
+          this.trainText = '';
+          this.setSuccess('نمونه آموزشی با موفقیت ثبت شد.');
+          this.loadTrainingData();
+        },
+        error: (error) => {
+          this.setError(this.extractError(error) ?? 'ثبت نمونه آموزشی با خطا مواجه شد.');
+        },
+      });
+  }
+
+  deleteTrainingSample(sample: TrainingSampleDto): void {
+    this.deletingTrainingId = sample.id;
+    this.api
+      .deleteTrainingSample(sample.id)
+      .pipe(finalize(() => (this.deletingTrainingId = null)))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.setSuccess('نمونه آموزشی حذف شد.');
+          this.loadTrainingData();
+        },
+        error: (error) => {
+          this.setError(this.extractError(error) ?? 'حذف نمونه آموزشی با خطا مواجه شد.');
+        },
+      });
+  }
+
+  formatDuration(totalSec: number): string {
+    if (!totalSec || totalSec <= 0) return '0 دقیقه';
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    if (h > 0) return `${h} ساعته و ${m} دقیقه`;
+    if (m > 0) return `${m} دقیقه`;
+    return `${totalSec} ثانیه`;
   }
 
   // ===== Audio to text (Whisper) =====
