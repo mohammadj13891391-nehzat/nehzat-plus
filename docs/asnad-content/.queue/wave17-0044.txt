@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/۳ ژوئن،‏ ۱۰.۳۴​.txt 276->276
+summary: done=1 failed=0 skipped=1

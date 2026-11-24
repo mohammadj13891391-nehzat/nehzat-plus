@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/Eitaa-Live-1708604974323__part3.txt 167->167
+summary: done=1 failed=0 skipped=0

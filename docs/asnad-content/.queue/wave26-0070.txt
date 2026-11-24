@@ -1,0 +1,8 @@
+batch-0070 — تبیین نهضت تربیتی برای شعبه امین ج۶  ۲۶ بهمن ۱۴۰۴.txt
+Status: FAILED — source corrupted (unrecoverable)
+- Repo copy AND pristine source (D:\اسناد) are byte-identical and fully corrupted: all Persian text replaced by ASCII '?' (0x3F).
+- Size 22428 B; 17936 question marks; only 3 non-ASCII bytes.
+- The «- نسخه دوم» duplicate is corrupted identically; no clean copy found anywhere in the source tree.
+- Full-tree scan found 24 other unique corrupted files (50 counting duplicates) with the same '?' pattern.
+- No edits possible or performed; manifest row set to 'failed' (sticky-skip).
+Decision required from corpus owner: re-transcribe from audio or restore from another backup.

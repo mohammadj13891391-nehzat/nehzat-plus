@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/۶ ژوئن،‏ ۱۰.۳۰​__part1.txt 2731->2730
+summary: done=1 failed=0 skipped=0

@@ -5,6 +5,8 @@ import {
   ApiMessageResponse,
   Coach,
   CoachFileDto,
+  TrainingSampleDto,
+  TrainingSummaryDto,
   CreateCoachPayload,
   CreateStudentPayload,
   Student,
@@ -44,6 +46,22 @@ export function withAdminCoaches<T extends MockApiCtor>(Base: T) {
 
     deleteCoachFile(coachId: number, fileId: number): Observable<void> {
       return this.adminCoaches.deleteCoachFile(coachId, fileId);
+    }
+
+    addTrainingSample(file: File, text: string, coachId?: number): Observable<TrainingSampleDto> {
+      return this.adminCoaches.addTrainingSample(file, text, coachId);
+    }
+
+    getTrainingSamples(coachId?: number): Observable<TrainingSampleDto[]> {
+      return this.adminCoaches.getTrainingSamples(coachId);
+    }
+
+    deleteTrainingSample(sampleId: number): Observable<void> {
+      return this.adminCoaches.deleteTrainingSample(sampleId);
+    }
+
+    getTrainingSummary(): Observable<TrainingSummaryDto> {
+      return this.adminCoaches.getTrainingSummary();
     }
 
     // ===== Students =====

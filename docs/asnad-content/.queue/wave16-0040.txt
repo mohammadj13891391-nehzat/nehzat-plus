@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/۲ ژوئن،‏ ۱۱.۱۹​__part1.txt 2708->2710
+summary: done=1 failed=0 skipped=0

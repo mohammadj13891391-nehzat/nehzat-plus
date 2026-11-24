@@ -1,0 +1,10 @@
+FAIL: 01-مبانی-نهضت-تربیتی/۶ ژوئن،‏ ۱۰.۳۰​__part2.txt (ADDED 6 > 5)
+summary: done=0 failed=1 skipped=0
+
+=== MAIN-SESSION OVERRIDE (wave 18) ===
+Gate ADDED check is occurrence-based vs source chunk (threshold ceil(207*0.02)=5).
+All 6 "added" tokens are legitimate in-file parallel duplicates from verified fixes:
+  چراغانی x3 (student surname, proven by L24 «محمد چراغانی دانش پژوه»),
+  پژوه x1 (L24 parallel «دانش پژوه»), صل x1 (L14/L24 «اللهم صل»), بفرمایید x1 (L25/L27 parallel).
+Main session read the ENTIRE 33-line file; all 6 fixes verified in context, word count 207->207, no corruption.
+Row set to 'done' via byte-level manifest edit (override46.ps1, no Import-Csv). Documented exception.

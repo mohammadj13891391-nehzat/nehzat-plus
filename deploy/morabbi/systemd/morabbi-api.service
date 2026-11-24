@@ -1,0 +1,24 @@
+[Unit]
+Description=Morabbi API (ASP.NET Core)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=morabbi
+WorkingDirectory=/opt/morabbi/api
+ExecStart=/usr/local/bin/dotnet /opt/morabbi/api/EducationalPlatform.Morabbi.API.dll
+Restart=always
+RestartSec=5
+Environment=DOTNET_ROOT=/usr/local/share/dotnet
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:3010
+EnvironmentFile=-/opt/morabbi/morabbi.env
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

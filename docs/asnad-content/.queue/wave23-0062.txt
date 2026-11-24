@@ -1,0 +1,2 @@
+﻿OK: 01-مبانی-نهضت-تربیتی/VID_20230105_093745.txt 2722->2723
+summary: done=1 failed=0 skipped=0

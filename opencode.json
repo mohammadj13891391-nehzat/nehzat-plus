@@ -4,6 +4,7 @@
   "skills": {
     "paths": [".opencode/skills"]
   },
+  "model": "zai/glm-4.7",
   "small_model": "zen/big-pickle",
   "plugin": [
     "@tarquinen/opencode-dcp",
@@ -14,5 +15,57 @@
   "compaction": {
     "auto": true,
     "tail_turns": 12
+  },
+  "provider": {
+    "zai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Z.AI",
+      "options": {
+        "baseURL": "https://api.z.ai/api/paas/v4",
+        "apiKey": "6e4533db72df4e4fb8f9fc56c4317e09.usVB6PNHNRRDjP2L"
+      },
+      "models": {
+        "glm-4.5": { "name": "GLM-4.5" },
+        "glm-4.5-air": { "name": "GLM-4.5 Air" },
+        "glm-4.6": { "name": "GLM-4.6" },
+        "glm-4.7": { "name": "GLM-4.7" },
+        "glm-5": { "name": "GLM-5" },
+        "glm-5-turbo": { "name": "GLM-5 Turbo" },
+        "glm-5.1": { "name": "GLM-5.1" },
+        "glm-5.2": { "name": "GLM-5.2" },
+        "glm-5.3": { "name": "GLM-5.3" },
+        "glm-5.3-flash": { "name": "GLM-5.3 Flash" },
+        "glm-5.3-flashx": { "name": "GLM-5.3 FlashX" },
+        "glm-5.3-flashx-legal": { "name": "GLM-5.3 FlashX Legal" }
+      }
+    }
+  },
+  "mcp": {
+    "servers": {
+      "web-search-prime": {
+        "type": "remote",
+        "url": "https://api.z.ai/api/mcp/web_search_prime/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:ZAI_API_KEY}"
+        }
+      },
+      "web-reader": {
+        "type": "remote",
+        "url": "https://api.z.ai/api/mcp/web_reader/mcp",
+        "oauth": false,
+        "headers": {
+          "Authorization": "Bearer {env:ZAI_API_KEY}"
+        }
+      },
+      "zai-mcp-server": {
+        "type": "local",
+        "command": ["npx", "-y", "@z_ai/mcp-server"],
+        "environment": {
+          "Z_AI_API_KEY": "{env:ZAI_API_KEY}",
+          "Z_AI_MODE": "ZAI"
+        }
+      }
+    }
   }
 }
