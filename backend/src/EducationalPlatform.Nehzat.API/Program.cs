@@ -331,6 +331,27 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ddlEx) { logger.LogWarning("coach_files DDL skip: {Msg}", ddlEx.Message); }
 
+    // Idempotent: create Nehzat_training_samples if missing (Whisper fine-tuning corpus)
+    try
+    {
+        db.Database.ExecuteSqlRaw(@"
+            IF NOT EXISTS (SELECT 1 FROM sys.tables t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = 'nehzat' AND t.name = 'Nehzat_training_samples')
+            BEGIN
+                CREATE TABLE [nehzat].[Nehzat_training_samples] (
+                    [Id] int NOT NULL IDENTITY(1,1),
+                    [AudioPath] nvarchar(500) NOT NULL,
+                    [Text] nvarchar(2000) NOT NULL,
+                    [CoachName] nvarchar(200) NOT NULL,
+                    [CoachId] int NULL,
+                    [DurationSec] int NULL,
+                    [CreatedAt] datetime2 NOT NULL,
+                    CONSTRAINT [PK_Nehzat_training_samples] PRIMARY KEY ([Id])
+                );
+                CREATE INDEX [IX_Nehzat_training_samples_CoachId] ON [nehzat].[Nehzat_training_samples]([CoachId]);
+            END;");
+    }
+    catch (Exception ddlEx) { logger.LogWarning("training_samples DDL skip: {Msg}", ddlEx.Message); }
+
     var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
     // Users are synced from OTUH2 via OidcSyncMiddleware on first request
 

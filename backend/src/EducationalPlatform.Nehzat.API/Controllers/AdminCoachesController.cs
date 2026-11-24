@@ -257,6 +257,163 @@ public class AdminCoachesController : ControllerBase
         return NoContent();
     }
 
+    // ===== Whisper fine-tuning corpus =====
+
+    [HttpPost("training/samples")]
+    public async Task<IActionResult> AddTrainingSample(
+        [FromForm] IFormFile? file,
+        [FromForm] string? text,
+        [FromForm] int? coachId)
+    {
+        if (file == null || string.IsNullOrWhiteSpace(text))
+            return BadRequest(GenericErrorMessages.BadRequest);
+
+        var ext = Path.GetExtension(file.FileName);
+        if (!".wav.mp3.m4a.ogg.flac.webm".Contains(ext.ToLowerInvariant()))
+            return BadRequest("فرمت فایل صوتی نامعتبر است");
+
+        var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "public", "uploads", "training");
+        Directory.CreateDirectory(uploadsDir);
+
+        var fileName = $"{Guid.NewGuid():N}{ext}";
+        var filePath = Path.Combine(uploadsDir, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var coach = coachId.HasValue ? await _coachService.FindByIdAsync(coachId.Value) : null;
+        var sample = new TrainingSample
+        {
+            AudioPath = $"/uploads/training/{fileName}",
+            Text = text.Trim(),
+            CoachName = coach != null ? $"{coach.FirstName} {coach.LastName}".Trim() : "",
+            CoachId = coach?.Id,
+            DurationSec = TryGetWavDurationSec(filePath),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _db.TrainingSamples.Add(sample);
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            sample.Id,
+            sample.AudioPath,
+            sample.Text,
+            sample.CoachName,
+            sample.CoachId,
+            sample.DurationSec,
+            sample.CreatedAt
+        });
+    }
+
+    [HttpGet("training/samples")]
+    public async Task<IActionResult> GetTrainingSamples([FromQuery] int? coachId)
+    {
+        var q = _db.TrainingSamples.AsQueryable();
+        if (coachId.HasValue) q = q.Where(s => s.CoachId == coachId.Value);
+
+        var samples = await q
+            .OrderByDescending(s => s.CreatedAt)
+            .Select(s => new { s.Id, s.AudioPath, s.Text, s.CoachName, s.CoachId, s.DurationSec, s.CreatedAt })
+            .ToListAsync();
+        return Ok(samples);
+    }
+
+    [HttpDelete("training/samples/{sampleId}")]
+    public async Task<IActionResult> DeleteTrainingSample(int sampleId)
+    {
+        var sample = await _db.TrainingSamples.FirstOrDefaultAsync(s => s.Id == sampleId);
+        if (sample == null) return NotFound(GenericErrorMessages.NotFound);
+
+        try
+        {
+            var physicalPath = Path.Combine(Directory.GetCurrentDirectory(), "public", sample.AudioPath);
+            if (System.IO.File.Exists(physicalPath)) System.IO.File.Delete(physicalPath);
+        }
+        catch { }
+
+        _db.TrainingSamples.Remove(sample);
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpGet("training/summary")]
+    public async Task<IActionResult> GetTrainingSummary()
+    {
+        var all = await _db.TrainingSamples
+            .Select(s => new { s.CoachId, s.CoachName, s.DurationSec })
+            .ToListAsync();
+
+        var byCoach = all
+            .GroupBy(s => s.CoachName)
+            .Select(g => new
+            {
+                coach = g.Key,
+                samples = g.Count(),
+                durationSec = g.Sum(x => x.DurationSec ?? 0)
+            })
+            .OrderByDescending(x => x.samples)
+            .ToList();
+
+        return Ok(new
+        {
+            count = all.Count,
+            totalDurationSec = all.Sum(s => s.DurationSec ?? 0),
+            byCoach
+        });
+    }
+
+    [HttpGet("training/export")]
+    public async Task<IActionResult> ExportTrainingManifest()
+    {
+        var samples = await _db.TrainingSamples
+            .OrderBy(s => s.Id)
+            .Select(s => new { s.Id, s.AudioPath, s.Text })
+            .ToListAsync();
+
+        var root = Directory.GetCurrentDirectory();
+        var publicRoot = Path.Combine(root, "public");
+        var lines = samples.Select(s =>
+        {
+            var diskPath = Path.Combine(publicRoot, s.AudioPath.TrimStart('/'));
+            return $"{{\"id\": {s.Id}, \"path\": \"{diskPath.Replace("\\", "/")}\", \"text\": \"{s.Text.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"}}";
+        });
+
+        Response.ContentType = "application/x-ndjson";
+        return Content(string.Join("\n", lines));
+    }
+
+    private static int? TryGetWavDurationSec(string path)
+    {
+        try
+        {
+            var bytes = System.IO.File.ReadAllBytes(path);
+            if (bytes.Length < 44) return null;
+            if (bytes[0] != 'R' || bytes[1] != 'I' || bytes[2] != 'F' || bytes[3] != 'F') return null;
+            if (bytes[8] != 'W' || bytes[9] != 'A' || bytes[10] != 'V' || bytes[11] != 'E') return null;
+
+            var byteRate = BitConverter.ToInt32(bytes, 28);
+            var dataOffset = 44;
+            var data = bytes;
+            // scan for 'data' chunk (WAVs may have extra chunks)
+            for (var i = 12; i + 8 <= bytes.Length; i += 8)
+            {
+                if (bytes[i] == 'd' && bytes[i + 1] == 'a' && bytes[i + 2] == 't' && bytes[i + 3] == 'a')
+                {
+                    dataOffset = i + 8;
+                    break;
+                }
+            }
+            if (byteRate <= 0) return null;
+            var dataBytes = bytes.Length - dataOffset;
+            return (int)(dataBytes / byteRate);
+        }
+        catch { return null; }
+    }
+
     private static string DetermineFileKind(string? mimeType)
     {
         if (mimeType == null) return "other";

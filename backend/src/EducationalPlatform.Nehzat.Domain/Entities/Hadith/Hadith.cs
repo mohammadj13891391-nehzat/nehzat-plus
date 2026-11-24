@@ -14,7 +14,7 @@ namespace EducationalPlatform.Nehzat.Domain.Entities.Hadith
         [Column(TypeName = "int")]
         public int HadithNumber { get; set; }
 
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(max)")]
         public string MatnArabic { get; set; } = string.Empty;
 
         [Column(TypeName = "nvarchar(max)")]

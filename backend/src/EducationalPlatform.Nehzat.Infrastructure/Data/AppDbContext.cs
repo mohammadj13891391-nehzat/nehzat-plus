@@ -27,6 +27,7 @@ public class AppDbContext : DbContext
     public DbSet<Coach> Coaches => Set<Coach>();
     public DbSet<CoachCourse> CoachCourses => Set<CoachCourse>();
     public DbSet<CoachFile> CoachFiles => Set<CoachFile>();
+    public DbSet<TrainingSample> TrainingSamples => Set<TrainingSample>();
     public DbSet<BranchManager> BranchManagers => Set<BranchManager>();
     public DbSet<Parent> Parents => Set<Parent>();
     public DbSet<Evaluator> Evaluators => Set<Evaluator>();
@@ -347,6 +348,14 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.CoachId)
                   .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasIndex(e => e.CoachId);
+        });
+
+        modelBuilder.Entity<TrainingSample>(entity =>
+        {
+            entity.Property(e => e.AudioPath).HasMaxLength(500);
+            entity.Property(e => e.Text).HasMaxLength(2000);
+            entity.Property(e => e.CoachName).HasMaxLength(200);
             entity.HasIndex(e => e.CoachId);
         });
 

@@ -34,3 +34,9 @@ docs/plans/
 # Runtime logs
 *.out
 *.err
+
+# Runtime uploads (backend)
+backend/src/EducationalPlatform.Nehzat.API/public/uploads/
+
+# Test results
+**/TestResults/
