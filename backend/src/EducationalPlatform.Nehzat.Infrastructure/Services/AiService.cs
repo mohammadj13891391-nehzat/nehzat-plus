@@ -26,6 +26,7 @@ public class AiService : IAiService
     private readonly string _embeddingModel;
     private readonly int _maxTokens;
     private readonly double _temperature;
+    private readonly string _transcribeUrl;
 
     public AiService(
         AppDbContext dbContext,
@@ -45,6 +46,7 @@ public class AiService : IAiService
         _embeddingModel = configuration["AI:EmbeddingModel"] ?? "text-embedding-3-small";
         _maxTokens = int.Parse(configuration["AI:MaxTokens"] ?? "2048");
         _temperature = double.Parse(configuration["AI:Temperature"] ?? "0.3");
+        _transcribeUrl = configuration["AI:TranscribeUrl"] ?? "";
     }
 
     public async Task<AiChatResponse> AskAsync(int userId, AiChatRequest request)
@@ -117,6 +119,44 @@ public class AiService : IAiService
 
     public async Task<string> TranscribeAudioAsync(Stream audioStream, string fileName)
     {
+        // Local (keyless) transcription server takes priority when configured.
+        if (!string.IsNullOrEmpty(_transcribeUrl))
+        {
+            using var localForm = new MultipartFormDataContent();
+            var localFile = new StreamContent(audioStream);
+            localFile.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            localForm.Add(localFile, "file", fileName);
+            localForm.Add(new StringContent("fa"), "language");
+
+            using var localRequest = new HttpRequestMessage(HttpMethod.Post, _transcribeUrl)
+            {
+                Content = localForm
+            };
+
+            try
+            {
+                using var localResponse = await _httpClient.SendAsync(localRequest);
+                var localJson = await localResponse.Content.ReadAsStringAsync();
+
+                if (!localResponse.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Local transcription failed with status {StatusCode}: {Body}",
+                        localResponse.StatusCode,
+                        localJson.Length > 500 ? localJson[..500] : localJson);
+                    throw new InvalidOperationException("Local transcription request failed.");
+                }
+
+                var localResult = JsonSerializer.Deserialize<TranscribeResponse>(localJson);
+                return localResult?.Text ?? string.Empty;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Local transcription server unreachable at {Url}: {Msg}", _transcribeUrl, ex.Message);
+                throw new InvalidOperationException("Local transcription server is not reachable.");
+            }
+        }
+
+        // Fallback: OpenAI (requires API key).
         if (string.IsNullOrEmpty(_apiKey))
             throw new InvalidOperationException("AI key is not configured.");
 
