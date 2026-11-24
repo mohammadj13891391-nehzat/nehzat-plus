@@ -1,0 +1,6 @@
+ID: 71428
+Title: Qamus al-Quran (Seyyed Ali Akbar Qarashi)
+Volumes: 0, 1, 2, 3, 4, 5, 6, 7
+Source: https://lib.eshia.ir/71428
+--- shenasnameh ---
+

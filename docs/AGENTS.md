@@ -166,6 +166,7 @@ With `MockAuthHandler` enabled, any username/password works — the handler alwa
 | `docs/quran-analysis/01-text-4-surahs.md` | متن کامل ۴ سوره (رسم‌الخط عثمانی) |
 | `docs/quran-analysis/analyze.py` | اسکریپت تحلیل (نیاز به بازنویسی با Quranic Arabic Corpus) |
 | `docs/quran-analysis/analysis-results.json` | نتایج خام تحلیل |
+| `docs/quran-analysis/TADABBUR_METHOD.md` | الگوریتم و روش‌شناسی تدبر (۱۰ مرحله + کنترل کیفیت) — الگوی استاندارد برای تدبر سوره‌ها |
 
 ### ۴ سوره اصلی حلقه‌ها
 - نوح (۷۱) | حشر (۵۹) | فتح (۴۸) | حجرات (۴۹)

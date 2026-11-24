@@ -1,0 +1,152 @@
+Imam Ali|40|نهج البلاغه
+Imam Sajjad|94|صحیفه سجادیه
+Imam Sadiq|148|مصباح الشریعة
+Imam Sadiq|148|توحید مفضل
+Imam Reza|203|الرسالة الذهبیة
+Imam Reza|203|فقه الرضا
+Imam Reza|203|صحیفة الامام الرضا
+Imam Hasan Askari|260|تفسیر الامام العسکری
+Ibn Abi Jumhur al-Ahvasi|850|عوالى اللئالى
+Ibn Idris al-Hili|561|مستطرفات السرائر
+Ibn al-Shaykh al-Thani|966|منتقی الجمان
+Ali ibn Muhammad Amili|1103|الدر المنثور
+Ibn Batiriq|600|خصائص الوحی المبین
+Ibn Hamza|570|الثاقب فی المناقب
+Ibn Khuzar al-Qumi|190|کفایة الأثر
+Ibn Shu'ba Harani|413|تحف العقول
+Ibn Shahr Ashub|588|مناقب
+Ibn Furuh Saffar|290|بصائر الدرجات
+Ibn Fada al-Hili|1100|التحصین
+Ibn Numa al-Hili|650|مثیر الأحزان
+Abu Ishaq Thaqafi|283|الغارات
+Abu al-Hasan al-Laythi|500|عیون الحکم و المواعظ
+Shadan ibn Jibrail|500|الفضائل
+Abu al-Fadl al-Tabarsi|600|مشکاة الأنوار
+Abu Ali al-Tabarsi|548|اعلام الورى
+Abu Mansur al-Tabarsi|580|الاحتجاج
+Sadeh Ehsanbakhsh|1380|آثار الصادقین
+Ahmad ibn Ta'nan al-Bahrani|1350|الصحیفة الصادقیة
+Ahmad ibn Muhammad ibn Khalid al-Barqi|200|المحاسن
+Ahmad ibn Muhammad ibn Isa al-Askari|280|النوادر اشعرى
+Ali ibn Isa al-Arbili|940|کشف الغمة
+Muhammad ibn Hammam al-Askali|336|التمحیص
+Yusuf Ozbek|0|مسند علی بن ابی طالب
+Ja'far ibn Ahmad al-Qumi|200|جامع الأحادیث النبویة
+Ja'far ibn Ahmad al-Qumi|200|الغایات
+Ja'far ibn Ahmad al-Qumi|200|الاعمال المانعة من الجنة
+Ja'far ibn Ahmad al-Qumi|200|المسلسلات
+Ja'far ibn Ahmad al-Qumi|200|نوادر الاثر فی علی خیر البشر
+Ja'far ibn Muhammad al-Mustaghfi|300|طب النبی
+Ja'far ibn Muhammad al-Qummi|367|کامل الزیارات
+Group of Shia narrators|0|اصول سته عشر
+al-Hafiz Rajab al-Barsisi|773|مشارق أنوارالیقین
+Sayyid Muhammad Husayni Amili Ainathi|1200|الإثنی عشریة فی المواعظ العددیة
+al-Hasan ibn Sulayman al-Hili|850|مختصر بصائر الدرجات
+Hasan ibn Muhammad al-Dilmi|750|ارشاد القلوب
+Hasan ibn Muhammad al-Dilmi|750|اعلام الدین
+Husayn ibn Sa'id al-Ahwa|235|الزهد
+Husayn ibn Sa'id al-Ahwa|235|المؤمن
+Husayn ibn Abd al-Wahhab|300|عیون المعجزات
+Husayn ibn Muhammad al-Halwani|400|نزهة الناظر
+Hamid ibn Ahmad al-Zaydi|600|محاسن الأزهار
+Zayd ibn Ali|122|مسند زید
+Sulayman ibn Abdullah al-Bahrani|1130|الأربعون حدیثا فی إمامة أمیرالمؤمنین
+Sayyid ibn Tawus|664|الأمان من الأخطار
+Sayyid ibn Tawus|664|المجتنی
+Sayyid ibn Tawus|664|الدروع الواقیة
+Sayyid ibn Tawus|664|فتح الأبواب
+Sayyid ibn Tawus|664|اللهوف
+Sayyid ibn Tawus|664|محاسبة النفس
+Sayyid ibn Tawus|664|الملاحم و الفتن
+Sayyid ibn Tawus|664|اقبال الاعمال
+Sayyid ibn Tawus|664|التحصین
+Sayyid ibn Tawus|664|سعد السعود
+Sayyid ibn Tawus|664|فرج المهموم
+Sayyid ibn Tawus|664|مصباح الزائر
+Sayyid ibn Tawus|664|الیقین
+Sayyid ibn Tawus|664|مهج الدعوات
+Sayyid ibn Tawus|664|فلاح السائل
+Sayyid ibn Tawus|664|جمال الأسبوع
+Sayyid Razi|406|نهج البلاغه
+Sayyid Fadl Allah al-Rawandi|548|المناجات الإلهیات
+Sayyid Fadl Allah al-Rawandi|548|النوادر
+Ayatollah Borujerdi|1340|جامع احادیث الشیعه
+Sayyid Murtada|436|الأمالی
+Sayyid Hashim al-Bahrani|1107|ینابیع المعاجز
+Sayyid Hashim al-Bahrani|1107|مدینة المعاجز
+Sayyid Hashim al-Bahrani|1107|البرهان
+al-Shajari al-Zaydi|500|الأمالی
+Shahid Awwal|786|المزار
+Shahid Awwal|786|الدرة الباهرة
+Shahid Awwal|786|الأربعون حدیث
+Sheikh Mufid|413|الإرشاد
+Shahid Thani|966|مسکن الفؤاد
+Sayyid Sharaf al-Din al-Isfarayeni|930|تأویل الآیات الظاهرة
+Sheikh Bahai|1030|مفتاح الفلاح
+Sheikh Bahai|1030|الأربعین
+Muhammad ibn Hasan al-Warraq al-Amili|1104|وسائل الشیعة
+Muhammad ibn Hasan al-Warraq al-Amili|1104|الصحیفة السجادیة الثانیة
+Muhammad ibn Hasan al-Warraq al-Amili|1104|الفصول المهمه
+Muhammad ibn Hasan al-Warraq al-Amili|1104|الجواهر السنیة
+Muhammad ibn Hasan al-Warraq al-Amili|1104|اثبات الهداة
+Sheikh Saduq|381|الأمالی
+Sheikh Saduq|381|المواعظ
+Sheikh Saduq|381|ثواب الأعمال
+Sheikh Saduq|381|صفات الشیعه
+Sheikh Saduq|381|عیون أخبارالرضا
+Sheikh Saduq|381|فضائل الشیعه
+Sheikh Saduq|381|مصادقة الاخوان
+Sheikh Saduq|381|التوحید
+Sheikh Saduq|381|الخصال
+Sheikh Saduq|381|علل الشرائع
+Sheikh Saduq|381|فضائل الأشهر الثلاثة
+Sheikh Saduq|381|کمال الدین
+Sheikh Saduq|381|معانى الأخبار
+Sheikh Saduq|381|من لایحضره الفقیه
+Sheikh Saduq|381|الإمامة والتبصرة
+Sheikh Tusi|460|اختیار معرفة الرجال
+Sheikh Tusi|460|تهذیب الأحکام
+Sheikh Tusi|460|کتاب الغیبة
+Sheikh Tusi|460|الاستبصار
+Sheikh Tusi|460|الأمالی
+Sheikh Tusi|460|مصباح المتهجد
+Sheikh Mufid|413|الأمالی
+Shahid Awwal|786|الأربعون حدیثا عن أربعین شیخا
+Abd al-Karim ibn Tawus|700|فرحة الغری
+Abdullah ibn Saleh al-Samahij|1200|الصحیفة العلویة
+Abd al-Wahid al-Timi|500|غرر الحکم
+Abd al-Ali al-Huwayzi|1112|نور الثقلین
+Allama Majlisi|1110|بحارالانوار
+Ali ibn Ibrahim al-Qumi|320|تفسیر القمى
+Ali ibn Ja'far|220|مسائل علی بن جعفر
+Muhammad ibn Mas'ud al-Isfahani|320|تفسیر العیاشى
+Farrat ibn Ibrahim al-Kufi|310|تفسیر فرات
+Fayd al-Kashani|1091|الحقائق فی محاسن الأخلاق
+Fayd al-Kashani|1091|النوادر فی جمع الأحادیث
+Fayd al-Kashani|1091|الوافى
+Fayd al-Kashani|1091|کلمات مکنونه
+Sayyid Hasan Qobanchi|1411|مسند الامام علی
+Qutb al-Din al-Rawandi|573|الخرایج والجرائح
+Qutb al-Din al-Rawandi|573|الدعوات
+Taqi al-Din al-Kaf'ami|905|البلد الأمین
+Taqi al-Din al-Kaf'ami|905|المصباح
+Muhammad ibn Ibrahim al-Nu'mani|360|الغیبة
+Ibn Shadhan al-Qumi|260|مأة منقبة
+Muhammad ibn Fayd al-Kashani|1200|معادن الحکمة
+Muhammad ibn Jarir al-Tabari|310|دلائل الإمامة
+Ibn Mashhadi|600|المزار الکبیر
+Ibn Zahr al-Halabi|700|الأربعون حدیثا فی حقوق الإخوان
+Imad al-Din al-Tabari|600|بشارة المصطفی
+Muhammad ibn Ali al-Karajiki|470|کنز الفوائد
+Muhammad ibn Ali al-Karajiki|470|معدن الجواهر
+Muhammad ibn Ash'ath al-Kufi|270|الجعفریات
+Muhammad ibn Muhammad al-Sabzwari|650|جامع الأخبار
+Muhammad ibn Ya'qub al-Kulini|329|الکافى
+Muhammad Baqir Majlisi|1111|الأربعون حدیثاً
+Muhammad Sadid Khatun-Abadi|1250|کشف الحق
+Salim ibn Qays al-Hilali|76|کتاب سلیم بن قیس
+Mirza Husayn Nuri|1320|مستدرک الوسائل
+Sheikh Mufid|413|المزار
+Nu'man ibn Muhammad al-Timari|363|دعائم الاسلام
+Yahya ibn al-Husayn|200|دُرر الأحادیث
+Waraq ibn Abi Firas|700|تنبیه الخواطر

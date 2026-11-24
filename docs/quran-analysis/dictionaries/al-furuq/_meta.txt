@@ -1,0 +1,9 @@
+Book: الفروق في اللغة (Al-Furuq fi al-Lugha)
+Source: lib.eshia.ir book 12546, 1 volume, 311 pages
+Edition: دار الآفاق الجديدة، بيروت، 1400 هـ (first printing)
+Author per source: عسکری، حسن بن عبدالله (Abu Hilal al-Askari, d. 395 AH per source)
+NOTE: requested list item named "أبو هلال الدمشقي"; this copy is attributed to al-Askari
+      (the classical furuq dictionary, exact title match). Verify attribution if the
+      dimashqi edition is strictly required.
+Retrieved: 2026-11-13
+Pages file: vol1.txt ([pN] markers, N = source page 1..311)

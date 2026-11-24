@@ -1,0 +1,1265 @@
+﻿{
+    "LastRun":  "2026-11-24 21:22:18",
+    "Cycle":  6,
+    "TotalBooks":  152,
+    "Interval":  300,
+    "BooksFound":  0,
+    "BooksUnverified":  152,
+    "BooksPending":  0,
+    "Sources":  [
+                    {
+                        "Name":  "noorlib",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "wikisource",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "shiaprophet",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "hawzah",
+                        "Status":  "Up"
+                    },
+                    {
+                        "Name":  "marja",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "archive.org",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "hathitrust",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "googlebooks",
+                        "Status":  "Down"
+                    },
+                    {
+                        "Name":  "worldcat",
+                        "Status":  "Down"
+                    }
+                ],
+    "Books":  [
+                  {
+                      "Book":  "اصول سته عشر",
+                      "Author":  "Group of Shia narrators",
+                      "DeathAH":  0,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "مسند علی بن ابی طالب",
+                      "Author":  "Yusuf Ozbek",
+                      "DeathAH":  0,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "نهج البلاغه",
+                      "Author":  "Imam Ali",
+                      "DeathAH":  40,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "کتاب سلیم بن قیس",
+                      "Author":  "Salim ibn Qays al-Hilali",
+                      "DeathAH":  76,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "صحیفه سجادیه",
+                      "Author":  "Imam Sajjad",
+                      "DeathAH":  94,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "مسند زید",
+                      "Author":  "Zayd ibn Ali",
+                      "DeathAH":  122,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110264 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:13:26"
+                  },
+                  {
+                      "Book":  "مصباح الشریعة",
+                      "Author":  "Imam Sadiq",
+                      "DeathAH":  148,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110252 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:19:33"
+                  },
+                  {
+                      "Book":  "توحید مفضل",
+                      "Author":  "Imam Sadiq",
+                      "DeathAH":  148,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110215 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:26:11"
+                  },
+                  {
+                      "Book":  "کفایة الأثر",
+                      "Author":  "Ibn Khuzar al-Qumi",
+                      "DeathAH":  190,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110215 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:26:11"
+                  },
+                  {
+                      "Book":  "المحاسن",
+                      "Author":  "Ahmad ibn Muhammad ibn Khalid al-Barqi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110236 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:19:33"
+                  },
+                  {
+                      "Book":  "الاعمال المانعة من الجنة",
+                      "Author":  "Ja\u0027far ibn Ahmad al-Qumi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110214 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:26:11"
+                  },
+                  {
+                      "Book":  "نوادر الاثر فی علی خیر البشر",
+                      "Author":  "Ja\u0027far ibn Ahmad al-Qumi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110239 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:26:11"
+                  },
+                  {
+                      "Book":  "الغایات",
+                      "Author":  "Ja\u0027far ibn Ahmad al-Qumi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110241 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:26:11"
+                  },
+                  {
+                      "Book":  "جامع الأحادیث النبویة",
+                      "Author":  "Ja\u0027far ibn Ahmad al-Qumi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110259 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:33:01"
+                  },
+                  {
+                      "Book":  "المسلسلات",
+                      "Author":  "Ja\u0027far ibn Ahmad al-Qumi",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110261 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:33:01"
+                  },
+                  {
+                      "Book":  "دُرر الأحادیث",
+                      "Author":  "Yahya ibn al-Husayn",
+                      "DeathAH":  200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110259 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:33:01"
+                  },
+                  {
+                      "Book":  "الرسالة الذهبیة",
+                      "Author":  "Imam Reza",
+                      "DeathAH":  203,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110259 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:33:01"
+                  },
+                  {
+                      "Book":  "صحیفة الامام الرضا",
+                      "Author":  "Imam Reza",
+                      "DeathAH":  203,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110263 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:33:01"
+                  },
+                  {
+                      "Book":  "فقه الرضا",
+                      "Author":  "Imam Reza",
+                      "DeathAH":  203,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:39:22"
+                  },
+                  {
+                      "Book":  "مسائل علی بن جعفر",
+                      "Author":  "Ali ibn Ja\u0027far",
+                      "DeathAH":  220,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:45:22"
+                  },
+                  {
+                      "Book":  "المؤمن",
+                      "Author":  "Husayn ibn Sa\u0027id al-Ahwa",
+                      "DeathAH":  235,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:39:22"
+                  },
+                  {
+                      "Book":  "الزهد",
+                      "Author":  "Husayn ibn Sa\u0027id al-Ahwa",
+                      "DeathAH":  235,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:39:22"
+                  },
+                  {
+                      "Book":  "مأة منقبة",
+                      "Author":  "Ibn Shadhan al-Qumi",
+                      "DeathAH":  260,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:39:22"
+                  },
+                  {
+                      "Book":  "تفسیر الامام العسکری",
+                      "Author":  "Imam Hasan Askari",
+                      "DeathAH":  260,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:45:22"
+                  },
+                  {
+                      "Book":  "الجعفریات",
+                      "Author":  "Muhammad ibn Ash\u0027ath al-Kufi",
+                      "DeathAH":  270,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:45:22"
+                  },
+                  {
+                      "Book":  "النوادر اشعرى",
+                      "Author":  "Ahmad ibn Muhammad ibn Isa al-Askari",
+                      "DeathAH":  280,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:45:22"
+                  },
+                  {
+                      "Book":  "الغارات",
+                      "Author":  "Abu Ishaq Thaqafi",
+                      "DeathAH":  283,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:45:22"
+                  },
+                  {
+                      "Book":  "بصائر الدرجات",
+                      "Author":  "Ibn Furuh Saffar",
+                      "DeathAH":  290,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:00:52"
+                  },
+                  {
+                      "Book":  "عیون المعجزات",
+                      "Author":  "Husayn ibn Abd al-Wahhab",
+                      "DeathAH":  300,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:00:52"
+                  },
+                  {
+                      "Book":  "طب النبی",
+                      "Author":  "Ja\u0027far ibn Muhammad al-Mustaghfi",
+                      "DeathAH":  300,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-22 23:51:36"
+                  },
+                  {
+                      "Book":  "تفسیر فرات",
+                      "Author":  "Farrat ibn Ibrahim al-Kufi",
+                      "DeathAH":  310,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:09:14"
+                  },
+                  {
+                      "Book":  "دلائل الإمامة",
+                      "Author":  "Muhammad ibn Jarir al-Tabari",
+                      "DeathAH":  310,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:09:14"
+                  },
+                  {
+                      "Book":  "تفسیر القمى",
+                      "Author":  "Ali ibn Ibrahim al-Qumi",
+                      "DeathAH":  320,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:00:52"
+                  },
+                  {
+                      "Book":  "تفسیر العیاشى",
+                      "Author":  "Muhammad ibn Mas\u0027ud al-Isfahani",
+                      "DeathAH":  320,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:09:14"
+                  },
+                  {
+                      "Book":  "الکافى",
+                      "Author":  "Muhammad ibn Ya\u0027qub al-Kulini",
+                      "DeathAH":  329,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:09:14"
+                  },
+                  {
+                      "Book":  "التمحیص",
+                      "Author":  "Muhammad ibn Hammam al-Askali",
+                      "DeathAH":  336,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:09:14"
+                  },
+                  {
+                      "Book":  "الغیبة",
+                      "Author":  "Muhammad ibn Ibrahim al-Nu\u0027mani",
+                      "DeathAH":  360,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:15:37"
+                  },
+                  {
+                      "Book":  "دعائم الاسلام",
+                      "Author":  "Nu\u0027man ibn Muhammad al-Timari",
+                      "DeathAH":  363,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:15:37"
+                  },
+                  {
+                      "Book":  "کامل الزیارات",
+                      "Author":  "Ja\u0027far ibn Muhammad al-Qummi",
+                      "DeathAH":  367,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:15:37"
+                  },
+                  {
+                      "Book":  "علل الشرائع",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:15:37"
+                  },
+                  {
+                      "Book":  "الخصال",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:15:37"
+                  },
+                  {
+                      "Book":  "التوحید",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:32:44"
+                  },
+                  {
+                      "Book":  "الإمامة والتبصرة",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:23:01"
+                  },
+                  {
+                      "Book":  "معانى الأخبار",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:32:44"
+                  },
+                  {
+                      "Book":  "کمال الدین",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:32:44"
+                  },
+                  {
+                      "Book":  "فضائل الأشهر الثلاثة",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:23:01"
+                  },
+                  {
+                      "Book":  "فضائل الشیعه",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:32:44"
+                  },
+                  {
+                      "Book":  "صفات الشیعه",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:32:44"
+                  },
+                  {
+                      "Book":  "من لایحضره الفقیه",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "عیون أخبارالرضا",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "ثواب الأعمال",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "الأمالی",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "مصادقة الاخوان",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "المواعظ",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:45:46"
+                  },
+                  {
+                      "Book":  "نزهة الناظر",
+                      "Author":  "Husayn ibn Muhammad al-Halwani",
+                      "DeathAH":  400,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:45:46"
+                  },
+                  {
+                      "Book":  "نهج البلاغه",
+                      "Author":  "Imam Ali",
+                      "DeathAH":  40,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110292 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-24 21:22:18"
+                  },
+                  {
+                      "Book":  "تحف العقول",
+                      "Author":  "Ibn Shu\u0027ba Harani",
+                      "DeathAH":  413,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:45:46"
+                  },
+                  {
+                      "Book":  "الإرشاد",
+                      "Author":  "Sheikh Mufid",
+                      "DeathAH":  413,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:45:46"
+                  },
+                  {
+                      "Book":  "الأمالی",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "المزار",
+                      "Author":  "Sheikh Mufid",
+                      "DeathAH":  413,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:51:19"
+                  },
+                  {
+                      "Book":  "الأمالی",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "مصباح المتهجد",
+                      "Author":  "Sheikh Tusi",
+                      "DeathAH":  460,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:51:19"
+                  },
+                  {
+                      "Book":  "الاستبصار",
+                      "Author":  "Sheikh Tusi",
+                      "DeathAH":  460,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110274 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:56:52"
+                  },
+                  {
+                      "Book":  "الأمالی",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "تهذیب الأحکام",
+                      "Author":  "Sheikh Tusi",
+                      "DeathAH":  460,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:51:19"
+                  },
+                  {
+                      "Book":  "کتاب الغیبة",
+                      "Author":  "Sheikh Tusi",
+                      "DeathAH":  460,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:51:19"
+                  },
+                  {
+                      "Book":  "اختیار معرفة الرجال",
+                      "Author":  "Sheikh Tusi",
+                      "DeathAH":  460,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:56:52"
+                  },
+                  {
+                      "Book":  "کنز الفوائد",
+                      "Author":  "Muhammad ibn Ali al-Karajiki",
+                      "DeathAH":  470,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110277 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:56:52"
+                  },
+                  {
+                      "Book":  "معدن الجواهر",
+                      "Author":  "Muhammad ibn Ali al-Karajiki",
+                      "DeathAH":  470,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110265 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:56:52"
+                  },
+                  {
+                      "Book":  "غرر الحکم",
+                      "Author":  "Abd al-Wahid al-Timi",
+                      "DeathAH":  500,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110269 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:56:52"
+                  },
+                  {
+                      "Book":  "عیون الحکم و المواعظ",
+                      "Author":  "Abu al-Hasan al-Laythi",
+                      "DeathAH":  500,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110274 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:02:26"
+                  },
+                  {
+                      "Book":  "الأمالی",
+                      "Author":  "Sheikh Saduq",
+                      "DeathAH":  381,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:39:44"
+                  },
+                  {
+                      "Book":  "الفضائل",
+                      "Author":  "Shadan ibn Jibrail",
+                      "DeathAH":  500,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110273 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:02:26"
+                  },
+                  {
+                      "Book":  "اعلام الورى",
+                      "Author":  "Abu Ali al-Tabarsi",
+                      "DeathAH":  548,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110278 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:02:26"
+                  },
+                  {
+                      "Book":  "النوادر",
+                      "Author":  "Sayyid Fadl Allah al-Rawandi",
+                      "DeathAH":  548,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110278 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:02:26"
+                  },
+                  {
+                      "Book":  "المناجات الإلهیات",
+                      "Author":  "Sayyid Fadl Allah al-Rawandi",
+                      "DeathAH":  548,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:13:30"
+                  },
+                  {
+                      "Book":  "مستطرفات السرائر",
+                      "Author":  "Ibn Idris al-Hili",
+                      "DeathAH":  561,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:07:58"
+                  },
+                  {
+                      "Book":  "الثاقب فی المناقب",
+                      "Author":  "Ibn Hamza",
+                      "DeathAH":  570,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:07:58"
+                  },
+                  {
+                      "Book":  "الخرایج والجرائح",
+                      "Author":  "Qutb al-Din al-Rawandi",
+                      "DeathAH":  573,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:07:58"
+                  },
+                  {
+                      "Book":  "الدعوات",
+                      "Author":  "Qutb al-Din al-Rawandi",
+                      "DeathAH":  573,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:07:58"
+                  },
+                  {
+                      "Book":  "الاحتجاج",
+                      "Author":  "Abu Mansur al-Tabarsi",
+                      "DeathAH":  580,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:13:30"
+                  },
+                  {
+                      "Book":  "مناقب",
+                      "Author":  "Ibn Shahr Ashub",
+                      "DeathAH":  588,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:13:30"
+                  },
+                  {
+                      "Book":  "مشکاة الأنوار",
+                      "Author":  "Abu al-Fadl al-Tabarsi",
+                      "DeathAH":  600,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:13:30"
+                  },
+                  {
+                      "Book":  "محاسن الأزهار",
+                      "Author":  "Hamid ibn Ahmad al-Zaydi",
+                      "DeathAH":  600,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:13:30"
+                  },
+                  {
+                      "Book":  "خصائص الوحی المبین",
+                      "Author":  "Ibn Batiriq",
+                      "DeathAH":  600,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:19:04"
+                  },
+                  {
+                      "Book":  "المزار الکبیر",
+                      "Author":  "Ibn Mashhadi",
+                      "DeathAH":  600,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:19:04"
+                  },
+                  {
+                      "Book":  "بشارة المصطفی",
+                      "Author":  "Imad al-Din al-Tabari",
+                      "DeathAH":  600,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:19:04"
+                  },
+                  {
+                      "Book":  "مثیر الأحزان",
+                      "Author":  "Ibn Numa al-Hili",
+                      "DeathAH":  650,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:19:04"
+                  },
+                  {
+                      "Book":  "جامع الأخبار",
+                      "Author":  "Muhammad ibn Muhammad al-Sabzwari",
+                      "DeathAH":  650,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:19:04"
+                  },
+                  {
+                      "Book":  "الأمان من الأخطار",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:24:36"
+                  },
+                  {
+                      "Book":  "فرج المهموم",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:35:43"
+                  },
+                  {
+                      "Book":  "مصباح الزائر",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:24:36"
+                  },
+                  {
+                      "Book":  "التحصین",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:30:10"
+                  },
+                  {
+                      "Book":  "سعد السعود",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:24:36"
+                  },
+                  {
+                      "Book":  "فلاح السائل",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:30:10"
+                  },
+                  {
+                      "Book":  "مهج الدعوات",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:30:10"
+                  },
+                  {
+                      "Book":  "الیقین",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:30:10"
+                  },
+                  {
+                      "Book":  "جمال الأسبوع",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:35:43"
+                  },
+                  {
+                      "Book":  "اقبال الاعمال",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:35:43"
+                  },
+                  {
+                      "Book":  "المجتنی",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:35:43"
+                  },
+                  {
+                      "Book":  "فتح الأبواب",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:35:43"
+                  },
+                  {
+                      "Book":  "الدروع الواقیة",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:41:18"
+                  },
+                  {
+                      "Book":  "الملاحم و الفتن",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:46:49"
+                  },
+                  {
+                      "Book":  "محاسبة النفس",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:41:18"
+                  },
+                  {
+                      "Book":  "اللهوف",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:41:18"
+                  },
+                  {
+                      "Book":  "فرحة الغری",
+                      "Author":  "Abd al-Karim ibn Tawus",
+                      "DeathAH":  700,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:41:18"
+                  },
+                  {
+                      "Book":  "الأربعون حدیثا فی حقوق الإخوان",
+                      "Author":  "Ibn Zahr al-Halabi",
+                      "DeathAH":  700,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:46:49"
+                  },
+                  {
+                      "Book":  "تنبیه الخواطر",
+                      "Author":  "Waraq ibn Abi Firas",
+                      "DeathAH":  700,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:52:22"
+                  },
+                  {
+                      "Book":  "ارشاد القلوب",
+                      "Author":  "Hasan ibn Muhammad al-Dilmi",
+                      "DeathAH":  750,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:46:49"
+                  },
+                  {
+                      "Book":  "اعلام الدین",
+                      "Author":  "Hasan ibn Muhammad al-Dilmi",
+                      "DeathAH":  750,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:46:49"
+                  },
+                  {
+                      "Book":  "مشارق أنوارالیقین",
+                      "Author":  "al-Hafiz Rajab al-Barsisi",
+                      "DeathAH":  773,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:52:22"
+                  },
+                  {
+                      "Book":  "الأربعون حدیثا عن أربعین شیخا",
+                      "Author":  "Shahid Awwal",
+                      "DeathAH":  786,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:52:22"
+                  },
+                  {
+                      "Book":  "الدرة الباهرة",
+                      "Author":  "Shahid Awwal",
+                      "DeathAH":  786,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:52:22"
+                  },
+                  {
+                      "Book":  "المزار",
+                      "Author":  "Sheikh Mufid",
+                      "DeathAH":  413,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110254 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 00:51:19"
+                  },
+                  {
+                      "Book":  "الأربعون حدیث",
+                      "Author":  "Shahid Awwal",
+                      "DeathAH":  786,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:52:22"
+                  },
+                  {
+                      "Book":  "مختصر بصائر الدرجات",
+                      "Author":  "al-Hasan ibn Sulayman al-Hili",
+                      "DeathAH":  850,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:58:00"
+                  },
+                  {
+                      "Book":  "عوالى اللئالى",
+                      "Author":  "Ibn Abi Jumhur al-Ahvasi",
+                      "DeathAH":  850,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:58:00"
+                  },
+                  {
+                      "Book":  "المصباح",
+                      "Author":  "Taqi al-Din al-Kaf\u0027ami",
+                      "DeathAH":  905,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:58:00"
+                  },
+                  {
+                      "Book":  "البلد الأمین",
+                      "Author":  "Taqi al-Din al-Kaf\u0027ami",
+                      "DeathAH":  905,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:58:00"
+                  },
+                  {
+                      "Book":  "تأویل الآیات الظاهرة",
+                      "Author":  "Sayyid Sharaf al-Din al-Isfarayeni",
+                      "DeathAH":  930,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:58:00"
+                  },
+                  {
+                      "Book":  "کشف الغمة",
+                      "Author":  "Ali ibn Isa al-Arbili",
+                      "DeathAH":  940,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:03:31"
+                  },
+                  {
+                      "Book":  "منتقی الجمان",
+                      "Author":  "Ibn al-Shaykh al-Thani",
+                      "DeathAH":  966,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:03:31"
+                  },
+                  {
+                      "Book":  "مسکن الفؤاد",
+                      "Author":  "Shahid Thani",
+                      "DeathAH":  966,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:03:31"
+                  },
+                  {
+                      "Book":  "مفتاح الفلاح",
+                      "Author":  "Sheikh Bahai",
+                      "DeathAH":  1030,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:03:31"
+                  },
+                  {
+                      "Book":  "الأربعین",
+                      "Author":  "Sheikh Bahai",
+                      "DeathAH":  1030,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:03:31"
+                  },
+                  {
+                      "Book":  "الحقائق فی محاسن الأخلاق",
+                      "Author":  "Fayd al-Kashani",
+                      "DeathAH":  1091,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:09:04"
+                  },
+                  {
+                      "Book":  "کلمات مکنونه",
+                      "Author":  "Fayd al-Kashani",
+                      "DeathAH":  1091,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:09:04"
+                  },
+                  {
+                      "Book":  "النوادر فی جمع الأحادیث",
+                      "Author":  "Fayd al-Kashani",
+                      "DeathAH":  1091,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:09:04"
+                  },
+                  {
+                      "Book":  "الوافى",
+                      "Author":  "Fayd al-Kashani",
+                      "DeathAH":  1091,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:09:04"
+                  },
+                  {
+                      "Book":  "التحصین",
+                      "Author":  "Sayyid ibn Tawus",
+                      "DeathAH":  664,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 01:30:10"
+                  },
+                  {
+                      "Book":  "الدر المنثور",
+                      "Author":  "Ali ibn Muhammad Amili",
+                      "DeathAH":  1103,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:14:36"
+                  },
+                  {
+                      "Book":  "الصحیفة السجادیة الثانیة",
+                      "Author":  "Muhammad ibn Hasan al-Warraq al-Amili",
+                      "DeathAH":  1104,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:14:36"
+                  },
+                  {
+                      "Book":  "وسائل الشیعة",
+                      "Author":  "Muhammad ibn Hasan al-Warraq al-Amili",
+                      "DeathAH":  1104,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:14:36"
+                  },
+                  {
+                      "Book":  "الفصول المهمه",
+                      "Author":  "Muhammad ibn Hasan al-Warraq al-Amili",
+                      "DeathAH":  1104,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:20:11"
+                  },
+                  {
+                      "Book":  "اثبات الهداة",
+                      "Author":  "Muhammad ibn Hasan al-Warraq al-Amili",
+                      "DeathAH":  1104,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:14:36"
+                  },
+                  {
+                      "Book":  "الجواهر السنیة",
+                      "Author":  "Muhammad ibn Hasan al-Warraq al-Amili",
+                      "DeathAH":  1104,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:20:11"
+                  },
+                  {
+                      "Book":  "مدینة المعاجز",
+                      "Author":  "Sayyid Hashim al-Bahrani",
+                      "DeathAH":  1107,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:20:11"
+                  },
+                  {
+                      "Book":  "ینابیع المعاجز",
+                      "Author":  "Sayyid Hashim al-Bahrani",
+                      "DeathAH":  1107,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:20:11"
+                  },
+                  {
+                      "Book":  "البرهان",
+                      "Author":  "Sayyid Hashim al-Bahrani",
+                      "DeathAH":  1107,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:20:11"
+                  },
+                  {
+                      "Book":  "بحارالانوار",
+                      "Author":  "Allama Majlisi",
+                      "DeathAH":  1110,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:25:42"
+                  },
+                  {
+                      "Book":  "الأربعون حدیثاً",
+                      "Author":  "Muhammad Baqir Majlisi",
+                      "DeathAH":  1111,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:25:42"
+                  },
+                  {
+                      "Book":  "نور الثقلین",
+                      "Author":  "Abd al-Ali al-Huwayzi",
+                      "DeathAH":  1112,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:25:42"
+                  },
+                  {
+                      "Book":  "الأربعون حدیثا فی إمامة أمیرالمؤمنین",
+                      "Author":  "Sulayman ibn Abdullah al-Bahrani",
+                      "DeathAH":  1130,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:31:14"
+                  },
+                  {
+                      "Book":  "الصحیفة العلویة",
+                      "Author":  "Abdullah ibn Saleh al-Samahij",
+                      "DeathAH":  1200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:25:42"
+                  },
+                  {
+                      "Book":  "معادن الحکمة",
+                      "Author":  "Muhammad ibn Fayd al-Kashani",
+                      "DeathAH":  1200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:31:14"
+                  },
+                  {
+                      "Book":  "الإثنی عشریة فی المواعظ العددیة",
+                      "Author":  "Sayyid Muhammad Husayni Amili Ainathi",
+                      "DeathAH":  1200,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:31:14"
+                  },
+                  {
+                      "Book":  "کشف الحق",
+                      "Author":  "Muhammad Sadid Khatun-Abadi",
+                      "DeathAH":  1250,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:31:14"
+                  },
+                  {
+                      "Book":  "مستدرک الوسائل",
+                      "Author":  "Mirza Husayn Nuri",
+                      "DeathAH":  1320,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:31:14"
+                  },
+                  {
+                      "Book":  "جامع احادیث الشیعه",
+                      "Author":  "Ayatollah Borujerdi",
+                      "DeathAH":  1340,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:36:50"
+                  },
+                  {
+                      "Book":  "الصحیفة الصادقیة",
+                      "Author":  "Ahmad ibn Ta\u0027nan al-Bahrani",
+                      "DeathAH":  1350,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:36:50"
+                  },
+                  {
+                      "Book":  "آثار الصادقین",
+                      "Author":  "Sadeh Ehsanbakhsh",
+                      "DeathAH":  1380,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:36:50"
+                  },
+                  {
+                      "Book":  "مسند الامام علی",
+                      "Author":  "Sayyid Hasan Qobanchi",
+                      "DeathAH":  1411,
+                      "Status":  "Unverified",
+                      "Detail":  "noorlib no result group (total=110282 groups=special-authors(1))",
+                      "LastSearched":  "2026-11-23 02:36:50"
+                  }
+              ]
+}
