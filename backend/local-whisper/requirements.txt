@@ -1,0 +1,10 @@
+faster-whisper==1.2.1
+av==12.3.0
+ctranslate2==4.9.1
+fastapi==0.165.0
+uvicorn==0.54.0
+python-multipart==0.0.34
+onnxruntime==1.32.0
+tokenizers==0.23.3
+huggingface_hub==2.4.0
+filelock==4.3.1
