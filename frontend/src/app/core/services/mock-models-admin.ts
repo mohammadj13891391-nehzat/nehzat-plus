@@ -2,6 +2,8 @@
 export type {
   Coach,
   CoachFileDto,
+  TrainingSampleDto,
+  TrainingSummaryDto,
   CreateCoachPayload,
   Student,
   CreateStudentPayload,

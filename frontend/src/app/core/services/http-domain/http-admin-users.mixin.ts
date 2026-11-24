@@ -8,6 +8,8 @@ import {
   BranchManager,
   Coach,
   CoachFileDto,
+  TrainingSampleDto,
+  TrainingSummaryDto,
   CreatedUser,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -94,6 +96,28 @@ export function WithAdminUsers<TBase extends Constructor<HttpServiceContext>>(Ba
 
     deleteCoachFile(coachId: number, fileId: number): Observable<void> {
       return this.http.delete<void>(this.url(`/admin/coaches/${coachId}/files/${fileId}`));
+    }
+
+    addTrainingSample(file: File, text: string, coachId?: number): Observable<TrainingSampleDto> {
+      const fd = new FormData();
+      fd.append('file', file, file.name);
+      fd.append('text', text);
+      if (coachId != null) fd.append('coachId', String(coachId));
+      return this.http.post<TrainingSampleDto>(this.url('/admin/coaches/training/samples'), fd);
+    }
+
+    getTrainingSamples(coachId?: number): Observable<TrainingSampleDto[]> {
+      let params = new HttpParams();
+      if (coachId != null) params = params.set('coachId', String(coachId));
+      return this.http.get<TrainingSampleDto[]>(this.url('/admin/coaches/training/samples'), { params });
+    }
+
+    deleteTrainingSample(sampleId: number): Observable<void> {
+      return this.http.delete<void>(this.url(`/admin/coaches/training/samples/${sampleId}`));
+    }
+
+    getTrainingSummary(): Observable<TrainingSummaryDto> {
+      return this.http.get<TrainingSummaryDto>(this.url('/admin/coaches/training/summary'));
     }
 
     getBranchManagers(): Observable<BranchManager[]> {

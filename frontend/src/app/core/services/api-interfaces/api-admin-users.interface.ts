@@ -7,6 +7,8 @@ import {
   BranchManager,
   Coach,
   CoachFileDto,
+  TrainingSampleDto,
+  TrainingSummaryDto,
   CreatedUser,
   CreateBranchManagerPayload,
   CreateCoachPayload,
@@ -45,6 +47,11 @@ export abstract class AdminUsersApi {
   abstract getCoachFiles(coachId: number): Observable<CoachFileDto[]>;
   abstract uploadCoachFile(coachId: number, title: string, file: File): Observable<CoachFileDto>;
   abstract deleteCoachFile(coachId: number, fileId: number): Observable<void>;
+
+  abstract addTrainingSample(file: File, text: string, coachId?: number): Observable<TrainingSampleDto>;
+  abstract getTrainingSamples(coachId?: number): Observable<TrainingSampleDto[]>;
+  abstract deleteTrainingSample(sampleId: number): Observable<void>;
+  abstract getTrainingSummary(): Observable<TrainingSummaryDto>;
 
   abstract getBranchManagers(): Observable<BranchManager[]>;
   abstract getMyBranchManagers(): Observable<BranchManager[]>;

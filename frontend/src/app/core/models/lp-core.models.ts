@@ -676,6 +676,23 @@ export interface CoachFileDto {
   createdAt: string;
 }
 
+export interface TrainingSampleDto {
+  id: number;
+  audioPath: string;
+  text: string;
+  coachName: string;
+  coachId: number | null;
+  durationSec: number | null;
+  createdAt: string;
+}
+
+export interface TrainingSummaryDto {
+  count: number;
+  totalDurationSec: number;
+  byCoach: { coach: string; samples: number; durationSec: number }[];
+}
+
+
 export interface Parent {
   id: number;
   username: string;

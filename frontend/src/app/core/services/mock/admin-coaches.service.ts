@@ -4,6 +4,8 @@ import { MockDataContext } from './mock-data-context';
 import {
   Coach,
   CoachFileDto,
+  TrainingSampleDto,
+  TrainingSummaryDto,
   Student,
   BranchManager,
   CreateCoachPayload,
@@ -15,6 +17,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class MockAdminCoachesService {
   private coachFiles = new Map<number, CoachFileDto[]>();
+  private trainingSamples: TrainingSampleDto[] = [];
 
   constructor(private ctx: MockDataContext) {}
 
@@ -96,6 +99,50 @@ export class MockAdminCoachesService {
     const list = this.coachFiles.get(coachId) ?? [];
     this.coachFiles.set(coachId, list.filter((f) => f.id !== fileId));
     return this.ctx.delayed(undefined as void);
+  }
+
+  addTrainingSample(file: File, text: string, coachId?: number): Observable<TrainingSampleDto> {
+    const coach = coachId != null ? this.ctx.coaches.find((c) => c.id === coachId) : undefined;
+    const dto: TrainingSampleDto = {
+      id: this.ctx.nextId(this.trainingSamples),
+      audioPath: `/mock/uploads/training/${file.name}`,
+      text: text.trim(),
+      coachName: coach ? `${coach.firstName} ${coach.lastName}`.trim() : '',
+      coachId: coach?.id ?? null,
+      durationSec: null,
+      createdAt: new Date().toISOString(),
+    };
+    this.trainingSamples.push(dto);
+    return this.ctx.delayed(dto);
+  }
+
+  getTrainingSamples(coachId?: number): Observable<TrainingSampleDto[]> {
+    let list = [...this.trainingSamples];
+    if (coachId != null) list = list.filter((s) => s.coachId === coachId);
+    return this.ctx.delayed(
+      list.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    );
+  }
+
+  deleteTrainingSample(sampleId: number): Observable<void> {
+    this.trainingSamples = this.trainingSamples.filter((s) => s.id !== sampleId);
+    return this.ctx.delayed(undefined as void);
+  }
+
+  getTrainingSummary(): Observable<TrainingSummaryDto> {
+    const byCoach = new Map<string, { coach: string; samples: number; durationSec: number }>();
+    for (const s of this.trainingSamples) {
+      const entry = byCoach.get(s.coachName) ?? { coach: s.coachName, samples: 0, durationSec: 0 };
+      entry.samples += 1;
+      entry.durationSec += s.durationSec ?? 0;
+      byCoach.set(s.coachName, entry);
+    }
+    const rows = [...byCoach.values()].sort((a, b) => b.samples - a.samples);
+    return this.ctx.delayed({
+      count: this.trainingSamples.length,
+      totalDurationSec: this.trainingSamples.reduce((sum, s) => sum + (s.durationSec ?? 0), 0),
+      byCoach: rows,
+    });
   }
 
   getStudents(): Observable<Student[]> {
