@@ -3,9 +3,13 @@ import { HttpBackend, HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } f
 import { Observable, fromEvent, of, throwError } from 'rxjs';
 import { resolveMorabbiApiBaseUrl } from '../../../core/services/api-url.util';
 import {
-  drainOfflineReportQueue,
+  OFFLINE_SYNC_INTERVAL_MS,
+  OfflineSyncAbortedError,
+  drainOfflineQueue,
+  enqueueOfflineLessonPlan,
   enqueueOfflineReport,
-  pendingOfflineReportCount
+  pendingOfflineCount,
+  setOfflineMeta
 } from './morabbi-offline-queue';
 import {
   ApproveUserPayload,
@@ -54,17 +58,20 @@ export class MorabbiApiService {
   readonly user = signal<AuthUserDto | null>(this.restoreUser());
   readonly sessionReady = signal<boolean>(!!localStorage.getItem(TOKEN_KEY));
   readonly sessionError = signal<string | null>(null);
-  readonly pendingOfflineReports = signal(0);
+  readonly pendingOfflineItems = signal(0);
 
   private ensureSessionOnce: Promise<void> | null = null;
   private offlineSyncing = false;
 
   constructor() {
     fromEvent(window, 'online').subscribe(() => {
-      void this.syncOfflineReports();
+      void this.syncOfflineQueue();
     });
+    setInterval(() => {
+      void this.syncOfflineQueue();
+    }, OFFLINE_SYNC_INTERVAL_MS);
     void this.refreshPendingOffline();
-    void this.syncOfflineReports();
+    void this.syncOfflineQueue();
   }
 
   private get base(): string {
@@ -206,16 +213,26 @@ export class MorabbiApiService {
     });
   }
 
-  async syncOfflineReports(): Promise<void> {
+  async syncOfflineQueue(): Promise<void> {
     if (this.offlineSyncing || !this.token || !navigator.onLine) return;
     this.offlineSyncing = true;
     try {
-      const sent = await drainOfflineReportQueue(async (payload) => {
-        await this.http
-          .post<{ report: DailyReport }>(`${this.base}/api/reports`, payload, { headers: this.headers() })
-          .toPromise();
+      const { sent } = await drainOfflineQueue(async (item) => {
+        const path = item.kind === 'report' ? '/api/reports' : '/api/lesson-plans';
+        try {
+          await this.http.post(`${this.base}${path}`, item.data, { headers: this.headers() }).toPromise();
+        } catch (err) {
+          if (err instanceof HttpErrorResponse && err.status === 401) {
+            this.clearSession();
+            throw new OfflineSyncAbortedError('morabbi session lost');
+          }
+          throw err;
+        }
       });
-      if (sent > 0) this.refreshPendingOffline();
+      if (sent > 0) {
+        await setOfflineMeta('lastSyncAt', Date.now());
+        this.refreshPendingOffline();
+      }
     } catch {
       // queue stays, retry on next online/startup
     } finally {
@@ -224,8 +241,8 @@ export class MorabbiApiService {
   }
 
   private refreshPendingOffline(): void {
-    pendingOfflineReportCount()
-      .then((n) => this.pendingOfflineReports.set(n))
+    pendingOfflineCount()
+      .then((n) => this.pendingOfflineItems.set(n))
       .catch(() => {});
   }
 
@@ -246,8 +263,38 @@ export class MorabbiApiService {
     return this.req<LessonPlan>({ method: 'GET', path: `/api/lesson-plans/${id}` });
   }
 
-  createLessonPlan(payload: CreateLessonPlanPayload): Observable<{ lessonPlan: LessonPlan }> {
-    return this.req<{ lessonPlan: LessonPlan }>({ method: 'POST', path: '/api/lesson-plans', body: payload });
+  createLessonPlan(payload: CreateLessonPlanPayload): Observable<{ lessonPlan: LessonPlan | null }> {
+    const queueOffline = () =>
+      new Observable<{ lessonPlan: LessonPlan | null }>((subscriber) => {
+        enqueueOfflineLessonPlan(payload)
+          .then(() => {
+            this.refreshPendingOffline();
+            subscriber.next({ lessonPlan: null });
+            subscriber.complete();
+          })
+          .catch((err) => subscriber.error(err));
+      });
+
+    if (!navigator.onLine) {
+      return queueOffline();
+    }
+
+    return new Observable<{ lessonPlan: LessonPlan | null }>((subscriber) => {
+      this.req<{ lessonPlan: LessonPlan }>({ method: 'POST', path: '/api/lesson-plans', body: payload }).subscribe({
+        next: (v) => {
+          subscriber.next({ lessonPlan: v.lessonPlan });
+          subscriber.complete();
+        },
+        error: (err) => {
+          const networkFailure = err instanceof HttpErrorResponse && (err.status === 0 || !navigator.onLine);
+          if (networkFailure) {
+            queueOffline().subscribe(subscriber);
+          } else {
+            subscriber.error(err);
+          }
+        }
+      });
+    });
   }
 
   updateLessonPlan(id: number, payload: UpdateLessonPlanPayload): Observable<{ lessonPlan: LessonPlan }> {

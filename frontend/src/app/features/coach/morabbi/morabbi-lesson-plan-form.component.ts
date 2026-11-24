@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from '../../../core/services/notification.service';
 import { MorabbiApiService } from './morabbi-api.service';
 import { Branch, CreateLessonPlanPayload, LessonPlan, TargetStatus } from './morabbi.models';
 
@@ -247,6 +248,7 @@ export class MorabbiLessonPlanFormComponent implements OnInit {
   private readonly auth = inject(MorabbiApiService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly notifier = inject(NotificationService);
 
   readonly sections = SECTIONS;
   readonly editId = signal<number | null>(null);
@@ -333,7 +335,14 @@ export class MorabbiLessonPlanFormComponent implements OnInit {
     this.error.set(null);
     const obs = this.editId() ? this.auth.updateLessonPlan(this.editId()!, payload) : this.auth.createLessonPlan(payload);
     obs.subscribe({
-      next: (res) => this.router.navigate(['/coach/lesson-plans', res.lessonPlan.id]),
+      next: (res) => {
+        if (!res.lessonPlan) {
+          this.notifier.show('طرح درس آفلاین ذخیره شد؛ پس از برقراری اتصال به‌صورت خودکار ارسال می‌شود.', 'info');
+          this.router.navigate(['/coach/lesson-plans']);
+          return;
+        }
+        this.router.navigate(['/coach/lesson-plans', res.lessonPlan.id]);
+      },
       error: (err) => {
         this.busy.set(false);
         this.error.set(err?.error?.message ?? 'خطا در ذخیره طرح');

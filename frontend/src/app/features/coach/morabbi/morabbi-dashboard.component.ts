@@ -24,8 +24,8 @@ import { notificationTypeLabel as notificationTypeLabelFn, roleLabel as roleLabe
 
     <div class="alert alert-error" *ngIf="error()">{{ error() }}</div>
 
-    <div class="alert alert-info" *ngIf="auth.pendingOfflineReports() > 0">
-      ⏳ {{ auth.pendingOfflineReports() }} گزارش آفلاین در صف ارسال است — پس از برقراری اتصال به‌صورت خودکار ارسال می‌شوند.
+    <div class="alert alert-info" *ngIf="auth.pendingOfflineItems() > 0">
+      ⏳ {{ auth.pendingOfflineItems() }} مورد آفلاین در صف ارسال است — پس از برقراری اتصال به‌صورت خودکار ارسال می‌شود.
     </div>
 
     <div class="grid-2" *ngIf="data()">
