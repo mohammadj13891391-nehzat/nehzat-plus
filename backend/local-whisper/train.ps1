@@ -56,7 +56,7 @@ if (-not (Test-Path $pyexe)) {
 
 $need = @("torch", "transformers", "datasets", "soundfile", "accelerate", "ctranslate2", "tiktoken", "huggingface_hub", "av")
 function Test-Missing($mods) {
-    $out = & $pyexe -c "import importlib.util,sys; missing=[m for m in $mods if importlib.util.find_spec(m) is None]; print(' '.join(missing))"
+    $out = & $pyexe -c "import importlib.util,sys; missing=[m for m in sys.argv[1:] if importlib.util.find_spec(m) is None]; print(' '.join(missing))" $mods
     return -not [string]::IsNullOrWhiteSpace($out.Trim())
 }
 if (Test-Missing $need) {
@@ -72,7 +72,7 @@ New-Item -ItemType Directory -Force -Path $modelsDir | Out-Null
 # ---- 1. Prepare dataset -----------------------------------------------------
 if (-not $SkipPrep) {
     Write-Host "==> Preparing dataset into $DatasetDir" -ForegroundColor Cyan
-    $prepArgs = @("prepare_dataset.py", "--out", $DatasetDir, "--min-samples", $MinSamples)
+    $prepArgs = @("--out", $DatasetDir, "--min-samples", $MinSamples)
     if ($Manifest) {
         $prepArgs += @("--manifest", $Manifest)
     } else {
@@ -88,7 +88,7 @@ if (-not $SkipPrep) {
 $hfOut = Join-Path $DatasetDir "hf-finetuned"
 if (-not $SkipTrain) {
     Write-Host "==> Fine-tuning $ModelSize Whisper on $DatasetDir" -ForegroundColor Cyan
-    $ftArgs = @("finetune_whisper.py", "--dataset_dir", $DatasetDir, "--model_size", $ModelSize, "--out_dir", $hfOut, "--epochs", $Epochs, "--batch_size", $BatchSize, "--lr", $Lr)
+    $ftArgs = @("--dataset_dir", $DatasetDir, "--model_size", $ModelSize, "--out_dir", $hfOut, "--epochs", $Epochs, "--batch_size", $BatchSize, "--lr", $Lr)
     if ($Steps -gt 0) { $ftArgs += @("--max_steps", $Steps) }
     & $pyexe (Join-Path $here "finetune_whisper.py") @ftArgs
     if ($LASTEXITCODE -ne 0) { throw "finetune_whisper.py failed (exit $LASTEXITCODE)." }
@@ -100,7 +100,7 @@ $next = 1
 if ($existing) { $next = (($existing | ForEach-Object { [int]($_.Name -replace "nehzat-fa-v?(\d+)$", '$1') } | Measure-Object -Maximum).Maximum) + 1 }
 $target = Join-Path $modelsDir "nehzat-fa-v$next"
 Write-Host "==> Converting HF checkpoint -> CTranslate2 at $target" -ForegroundColor Cyan
-& $pyexe -m ctranslate2.converters.whisper $hfOut --output_dir $target
+& $pyexe -m ctranslate2.converters.transformers --model $hfOut --output_dir $target --quantization int8
 if ($LASTEXITCODE -ne 0) { throw "ctranslate2 conversion failed (exit $LASTEXITCODE)." }
 
 Write-Host ""

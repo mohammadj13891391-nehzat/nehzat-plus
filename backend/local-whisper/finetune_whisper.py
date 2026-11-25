@@ -169,9 +169,19 @@ def main() -> None:
         predict_with_generate=False,
         report_to=[],
         seed=args.seed,
-        max_source_length=args.max_source_length,
         **training_kwargs,
     )
+
+    def collate(features):
+        out = {}
+        for k in features[0].keys():
+            arr = np.stack([f[k] for f in features])
+            if k == "labels":
+                arr = arr.astype(np.int64)
+            else:
+                arr = arr.astype(np.float32)
+            out[k] = torch.tensor(arr)
+        return out
 
     trainer = Seq2SeqTrainer(
         model=model,
@@ -179,6 +189,7 @@ def main() -> None:
         train_dataset=train_ds,
         eval_dataset=val_ds,
         processing_class=tokenizer,
+        data_collator=collate,
     )
 
     print("Starting fine-tuning (CPU). This can take a while for small models...")
